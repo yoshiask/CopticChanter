@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Joshua Askharoun</Authors>
     <Company>Joshua Askharoun</Company>
@@ -23,6 +23,12 @@ Useful features:
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MoonSharp.Interpreter">
+      <HintPath>C:\Users\jjask\.nuget\packages\moonsharp\2.0.0\lib\netstandard1.6\MoonSharp.Interpreter.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

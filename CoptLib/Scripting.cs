@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoptLib.XML;
+using MoonSharp.Interpreter;
 
 namespace CoptLib
 {
@@ -12,13 +10,13 @@ namespace CoptLib
         public static IDictionary<string, bool> GetArgs(DateTime date)
         {
             if (date == new DateTime())
-               date = DateTime.Today;
+                date = DateTime.Today;
             var args = new Dictionary<string, bool>();
 
             // Check if today is the Feast of the Nativity, always Jan. 7th [Gregorian]
-            if (date == CopticDate.Nativity)
+            if (date == CopticDate.GetNextNativity(date))
             {
-                args.Add("Nativity", true);             
+                args.Add("Nativity", true);
             }
             else
             {
@@ -26,7 +24,7 @@ namespace CoptLib
             }
 
             // Check if today is the Sunday before the Feast of the Nativity
-            if (date == CopticDate.NativitySunday)
+            if (date == CopticDate.GetNextNativitySunday(date))
             {
                 args.Add("Nativity Sunday", true);
             }
@@ -36,17 +34,17 @@ namespace CoptLib
             }
 
             // Check if today is during Great Lent
-            if (date >= CopticDate.GreatLentStart && date < CopticDate.PalmSunday)
+            /*if (date >= CopticDate.GreatLentStart && date < CopticDate.PalmSunday)
             {
                 args.Add("Great Lent", true);
             }
             else
             {
                 args.Add("Great Lent", false);
-            }
+            }*/
 
             // Check if today is during Holy Week
-            if (date >= CopticDate.PalmSunday && date < CopticDate.Pascha)
+            if (date >= CopticDate.GetNextHosannaSunday(date) && date < CopticDate.GetNextPascha(date))
             {
                 args.Add("Holy Week", true);
             }
@@ -56,7 +54,7 @@ namespace CoptLib
             }
 
             // Check if today is Palm Sunday
-            if (date == CopticDate.PalmSunday)
+            if (date == CopticDate.GetNextHosannaSunday(date))
             {
                 args.Add("Palm Sunday", true);
             }
@@ -65,8 +63,8 @@ namespace CoptLib
                 args.Add("Palm Sunday", false);
             }
 
-            // Check if today is Easter/Pascha
-            if (date == CopticDate.Pascha)
+            // Check if today is Pascha
+            if (date == CopticDate.GetNextPascha(date))
             {
                 args.Add("Pascha", true);
                 args.Add("Easter", true);
@@ -92,8 +90,7 @@ namespace CoptLib
                         {
                             int int1 = Convert.ToInt32(script.LeftHand.Split(':')[1]);
                             int int2 = Convert.ToInt32(script.RightHand.Split(':')[1]);
-                            return ReturnHandler(PerformOperation(int1, int2, script.Comparator),
-                                                                    script, parentIf, parentDoc);
+                            return ReturnHandler(PerformOperation(int1, int2, script.Comparator), script, parentIf, parentDoc);
                         }
                         catch (Exception ex)
                         {
@@ -105,8 +102,7 @@ namespace CoptLib
                         {
                             Boolean.TryParse(script.LeftHand.Split(':')[1], out bool b1);
                             Boolean.TryParse(script.RightHand.Split(':')[1], out bool b2);
-                            return ReturnHandler(PerformOperation(b1, b2, script.Comparator),
-                                                                    script, parentIf, parentDoc);
+                            return ReturnHandler(PerformOperation(b1, b2, script.Comparator), script, parentIf, parentDoc);
                         }
                         catch (Exception ex)
                         {
@@ -121,8 +117,7 @@ namespace CoptLib
 
                             if (ds1 == "today" && !ds2.Contains("/"))
                             {
-                                return ReturnHandler(PerformOperation(ds1, ds2, script.Comparator, true),
-                                                                        script, parentIf, parentDoc);
+                                return ReturnHandler(PerformOperation(ds1, ds2, script.Comparator, true), script, parentIf, parentDoc);
                             }
                             else
                             {
@@ -299,5 +294,43 @@ namespace CoptLib
             }
         }
         #endregion
+
+        public static string RunLuaScript(string scriptBody)
+        {
+            string scriptCode = "function getNext()\n" + scriptBody + "\nend";
+            var script = new Script();
+
+            // Add the CoptLib date functions
+            script.Globals["Today"] = DateTime.Today.Ticks;
+            script.Globals["NextCovenantThursday"] = (Func<long>)CopticDate.GetNextCovenantThursday;
+            script.Globals["NextFeastResurrection"] = (Func<long>)CopticDate.GetNextFeastResurrection;
+            script.Globals["NextGoodFriday"] = (Func<long>)CopticDate.GetNextGoodFriday;
+            script.Globals["NextHosannaSunday"] = (Func<long>)CopticDate.GetNextHosannaSunday;
+            script.Globals["NextLazarusSaturday"] = (Func<long>)CopticDate.GetNextLazarusSaturday;
+            script.Globals["NextNativity"] = (Func<long>)CopticDate.GetNextNativity;
+            script.Globals["NextNativityFast"] = (Func<long>)CopticDate.GetNextNativityFast;
+            script.Globals["NextNativitySunday"] = (Func<long>)CopticDate.GetNextNativitySunday;
+            script.Globals["NextPascha"] = (Func<long>)CopticDate.GetNextPascha;
+            script.Globals["NextSpringEquinox"] = (Func<long>)CopticDate.GetNextSpringEquinox;
+
+            try
+            {
+                script.DoString(scriptCode);
+
+                DynValue res = script.Call(script.Globals["getNext"]);
+
+                // Check the return type.
+                if (res.Type != DataType.String)
+                {
+                    throw new InvalidCastException("Invalid return type: " + res.Type.ToString());
+                }
+
+                return res.String;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }
