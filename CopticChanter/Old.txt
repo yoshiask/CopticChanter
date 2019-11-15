@@ -1,0 +1,53 @@
+﻿protected async void OldOnNavigatedTo(NavigationEventArgs e)
+        {
+            if (Common.RemoteInfo != null)
+            {
+                BluetoothDevice bluetoothDevice = await BluetoothDevice.FromIdAsync(Common.RemoteInfo.Id);
+
+                var accessStatus = await bluetoothDevice.RequestAccessAsync();
+                if (accessStatus == DeviceAccessStatus.Allowed)
+                {
+                    var services = await bluetoothDevice.GetRfcommServicesForIdAsync(
+                RfcommServiceId.FromUuid(Guid.Parse("983743D4-2DA8-EE80-F166-8D78357605A6")), BluetoothCacheMode.Uncached);
+
+                    if (services.Services.Count <= 0)
+                        return;
+
+                    // Initialize the target Bluetooth BR device
+                    var service = services.Services[0];
+                    //var service = await RfcommDeviceService.FromIdAsync(services.Services[0].ServiceId.);
+                    var pairResult = await bluetoothDevice.DeviceInformation.Pairing.PairAsync();
+
+                    if (pairResult.Status == DevicePairingResultStatus.Paired || 
+                        pairResult.Status == DevicePairingResultStatus.AlreadyPaired)
+                    {
+                        // Check that the service meets this App's minimum requirement
+                        bool isProtected = SupportsProtection(service);
+                        bool isCompatible = true; //await IsCompatibleVersion(service);
+                        if (isProtected && isCompatible)
+                        {
+                            Common.RemoteService = service;
+
+                            // Create a socket and connect to the target
+                            Common.RemoteSocket = new StreamSocket();
+                            await Common.RemoteSocket.ConnectAsync(
+                                Common.RemoteService.ConnectionHostName,
+                                Common.RemoteService.ConnectionServiceName,
+                                SocketProtectionLevel
+                                    .BluetoothEncryptionAllowNullAuthentication);
+
+                            // The socket is connected. At this point the App can wait for
+                            // the user to take some action, e.g. click a button to send a
+                            // file to the device, which could invoke the Picker and then
+                            // send the picked file. The transfer itself would use the
+                            // Sockets API and not the Rfcomm API, and so is omitted here for
+                            // brevity.
+
+                            var writeStream = Common.RemoteSocket.OutputStream.AsStreamForWrite();
+                            byte[] content = { CMD_SETASDISPLAY, CMD_ENDMSG };
+                            writeStream.Write(content, 0, content.Length);
+                        }
+                    }
+                }
+            }
+        }

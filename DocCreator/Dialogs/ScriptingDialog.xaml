@@ -1,0 +1,23 @@
+﻿<Window x:Class="DocCreator.Dialogs.ScriptingDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DocCreator.Dialogs"
+        xmlns:a="http://icsharpcode.net/sharpdevelop/avalonedit"
+        mc:Ignorable="d"
+        Title="DocCreator - Scripting" Height="400" Width="600" ShowInTaskbar="True" Closing="Window_Closing" Deactivated="Window_Deactivated" Activated="Window_Activated">
+    <Grid x:Name="MainGrid">
+        <Grid x:Name="TopGrid" Height="50" Margin="0" VerticalAlignment="Top" Background="#FFBB0000" MouseDown="TopGrid_MouseDown">
+            <Button x:Name="SaveButton" Content="Save" HorizontalAlignment="Right" Margin="0,10,180,10" Width="75" Style="{DynamicResource EmptyButton}" Background="#FFBB0000" BorderBrush="{x:Null}" Foreground="White" Click="SaveButton_Click"/>
+            <Button x:Name="ClearButton" Content="Clear" HorizontalAlignment="Right" Margin="0,10,10,10" Width="75" Style="{DynamicResource EmptyButton}" Background="#FFBB0000" BorderBrush="{x:Null}" Foreground="White" Click="ClearButton_Click"/>
+            <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Right" Margin="0,10,95,10" Width="75" Style="{DynamicResource EmptyButton}" Background="#FFBB0000" BorderBrush="{x:Null}" Foreground="White" Click="CancelButton_Click"/>
+            <Button x:Name="RunScriptButton" Content="Run" HorizontalAlignment="Left" Margin="10,10,0,10" Width="75" Style="{DynamicResource EmptyButton}" Background="#FFBB0000" BorderBrush="{x:Null}" Foreground="White" Click="RunScriptButton_Click"/>
+        </Grid>
+        <a:TextEditor x:Name="InputBox" Margin="0,50,0,0" SyntaxHighlighting="XML" FontSize="12">
+            <a:TextEditor.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+            </a:TextEditor.Background>
+        </a:TextEditor>
+    </Grid>
+</Window>

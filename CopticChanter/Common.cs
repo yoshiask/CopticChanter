@@ -1,0 +1,562 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Enumeration;
+using Windows.Networking.Sockets;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
+
+namespace CopticChanter
+{
+    public class Common
+    {
+        #region Doc Info
+        public static int EnglishDocCount = 0;
+        public static int CopticDocCount = 0;
+        public static int ArabicDocCount = 0;
+        public static List<CoptLib.XML.DocXML> Docs = new List<CoptLib.XML.DocXML>();
+        public static CoptLib.CopticDate CopticDate = CoptLib.CopticDate.Today;
+        #endregion
+
+        #region Bluetooth Remote
+        public static bool IsConnected = false;
+        public static DeviceInformation RemoteInfo;
+        public static class RemoteCMDByte
+        {
+            /// <summary>
+            /// Remote Protocol: Proceeds to next page
+            /// </summary>
+            public const byte CMD_NEXT = 0x20;
+            /// <summary>
+            /// Remote Protocol: Proceeds to previous page
+            /// </summary>
+            public const byte CMD_PREV = 0x40;
+            /// <summary>
+            /// Remote Protocol: The sending device is delcared as the remote.
+            /// </summary>
+            public const byte CMD_SETASREMOTE = 0x80;
+            /// <summary>
+            /// Remote Protocol: The sending device is delcared as the display device.
+            /// </summary>
+            public const byte CMD_SETASDISPLAY = 0x81;
+            /// <summary>
+            /// Remote Protocol: End message
+            /// </summary>
+            public const byte CMD_ENDMSG = 0x00;
+            /// <summary>
+            /// Remote Protocol: Closes connection.
+            /// </summary>
+            public const byte CMD_DISCONNECT = 0xE0;
+            /// <summary>
+            /// Remote Protocol: Messages recieved and interpreted
+            /// </summary>
+            public const byte CMD_RECIEVEDOK = 0xE1;
+            /// <summary>
+            /// Remote Protocol: Messages recieved but not interpreted
+            /// </summary>
+            public const byte CMD_RECIEVEDERROR = 0xE2;
+            /// <summary>
+            /// Remote Protocol: Messages recieved but error executing
+            /// </summary>
+            public const byte CMD_ERROR = 0xE3;
+        }
+        public static class RemoteCMDString
+        {
+            /// <summary>
+            /// Remote Protocol: Proceeds to next page
+            /// </summary>
+            public const string CMD_NEXT = "cmd:next";
+            /// <summary>
+            /// Remote Protocol: Proceeds to previous page
+            /// </summary>
+            public const string CMD_PREV = "cmd:prev";
+            /// <summary>
+            /// Remote Protocol: The sending device is delcared as the remote.
+            /// </summary>
+            public const string CMD_SETASREMOTE = "cmd:setasremote";
+            /// <summary>
+            /// Remote Protocol: The sending device is delcared as the display device.
+            /// </summary>
+            public const string CMD_SETASDISPLAY = "cmd:setasdisplay";
+            /// <summary>
+            /// Remote Protocol: End message (Exclamation mark and seven spaces)
+            /// </summary>
+            public const string CMD_ENDMSG = "!       ";
+            /// <summary>
+            /// Remote Protocol: Closes connection.
+            /// </summary>
+            public const string CMD_DISCONNECT = "co:disconnect";
+            /// <summary>
+            /// Remote Protocol: Messages recieved and interpreted
+            /// </summary>
+            public const string CMD_RECIEVEDOK = "status:ok";
+            /// <summary>
+            /// Remote Protocol: Messages recieved but not interpreted
+            /// </summary>
+            public const string CMD_RECIEVEDERROR = "status:parseerror";
+            /// <summary>
+            /// Remote Protocol: Messages recieved but error executing
+            /// </summary>
+            public const string CMD_ERROR = "status:execerror";
+        }
+        public static StreamSocket RemoteSocket;
+        public static DataWriter RemoteWriter = null;
+        public static BluetoothDevice RemoteDevice;
+        public static ObservableCollection<string> RecievedCMD = new ObservableCollection<string>();
+        public static Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService RemoteService;
+        public static Windows.ApplicationModel.Background.ApplicationTrigger RemoteBGTrigger;
+        public static Pages.BluetoothRemoteConnectPage bluetoothRemoteConnectPage;
+
+        /// <summary>
+        /// Creates a loop that adds recieved bytes to BytesRecieved
+        /// </summary>
+        /// <param name="RemoteReader"></param>
+        public static async void ReceiveStringLoopCommon(DataReader RemoteReader)
+        {
+            try
+            {
+                uint size = await RemoteReader.LoadAsync(sizeof(uint));
+                if (size < sizeof(uint))
+                {
+                    Disconnect("Remote device terminated connection - make sure only one instance of server is running on remote device");
+                    return;
+                }
+
+                uint stringLength = RemoteReader.ReadUInt32();
+                uint actualStringLength = await RemoteReader.LoadAsync(stringLength);
+                if (actualStringLength != stringLength)
+                {
+                    // The underlying socket was closed before we were able to read the whole data
+                    return;
+                }
+
+                RemoteReader.ReadString(stringLength);
+                Common.RecievedCMD.Add(RemoteReader.ReadString(stringLength));
+
+                ReceiveStringLoopCommon(RemoteReader);
+            }
+            catch (Exception ex)
+            {
+                //lock (this)
+                //{
+                    if (RemoteSocket == null)
+                    {
+                        // Do not print anything here -  the user closed the socket.
+                        if ((uint)ex.HResult == 0x80072745)
+                            Debug.WriteLine("Disconnect triggered by remote device");
+                        else if ((uint)ex.HResult == 0x800703E3)
+                            Debug.WriteLine("The I/O operation has been aborted because of either a thread exit or an application request.");
+                    }
+                    else
+                    {
+                        Disconnect("Read stream failed with error: " + ex.Message);
+                    }
+                //}
+            }
+        }
+
+        /// <summary>
+        /// Takes the contents of the MessageTextBox and writes it to the outgoing chatWriter
+        /// </summary>
+        public static void SendMessage(string message)
+        {
+            if (bluetoothRemoteConnectPage != null)
+            {
+                bluetoothRemoteConnectPage.SendMessage(message);
+            }
+
+            /*try
+            {
+                if (message.Length != 0)
+                {
+                    await Common.RemoteWriter.FlushAsync();
+                    Common.RemoteWriter.WriteUInt32((uint)message.Length);
+                    Common.RemoteWriter.WriteString(message);
+                    await Common.RemoteWriter.StoreAsync();
+                }
+            }
+            catch (Exception ex) when ((uint)ex.HResult == 0x80072745)
+            {
+                // The remote device has disconnected the connection
+                Debug.WriteLine("Remote side disconnect: " + ex.HResult.ToString() + " - " + ex.Message);
+            }*/
+        }
+
+        /// <summary>
+        /// Cleans up the socket and DataWriter and reset the UI
+        /// </summary>
+        /// <param name="disconnectReason"></param>
+        public static void Disconnect(string disconnectReason)
+        {
+            if (RemoteWriter != null)
+            {
+                RemoteWriter.DetachStream();
+                RemoteWriter = null;
+            }
+
+            if (RemoteService != null)
+            {
+                RemoteService.Dispose();
+                RemoteService = null;
+            }
+            //lock (this)
+            //{
+                if (RemoteSocket != null)
+                {
+                    RemoteSocket.Dispose();
+                    RemoteSocket = null;
+                }
+            //}
+
+            Debug.WriteLine(disconnectReason);
+        }
+        #endregion
+
+        #region Panel Arguments
+        public static Layouts.SinglePanelArgs OnePanelArgs;
+        public static Layouts.DoublePanelArgs TwoPanelArgs;
+        public static Layouts.TriplePanelArgs ThreePanelArgs;
+        #endregion
+
+        #region Styles
+        public static FontFamily Segoe = new FontFamily("Segoe UI");
+        public static FontFamily Coptic1 = new FontFamily("/Assets/Coptic1.ttf#Coptic1");
+        private static SolidColorBrush AccentBrush;
+        private static Color AccentColor;
+        #endregion
+
+        public enum Language
+        {
+            English = 0,
+            Coptic = 1,
+            Arabic = 2
+        }
+
+        public static SolidColorBrush GetAccentBrush()
+        {
+            if (AccentBrush == null)
+            {
+                if (AccentColor == null)
+                    AccentBrush = Application.Current.Resources["SystemControlHighlightAccentBrush"] as SolidColorBrush;
+                else
+                {
+                    AccentBrush = new SolidColorBrush(AccentColor);
+                }
+            }
+            return AccentBrush;
+        }
+        public static void SetAccentColor(Color accent)
+        {
+            AccentColor = accent;
+        }
+
+        public static int GetFontSize(Language lang)
+        {
+            switch (lang) {
+                case Language.English:
+                    if (!ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-e"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-e", 40);
+                    }
+                    return (int)ApplicationData.Current.RoamingSettings.Values["font-size-e"];
+
+                case Language.Coptic:
+                    if (!ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-c"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-c", 40);
+                    }
+                    return (int)ApplicationData.Current.RoamingSettings.Values["font-size-c"];
+
+                case Language.Arabic:
+                    if (!ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-a"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-a", 40);
+                    }
+                    return (int)ApplicationData.Current.RoamingSettings.Values["font-size-a"];
+
+                default:
+                    return 40;
+            }
+        }
+
+        public static void SetFontSize(Language lang, int size)
+        {
+            switch (lang)
+            {
+                case Language.English:
+                    if (ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-e"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values["font-size-e"] = size;
+                    }
+                    else
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-e", size);
+                    }
+                    break;
+
+                case Language.Coptic:
+                    if (ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-c"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values["font-size-c"] = size;
+                    }
+                    else
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-c", size);
+                    }
+                    break;
+
+                case Language.Arabic:
+                    if (ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-a"))
+                    {
+                        ApplicationData.Current.RoamingSettings.Values["font-size-a"] = size;
+                    }
+                    else
+                    {
+                        ApplicationData.Current.RoamingSettings.Values.Add("font-size-a", size);
+                    }
+                    break;
+            }
+        }
+
+        public static void SetEnglishFontSize(int size)
+        {
+            if (ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-e"))
+            {
+                ApplicationData.Current.RoamingSettings.Values["font-size-e"] = size;
+            }
+            else
+            {
+                ApplicationData.Current.RoamingSettings.Values.Add("font-size-e", size);
+            }
+        }
+
+        public static int GetEnglishFontSize()
+        {
+            if (!ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-e"))
+            {
+                ApplicationData.Current.RoamingSettings.Values.Add("font-size-e", 40);
+            }
+            return (int)ApplicationData.Current.RoamingSettings.Values["font-size-e"];
+        }
+
+        public static void SetCopticFontSize(int size)
+        {
+            if (ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-c"))
+            {
+                ApplicationData.Current.RoamingSettings.Values["font-size-c"] = size;
+            }
+            else
+            {
+                ApplicationData.Current.RoamingSettings.Values.Add("font-size-c", size);
+            }
+        }
+
+        public static int GetCopticFontSize()
+        {
+            if (!ApplicationData.Current.RoamingSettings.Values.ContainsKey("font-size-c"))
+            {
+                ApplicationData.Current.RoamingSettings.Values.Add("font-size-c", 45);
+            }
+            return (int)ApplicationData.Current.RoamingSettings.Values["font-size-c"];
+        }
+    }
+
+    public class WinVer
+    {
+        static ulong WinVersion;
+        static ulong WinBuild;
+
+        /// <summary>
+        /// Returns short Version number (ex. 1709)
+        /// </summary>
+        /// <returns></returns>
+        public static ulong GetWinVer()
+        {
+            if (WinVersion == 0)
+            {
+                string sv = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
+                ulong v = ulong.Parse(sv);
+                ulong v1 = (v & 0xFFFF000000000000L) >> 48;
+                ulong v2 = (v & 0x0000FFFF00000000L) >> 32;
+                ulong v3 = (v & 0x00000000FFFF0000L) >> 16;
+                ulong v4 = v & 0x000000000000FFFFL;
+                string version = $"{v1}.{v2}.{v3}.{v4}"; // == 10.0.10240.16413
+                WinBuild = v3;
+
+                if (WinBuild >= 17134)
+                {
+                    WinVersion = 1803;
+                }
+                else if (WinBuild >= 16299)
+                {
+                    WinVersion = 1709;
+                }
+                else if (WinBuild >= 15063)
+                {
+                    WinVersion = 1703;
+                }
+                else if (WinBuild >= 14393)
+                {
+                    WinVersion = 1607;
+                }
+                else if (WinBuild >= 10586)
+                {
+                    WinVersion = 1511;
+                }
+                else if (WinBuild >= 10240)
+                {
+                    WinVersion = 1507;
+                }
+                else if (WinBuild < 10240)
+                {
+                    WinVersion = 1;
+                }
+            }
+
+            return WinVersion;
+        }
+
+        /// <summary>
+        /// Returns long Build number (ex. 16299)
+        /// </summary>
+        /// <returns></returns>
+        public static ulong GetWinBuild()
+        {
+            if (WinVersion == 0)
+            {
+                string sv = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
+                ulong v = ulong.Parse(sv);
+                ulong v1 = (v & 0xFFFF000000000000L) >> 48;
+                ulong v2 = (v & 0x0000FFFF00000000L) >> 32;
+                ulong v3 = (v & 0x00000000FFFF0000L) >> 16;
+                ulong v4 = v & 0x000000000000FFFFL;
+                string version = $"{v1}.{v2}.{v3}.{v4}"; // == 10.0.10240.16413
+                WinBuild = v3;
+
+                if (WinBuild >= 17134)
+                {
+                    WinVersion = 1803;
+                }
+                else if (WinBuild >= 16299)
+                {
+                    WinVersion = 1709;
+                }
+                else if (WinBuild >= 15063)
+                {
+                    WinVersion = 1703;
+                }
+                else if (WinBuild >= 14393)
+                {
+                    WinVersion = 1607;
+                }
+                else if (WinBuild >= 10586)
+                {
+                    WinVersion = 1511;
+                }
+                else if (WinBuild >= 10240)
+                {
+                    WinVersion = 1507;
+                }
+                else if (WinBuild < 10240)
+                {
+                    WinVersion = 1;
+                }
+            }
+
+            return WinBuild;
+        }
+    }
+
+    public static class ColorExtensions
+    {
+        public static Windows.UI.Color ToUIColor(this Windows.UI.Color color)
+        {
+            return Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+    }
+
+    public static class MathExtensions
+    {
+        public static double Round(this double num, int increment)
+        {
+            double output = num;
+
+            var fnum = Math.Floor(num);
+            double target = 0;
+
+            for (target = 0; target < fnum; target += increment)
+            {
+                Debug.WriteLine(target + ": " + fnum);
+            }
+
+            return output;
+        }
+    }
+
+    public static class StoryboardExtensions
+    {
+        public static Task BeginAsync(this Storyboard storyboard)
+        {
+            try
+            {
+                TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                if (storyboard == null)
+                    tcs.SetException(new ArgumentNullException());
+                else
+                {
+                    EventHandler<object> onComplete = null;
+                    onComplete = (s, e) => {
+                        storyboard.Completed -= onComplete;
+                        tcs.SetResult(true);
+                    };
+                    storyboard.Completed += onComplete;
+                    storyboard.Begin();
+                }
+                return tcs.Task;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+    }
+
+    public static class ViewExtensions
+    {
+        public static void ScrollToElement(this ScrollViewer scrollViewer, UIElement element,
+    bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null)
+        {
+            var transform = element.TransformToVisual((UIElement)scrollViewer.Content);
+            var position = transform.TransformPoint(new Windows.Foundation.Point(0, 0));
+
+            if (isVerticalScrolling)
+            {
+                scrollViewer.ChangeView(null, position.Y, zoomFactor, !smoothScrolling);
+            }
+            else
+            {
+                scrollViewer.ChangeView(position.X, null, zoomFactor, !smoothScrolling);
+            }
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static CoptLib.CopticDate ToCoptic(this DateTime date)
+        {
+            return CoptLib.CopticDate.ToCopticDate(date);
+        }
+    }
+}

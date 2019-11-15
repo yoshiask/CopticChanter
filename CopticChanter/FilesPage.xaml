@@ -1,0 +1,24 @@
+﻿<Page
+    x:Class="CopticChanter.FilesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CopticChanter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Windows10FallCreatorsUpdate="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 5)"
+    mc:Ignorable="d" Loaded="Page_Loaded">
+
+    <Grid x:Name="MainGrid" Background="#F6F6F6">
+        <Grid x:Name="CenterGrid" HorizontalAlignment="Stretch" Margin="0,0,0,30" MaxWidth="500" >
+            <TextBlock x:Name="StatusBlock" Text="Successfully copied !" TextWrapping="Wrap" VerticalAlignment="Bottom" FontSize="18" Foreground="#FF0FA600" TextAlignment="Center" Visibility="Collapsed"/>
+            <ListView x:Name="FileView" Margin="0,10,0,80"/>
+            <TextBox x:Name="DirectoryBox" Margin="20,0,20,20" Text="Folder" FontSize="18" Height="36" VerticalAlignment="Bottom" IsReadOnly="True"/>
+        </Grid>
+
+        <CommandBar x:Name="BottomBar" Background="{ThemeResource AppBarBackgroundThemeBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <AppBarButton x:Name="DeleteBarButton" Icon="Delete" Label="Delete" Click="DeleteButton_Click" />
+            <AppBarButton x:Name="AddBarButton" Icon="Add" Label="Add" Click="ImportButton_Click" />
+            <AppBarButton x:Name="PresentBarButton" Icon="SlideShow" Label="Present" Click="PresentButton_Click" />
+        </CommandBar>
+    </Grid>
+</Page>

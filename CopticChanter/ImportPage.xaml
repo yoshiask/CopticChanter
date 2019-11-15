@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="CopticChanter.ImportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CopticChanter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="MainGrid" Background="#FFE6E6E6">
+        <Grid x:Name="CenterGrid" HorizontalAlignment="Center" Height="300" VerticalAlignment="Center" Width="500">
+            <Button x:Name="ImportButton" Content="Import" HorizontalAlignment="Left" Margin="109,71,0,0" VerticalAlignment="Top" FontSize="18" Click="ImportButton_Click"/>
+            <TextBlock Margin="197,79,117,0" Text="XML from Doc Creator" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18"/>
+            <TextBlock Margin="235,129,235,0" Text="OR" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" TextAlignment="Center"/>
+            <TextBlock Margin="150,177,150,0" Text="Save to the folder below:" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" TextAlignment="Center"/>
+            <TextBox x:Name="DirectoryBox" Margin="109,0,117,51" Text="Folder" FontSize="18" Height="36" VerticalAlignment="Bottom" IsReadOnly="True"/>
+            <TextBlock x:Name="StatusBlock" Margin="0,10,0,0" Text="Successfully copied !" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" Foreground="#FF0FA600" TextAlignment="Center" Visibility="Collapsed"/>
+        </Grid>
+        <Button x:Name="PresentButton" Content="Present" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Click="PresentButton_Click"/>
+    </Grid>
+</Page>

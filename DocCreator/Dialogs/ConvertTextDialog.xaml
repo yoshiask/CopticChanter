@@ -1,0 +1,23 @@
+﻿<Window x:Class="DocCreator.Dialogs.ConvertTextDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DocCreator.Dialogs"
+        mc:Ignorable="d"
+        Title="Convert from Tasbeha.org" Height="400" Width="800" WindowStartupLocation="CenterOwner">
+    <Grid x:Name="MainGrid">
+        <TextBox x:Name="InputBox" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,35,0,0" ToolTip="Input" VerticalScrollBarVisibility="Auto" FontSize="18" FontFamily="CS Avva Shenouda">
+            <TextBox.Background>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+            </TextBox.Background>
+        </TextBox>
+        <Button x:Name="ConvertButton" Content="🡲" VerticalAlignment="Top" Style="{DynamicResource EmptyButton}" Background="#FFBB0000" BorderBrush="{x:Null}" Foreground="White" Click="ConvertButton_Click" Height="35" FontSize="22" Width="70" HorizontalAlignment="Right" Margin="0"/>
+        <ComboBox x:Name="ConvertFromOption" Margin="5,5,75.333,0" VerticalAlignment="Top" IsReadOnly="True" SelectedIndex="0" ToolTip="Input Font" SelectionChanged="ConvertFromOption_SelectionChanged" FontSize="14">
+            <ComboBoxItem Content="Tasbeha.org"/>
+            <ComboBoxItem Content="CS Font"/>
+            <ComboBoxItem Content="Coptic Unicode"/>
+        </ComboBox>
+
+    </Grid>
+</Window>
