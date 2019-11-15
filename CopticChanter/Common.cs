@@ -32,194 +32,105 @@ namespace CopticChanter
         #region Bluetooth Remote
         public static bool IsConnected = false;
         public static DeviceInformation RemoteInfo;
-        public static class RemoteCMDByte
-        {
-            /// <summary>
-            /// Remote Protocol: Proceeds to next page
-            /// </summary>
-            public const byte CMD_NEXT = 0x20;
-            /// <summary>
-            /// Remote Protocol: Proceeds to previous page
-            /// </summary>
-            public const byte CMD_PREV = 0x40;
-            /// <summary>
-            /// Remote Protocol: The sending device is delcared as the remote.
-            /// </summary>
-            public const byte CMD_SETASREMOTE = 0x80;
-            /// <summary>
-            /// Remote Protocol: The sending device is delcared as the display device.
-            /// </summary>
-            public const byte CMD_SETASDISPLAY = 0x81;
-            /// <summary>
-            /// Remote Protocol: End message
-            /// </summary>
-            public const byte CMD_ENDMSG = 0x00;
-            /// <summary>
-            /// Remote Protocol: Closes connection.
-            /// </summary>
-            public const byte CMD_DISCONNECT = 0xE0;
-            /// <summary>
-            /// Remote Protocol: Messages recieved and interpreted
-            /// </summary>
-            public const byte CMD_RECIEVEDOK = 0xE1;
-            /// <summary>
-            /// Remote Protocol: Messages recieved but not interpreted
-            /// </summary>
-            public const byte CMD_RECIEVEDERROR = 0xE2;
-            /// <summary>
-            /// Remote Protocol: Messages recieved but error executing
-            /// </summary>
-            public const byte CMD_ERROR = 0xE3;
-        }
-        public static class RemoteCMDString
-        {
-            /// <summary>
-            /// Remote Protocol: Proceeds to next page
-            /// </summary>
-            public const string CMD_NEXT = "cmd:next";
-            /// <summary>
-            /// Remote Protocol: Proceeds to previous page
-            /// </summary>
-            public const string CMD_PREV = "cmd:prev";
-            /// <summary>
-            /// Remote Protocol: The sending device is delcared as the remote.
-            /// </summary>
-            public const string CMD_SETASREMOTE = "cmd:setasremote";
-            /// <summary>
-            /// Remote Protocol: The sending device is delcared as the display device.
-            /// </summary>
-            public const string CMD_SETASDISPLAY = "cmd:setasdisplay";
-            /// <summary>
-            /// Remote Protocol: End message (Exclamation mark and seven spaces)
-            /// </summary>
-            public const string CMD_ENDMSG = "!       ";
-            /// <summary>
-            /// Remote Protocol: Closes connection.
-            /// </summary>
-            public const string CMD_DISCONNECT = "co:disconnect";
-            /// <summary>
-            /// Remote Protocol: Messages recieved and interpreted
-            /// </summary>
-            public const string CMD_RECIEVEDOK = "status:ok";
-            /// <summary>
-            /// Remote Protocol: Messages recieved but not interpreted
-            /// </summary>
-            public const string CMD_RECIEVEDERROR = "status:parseerror";
-            /// <summary>
-            /// Remote Protocol: Messages recieved but error executing
-            /// </summary>
-            public const string CMD_ERROR = "status:execerror";
-        }
-        public static StreamSocket RemoteSocket;
-        public static DataWriter RemoteWriter = null;
-        public static BluetoothDevice RemoteDevice;
-        public static ObservableCollection<string> RecievedCMD = new ObservableCollection<string>();
-        public static Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService RemoteService;
-        public static Windows.ApplicationModel.Background.ApplicationTrigger RemoteBGTrigger;
-        public static Pages.BluetoothRemoteConnectPage bluetoothRemoteConnectPage;
 
         /// <summary>
-        /// Creates a loop that adds recieved bytes to BytesRecieved
+        /// Class containing Attributes and UUIDs that will populate the SDP record.
         /// </summary>
-        /// <param name="RemoteReader"></param>
-        public static async void ReceiveStringLoopCommon(DataReader RemoteReader)
+        public class RemoteConstants
         {
-            try
+            // The Chat Server's custom service Uuid: 5948428E-686D-4F4E-BB78-52922293FFCE
+            public static readonly Guid RfcommChatServiceUuid = Guid.Parse("5948428E-686D-4F4E-BB78-52922293FFCE");
+
+            // The Id of the Service Name SDP attribute
+            public const UInt16 SdpServiceNameAttributeId = 0x100;
+
+            // The SDP Type of the Service Name SDP attribute.
+            // The first byte in the SDP Attribute encodes the SDP Attribute Type as follows :
+            //    -  the Attribute Type size in the least significant 3 bits,
+            //    -  the SDP Attribute Type value in the most significant 5 bits.
+            public const byte SdpServiceNameAttributeType = (4 << 3) | 5;
+
+            // The value of the Service Name SDP attribute
+            public const string SdpServiceName = "Coptic Chanter Remote Service";
+
+            public static class RemoteCMDByte
             {
-                uint size = await RemoteReader.LoadAsync(sizeof(uint));
-                if (size < sizeof(uint))
-                {
-                    Disconnect("Remote device terminated connection - make sure only one instance of server is running on remote device");
-                    return;
-                }
-
-                uint stringLength = RemoteReader.ReadUInt32();
-                uint actualStringLength = await RemoteReader.LoadAsync(stringLength);
-                if (actualStringLength != stringLength)
-                {
-                    // The underlying socket was closed before we were able to read the whole data
-                    return;
-                }
-
-                RemoteReader.ReadString(stringLength);
-                Common.RecievedCMD.Add(RemoteReader.ReadString(stringLength));
-
-                ReceiveStringLoopCommon(RemoteReader);
+                /// <summary>
+                /// Remote Protocol: Proceeds to next page
+                /// </summary>
+                public const byte CMD_NEXT = 0x20;
+                /// <summary>
+                /// Remote Protocol: Proceeds to previous page
+                /// </summary>
+                public const byte CMD_PREV = 0x40;
+                /// <summary>
+                /// Remote Protocol: The sending device is delcared as the remote.
+                /// </summary>
+                public const byte CMD_SETASREMOTE = 0x80;
+                /// <summary>
+                /// Remote Protocol: The sending device is delcared as the display device.
+                /// </summary>
+                public const byte CMD_SETASDISPLAY = 0x81;
+                /// <summary>
+                /// Remote Protocol: End message
+                /// </summary>
+                public const byte CMD_ENDMSG = 0x00;
+                /// <summary>
+                /// Remote Protocol: Closes connection.
+                /// </summary>
+                public const byte CMD_DISCONNECT = 0xE0;
+                /// <summary>
+                /// Remote Protocol: Messages recieved and interpreted
+                /// </summary>
+                public const byte CMD_RECIEVEDOK = 0xE1;
+                /// <summary>
+                /// Remote Protocol: Messages recieved but not interpreted
+                /// </summary>
+                public const byte CMD_RECIEVEDERROR = 0xE2;
+                /// <summary>
+                /// Remote Protocol: Messages recieved but error executing
+                /// </summary>
+                public const byte CMD_ERROR = 0xE3;
             }
-            catch (Exception ex)
+            public static class RemoteCMDString
             {
-                //lock (this)
-                //{
-                    if (RemoteSocket == null)
-                    {
-                        // Do not print anything here -  the user closed the socket.
-                        if ((uint)ex.HResult == 0x80072745)
-                            Debug.WriteLine("Disconnect triggered by remote device");
-                        else if ((uint)ex.HResult == 0x800703E3)
-                            Debug.WriteLine("The I/O operation has been aborted because of either a thread exit or an application request.");
-                    }
-                    else
-                    {
-                        Disconnect("Read stream failed with error: " + ex.Message);
-                    }
-                //}
+                /// <summary>
+                /// Remote Protocol: Proceeds to next page
+                /// </summary>
+                public const string CMD_NEXT = "cmd:next";
+                /// <summary>
+                /// Remote Protocol: Proceeds to previous page
+                /// </summary>
+                public const string CMD_PREV = "cmd:prev";
+                /// <summary>
+                /// Remote Protocol: The sending device is delcared as the remote.
+                /// </summary>
+                public const string CMD_SETASREMOTE = "cmd:setasremote";
+                /// <summary>
+                /// Remote Protocol: The sending device is delcared as the display device.
+                /// </summary>
+                public const string CMD_SETASDISPLAY = "cmd:setasdisplay";
+                /// <summary>
+                /// Remote Protocol: End message (Exclamation mark and seven spaces)
+                /// </summary>
+                public const string CMD_ENDMSG = "!       ";
+                /// <summary>
+                /// Remote Protocol: Closes connection.
+                /// </summary>
+                public const string CMD_DISCONNECT = "co:disconnect";
+                /// <summary>
+                /// Remote Protocol: Messages recieved and interpreted
+                /// </summary>
+                public const string CMD_RECIEVEDOK = "status:ok";
+                /// <summary>
+                /// Remote Protocol: Messages recieved but not interpreted
+                /// </summary>
+                public const string CMD_RECIEVEDERROR = "status:parseerror";
+                /// <summary>
+                /// Remote Protocol: Messages recieved but error executing
+                /// </summary>
+                public const string CMD_ERROR = "status:execerror";
             }
-        }
-
-        /// <summary>
-        /// Takes the contents of the MessageTextBox and writes it to the outgoing chatWriter
-        /// </summary>
-        public static void SendMessage(string message)
-        {
-            if (bluetoothRemoteConnectPage != null)
-            {
-                bluetoothRemoteConnectPage.SendMessage(message);
-            }
-
-            /*try
-            {
-                if (message.Length != 0)
-                {
-                    await Common.RemoteWriter.FlushAsync();
-                    Common.RemoteWriter.WriteUInt32((uint)message.Length);
-                    Common.RemoteWriter.WriteString(message);
-                    await Common.RemoteWriter.StoreAsync();
-                }
-            }
-            catch (Exception ex) when ((uint)ex.HResult == 0x80072745)
-            {
-                // The remote device has disconnected the connection
-                Debug.WriteLine("Remote side disconnect: " + ex.HResult.ToString() + " - " + ex.Message);
-            }*/
-        }
-
-        /// <summary>
-        /// Cleans up the socket and DataWriter and reset the UI
-        /// </summary>
-        /// <param name="disconnectReason"></param>
-        public static void Disconnect(string disconnectReason)
-        {
-            if (RemoteWriter != null)
-            {
-                RemoteWriter.DetachStream();
-                RemoteWriter = null;
-            }
-
-            if (RemoteService != null)
-            {
-                RemoteService.Dispose();
-                RemoteService = null;
-            }
-            //lock (this)
-            //{
-                if (RemoteSocket != null)
-                {
-                    RemoteSocket.Dispose();
-                    RemoteSocket = null;
-                }
-            //}
-
-            Debug.WriteLine(disconnectReason);
         }
         #endregion
 

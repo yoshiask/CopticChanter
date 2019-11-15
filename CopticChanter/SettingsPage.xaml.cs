@@ -1,31 +1,9 @@
-﻿using CoptLib;
-using static CopticChanter.Common.RemoteCMDString;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Devices.Bluetooth;
-using Windows.Devices.Bluetooth.Rfcomm;
-using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
+﻿using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using System.Collections.ObjectModel;
 using Windows.UI;
 using System.Diagnostics;
-using System.Threading;
-using Windows.ApplicationModel.Background;
-using Windows.UI.Core;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -95,7 +73,7 @@ namespace CopticChanter
             RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Gray);
 
             // Check if remote is connected
-            if (Common.RemoteSocket == null)
+            /*if (Common.RemoteSocket == null)
             {
                 Common.IsConnected = false;
                 RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Gray);
@@ -108,12 +86,12 @@ namespace CopticChanter
                 ConnectDeviceButton.Content = "Disconnect";
                 RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Green);
                 RemoteStatusDisplay.Text = "Connected to " + Common.RemoteInfo.Name;
-            }
+            }*/
         }
 
-        private void ConnectDeviceButton_Click(object sender, RoutedEventArgs e)
+        private void ConnectAsHostButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(Pages.BluetoothRemoteConnectPage));
+            Frame.Navigate(typeof(Pages.BluetoothHostConnectPage));
 
             #region Old
             /*if (Common.IsConnected)
@@ -277,6 +255,11 @@ namespace CopticChanter
                 }
             }*/
             #endregion
+        }
+
+        private void ConnectAsRemoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Pages.BluetoothRemoteConnectPage));
         }
     }
 }

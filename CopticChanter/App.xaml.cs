@@ -102,9 +102,7 @@ namespace CopticChanter
         protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
             base.OnBackgroundActivated(args);
-            CoptLib.RemoteCommunicator.Start(
-                new Windows.Storage.Streams.DataReader(Common.RemoteSocket.InputStream),
-                args.TaskInstance);
+            //CoptLib.RemoteCommunicator.Start(new Windows.Storage.Streams.DataReader(Common.RemoteSocket.InputStream),args.TaskInstance);
         }
     }
 }

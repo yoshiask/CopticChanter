@@ -31,9 +31,10 @@
         <DatePicker x:Name="GregorianDatePicker" HorizontalAlignment="Left" Margin="165,215,0,0" VerticalAlignment="Top" DateChanged="GregorianDatePicker_DateChanged"/>
         <TextBlock x:Name="CopticDateDisplay" HorizontalAlignment="Left" Margin="165,252,0,0" Text="[Coptic Date]" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Width="295"/>
         <TextBlock x:Name="DateTodayTitle" HorizontalAlignment="Left" Margin="20,220,0,0" Text="Today's Date" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <Button x:Name="ConnectDeviceButton" Content="Connect to Device" HorizontalAlignment="Left" Margin="165,284,0,0" VerticalAlignment="Top" Width="148" Click="ConnectDeviceButton_Click"/>
+        <Button x:Name="ConnectAsHostButton" Content="Connect as Host" HorizontalAlignment="Left" Margin="165,284,0,0" VerticalAlignment="Top" Width="148" Click="ConnectAsHostButton_Click"/>
+        <Button x:Name="ConnectAsRemoteButton" Content="Connect as Remote" HorizontalAlignment="Left" Margin="323,284,0,0" VerticalAlignment="Top" Width="148" Click="ConnectAsRemoteButton_Click"/>
         <TextBlock x:Name="RemoteTitle" HorizontalAlignment="Left" Margin="20,290,0,0" Text="Wireless Remote" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock x:Name="RemoteStatusDisplay" HorizontalAlignment="Left" Margin="165,321,0,0" Text="Not Connected" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock x:Name="RemoteStatusDisplay" HorizontalAlignment="Left" Margin="466,290,0,0" Text="Not Connected" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
 
     </Grid>
 </Page>

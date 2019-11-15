@@ -31,45 +31,38 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <Grid>
-        <Grid x:Name="TopGrid" VerticalAlignment="Top" Height="120">
-            <Button x:Name="DisconnectButton" Margin="0,10,10,0" IsEnabled="False" Click="DisconnectButton_Click" Content="Disconnect" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-            <TextBox x:Name="MessageTextBox" Grid.Column="0" KeyDown="KeyboardKey_Pressed" HorizontalAlignment="Stretch" Margin="10,50,74,0" VerticalAlignment="Stretch" Height="50"/>
-            <Button x:Name="SendButton" Content="Send" Margin="0,50,10,0" Click="SendButton_Click" HorizontalAlignment="Right" VerticalAlignment="Stretch" Height="50" FontFamily="Segoe UI"/>
-            <TextBlock x:Name="TitleBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Text="Set up a remote via Bluetooth" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="24"/>
-        </Grid>
-        <Pivot x:Name="MainPivot" Title="" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,120,0,0">
-            <PivotItem x:Name="RemoteTab" Header="Remote" FontFamily="Segoe UI">
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                    <Grid x:Name="RootGrid" Margin="12,20,12,12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Margin="0,0,0,10">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="RootGrid" Margin="12,20,12,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Margin="0,0,0,10">
 
-                        </StackPanel>
-                        <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <ScrollViewer Grid.Row="0" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,15,0">
-                                        <TextBlock TextWrapping="Wrap" FontFamily="Segoe UI" Text="Select a Bluetooth device to connect to. Sets this device as the remote."/>
-                                        <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="60">
-                                            <Button x:Name="RunButton" HorizontalAlignment="Stretch"
+            </StackPanel>
+            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <ScrollViewer Grid.Row="0" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,15,0">
+                            <TextBlock TextWrapping="Wrap">
+                                    Enumerates all the Chat service instances that are known to Windows and connects to the selected one.
+                            </TextBlock>
+                            <VariableSizedWrapGrid Orientation="Horizontal" ItemWidth="60">
+                                <Button x:Name="RunButton" HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Content="Start"
                                         Margin="1"
                                         VariableSizedWrapGrid.ColumnSpan="2"
                                         Click="RunButton_Click"/>
-                                            <Button x:Name="ConnectButton"
+                                <Button x:Name="ConnectButton"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Content="Connect to Selected Device"
                                         Margin="1"
                                         VariableSizedWrapGrid.ColumnSpan="5"
                                         Click="ConnectButton_Click"/>
-                                            <Button x:Name="RequestAccessButton"
+                                <Button x:Name="RequestAccessButton"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Content="Request Access to Trusted Device"
@@ -77,81 +70,43 @@
                                         VariableSizedWrapGrid.ColumnSpan="5"
                                         Visibility="Collapsed"
                                         Click="RequestAccessButton_Click"/>
-                                        </VariableSizedWrapGrid>
+                            </VariableSizedWrapGrid>
 
-                                        <Border BorderBrush="AntiqueWhite" BorderThickness="1">
-                                            <ListView x:Name="resultsListView"
+                            <Border BorderBrush="AntiqueWhite" BorderThickness="1">
+                                <ListView x:Name="resultsListView"
                                           Visibility="Visible"
                                       ItemTemplate="{StaticResource ResultsListViewTemplate}"
                                       ItemsSource="{Binding Path=ResultCollection}"
                                       SelectionChanged="ResultsListView_SelectionChanged"
                                       MaxHeight="450"/>
-                                        </Border>
-                                    </StackPanel>
-                                </ScrollViewer>
-                                <Grid x:Name="ChatBox" Visibility="Collapsed" Margin="0,10,0,0">
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock x:Name="DeviceName" Text="Connected to: " TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                        <TextBlock x:Name="ServiceName" Text="Current Service Name" TextWrapping="Wrap" Margin="0,0,0,10"/>
-
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap">Enter a message to send:</TextBlock>
-                                            <ListBox x:Name="ConversationList" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="300" Margin="0,10,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollMode="Auto"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Grid>
-            </PivotItem>
-            <PivotItem x:Name="DisplayTab" Header="Display" FontFamily="Segoe UI">
-                <Grid x:Name="LayoutRoot" HorizontalAlignment="Left" VerticalAlignment="Top" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid x:Name="Input" Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Margin="0,0,0,10">
-                            <TextBlock x:Name="InputTextBlock1" TextWrapping="Wrap" Grid.Row="0" HorizontalAlignment="Left" Text="Listen for remote devices trying to connect. Sets this device as the display."/>
+                            </Border>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,10" Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan ="2">
-                            <Button x:Name="ListenButton" Margin="20,0,20,0" Click="ListenButton_Click" Content="Start Listening"/>
-
-                        </StackPanel>
-                        <ScrollViewer Grid.Row="2" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                            <Grid Margin="0,10,0,0">
+                    </ScrollViewer>
+                    <Grid x:Name="ChatBox" Visibility="Collapsed" Margin="0,10,0,0">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Name="DeviceName" Text="Connected to: " TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <TextBlock x:Name="ServiceName" Style="{StaticResource BaseTextBlockStyle}" Text="Current Service Name" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                            <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click"/>
+                            <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap" FontFamily="Segoe UI"><Run Text="Enter a message to send:"/></TextBlock>
-                                <ListBox x:Name="ConversationListBox" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight ="300" Margin="0,10,0,50" ScrollViewer.HorizontalScrollMode="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap">Enter a message to send:</TextBlock>
+                                <TextBox x:Name="MessageTextBox" Grid.Column="0" Grid.Row="1" Margin="0,10,10,0" KeyDown="KeyboardKey_Pressed"/>
+                                <Button x:Name="SendButton" Grid.Column="1" Grid.Row="1" Content="Send" Click="SendButton_Click" Margin="5,10,10,0"/>
+                                <ListBox x:Name="ConversationList" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="300" Margin="0,10,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollMode="Auto"/>
                             </Grid>
-                        </ScrollViewer>
+                        </StackPanel>
                     </Grid>
-                    <Grid HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top"/>
-                </Grid>
-            </PivotItem>
-        </Pivot>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
+    
 </Page>

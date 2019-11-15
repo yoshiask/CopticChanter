@@ -203,7 +203,7 @@ namespace CopticChanter.Layouts
                 ContentViewRight.ScrollToElement(ContentPanelRight.Children[index]);
                 if (Common.IsConnected)
                 {
-                    Common.SendMessage(Common.RemoteCMDString.CMD_NEXT);
+                    //Common.SendMessage(Common.RemoteCMDString.CMD_NEXT);
                 }
             }
             catch (Exception ex)
@@ -358,11 +358,7 @@ namespace CopticChanter.Layouts
             // Subscribe to remote messages
             if (Common.IsConnected)
             {
-                if (Common.RemoteWriter != null && Common.RemoteSocket != null && Common.RemoteDevice != null)
-                {
-                    Common.RecievedCMD.CollectionChanged += BytesRecieved_CollectionChanged;
-                    //Common.ReceiveStringLoop(new Windows.Storage.Streams.DataReader(Common.RemoteSocket.InputStream));
-                }
+                // Subscribe BytesRecieved_CollectionChanged to byte received
             }
         }
 
@@ -372,7 +368,7 @@ namespace CopticChanter.Layouts
             {
                 foreach (string cmd in e.NewItems)
                 {
-                    switch (cmd)
+                    /*switch (cmd)
                     {
                         case Common.RemoteCMDString.CMD_NEXT:
                             RightButton_Click(sender, new RoutedEventArgs());
@@ -409,7 +405,7 @@ namespace CopticChanter.Layouts
                         case Common.RemoteCMDString.CMD_ERROR:
                             Debug.WriteLine("Device failed to execute command");
                             break;
-                    }
+                    }*/
                 }
             }
             throw new NotImplementedException();

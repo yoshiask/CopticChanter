@@ -1,15 +1,23 @@
-﻿using System;
+﻿//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
+
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel.Background;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Networking.Sockets;
-using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -18,311 +26,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace CopticChanter.Pages
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class BluetoothRemoteConnectPage : Page
     {
-        private bool Client = true;
-
-        #region Shared
-        public BluetoothRemoteConnectPage()
-        {
-            this.InitializeComponent();
-            Common.bluetoothRemoteConnectPage = this;
-            App.Current.Suspending += App_Suspending;
-            trigger = new RfcommConnectionTrigger();
-
-            // Local service Id is the only mandatory field that should be used to filter a known service UUID.  
-            trigger.InboundConnection.LocalServiceId = RfcommServiceId.FromUuid(Constants.RfcommChatServiceUuid);
-
-            // The SDP record is nice in order to populate optional name and description fields
-            trigger.InboundConnection.SdpRecord = sdpRecordBlob.AsBuffer();
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (Client)
-            {
-                ResultCollection = new ObservableCollection<RfcommChatDeviceDisplay>();
-                DataContext = this;
-            }
-            else
-            {
-                foreach (var task in BackgroundTaskRegistration.AllTasks)
-                {
-                    if (task.Value.Name == taskName)
-                    {
-                        AttachProgressAndCompletedHandlers(task.Value);
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region Server
-        // The background task registration for the background advertisement watcher 
-        private IBackgroundTaskRegistration taskRegistration;
-        // The watcher trigger used to configure the background task registration 
-        private RfcommConnectionTrigger trigger;
-        // A name is given to the task in order for it to be identifiable across context. 
-        private string taskName = "CCUWPRemoteService";
-        // Entry point for the background task. 
-        private string taskEntryPoint = "UWPRemoteTask.RfcommServerTask";
-
-
-        // Define the raw bytes that are converted into SDP record
-        private byte[] sdpRecordBlob = new byte[]
-        {
-            0x35, 0x4a,  // DES len = 74 bytes
-
-            // Vol 3 Part B 5.1.15 ServiceName
-            // 34 bytes
-            0x09, 0x01, 0x00, // UINT16 (0x09) value = 0x0100 [ServiceName]
-            0x25, 0x1d,       // TextString (0x25) len = 29 bytes
-                0x42, 0x6c, 0x75, 0x65, 0x74, 0x6f, 0x6f, 0x74, 0x68, 0x20,     // Bluetooth <sp>
-                0x52, 0x66, 0x63, 0x6f, 0x6d, 0x6d, 0x20,                       // Rfcomm <sp>
-                0x43, 0x68, 0x61, 0x74, 0x20,                                   // Chat <sp>
-                0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,                       // Service <sp>
-            // Vol 3 Part B 5.1.15 ServiceDescription
-            // 40 bytes
-            0x09, 0x01, 0x01, // UINT16 (0x09) value = 0x0101 [ServiceDescription]
-            0x25, 0x23,       // TextString (0x25) = 33 bytes,
-                0x42, 0x6c, 0x75, 0x65, 0x74, 0x6f, 0x6f, 0x74, 0x68, 0x20,     // Bluetooth <sp>
-                0x52, 0x66, 0x63, 0x6f, 0x6d, 0x6d, 0x20,                       // Rfcomm <sp>
-                0x43, 0x68, 0x61, 0x74, 0x20,                                   // Chat <sp>
-                0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x20,                  // Service <sp>
-                0x69, 0x6e, 0x20, 0x43, 0x23                                    // in C#
-
-        };
-
-        /// <summary>
-        /// Class containing Attributes and UUIDs that will populate the SDP record.
-        /// </summary>
-        class Constants
-        {
-            // The Chat Server's custom service Uuid: 34B1CF4D-1069-4AD6-89B6-E161D79BE4D8
-            // "636F7074" spells "copt"
-            public static readonly Guid RfcommChatServiceUuid = Guid.Parse("636F7074-1069-4AD6-89B6-E161D79BE4D8");
-
-            // The Id of the Service Name SDP attribute
-            public const UInt16 SdpServiceNameAttributeId = 0x100;
-
-            // The SDP Type of the Service Name SDP attribute.
-            // The first byte in the SDP Attribute encodes the SDP Attribute Type as follows :
-            //    -  the Attribute Type size in the least significant 3 bits,
-            //    -  the SDP Attribute Type value in the most significant 5 bits.
-            public const byte SdpServiceNameAttributeType = (4 << 3) | 5;
-
-            // The value of the Service Name SDP attribute
-            public const string SdpServiceName = "Bluetooth CCRemote Service";
-            //public const string SdpServiceName = "Bluetooth Rfcomm Chat Service";
-        }
-
-        private async void ListenButton_Click(object sender, RoutedEventArgs e)
-        {
-            ListenButton.IsEnabled = false;
-            DisconnectButton.IsEnabled = true;
-
-            // Registering a background trigger if it is not already registered. Rfcomm Chat Service will now be advertised in the SDP record
-            // First get the existing tasks to see if we already registered for it
-
-            foreach (var task in BackgroundTaskRegistration.AllTasks)
-            {
-                if (task.Value.Name == taskName)
-                {
-                    taskRegistration = task.Value;
-                    break;
-                }
-            }
-
-            if (taskRegistration != null)
-            {
-                Debug.WriteLine("Background watcher already registered.");
-                return;
-            }
-            else
-            {
-                // Applications registering for background trigger must request for permission.
-                BackgroundAccessStatus backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-
-                var builder = new BackgroundTaskBuilder();
-                builder.TaskEntryPoint = taskEntryPoint;
-                builder.SetTrigger(trigger);
-                builder.Name = taskName;
-
-                try
-                {
-                    taskRegistration = builder.Register();
-                    AttachProgressAndCompletedHandlers(taskRegistration);
-
-                    // Even though the trigger is registered successfully, it might be blocked. Notify the user if that is the case.
-                    if ((backgroundAccessStatus == BackgroundAccessStatus.AlwaysAllowed) || (backgroundAccessStatus == BackgroundAccessStatus.AllowedSubjectToSystemPolicy))
-                    {
-                        Debug.WriteLine("Background watcher registered.");
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Background tasks may be disabled for this app");
-                    }
-                }
-                catch (Exception)
-                {
-                    Debug.WriteLine("Background task not registered");
-                }
-            }
-        }
-
-        private void SendButton_Click(object sender, RoutedEventArgs e)
-        {
-            SendMessage(MessageTextBox.Text);
-        }
-
-        public void KeyboardKey_Pressed(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Left)
-            {
-                SendMessage(Common.RemoteCMDString.CMD_PREV);
-            }
-            else if (e.Key == Windows.System.VirtualKey.Right)
-            {
-                SendMessage(Common.RemoteCMDString.CMD_NEXT);
-            }
-            else if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                SendMessage(MessageTextBox.Text);
-            }
-        }
-
-        /// <summary>
-        /// Sends the current message in MessageTextBox.  Also makes sure the text is not empty and updates the conversation list.  
-        /// </summary>
-        public void SendMessage(string message)
-        {
-            var previousMessage = (string)ApplicationData.Current.LocalSettings.Values["SendMessage"];
-
-            // Make sure previous message has been sent
-            if (previousMessage == null || previousMessage == "")
-            {
-                // Save the current message to local settings so the background task can pick it up. 
-                ApplicationData.Current.LocalSettings.Values["SendMessage"] = message;
-
-                // Clear the messageTextBox for a new message
-                MessageTextBox.Text = "";
-                ConversationListBox.Items.Add("Sent: " + message);
-            }
-            else
-            {
-                // Do nothing until previous message has been sent.  
-            }
-        }
-
-        private void DisconnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            Disconnect();
-        }
-
-        /// <summary>
-        /// Called when background task defferal is completed.  This can happen for a number of reasons (both expected and unexpected).  
-        /// IF this is expected, we'll notify the user.  If it's not, we'll show that this is an error.  Finally, clean up the connection by calling Disconnect().
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private async void OnCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.ContainsKey("TaskCancelationReason"))
-            {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                Debug.WriteLine("Task cancelled unexpectedly - reason: " + settings.Values["TaskCancelationReason"].ToString());
-                });
-            }
-            else
-            {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                    Debug.WriteLine("Background task completed");
-                });
-            }
-            try
-            {
-                args.CheckResult();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-            Disconnect();
-        }
-
-        /// <summary>
-        /// Handles UX changes and task registration changes when socket is disconnected
-        /// </summary>
-        private async void Disconnect()
-        {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                ListenButton.IsEnabled = true;
-                DisconnectButton.IsEnabled = false;
-                ConversationListBox.Items.Clear();
-
-                SendMessage(Common.RemoteCMDString.CMD_DISCONNECT);
-
-                // Unregistering the background task will remove the Rfcomm Chat Service from the SDP record and stop listening for incoming connections
-                // First get the existing tasks to see if we already registered for it
-                if (taskRegistration != null)
-                {
-                    taskRegistration.Unregister(true);
-                    taskRegistration = null;
-                    Debug.WriteLine("Background watcher unregistered.");
-                }
-                else
-                {
-                    // At this point we assume we haven't found any existing tasks matching the one we want to unregister
-                    Debug.WriteLine("No registered background watcher found.");
-                }
-            });
-
-        }
-
-        /// <summary>
-        /// The background task updates the progress counter.  When that happens, this event handler gets invoked
-        /// When the handler is invoked, we will display the value stored in local settings to the user.
-        /// </summary>
-        /// <param name="task"></param>
-        /// <param name="args"></param>
-        private async void OnProgress(IBackgroundTaskRegistration task, BackgroundTaskProgressEventArgs args)
-        {
-
-            if (ApplicationData.Current.LocalSettings.Values.Keys.Contains("ReceivedMessage"))
-            {
-                string backgroundMessage = (string)ApplicationData.Current.LocalSettings.Values["ReceivedMessage"];
-                string remoteDeviceName = (string)ApplicationData.Current.LocalSettings.Values["RemoteDeviceName"];
-
-                if (!backgroundMessage.Equals(""))
-                {
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        Debug.WriteLine("Client Connected: " + remoteDeviceName);
-                        ConversationListBox.Items.Add("Received: " + backgroundMessage);
-                    });
-                }
-            }
-        }
-
-        private void AttachProgressAndCompletedHandlers(IBackgroundTaskRegistration task)
-        {
-            task.Progress += new BackgroundTaskProgressEventHandler(OnProgress);
-            task.Completed += new BackgroundTaskCompletedEventHandler(OnCompleted);
-        }
-        #endregion
-
-        #region Client
         // Used to display list of available devices to chat with
         public ObservableCollection<RfcommChatDeviceDisplay> ResultCollection {
             get;
@@ -334,6 +41,18 @@ namespace CopticChanter.Pages
         private DataWriter chatWriter = null;
         private RfcommDeviceService chatService = null;
         private BluetoothDevice bluetoothDevice;
+
+        public BluetoothRemoteConnectPage()
+        {
+            this.InitializeComponent();
+            App.Current.Suspending += App_Suspending;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            ResultCollection = new ObservableCollection<RfcommChatDeviceDisplay>();
+            DataContext = this;
+        }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
@@ -382,7 +101,7 @@ namespace CopticChanter.Pages
         {
             // Disable the button while we do async operations so the user can't Run twice.
             RunButton.Content = "Stop";
-            Debug.WriteLine("Device watcher started");
+            Console.WriteLine("STATUS: Device watcher started");
             resultsListView.Visibility = Visibility.Visible;
             resultsListView.IsEnabled = true;
         }
@@ -415,13 +134,13 @@ namespace CopticChanter.Pages
             deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (watcher, deviceInfo) =>
             {
                 // Since we have the collection databound to a UI element, we need to update the collection on the UI thread.
-                await Common.bluetoothRemoteConnectPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     // Make sure device name isn't blank
                     if (deviceInfo.Name != "")
                     {
                         ResultCollection.Add(new RfcommChatDeviceDisplay(deviceInfo));
-                        Debug.WriteLine(
+                        Console.WriteLine("STATUS: " + 
                             String.Format("{0} devices found.", ResultCollection.Count));
                     }
 
@@ -430,7 +149,7 @@ namespace CopticChanter.Pages
 
             deviceWatcher.Updated += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
             {
-                await Common.bluetoothRemoteConnectPage.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
                     foreach (RfcommChatDeviceDisplay rfcommInfoDisp in ResultCollection)
                     {
@@ -445,9 +164,9 @@ namespace CopticChanter.Pages
 
             deviceWatcher.EnumerationCompleted += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
             {
-                await Common.bluetoothRemoteConnectPage.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
-                    Debug.WriteLine(
+                    Console.WriteLine("STATUS: " + 
                         String.Format("{0} devices found. Enumeration completed. Watching for updates...", ResultCollection.Count));
                 });
             });
@@ -455,7 +174,7 @@ namespace CopticChanter.Pages
             deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
             {
                 // Since we have the collection databound to a UI element, we need to update the collection on the UI thread.
-                await Common.bluetoothRemoteConnectPage.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
                     // Find the corresponding DeviceInformation in the collection and remove it
                     foreach (RfcommChatDeviceDisplay rfcommInfoDisp in ResultCollection)
@@ -467,14 +186,14 @@ namespace CopticChanter.Pages
                         }
                     }
 
-                    Debug.WriteLine(
+                    Console.WriteLine("STATUS: " + 
                         String.Format("{0} devices found.", ResultCollection.Count));
                 });
             });
 
             deviceWatcher.Stopped += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
             {
-                await Common.bluetoothRemoteConnectPage.Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
                     ResultCollection.Clear();
                 });
@@ -494,11 +213,11 @@ namespace CopticChanter.Pages
             // Make sure user has selected a device first
             if (resultsListView.SelectedItem != null)
             {
-                Debug.WriteLine("Connecting to remote device. Please wait...");
+                Console.WriteLine("STATUS: Connecting to remote device. Please wait...");
             }
             else
             {
-                Debug.WriteLine("Please select an item to connect to");
+                Console.WriteLine("ERROR: Please select an item to connect to");
                 return;
             }
 
@@ -509,7 +228,7 @@ namespace CopticChanter.Pages
             DeviceAccessStatus accessStatus = DeviceAccessInformation.CreateFromId(deviceInfoDisp.Id).CurrentStatus;
             if (accessStatus == DeviceAccessStatus.DeniedByUser)
             {
-                Debug.WriteLine("This app does not have access to connect to the remote device (please grant access in Settings > Privacy > Other Devices");
+                Console.WriteLine("ERROR: This app does not have access to connect to the remote device (please grant access in Settings > Privacy > Other Devices");
                 return;
             }
             // If not, try to get the Bluetooth device
@@ -519,7 +238,7 @@ namespace CopticChanter.Pages
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Console.WriteLine("ERROR: " + ex.Message);
                 ResetMainUI();
                 return;
             }
@@ -528,12 +247,12 @@ namespace CopticChanter.Pages
             // should not be interacted with.
             if (bluetoothDevice == null)
             {
-                Debug.WriteLine("Bluetooth Device returned null. Access Status = " + accessStatus.ToString());
+                Console.WriteLine("ERROR: Bluetooth Device returned null. Access Status = " + accessStatus.ToString());
             }
 
             // This should return a list of uncached Bluetooth services (so if the server was not active when paired, it will still be detected by this call
             var rfcommServices = await bluetoothDevice.GetRfcommServicesForIdAsync(
-                RfcommServiceId.FromUuid(Constants.RfcommChatServiceUuid), BluetoothCacheMode.Uncached);
+                RfcommServiceId.FromUuid(Common.RemoteConstants.RfcommChatServiceUuid), BluetoothCacheMode.Uncached);
 
             if (rfcommServices.Services.Count > 0)
             {
@@ -541,28 +260,25 @@ namespace CopticChanter.Pages
             }
             else
             {
-                Debug.WriteLine(
-                   "Could not discover the chat service on the remote device");
+                Console.WriteLine("ERROR: Could not discover the chat service on the remote device");
                 ResetMainUI();
                 return;
             }
 
             // Do various checks of the SDP record to make sure you are talking to a device that actually supports the Bluetooth Rfcomm Chat Service
             var attributes = await chatService.GetSdpRawAttributesAsync();
-            if (!attributes.ContainsKey(Constants.SdpServiceNameAttributeId))
+            if (!attributes.ContainsKey(Common.RemoteConstants.SdpServiceNameAttributeId))
             {
-                Debug.WriteLine(
-                    "The Chat service is not advertising the Service Name attribute (attribute id=0x100). " +
+                Console.WriteLine("ERROR: The Chat service is not advertising the Service Name attribute (attribute id=0x100). " +
                     "Please verify that you are running the BluetoothRfcommChat server.");
                 ResetMainUI();
                 return;
             }
-            var attributeReader = DataReader.FromBuffer(attributes[Constants.SdpServiceNameAttributeId]);
+            var attributeReader = DataReader.FromBuffer(attributes[Common.RemoteConstants.SdpServiceNameAttributeId]);
             var attributeType = attributeReader.ReadByte();
-            if (attributeType != Constants.SdpServiceNameAttributeType)
+            if (attributeType != Common.RemoteConstants.SdpServiceNameAttributeType)
             {
-                Debug.WriteLine(
-                    "The Chat service is using an unexpected format for the Service Name attribute. " +
+                Console.WriteLine("ERROR: The Chat service is using an unexpected format for the Service Name attribute. " +
                     "Please verify that you are running the BluetoothRfcommChat server.");
                 ResetMainUI();
                 return;
@@ -590,12 +306,12 @@ namespace CopticChanter.Pages
             }
             catch (Exception ex) when ((uint)ex.HResult == 0x80070490) // ERROR_ELEMENT_NOT_FOUND
             {
-                Debug.WriteLine("Please verify that you are running the BluetoothRfcommChat server.");
+                Console.WriteLine("ERROR: Please verify that you are running the BluetoothRfcommChat server.");
                 ResetMainUI();
             }
             catch (Exception ex) when ((uint)ex.HResult == 0x80072740) // WSAEADDRINUSE
             {
-                Debug.WriteLine("Please verify that there is no other RFCOMM connection to the same device.");
+                Console.WriteLine("ERROR: Please verify that there is no other RFCOMM connection to the same device.");
                 ResetMainUI();
             }
         }
@@ -616,13 +332,23 @@ namespace CopticChanter.Pages
 
             if (accessStatus != DeviceAccessStatus.Allowed)
             {
-                Debug.WriteLine(
-                    "Access to the device is denied because the application was not granted access");
+                Console.WriteLine("ERROR: Access to the device is denied because the application was not granted access");
             }
             else
             {
-                Debug.WriteLine(
-                                    "Access granted, you are free to pair devices");
+                Console.WriteLine("STATUS: Access granted, you are free to pair devices");
+            }
+        }
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            SendMessage();
+        }
+
+        public void KeyboardKey_Pressed(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                SendMessage();
             }
         }
 
@@ -631,9 +357,6 @@ namespace CopticChanter.Pages
         /// </summary>
         private async void SendMessage()
         {
-            SendMessage(MessageTextBox.Text);
-            return;
-
             try
             {
                 if (MessageTextBox.Text.Length != 0)
@@ -650,7 +373,7 @@ namespace CopticChanter.Pages
             catch (Exception ex) when ((uint)ex.HResult == 0x80072745)
             {
                 // The remote device has disconnected the connection
-                Debug.WriteLine("Remote side disconnect: " + ex.HResult.ToString() + " - " + ex.Message);
+                Console.WriteLine("STATUS: Remote side disconnect: " + ex.HResult.ToString() + " - " + ex.Message);
             }
         }
 
@@ -673,7 +396,53 @@ namespace CopticChanter.Pages
                     return;
                 }
 
-                ConversationList.Items.Add("Received: " + chatReader.ReadString(stringLength));
+                string message = chatReader.ReadString(stringLength);
+                string outputText = "";
+                switch (message)
+                {
+                    case Common.RemoteConstants.RemoteCMDString.CMD_NEXT:
+                        outputText = "Device requested next slide";
+                        //RightButton_Click(sender, new RoutedEventArgs());
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_PREV:
+                        outputText = "Device requested previous slide";
+                        //LeftButton_Click(sender, new RoutedEventArgs());
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_SETASREMOTE:
+                        outputText = "Device requested remote";
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_SETASDISPLAY:
+                        outputText = "Device requested display";
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_ENDMSG:
+                        // Nothing more to read, continue to listen
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_DISCONNECT:
+                        Disconnect("Remote requested disconnect via command");
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_RECIEVEDOK:
+                        outputText = "Device recieved and executed command without errors";
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_RECIEVEDERROR:
+                        outputText = "Device failed to parse command";
+                        break;
+
+                    case Common.RemoteConstants.RemoteCMDString.CMD_ERROR:
+                        outputText = "Device failed to execute command";
+                        break;
+
+                    default:
+                        outputText = "Received: " + message;
+                        break;
+                }
+                ConversationList.Items.Add(outputText);
 
                 ReceiveStringLoop(chatReader);
             }
@@ -685,9 +454,9 @@ namespace CopticChanter.Pages
                     {
                         // Do not print anything here -  the user closed the socket.
                         if ((uint)ex.HResult == 0x80072745)
-                            Debug.WriteLine("Disconnect triggered by remote device");
+                            Console.WriteLine("STATUS: Disconnect triggered by remote device");
                         else if ((uint)ex.HResult == 0x800703E3)
-                            Debug.WriteLine("The I/O operation has been aborted because of either a thread exit or an application request.");
+                            Console.WriteLine("STATUS: The I/O operation has been aborted because of either a thread exit or an application request.");
                     }
                     else
                     {
@@ -695,6 +464,11 @@ namespace CopticChanter.Pages
                     }
                 }
             }
+        }
+
+        private void DisconnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            Disconnect("Disconnected");
         }
 
 
@@ -725,13 +499,13 @@ namespace CopticChanter.Pages
                 }
             }
 
-            Debug.WriteLine(disconnectReason);
+            Console.WriteLine(disconnectReason);
             ResetMainUI();
         }
 
         private void SetChatUI(string serviceName, string deviceName)
         {
-            Debug.WriteLine("Connected");
+            Console.WriteLine("STATUS: Connected");
             ServiceName.Text = "Service Name: " + serviceName;
             DeviceName.Text = "Connected to: " + deviceName;
             RunButton.IsEnabled = false;
@@ -760,7 +534,6 @@ namespace CopticChanter.Pages
                 ConnectButton.IsEnabled = false;
             }
         }
-        #endregion
     }
 
     public class RfcommChatDeviceDisplay : INotifyPropertyChanged

@@ -8,13 +8,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Coptic Chanter")]
 [assembly: AssemblyDescription("An alternative to Coptic Reader for Holy Virgin Mary Coptic Orthodox Church")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Yoshi")]
+[assembly: AssemblyCompany("Joshua Askharoun")]
 [assembly: AssemblyProduct("Coptic Chanter")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("2018")]
+[assembly: AssemblyCopyright("Copyright ©  2018-2019")]
+[assembly: AssemblyTrademark("2019")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyFileVersion("1.0.0.1")]
 
 // Version information for an assembly consists of the following four values:
 //
