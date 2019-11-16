@@ -36,8 +36,11 @@ namespace CopticChanter.Layouts
             trnslttrnsfrmMenuBottom.X = -stckpnlMenuWidth;
             this.ManipulationMode = ManipulationModes.TranslateX;
             #endregion
+        }
 
-            var args = Common.TwoPanelArgs;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            var args = e.Parameter as DoublePanelArgs;
             ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             MainGrid.Background = new SolidColorBrush(args.BackColor.ToUIColor());
@@ -97,7 +100,7 @@ namespace CopticChanter.Layouts
                 #endregion
 
                 #region Arabic
-                    // TODO: Support Arabic text
+                // TODO: Support Arabic text
                 case Common.Language.Arabic:
                     var ContentBlockA = new TextBlock();
                     ContentBlockA.Text = "\n";
@@ -106,7 +109,7 @@ namespace CopticChanter.Layouts
                     ContentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
                     ContentPanelLeft.Children.Add(ContentBlockA);
                     break;
-                #endregion
+                    #endregion
             }
             #endregion
 
@@ -173,9 +176,11 @@ namespace CopticChanter.Layouts
                     ContentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
                     ContentPanelRight.Children.Add(ContentBlockA);
                     break;
-                #endregion
+                    #endregion
             }
             #endregion
+
+            base.OnNavigatedTo(e);
         }
 
         private int index = 0;

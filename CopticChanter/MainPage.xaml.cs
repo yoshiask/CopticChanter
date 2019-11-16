@@ -142,55 +142,61 @@ namespace CopticChanter
 
             if (eng && !copt && !arabic)
             {
-                Common.OnePanelArgs = new Layouts.SinglePanelArgs(
-                    Common.Language.English,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.SinglePanel));
+                Frame.Navigate(typeof(Layouts.SinglePanel),
+                    new Layouts.SinglePanelArgs(
+                        Common.Language.English,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
             else if (!eng && copt && !arabic)
             {
-                Common.OnePanelArgs = new Layouts.SinglePanelArgs(
-                    Common.Language.Coptic,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.SinglePanel));
+                Frame.Navigate(typeof(Layouts.SinglePanel),
+                    new Layouts.SinglePanelArgs(
+                        Common.Language.Coptic,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
             else if (!eng && !copt && arabic)
             {
-                Common.OnePanelArgs = new Layouts.SinglePanelArgs(
-                    Common.Language.Arabic,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.SinglePanel));
+                Frame.Navigate(typeof(Layouts.SinglePanel),
+                    new Layouts.SinglePanelArgs(
+                        Common.Language.Arabic,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
 
             else if (eng && copt && !arabic)
             {
-                Common.TwoPanelArgs = new Layouts.DoublePanelArgs(
-                    Common.Language.English,
-                    Common.Language.Coptic,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.DoublePanel));
+                Frame.Navigate(typeof(Layouts.DoublePanel),
+                    new Layouts.DoublePanelArgs(
+                        Common.Language.English,
+                        Common.Language.Coptic,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
             else if (!eng && copt && arabic)
             {
-                Common.TwoPanelArgs = new Layouts.DoublePanelArgs(
-                    Common.Language.Coptic,
-                    Common.Language.Arabic,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.DoublePanel));
+                Frame.Navigate(typeof(Layouts.DoublePanel),
+                    new Layouts.DoublePanelArgs(
+                        Common.Language.Coptic,
+                        Common.Language.Arabic,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
             else if (eng && !copt && arabic)
             {
-                Common.TwoPanelArgs = new Layouts.DoublePanelArgs(
-                    Common.Language.English,
-                    Common.Language.Arabic,
-                    Windows.UI.Colors.Black,
-                    Windows.UI.Colors.White);
-                Frame.Navigate(typeof(Layouts.DoublePanel));
+                Frame.Navigate(typeof(Layouts.DoublePanel),
+                    new Layouts.DoublePanelArgs(
+                        Common.Language.English,
+                        Common.Language.Arabic,
+                        Windows.UI.Colors.Black,
+                        Windows.UI.Colors.White)
+                );
             }
         }
 
