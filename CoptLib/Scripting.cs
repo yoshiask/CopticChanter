@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using CoptLib.XML;
 using MoonSharp.Interpreter;
 
@@ -170,7 +171,8 @@ namespace CoptLib
                         return parentIf.Return;
                     }
                 }
-                return parentDoc.DefaultNextGuid;
+                // TODO: Don't do this
+                return "";
             }
         }
 
@@ -330,6 +332,25 @@ namespace CoptLib
             catch (Exception ex)
             {
                 return ex.Message;
+            }
+        }
+
+        public static void ParseTextCommands(string input)
+        {
+            // Define a regular expression for repeated words.
+            Regex rx = new Regex(@"(\\)(?<command>\w+)(\{)(?<param>\w+)*(\})",
+              RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            // Find matches.
+            MatchCollection matches = rx.Matches(input);
+
+            // Report the number of matches found.
+            Console.WriteLine("{0} matches found in:\n   {1}",
+                              matches.Count,
+                              input);
+            foreach (Match m in matches)
+            {
+                Console.WriteLine($"\tCommand: {m.Groups["command"]}\r\n\tParameters: {m.Groups["params"]}\r\n");
             }
         }
     }

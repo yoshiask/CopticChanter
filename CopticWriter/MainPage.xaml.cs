@@ -1,0 +1,736 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using Windows.ApplicationModel.Core;
+using Windows.Storage.Pickers;
+using Windows.UI;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+
+// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+
+namespace CopticWriter
+{
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    {
+        int CharacterCaret = 0;
+        ObservableCollection<CoptLib.XML.DocXML> docs = new ObservableCollection<CoptLib.XML.DocXML>();
+        ObservableCollection<CoptLib.XML.DocXML> Docs {
+            get { return docs; }
+            set {
+                docs = value;
+                OnPropertyChanged();
+            }
+        }
+        public string CurrentStanza { get; set; }
+
+        public MainPage()
+        {
+            this.InitializeComponent();
+
+            InitEnglish();
+
+            // Change default title bar
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            coreTitleBar.ExtendViewIntoTitleBar = true;
+            coreTitleBar.LayoutMetricsChanged += CoreTitleBar_LayoutMetricsChanged;
+            Window.Current.SetTitleBar(TitleGrid);
+
+            // Set the caption buttons to transparent
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.InactiveBackgroundColor = Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+        }
+
+        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
+        {
+            TitleGrid.Height = sender.Height;
+        }
+
+        #region Keyboard
+        public static List<string> English = new List<string>()
+        {
+            null, // 0
+            "q", // 1
+            "w", // 2
+            "e", // 3
+            "r", // 4
+            "t", // 5
+            "y", // 6
+            "u", // 7
+            "i", // 8
+            "o", // 9
+            "p", // 10
+            "[", // 11
+            "]", // 12
+            "\\", // 13
+            "a", // 14
+            "s", // 15
+            "d", // 16
+            "f", // 17
+            "g", // 18
+            "h", // 19
+            "j", // 20
+            "k", // 21
+            "l", // 22
+            ";", // 23
+            "'", // 24
+            "z", // 25
+            "x", // 26
+            "c", // 27
+            "v", // 28
+            "b", // 29
+            "n", // 30
+            "m", // 31
+            ",", // 32
+            ".", // 33
+            "/" // 34
+        };
+        public static List<string> EnglishSft = new List<string>()
+        {
+            null, // 0
+            "Q", // 1
+            "W", // 2
+            "E", // 3
+            "R", // 4
+            "T", // 5
+            "Y", // 6
+            "U", // 7
+            "I", // 8
+            "O", // 9
+            "P", // 10
+            "{", // 11
+            "}", // 12
+            "|", // 13
+            "A", // 14
+            "S", // 15
+            "D", // 16
+            "F", // 17
+            "G", // 18
+            "H", // 19
+            "J", // 20
+            "K", // 21
+            "L", // 22
+            ":", // 23
+            "\"", // 24
+            "Z", // 25
+            "X", // 26
+            "C", // 27
+            "V", // 28
+            "B", // 29
+            "N", // 30
+            "M", // 31
+            "<", // 32
+            ">", // 33
+            "?" // 34
+        };
+
+        public static List<string> Arabic = new List<string>()
+        {
+            null, // 0
+            "ض", // 1
+            "ص", // 2
+            "ث", // 3
+            "ق", // 4
+            "ف", // 5
+            "غ", // 6
+            "ع", // 7
+            "ه", // 8
+            "خ", // 9
+            "ح", // 10
+            "ش", // 11
+            "س", // 12
+            "ي", // 13
+            "ب", // 14
+            "ل", // 15
+            "ا", // 16
+            "ت", // 17
+            "ن", // 18
+            "م", // 19
+            "ك", // 20
+            "ئ", // 21
+            "ء", // 22
+            "ؤ", // 23
+            "ر", // 24
+            "لا", // 25
+            "ى", // 26
+            "ة", // 27
+            "ز", // 28
+            null, // 29
+            ")", // 30
+            "(", // 31
+            "و", // 32
+            "ظ", // 33
+            null // 34
+        };
+        public static List<string> ArabicSft = new List<string>()
+        {
+            null, // 0
+            "َ", // 1
+            "ً", // 2
+            "ُ", // 3
+            "ٌ", // 4
+            "لإ", // 5
+            "إ", // 6
+            "‘", // 7
+            "÷", // 8
+            "×", // 9
+            "؛", // 10
+            "ِ", // 11
+            "ٍ", // 12
+            "]", // 13
+            "[", // 14
+            "لأ", // 15
+            "أ", // 16
+            "ـ", // 17
+            "،", // 18
+            "/", // 19
+            "\"", // 20
+            "~", // 21
+            "ْ", // 22
+            "}", // 23
+            "{", // 24
+            "لآ", // 25
+            "آ", // 26
+            "’", // 27
+            ".", // 28
+            null, // 29
+            "(", // 30
+            ")", // 31
+            ",", // 32
+            "!", // 33
+            null // 34
+        };
+
+        // TODO: Switch this to use the Coptic Unicode once you figure out how to 
+        // replace keyboard input with the wanted characters
+        public static List<string> Coptic = new List<string>()
+        {
+            null, // 0
+            "\u03B1", // 1, a
+            "\u03B2", // 2, b
+            "\u03B3", // 3, g
+            "\u03B4", // 4, d
+            "\u03B5", // 5, eh
+            "\u03EC", // 6, so
+            "\u03B6", // 7, z
+            "\u03B7", // 8, ee
+            "\u03B8", // 9, th
+            "\u03B9", // 10, i
+            "\u03BA", // 11, k
+            "\u03BB", // 12, l
+            "\u03BC", // 13, m
+            "\u03BD", // 14, n
+            "\u03BE", // 15, ks
+            "\u03BF", // 16, o
+            "\u03C0", // 17, p
+            "\u03C1", // 18, r
+            "\u03C3", // 19, s
+            "\u03C4", // 20, t
+            "\u03C5", // 21, u
+            "\u03C6", // 22, ph
+            "\u03C7", // 23, kh
+            "\u03C8", // 24, ps
+            "\u03C9", // 25, oh
+            "\u03E3", // 26, sh
+            "\u03E5", // 27, f
+            "\u03E7", // 28, x
+            "\u03E9", // 29, h
+            "\u03EB", // 30, j
+            "\u03ED", // 31, q
+            "\u03EF", // 32, tee
+            "\u0384", // 33, jenkim
+            ";" // 34
+        };
+        public static List<string> CopticSft = new List<string>()
+        {
+            null, // 0
+            "\u0391", // 1, a
+            "\u0392", // 2, b
+            "\u0393", // 3, g
+            "\u0394", // 4, d
+            "\u0395", // 5, eh
+            "\u03EC", // 6, so
+            "\u0396", // 7, z
+            "\u0397", // 8, ee
+            "\u0398", // 9, th
+            "\u0399", // 10, i
+            "\u039A", // 11, k
+            "\u039B", // 12, l
+            "\u039C", // 13, m
+            "\u039D", // 14, n
+            "\u039E", // 15, ks
+            "\u039F", // 16, o
+            "\u03A0", // 17, p
+            "\u03A1", // 18, r
+            "\u03A3", // 19, s
+            "\u03A4", // 20, t
+            "\u03A5", // 21, u
+            "\u03A6", // 22, ph
+            "\u03A7", // 23, kh
+            "\u03A8", // 24, ps
+            "\u03A9", // 25, oh
+            "\u03E2", // 26, sh
+            "\u03E4", // 27, f
+            "\u03E6", // 28, x
+            "\u03E8", // 29, h
+            "\u03EA", // 30, j
+            "\u03EC", // 31, q
+            "\u03EE", // 32, tee
+            "\u0384", // 33, jenkim
+            ":" // 34
+        };
+
+        private void InputBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (LanguageOption.SelectedIndex == 1 && (false == true))
+            {
+                // Language is set to Coptic, so intercept English keystrokes
+                // and replace with Coptic unicode
+                bool isUpper = e.Key == Windows.System.VirtualKey.Shift;
+
+                string englishText = e.OriginalKey.ToString();
+                if (CoptLib.CopticFont.UnicodeMapping.ContainsKey(englishText))
+                {
+                    if (isUpper)
+                        InputBox.Text += CoptLib.CopticFont.UnicodeMapping[englishText];
+                    else
+                        InputBox.Text += CoptLib.CopticFont.UnicodeMapping[englishText.ToLower()];
+                    e.Handled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes the specified key
+        /// </summary>
+        /// <param name="btn">The key to initialize</param>
+        /// <param name="keytype">Language to load: eng / copt / arabic + ":sft"</param>
+        /// <param name="index"></param>
+        private void InitKey(Button btn, string keytype, int index)
+        {
+            switch (keytype)
+            {
+                case "eng":
+                    if (English[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        btn.Content = English[index];
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+
+                case "eng:sft":
+                    if (EnglishSft[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        btn.Content = EnglishSft[index];
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+
+                case "copt":
+                    if (Coptic[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        btn.Content = CoptLib.CopticFont.UnicodeMapping.Values.ElementAt(index - 1);
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+
+                case "copt:sft":
+                    if (CopticSft[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        var vals = CoptLib.CopticFont.UnicodeMapping.Values.ToList();
+                        btn.Content = vals[index + 33];
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+
+                case "arabic":
+
+                    if (Arabic[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        btn.Content = Arabic[index];
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+
+                case "arabic:sft":
+
+                    if (ArabicSft[index] != null)
+                    {
+                        btn.Visibility = Visibility.Visible;
+                        btn.Content = ArabicSft[index];
+                    }
+                    else
+                    {
+                        btn.Visibility = Visibility.Collapsed;
+                    }
+                    return;
+            }
+        }
+
+        private void InitEnglish()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "eng", i);
+                }
+            }
+            return;
+        }
+        private void InitEnglishSft()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "eng:sft", i);
+                }
+            }
+            return;
+        }
+
+        private void InitCoptic()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "copt", i);
+                }
+            }
+            return;
+        }
+        private void InitCopticSft()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "copt:sft", i);
+                }
+            }
+            return;
+        }
+
+        private void InitArabic()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "arabic", i);
+                }
+            }
+            return;
+        }
+        private void InitArabicSft()
+        {
+            for (int i = 1; i <= 34; i++)
+            {
+                var key = KeyboardGrid.FindName("Key" + i.ToString());
+                if (key != null)
+                {
+                    if (key.GetType() == typeof(Button))
+                        InitKey((Button)key, "arabic:sft", i);
+                }
+            }
+            return;
+        }
+        #endregion
+
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new FileSavePicker();
+            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("DocCreator XML Document", new List<string> { ".xml" });
+            picker.FileTypeChoices.Add("DocCreator ZIP Set", new List<string> { ".zip" });
+
+            Windows.Storage.StorageFile file = await picker.PickSaveFileAsync();
+            if (file != null)
+            {
+                // Read the file
+            }
+        }
+
+        private async void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new FileOpenPicker();
+            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            picker.FileTypeFilter.Add(".xml");
+            picker.FileTypeFilter.Add(".zip");
+
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                switch (Path.GetExtension(file.Name))
+                {
+                    case ".xml":
+                        // Read the file
+                        var docXML = CoptLib.CopticInterpreter.ReadDocXML(await file.OpenStreamForReadAsync());
+                        HideDocControls();
+                        return;
+
+                    case ".zip":
+                        // Read the file
+                        var set = CoptLib.CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+                        ShowDocControls();
+                        Docs = new ObservableCollection<CoptLib.XML.DocXML>(set.IncludedDocs);
+                        CurrentStanza = set.IncludedDocs[0].Content[0].Text;
+                        OnPropertyChanged();
+                        return;
+                }
+            }
+        }
+
+        private void ConvertTasbehaButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ScriptButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void LanguageOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                if (LanguageOption.SelectedIndex > -1)
+                {
+                    switch (LanguageOption.SelectedIndex)
+                    {
+                        #region English
+                        case 0:
+                            InitEnglish();
+                            break;
+                        #endregion
+
+                        #region Coptic
+                        case 1:
+                            InitCoptic();
+                            break;
+                        #endregion
+
+                        #region Arabic
+                        case 2:
+                            InitArabic();
+                            break;
+                            #endregion
+                    }
+                }
+            }
+        }
+
+        private void InputBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        #region Doc Controls
+        private void DocDecrement_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DocIncrement_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DocDelete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DocCreate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void HideDocControls()
+        {
+            DocControlButtons.Visibility = Visibility.Collapsed;
+        }
+        private void ShowDocControls()
+        {
+            DocControlButtons.Visibility = Visibility.Visible;
+        }
+        #endregion
+
+        #region Stanza Controls
+        private void StanzaDelete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void StanzaCreate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void StanzaDecrement_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void StanzaIncrement_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        #endregion
+
+        #region Key Clicks
+        private void Key_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterCaret = InputBox.SelectionStart;
+            InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, ((Button)sender).Content.ToString());
+            InputBox.SelectionStart = CharacterCaret += 1;
+
+            // Reset the shift keys
+            KeyLeftShift.IsChecked = false;
+            KeyRightShift.IsChecked = false;
+        }
+
+        private void KeySpace_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterCaret = InputBox.SelectionStart;
+            InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, " ");
+            InputBox.SelectionStart = CharacterCaret += 1;
+        }
+
+        private void KeyEnter_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterCaret = InputBox.SelectionStart;
+            InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, "\n");
+            InputBox.SelectionStart = CharacterCaret += 1;
+        }
+
+        private void KeyBackspace_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterCaret = InputBox.SelectionStart;
+            if (CharacterCaret > 0)
+            {
+                InputBox.SelectionStart = CharacterCaret - 1;
+                InputBox.Text = InputBox.Text.Remove(InputBox.SelectionStart);
+                InputBox.SelectionStart = CharacterCaret;
+
+                if (InputBox.Text == String.Empty)
+                {
+                    InputBox.SelectionStart = 0;
+                }
+            }
+
+        }
+
+        private void KeyShift_Checked(object sender, RoutedEventArgs e)
+        {
+            KeyLeftShift.IsChecked = true;
+            KeyRightShift.IsChecked = true;
+
+            if (LanguageOption.SelectedIndex > -1)
+            {
+                switch (LanguageOption.SelectedIndex)
+                {
+                    #region English
+                    case 0:
+                        InitEnglishSft();
+                        break;
+                    #endregion
+
+                    #region Coptic
+                    case 1:
+                        InitCopticSft();
+                        break;
+                    #endregion
+
+                    #region Arabic
+                    case 2:
+                        InitArabicSft();
+                        break;
+                        #endregion
+                }
+            }
+        }
+
+        private void KeyShift_Unchecked(object sender, RoutedEventArgs e)
+        {
+            KeyLeftShift.IsChecked = false;
+            KeyRightShift.IsChecked = false;
+
+            if (LanguageOption.SelectedIndex > -1)
+            {
+                switch (LanguageOption.SelectedIndex)
+                {
+                    #region English
+                    case 0:
+                        InitEnglish();
+                        break;
+                    #endregion
+
+                    #region Coptic
+                    case 1:
+                        InitCoptic();
+                        break;
+                    #endregion
+
+                    #region Arabic
+                    case 2:
+                        InitArabic();
+                        break;
+                        #endregion
+                }
+            }
+        }
+        #endregion        
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}

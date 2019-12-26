@@ -657,7 +657,7 @@ namespace DocCreator
         {
             OpenFileDialog dialogX = new OpenFileDialog
             {
-                Filter = "Compressed Zip Folder (*zip)|*.zip",
+                Filter = "Compressed Zip Folder (*zip)|*.zip|Extensible Markup Language (*.xml)|*.xml",
                 DefaultExt = "zip"
             };
 
@@ -666,42 +666,79 @@ namespace DocCreator
 
             if ((bool)dialogX.ShowDialog(this))
             {
-                var set = CoptLib.CopticInterpreter.ReadSet(dialogX.FileName, System.IO.Path.Combine(
+                switch (System.IO.Path.GetExtension(dialogX.FileName)) {
+
+                    #region ZIP
+                    case ".zip":
+                        var set = CoptLib.CopticInterpreter.ReadSet(dialogX.FileName, System.IO.Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Coptic Chanter", "Doc Creator", "temp"));
-                ResetControls();
-                Stanzas.Add("");
-                DocSelection.Items.Clear();
+                        ResetControls();
+                        Stanzas.Add("");
+                        DocSelection.Items.Clear();
 
-                foreach (DocXML docX in set.IncludedDocs)
-                {
-                    CoptLib.CopticInterpreter.AllDocs.Add(docX.UUID, set.IncludedDocs.Find( (DocXML xml) => { if (xml.UUID == docX.UUID) return true; else { return false; } }) );
-                    DocSelection.Items.Add(docX.Name);
-                }
+                        foreach (DocXML docX in set.IncludedDocs)
+                        {
+                            CoptLib.CopticInterpreter.AllDocs.Add(docX.UUID, set.IncludedDocs.Find((DocXML xml) => { if (xml.UUID == docX.UUID) return true; else { return false; } }));
+                            DocSelection.Items.Add(docX.Name);
+                        }
 
-                DocSelection.SelectedIndex = 0;
-                DocXML doc = set.IncludedDocs[0];
-                if (!doc.Coptic)
-                {
-                    foreach (DocXML.StanzaXML stanza in doc.Stanzas)
-                    {
-                        Stanzas.Add(stanza.Content);
-                    }
-                    LanguageOption.SelectedIndex = 0;
-                }
-                else
-                {
-                    foreach (DocXML.StanzaXML stanza in doc.Stanzas)
-                    {
-                        Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Content));
-                    }
-                    LanguageOption.SelectedIndex = 1;
-                }
+                        DocSelection.SelectedIndex = 0;
+                        DocXML doc = set.IncludedDocs[0];
+                        if (!doc.Coptic)
+                        {
+                            foreach (DocXML.StanzaXML stanza in doc.Stanzas)
+                            {
+                                Stanzas.Add(stanza.Content);
+                            }
+                            LanguageOption.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            foreach (DocXML.StanzaXML stanza in doc.Stanzas)
+                            {
+                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Content));
+                            }
+                            LanguageOption.SelectedIndex = 1;
+                        }
 
-                NameBox.Text = doc.Name;
-                CurStanza = 1;
-                InputBox.Text = Stanzas[CurStanza];
-                CurrentDoc = doc;
+                        NameBox.Text = doc.Name;
+                        CurStanza = 1;
+                        InputBox.Text = Stanzas[CurStanza];
+                        CurrentDoc = doc;
+                        return;
+                    #endregion
+
+                    #region XML
+                    case ".xml":
+                        var docXML = CoptLib.CopticInterpreter.ReadDocXML(dialogX.FileName);
+                        ResetControls();
+                        Stanzas.Add("");
+
+                        if (!docXML.Coptic)
+                        {
+                            foreach (DocXML.StanzaXML stanza in docXML.Stanzas)
+                            {
+                                Stanzas.Add(stanza.Content);
+                            }
+                            LanguageOption.SelectedIndex = 0;
+                        }
+                        else
+                        {
+                            foreach (DocXML.StanzaXML stanza in docXML.Stanzas)
+                            {
+                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Content));
+                            }
+                            LanguageOption.SelectedIndex = 1;
+                        }
+
+                        NameBox.Text = docXML.Name;
+                        CurStanza = 1;
+                        InputBox.Text = Stanzas[CurStanza];
+                        return;
+                        #endregion
+
+                }
             }
 
             #region old

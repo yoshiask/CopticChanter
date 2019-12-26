@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,14 @@ namespace CoptLib
 {
     public static class CopticInterpreter
     {
+        public enum Language
+        {
+            English,
+            Coptic,
+            Arabic
+        }
+
+
         public static IDictionary<string, DocXML> AllDocs = new Dictionary<string, DocXML>();
 
         /// <summary>
@@ -20,6 +29,7 @@ namespace CoptLib
         /// <param name="input">Coptic-Latin</param>
         /// <param name="isGreek"></param>
         /// <returns></returns>
+        [Obsolete("Please save using Coptic Unicode.")]
         public static string ConvertFromString(string input, bool isGreek = false)
         {
             // Characters must be separated by a dash
@@ -72,6 +82,7 @@ namespace CoptLib
         /// <param name="input">Coptin-Font</param>
         /// <param name="isGreek"></param>
         /// <returns></returns>
+        [Obsolete("Please save using Coptic Unicode.")]
         public static string ConvertToString(string input, bool isGreek = false)
         {
             if (CopticAlphabet.Keys.Count == 0)
@@ -138,7 +149,7 @@ namespace CoptLib
         /// <param name="coptic">If the input language is Coptic</param>
         /// <param name="name">Name of the reading or hymn</param>
         /// <returns></returns>
-        public static bool SaveDocXML(string filename, IEnumerable<string> content, bool coptic, string name)
+        public static bool SaveDocXML(string filename, IEnumerable<string> content, Language lang, string name)
         {
             try
             {
@@ -148,27 +159,12 @@ namespace CoptLib
                 TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
                 DocXML SaveX = new DocXML();
 
-                SaveX.Coptic = coptic;
-                SaveX.Stanzas = new List<DocXML.StanzaXML>();
-                if (coptic)
+                SaveX.Language = lang;
+                SaveX.Content = new List<StanzaXML>();
+                foreach (string s in content)
                 {
-                    foreach (string s in content)
-                    {
-                        SaveX.Stanzas.Add(new DocXML.StanzaXML(s, "coptic"));
-                    }
-                }
-                else
-                {
-                    foreach (string s in content)
-                    {
-                        // Replaces c# escaped new lines with XML new lines .Replace("\r\n", "&#xD;")
-                        SaveX.Stanzas.Add(new DocXML.StanzaXML(s, "english"));
-                    }
-                }
-                // Checks if first stanza is empty
-                if (SaveX.Stanzas[0].Content == "")
-                {
-                    SaveX.Stanzas.RemoveAt(0);
+                    // Replaces c# escaped new lines with XML new lines .Replace("\r\n", "&#xD;")
+                    SaveX.Content.Add(new StanzaXML(s));
                 }
                 SaveX.Name = name;
 
@@ -184,9 +180,9 @@ namespace CoptLib
         }
 
         /// <summary>
-        /// Deserializes and returns a DocXML file
+        /// Deserializes and returns a DocXML file. Only use in full .NET Framework
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
         public static DocXML ReadDocXML(string path)
         {
@@ -212,6 +208,32 @@ namespace CoptLib
                 return null;
             }
         }
+        /// <summary>
+        /// Deserializes and returns a DocXML file. For use in UWP
+        /// </summary>
+        /// <param name="file">A Stream of the XML file</param>
+        /// <returns></returns>
+        public static DocXML ReadDocXML(Stream file)
+        {
+            try
+            {
+                // Create an instance of the XmlSerializer class;
+                // specify the type of object to be deserialized.
+                XmlSerializer serializer = new XmlSerializer(typeof(DocXML));
+                //If the XML document has been altered with unknown 
+                //nodes or attributes, handle them with the 
+                //UnknownNode and UnknownAttribute events.
+
+                //Use the Deserialize method to restore the object's state with
+                //data from the XML document.
+                return (DocXML)serializer.Deserialize(file);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
 
         /// <summary>
         /// Unzips, serializes, and returns an Index and list of Docs
@@ -220,7 +242,16 @@ namespace CoptLib
         /// <returns></returns>
         public static DocSetReader.ReadResults ReadSet(string path, string tempPath)
         {
-            return (new DocSetReader(path)).Read(tempPath);
+            return new DocSetReader(Path.GetFileNameWithoutExtension(path), path).Read(tempPath);
+        }
+        /// <summary>
+        /// Unzips, serializes, and returns an Index and list of Docs
+        /// </summary>
+        /// <param name="File">Stream of zip file</param>
+        /// <returns></returns>
+        public static DocSetReader.ReadResults ReadSet(Stream file, string name, string tempPath)
+        {
+            return (new DocSetReader(name, file)).Read(tempPath);
         }
 
         /// <summary>
@@ -255,16 +286,16 @@ namespace CoptLib
         [Obsolete("Please use ConvertFont() instead.")]
         public static string ConvertFromCS(string input)
         {
-            if (TasbehaAlphabet.Keys.Count == 0)
+            if (CopticStandardAlphabet.Keys.Count == 0)
             {
-                InitTasbeha();
+                InitCopticStandard();
             }
             string output = "";
 
             bool accent = false;
             foreach (char ch in input.ToCharArray())
             {
-                if (TasbehaAlphabet.Keys.Contains(ch.ToString()))
+                if (CopticStandardAlphabet.Keys.Contains(ch.ToString()))
                 {
                     if (ch == '`')
                     {
@@ -272,7 +303,7 @@ namespace CoptLib
                     }
                     else
                     {
-                        output += TasbehaAlphabet[ch.ToString()];
+                        output += CopticStandardAlphabet[ch.ToString()];
                         if (accent)
                         {
                             output += "~";
@@ -603,23 +634,23 @@ namespace CoptLib
             }
         }
 
-        public static Dictionary<string, string> TasbehaAlphabet = new Dictionary<string, string>();
-        private static void InitTasbeha()
+        public static Dictionary<string, string> CopticStandardAlphabet = new Dictionary<string, string>();
+        private static void InitCopticStandard()
         {
-            // Key is Tasbeha
+            // Key is Coptic Standard
             // Value is CoptLib
 
-            TasbehaAlphabet.Add("`", "~");
-            TasbehaAlphabet.Add("@", ":");
+            CopticStandardAlphabet.Add("`", "~");
+            CopticStandardAlphabet.Add("@", ":");
 
             #region Uppercase
-            TasbehaAlphabet.Add("y", "/");
-            TasbehaAlphabet.Add(";", "y");
+            CopticStandardAlphabet.Add("y", "/");
+            CopticStandardAlphabet.Add(";", "y");
             #endregion
 
             #region Lowercase
-            TasbehaAlphabet.Add("Y", "?");
-            TasbehaAlphabet.Add(":", "Y");
+            CopticStandardAlphabet.Add("Y", "?");
+            CopticStandardAlphabet.Add(":", "Y");
             #endregion
         }
 
@@ -706,10 +737,22 @@ namespace CoptLib
         private string ZipPath {
             get;
         }
+        private Stream ZipStream {
+            get;
+        }
+        public string Name {
+            get;
+        }
 
-        public DocSetReader(string zipPath)
+        public DocSetReader(string name, string zipPath)
         {
+            Name = name;
             ZipPath = zipPath;
+        }
+        public DocSetReader(string name, Stream zipStream)
+        {
+            Name = name;
+            ZipStream = zipStream;
         }
 
         /// <param name="tempPath">Path.Combine(
@@ -718,7 +761,7 @@ namespace CoptLib
         /// <returns></returns>
         public ReadResults Read(string tempPath)
         {
-            string FolderPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(ZipPath));
+            string FolderPath = Path.Combine(tempPath, Name);
             if (Directory.Exists(FolderPath))
             {
                 foreach (string file in Directory.EnumerateFiles(FolderPath))
@@ -728,8 +771,9 @@ namespace CoptLib
                 Directory.Delete(FolderPath);
             }
             Directory.CreateDirectory(FolderPath);
-            
-            if (UnzipFile(ZipPath, FolderPath))
+
+            bool isSuccess = ZipStream == null ? UnzipFile(ZipPath, FolderPath) : UnzipFile(ZipStream, FolderPath);
+            if (isSuccess)
             {
                 var results = new ReadResults();
                 List<string> files = Directory.EnumerateFiles(FolderPath).ToList();
@@ -796,6 +840,24 @@ namespace CoptLib
             try
             {
                 System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Extracts a zip file in the specified directory
+        /// </summary>
+        /// <param name="zipStream">Zip stream to extract</param>
+        /// <param name="extractPath">Path to extract zip file to</param>
+        private bool UnzipFile(Stream zipStream, string extractPath)
+        {
+            try
+            {
+                new ZipArchive(zipStream).ExtractToDirectory(extractPath);
                 return true;
             }
             catch
@@ -873,14 +935,24 @@ namespace CoptLib
 
         public void AddContent(DocXML xml)
         {
-            Index.IncludedDocs.Add(new IndexDocXML() { Name = xml.Name, UUID = xml.UUID, hasEnglish = !xml.Coptic, hasCoptic = xml.Coptic, hasArabic = false });
+            Index.IncludedDocs.Add(new IndexDocXML()
+            {
+                Name = xml.Name,
+                UUID = xml.UUID,
+                Language = xml.Language,
+            });
         }
 
         public void AddContent(IEnumerable<DocXML> docs)
         {
             foreach (DocXML xml in docs)
             {
-                Index.IncludedDocs.Add(new IndexDocXML() { Name = xml.Name, UUID = xml.UUID, hasEnglish = !xml.Coptic, hasCoptic = xml.Coptic, hasArabic = false });
+                Index.IncludedDocs.Add(new IndexDocXML()
+                {
+                    Name = xml.Name,
+                    UUID = xml.UUID,
+                    Language = xml.Language
+                });
             }
         }
 
@@ -1083,24 +1155,24 @@ namespace CoptLib
 
         private static Dictionary<string, string> InitCopticStandard()
         {
-            Dictionary<string, string> TasbehaAlphabet = new Dictionary<string, string>();
+            Dictionary<string, string> CopticStandardAlphabet = new Dictionary<string, string>();
             // Key is Tasbeha
             // Value is CoptLib
 
-            TasbehaAlphabet.Add("`", "~");
-            TasbehaAlphabet.Add("@", ":");
+            CopticStandardAlphabet.Add("`", "~");
+            CopticStandardAlphabet.Add("@", ":");
 
             #region Uppercase
-            TasbehaAlphabet.Add("y", "/");
-            TasbehaAlphabet.Add(";", "y");
+            CopticStandardAlphabet.Add("y", "/");
+            CopticStandardAlphabet.Add(";", "y");
             #endregion
 
             #region Lowercase
-            TasbehaAlphabet.Add("Y", "?");
-            TasbehaAlphabet.Add(":", "Y");
+            CopticStandardAlphabet.Add("Y", "?");
+            CopticStandardAlphabet.Add(":", "Y");
             #endregion
 
-            return TasbehaAlphabet;
+            return CopticStandardAlphabet;
         }
         private static Dictionary<string, string> InitCopticUnicode()
         {
@@ -1258,5 +1330,87 @@ namespace CoptLib
 
             return font;
         }
+
+        /// <summary>
+        /// Defines the mapping of Coptic Standard to Unicode characters
+        /// </summary>
+        public static readonly Dictionary<string, string> UnicodeMapping = new Dictionary<string, string>()
+        {
+            // Lowercase
+            { "q", "ϧ" },
+            { "w", "ω" },
+            { "e", "ε" },
+            { "r", "ρ" },
+            { "t", "τ" },
+            { "y", "η" },
+            { "u", "υ" },
+            { "i", "ι" },
+            { "o", "ο" },
+            { "p", "π" },
+            { "[", "ϭ" },
+            { "]", "ϯ" },
+            { "\\", "\\" },
+
+            { "a", "α" },
+            { "s", "ϣ" },
+            { "d", "δ" },
+            { "f", "ϥ" },
+            { "g", "γ" },
+            { "h", "ϩ" },
+            { "j", "ϫ" },
+            { "k", "κ" },
+            { "l", "λ" },
+            { ";", "θ" },
+            { "'", "ψ" },
+
+            { "z", "ζ" },
+            { "x", "ξ" },
+            { "c", "σ" },
+            { "v", "φ" },
+            { "b", "β" },
+            { "n", "ν" },
+            { "m", "μ" },
+            { ",", "χ" },
+            { ".", "." },
+            { "/", "/" },
+
+            // Uppercase
+            { "Q", "Ϧ" },
+            { "W", "Ω" },
+            { "E", "Ε" },
+            { "R", "Ρ" },
+            { "T", "Τ" },
+            { "Y", "Ν" },
+            { "U", "Υ" },
+            { "I", "Ι" },
+            { "O", "Ο" },
+            { "P", "Π" },
+            { "{", "Ϭ" },
+            { "}", "Ϯ" },
+            { "|", "|" },
+
+            { "A", "Α" },
+            { "S", "Ϣ" },
+            { "D", "Δ" },
+            { "F", "Ϥ" },
+            { "G", "Γ" },
+            { "H", "Ϩ" },
+            { "J", "Ϫ" },
+            { "K", "Κ" },
+            { "L", "Λ" },
+            { ":", "Θ" },
+            { "\"", "Ψ" },
+
+            { "Z", "Ζ" },
+            { "X", "Ξ" },
+            { "C", "Σ" },
+            { "V", "Φ" },
+            { "B", "Β" },
+            { "N", "Ν" },
+            { "M", "Μ" },
+            { "<", "Χ" },
+            { ">", "," },
+            { "?", "?" },
+        };
     }
 }

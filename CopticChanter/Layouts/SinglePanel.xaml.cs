@@ -36,8 +36,11 @@ namespace CopticChanter.Layouts
             trnslttrnsfrmMenuBottom.X = -stckpnlMenuWidth;
             this.ManipulationMode = ManipulationModes.TranslateX;
             #endregion
+        }
 
-            var args = Common.OnePanelArgs;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            var args = e.Parameter as SinglePanelArgs;
             ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
 
@@ -105,8 +108,10 @@ namespace CopticChanter.Layouts
                     ContentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
                     ContentPanel.Children.Add(ContentBlockA);
                     break;
-                #endregion
+                    #endregion
             }
+
+            base.OnNavigatedTo(e);
         }
 
         private int index = 0;

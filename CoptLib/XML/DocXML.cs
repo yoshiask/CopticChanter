@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,88 +12,52 @@ namespace CoptLib.XML
     public class DocXML
     {
         [XmlElement]
-        public string Name;
+        public string Name { get; set; }
 
         [XmlElement]
-        public string UUID;
+        public string UUID { get; set; }
 
         [XmlElement]
-        public string Parent;
+        public string Parent { get; set; }
+
+        [XmlArray(ElementName = "Content")]
+        public List<StanzaXML> Content { get; set; } = new List<StanzaXML>();
+
+        [XmlIgnore]
+        public ObservableCollection<StanzaXML> ContentCollection { get; set; } = new ObservableCollection<StanzaXML>();
+
         [XmlElement]
-        public string Language;
-
-        [XmlArray]
-        public List<StanzaXML> Stanzas = new List<StanzaXML>();
+        public CopticInterpreter.Language Language { get; set; }
 
         [XmlElement]
-        public bool Coptic;
+        public string NextScript { get; set; }
 
-        [XmlElement(ElementName = "If", IsNullable = true)]
-        public IfXML Script = new IfXML();
+        //[XmlElement(ElementName = "If", IsNullable = true)]
+        //public IfXML Script = new IfXML();
 
-        [XmlElement(ElementName = "DefaultNext", IsNullable = false)]
-        public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
+        //[XmlElement(ElementName = "DefaultNext", IsNullable = false)]
+        //public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
 
         public IndexDocXML ToIndexDocXML()
         {
-            switch (Language)
+            return new IndexDocXML()
             {
-                case "english":
-                    return new IndexDocXML()
-                    {
-                        Name = this.Name,
-                        UUID = this.UUID,
-                        hasCoptic = false,
-                        hasEnglish = true,
-                        hasArabic = false
-                    };
-
-                case "coptic":
-                    return new IndexDocXML()
-                    {
-                        Name = this.Name,
-                        UUID = this.UUID,
-                        hasCoptic = true,
-                        hasEnglish = false,
-                        hasArabic = false
-                    };
-
-                case "arabic":
-                    return new IndexDocXML()
-                    {
-                        Name = this.Name,
-                        UUID = this.UUID,
-                        hasCoptic = false,
-                        hasEnglish = false,
-                        hasArabic = true
-                    };
-
-                default:
-                    return new IndexDocXML()
-                    {
-                        Name = this.Name,
-                        UUID = this.UUID,
-                        hasCoptic = this.Coptic,
-                        hasEnglish = !this.Coptic,
-                        hasArabic = false
-                    };
-            }
+                Name = this.Name,
+                UUID = this.UUID,
+                Language = this.Language
+            };
         }
+    }
 
-        public class StanzaXML
+    public class StanzaXML
+    {
+        public StanzaXML() { }
+        public StanzaXML(string content)
         {
-            public StanzaXML() { }
-            public StanzaXML(string content, string lang)
-            {
-                Language = lang;
-                Content = content;
-            }
-
-            [XmlElement("Language")]
-            public string Language;
-
-            [XmlElement]
-            public string Content;
+            Text = content;
         }
+
+        [XmlElement]
+        public string Text { get; set; }
     }
 }

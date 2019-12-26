@@ -10,10 +10,8 @@ namespace CoptLib.XML
     [XmlRoot(ElementName = "CopticDocIndex")]
     public class IndexXML
     {
-        [XmlElement(ElementName = "name")]
         public string Name;
 
-        [XmlElement(ElementName = "uuid")]
         public string UUID;
 
         [XmlElement]
@@ -23,19 +21,13 @@ namespace CoptLib.XML
     [XmlRoot(ElementName = "Doc")]
     public class IndexDocXML
     {
-        [XmlElement(ElementName = "name")]
+        [XmlAttribute]
         public string Name;
 
-        [XmlElement(ElementName = "uuid")]
+        [XmlAttribute]
         public string UUID;
 
-        [XmlElement]
-        public bool hasCoptic;
-
-        [XmlElement]
-        public bool hasEnglish;
-
-        [XmlElement]
-        public bool hasArabic;
+        [XmlAttribute]
+        public CopticInterpreter.Language Language;
     }
 }
