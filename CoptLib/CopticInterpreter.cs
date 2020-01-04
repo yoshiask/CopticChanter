@@ -1250,6 +1250,11 @@ namespace CoptLib
             CopticUnicodeAlphabet.Add("ϯ", "]");
             #endregion
 
+            // u0300 is the combining grave accent
+            // u200D is the zero-width joiner
+            // NOTE: Some text renderers and fonts put the accent on the character before it
+            CopticUnicodeAlphabet.Add("\u0300\u200D", "`");
+
             return CopticUnicodeAlphabet;
         }
 

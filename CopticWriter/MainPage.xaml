@@ -2,7 +2,6 @@
     x:Class="CopticWriter.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CopticWriter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
@@ -10,6 +9,7 @@
     xmlns:NotWindows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractNotPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:CoptXml="using:CoptLib.XML"
     xmlns:WinUI="using:Microsoft.UI.Xaml.Controls"
+    xmlns:views="using:CopticWriter.Views"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -174,139 +174,13 @@
                     </Button>
                 </StackPanel>
 
-                <ComboBox x:Name="DocSelection" SelectedIndex="0" SelectionChanged="LanguageOption_SelectionChanged" FontSize="14" ItemsSource="{Binding CopticInterpreter.AllDocs}" IsEditable="True" FontWeight="Bold" HorizontalAlignment="Stretch" >
+                <ComboBox x:Name="DocSelection" SelectedIndex="0" FontSize="14" ItemsSource="{Binding CopticInterpreter.AllDocs}" IsEditable="True" FontWeight="Bold" HorizontalAlignment="Stretch" >
                     <!--ComboBoxItem Content="Name"/!-->
                 </ComboBox>
             </controls:DockPanel>
         </Grid>
 
-        <controls:Expander VerticalAlignment="Bottom" controls:DockPanel.Dock="Bottom"
-                HorizontalContentAlignment="Stretch" IsExpanded="True" ExpandDirection="Up">
-            <controls:Expander.Header>
-                <StackPanel Orientation="Horizontal">
-                    <SymbolIcon Symbol="Keyboard" Margin="0,0,10,0" />
-                    <TextBlock Text="On-Screen Keyboard"/>
-                </StackPanel>
-            </controls:Expander.Header>
-
-            <Grid x:Name="KeyBackGrid" Background="{ThemeResource SystemControlAccentAcrylicWindowAccentMediumHighBrush}"
-                  Height="255" VerticalAlignment="Bottom">
-
-                <ComboBox x:Name="LanguageOption" VerticalAlignment="Top" Width="120" SelectedIndex="0" SelectionChanged="LanguageOption_SelectionChanged" FontSize="14" HorizontalAlignment="Right" Margin="0,10,10,0">
-                    <ComboBoxItem Content="English"/>
-                    <ComboBoxItem Content="Coptic"/>
-                    <ComboBoxItem Content="Arabic"/>
-                </ComboBox>
-
-                <Viewbox Margin="10,10,10,10">
-                    <Grid x:Name="KeyboardGrid" HorizontalAlignment="Center" Width="715">
-                        <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                            <Button x:Name="Key1" Content="q" Click="Key_Click" Style="{x:Bind KeyboardB}" />
-                            <Button x:Name="Key2" Content="w" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key3" Content="e" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key4" Content="r" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key5" Content="t" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key6" Content="y" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key7" Content="u" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key8" Content="i" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key9" Content="o" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key10" Content="p" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key11" Content="[" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key12" Content="]" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key13" Content="\" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,55,105,0">
-                            <Button x:Name="Key14" Content="a" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18"                  Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key15" Content="s" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key16" Content="d" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key17" Content="f" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key18" Content="g" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key19" Content="h" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key20" Content="j" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key21" Content="k" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key22" Content="l" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key23" Content=";" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key24" Content="'" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                        </StackPanel>
-                        <Button x:Name="KeyEnter" VerticalAlignment="Top" Width="105" Padding="1" Height="50" FontSize="24" Click="KeyEnter_Click" HorizontalAlignment="Right" Margin="0,55,0,0">
-                            <FontIcon Glyph="&#xE751;" FontFamily="Segoe MDL2 Assets"/>
-                        </Button>
-                        <ToggleButton x:Name="KeyLeftShift" VerticalAlignment="Bottom" Margin="0,0,0,55"
-                                  Width="50" Padding="1" Height="50" FontSize="24"
-                                  Unchecked="KeyShift_Unchecked" Checked="KeyShift_Checked" >
-                            <FontIcon Glyph="&#xE752;" FontFamily="Segoe MDL2 Assets"/>
-                        </ToggleButton>
-
-                        <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="55,110,105,0">
-                            <Button x:Name="Key25" Content="z" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key26" Content="x" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key27" Content="c" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key28" Content="v" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key29" Content="b" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key30" Content="n" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key31" Content="m" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key32" Content="," VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key33" Content="." VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                            <Button x:Name="Key34" Content="/" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
-                        </StackPanel>
-                        <ToggleButton x:Name="KeyRightShift" VerticalAlignment="Bottom"
-                                  Width="105" Padding="1" Height="50" FontSize="24"
-                                  Unchecked="KeyShift_Unchecked" Checked="KeyShift_Checked" HorizontalAlignment="Right" Margin="0,0,0,55" >
-                            <FontIcon Glyph="&#xE752;" FontFamily="Segoe MDL2 Assets"/>
-                        </ToggleButton>
-                        <Button x:Name="KeyBackspace" Width="105" FontSize="18" Height="50" Click="KeyBackspace_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                            <FontIcon Glyph="&#xE750;" FontFamily="Segoe MDL2 Assets"/>
-                        </Button>
-                        <Button x:Name="KeySpace" Width="270" FontSize="18" Height="50" Click="KeySpace_Click" VerticalAlignment="Top" Margin="0,165,110,0" HorizontalAlignment="Center">
-                            <FontIcon Glyph="&#xE75D;" FontFamily="Segoe MDL2 Assets"/>
-                        </Button>
-
-                        <StackPanel Orientation="Horizontal" Height="50" Width="325" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,165,0,0"/>
-                    </Grid>
-                </Viewbox>
-
-            </Grid>
-        </controls:Expander>
-
-        <controls:DockPanel>
-            <Grid controls:DockPanel.Dock="Right">
-                <StackPanel Orientation="Vertical">
-                    <Button x:Name="StanzaDecrement" FontSize="18" Click="StanzaDecrement_Click" Height="40">
-                        <Button.Content>
-                            <SymbolIcon Symbol="Back"/>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="StanzaIncrement" FontSize="18" Click="StanzaIncrement_Click" Height="40">
-                        <Button.Content>
-                            <SymbolIcon Symbol="Forward"/>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="StanzaCreate" FontSize="18" Click="StanzaCreate_Click" Height="40" >
-                        <Button.Content>
-                            <SymbolIcon Symbol="Add"/>
-                        </Button.Content>
-                    </Button>
-                    <Button x:Name="StanzaDelete" FontSize="18" Click="StanzaDelete_Click" Height="40">
-                        <Button.Content>
-                            <SymbolIcon Symbol="Remove"/>
-                        </Button.Content>
-                    </Button>
-                    <Border BorderBrush="{x:Null}" Height="40">
-                        <TextBlock x:Name="StanzaLabel" Text="1" FontSize="16" VerticalAlignment="Center" TextAlignment="Center"/>
-                    </Border>
-                </StackPanel>
-            </Grid>
-
-            <TextBox x:Name="InputBox" TextWrapping="Wrap" AcceptsReturn="True"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto" FontSize="18"
-                 Text="{x:Bind CurrentStanza, Mode=TwoWay}"
-                 LostFocus="InputBox_LostFocus" FontFamily="Segoe UI Coptic" KeyDown="InputBox_KeyDown" >
-                <TextBox.Background>
-                    <SolidColorBrush Color="{ThemeResource SystemColorBackgroundColor}"/>
-                </TextBox.Background>
-            </TextBox>
-        </controls:DockPanel>
+        <views:StanzaEditorView/>
 
     </controls:DockPanel>
 </Page>

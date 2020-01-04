@@ -47,7 +47,7 @@ namespace CoptLib
         }
         #endregion
 
-        #region Static Dates & Bools
+        #region Static Dates
         public static CopticDate Today {
             get {
                 return CopticDate.ToCopticDate(DateTime.Today);
@@ -429,14 +429,7 @@ namespace CoptLib
         bool IEquatable<DateTime>.Equals(DateTime eDate)
         {
             var other = CopticDate.ToCopticDate(eDate);
-            if (other.Year == Year && other.Month == Month && other.Day == Day)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Equals(other);
         }
 
         public override bool Equals(Object obj)
