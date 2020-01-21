@@ -379,18 +379,18 @@ namespace CoptLib
                 bool accent = false;
                 foreach (char ch in input.ToCharArray())
                 {
-                    if (start.Charmap.Keys.Contains(ch.ToString()))
+                    if (target.Charmap.Keys.Contains(ch.ToString()))
                     {
-                        if (ch == '`')
+                        if (ch == start.JenkimCharacter)
                         {
                             accent = true;
                         }
                         else
                         {
-                            output += start.Charmap[ch.ToString()];
+                            output += target.Charmap[ch.ToString()];
                             if (accent)
                             {
-                                output += "~";
+                                output += target.JenkimCharacter;
                                 accent = false;
                             }
                         }
@@ -400,7 +400,7 @@ namespace CoptLib
                         output += ch.ToString();
                         if (accent)
                         {
-                            output += "~";
+                            output += target.JenkimCharacter;
                             accent = false;
                         }
                     }
@@ -412,18 +412,18 @@ namespace CoptLib
                 bool accent = false;
                 foreach (char ch in input.ToCharArray())
                 {
-                    if (CopticUnicodeAlphabet.Keys.Contains(ch.ToString()))
+                    if (target.Charmap.Keys.Contains(ch.ToString()))
                     {
-                        if (ch == '~')
+                        if (ch == start.JenkimCharacter)
                         {
                             accent = true;
                         }
                         else
                         {
-                            output += CopticUnicodeAlphabet[ch.ToString()];
+                            output += target.Charmap[ch.ToString()];
                             if (accent)
                             {
-                                output += "~";
+                                output += target.JenkimCharacter;
                                 accent = false;
                             }
                         }
@@ -433,7 +433,7 @@ namespace CoptLib
                         output += ch.ToString();
                         if (accent)
                         {
-                            output += "~";
+                            output += target.JenkimCharacter;
                             accent = false;
                         }
                     }
@@ -441,12 +441,7 @@ namespace CoptLib
                 //return output;
             }
 
-            if (target == CopticFont.Coptic1)
-                return output;
-            else
-            {
-                return ConvertFromCoptic1(output, target);
-            }
+            return output;
         }
 
         public static string ConvertFromCoptic1(string input, CopticFont target)
@@ -984,63 +979,12 @@ namespace CoptLib
         }
     }
 
-    public static class XmlTools
-    {
-        public static string ToXmlString<T>(this T input)
-        {
-            using (var writer = new StringWriter())
-            {
-                input.ToXml(writer);
-                return writer.ToString();
-            }
-        }
-
-        public static void ToXml<T>(this T objectToSerialize, Stream stream)
-        {
-            new XmlSerializer(typeof(T)).Serialize(stream, objectToSerialize);
-        }
-
-        public static void ToXml<T>(this T objectToSerialize, StringWriter writer)
-        {
-            new XmlSerializer(typeof(T)).Serialize(writer, objectToSerialize);
-        }
-    }
-
-    public static class DateTimeExtensions
-    {
-        ///<summary>Gets the first week day following a date.</summary>
-        ///<param name="date">The date.</param>
-        ///<param name="dayOfWeek">The day of week to return.</param>
-        ///<returns>The first dayOfWeek day following date, or date if it is on dayOfWeek.</returns>
-        public static DateTime Next(this DateTime date, DayOfWeek dayOfWeek)
-        {
-            return date.AddDays((dayOfWeek < date.DayOfWeek ? 7 : 0) + dayOfWeek - date.DayOfWeek);
-        }
-
-        public static CopticDate Next(this CopticDate date, DayOfWeek dayOfWeek)
-        {
-            return date.AddDays((dayOfWeek < date.DayOfWeek ? 7 : 0) + dayOfWeek - date.DayOfWeek);
-        }
-    }
-
-    public static class DictionaryTools
-    {
-        public static Dictionary<string, string> SwitchColumns(Dictionary<string, string> dictionary)
-        {
-            Dictionary<string, string> output = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, string> pair in dictionary)
-            {
-                output.Add(pair.Value, pair.Key);
-            }
-            return output;
-        }
-    }
-
     public class CopticFont
     {
         public string Name;
         public string FontName;
         public Dictionary<string, string> Charmap = new Dictionary<string, string>();
+        public char JenkimCharacter;
         public bool IsJenkimBefore = true;
         public bool IsCopticStandard = true;
 
@@ -1156,20 +1100,20 @@ namespace CoptLib
         private static Dictionary<string, string> InitCopticStandard()
         {
             Dictionary<string, string> CopticStandardAlphabet = new Dictionary<string, string>();
-            // Key is Tasbeha
-            // Value is CoptLib
+            // Key is Coptic Standard
+            // Value is Coptic Standard
 
-            CopticStandardAlphabet.Add("`", "~");
-            CopticStandardAlphabet.Add("@", ":");
+            //CopticStandardAlphabet.Add("`", "~");
+            //CopticStandardAlphabet.Add("@", ":");
 
             #region Uppercase
-            CopticStandardAlphabet.Add("y", "/");
-            CopticStandardAlphabet.Add(";", "y");
+            //CopticStandardAlphabet.Add("y", "/");
+            //CopticStandardAlphabet.Add(";", "y");
             #endregion
 
             #region Lowercase
-            CopticStandardAlphabet.Add("Y", "?");
-            CopticStandardAlphabet.Add(":", "Y");
+            //CopticStandardAlphabet.Add("Y", "?");
+            //CopticStandardAlphabet.Add(":", "Y");
             #endregion
 
             return CopticStandardAlphabet;
@@ -1177,83 +1121,87 @@ namespace CoptLib
         private static Dictionary<string, string> InitCopticUnicode()
         {
             Dictionary<string, string> CopticUnicodeAlphabet = new Dictionary<string, string>();
-            // Key is Greek unicode
-            // Value is CopticLib
+            // Key is Coptic Standard
+            // Value is Greek unicode
 
             #region Uppercase
-            CopticUnicodeAlphabet.Add("Ⲁ", "A");
-            CopticUnicodeAlphabet.Add("Ⲃ", "B");
-            CopticUnicodeAlphabet.Add("Ⲅ", "G");
-            CopticUnicodeAlphabet.Add("Ⲇ", "D");
-            CopticUnicodeAlphabet.Add("Ⲉ", "E");
-            CopticUnicodeAlphabet.Add("Ⲋ", "^");
-            CopticUnicodeAlphabet.Add("Ⲍ", "Z");
-            CopticUnicodeAlphabet.Add("Ⲏ", "?");
-            CopticUnicodeAlphabet.Add("Ⲑ", "Y");
-            CopticUnicodeAlphabet.Add("Ⲓ", "I");
-            CopticUnicodeAlphabet.Add("Ⲕ", "K");
-            CopticUnicodeAlphabet.Add("Ⲗ", "L");
-            CopticUnicodeAlphabet.Add("Ⲙ", "M");
-            CopticUnicodeAlphabet.Add("Ⲛ", "N");
-            CopticUnicodeAlphabet.Add("Ⲝ", "X");
-            CopticUnicodeAlphabet.Add("Ⲟ", "O");
-            CopticUnicodeAlphabet.Add("Ⲡ", "P");
-            CopticUnicodeAlphabet.Add("Ⲣ", "R");
-            CopticUnicodeAlphabet.Add("Ⲥ", "C");
-            CopticUnicodeAlphabet.Add("Ⲧ", "T");
-            CopticUnicodeAlphabet.Add("Ⲩ", "U");
-            CopticUnicodeAlphabet.Add("Ⲫ", "V");
-            CopticUnicodeAlphabet.Add("Ⲭ", "<");
-            CopticUnicodeAlphabet.Add("Ⲯ", "\"");
-            CopticUnicodeAlphabet.Add("Ⲱ", "W");
-            CopticUnicodeAlphabet.Add("Ϣ", "S");
-            CopticUnicodeAlphabet.Add("Ϥ", "F");
-            CopticUnicodeAlphabet.Add("Ϧ", "Q");
-            CopticUnicodeAlphabet.Add("Ϩ", "H");
-            CopticUnicodeAlphabet.Add("Ϫ", "J");
-            CopticUnicodeAlphabet.Add("Ϭ", "{");
-            CopticUnicodeAlphabet.Add("Ϯ", "}");
+            CopticUnicodeAlphabet.Add("A", "Ⲁ");
+            CopticUnicodeAlphabet.Add("B", "Ⲃ");
+            CopticUnicodeAlphabet.Add("G", "Ⲅ");
+            CopticUnicodeAlphabet.Add("D", "Ⲇ");
+            CopticUnicodeAlphabet.Add("E", "Ⲉ");
+            CopticUnicodeAlphabet.Add("^", "Ⲋ");
+            CopticUnicodeAlphabet.Add("Z", "Ⲍ");
+            CopticUnicodeAlphabet.Add("Y", "Ⲏ");
+            CopticUnicodeAlphabet.Add(":", "Ⲑ");
+            CopticUnicodeAlphabet.Add("I", "Ⲓ");
+            CopticUnicodeAlphabet.Add("K", "Ⲕ");
+            CopticUnicodeAlphabet.Add("L", "Ⲗ");
+            CopticUnicodeAlphabet.Add("M", "Ⲙ");
+            CopticUnicodeAlphabet.Add("N", "Ⲛ");
+            CopticUnicodeAlphabet.Add("X", "Ⲝ");
+            CopticUnicodeAlphabet.Add("O", "Ⲟ");
+            CopticUnicodeAlphabet.Add("P", "Ⲡ");
+            CopticUnicodeAlphabet.Add("R", "Ⲣ");
+            CopticUnicodeAlphabet.Add("C", "Ⲥ");
+            CopticUnicodeAlphabet.Add("T", "Ⲧ");
+            CopticUnicodeAlphabet.Add("U", "Ⲩ");
+            CopticUnicodeAlphabet.Add("V", "Ⲫ");
+            CopticUnicodeAlphabet.Add("<", "Ⲭ");
+            CopticUnicodeAlphabet.Add("\"", "Ⲯ");
+            CopticUnicodeAlphabet.Add("W", "Ⲱ");
+            CopticUnicodeAlphabet.Add("S", "Ϣ");
+            CopticUnicodeAlphabet.Add("F", "Ϥ");
+            CopticUnicodeAlphabet.Add("Q", "Ϧ");
+            CopticUnicodeAlphabet.Add("H", "Ϩ");
+            CopticUnicodeAlphabet.Add("J", "Ϫ");
+            CopticUnicodeAlphabet.Add("{", "Ϭ");
+            CopticUnicodeAlphabet.Add("}", "Ϯ");
             #endregion
 
             #region Lowercase
-            CopticUnicodeAlphabet.Add("ⲁ", "a");
-            CopticUnicodeAlphabet.Add("ⲃ", "b");
-            CopticUnicodeAlphabet.Add("ⲅ", "g");
-            CopticUnicodeAlphabet.Add("ⲇ", "d");
-            CopticUnicodeAlphabet.Add("ⲉ", "e");
-            CopticUnicodeAlphabet.Add("ⲋ", "6");
-            CopticUnicodeAlphabet.Add("ⲍ", "z");
-            CopticUnicodeAlphabet.Add("ⲏ", "/");
-            CopticUnicodeAlphabet.Add("ⲑ", "y");
-            CopticUnicodeAlphabet.Add("ⲓ", "i");
-            CopticUnicodeAlphabet.Add("ⲕ", "k");
-            CopticUnicodeAlphabet.Add("ⲗ", "l");
-            CopticUnicodeAlphabet.Add("ⲙ", "m");
-            CopticUnicodeAlphabet.Add("ⲛ", "n");
-            CopticUnicodeAlphabet.Add("ⲝ", "x");
-            CopticUnicodeAlphabet.Add("ⲟ", "o");
-            CopticUnicodeAlphabet.Add("ⲡ", "p");
-            CopticUnicodeAlphabet.Add("ⲣ", "r");
-            CopticUnicodeAlphabet.Add("ⲥ", "c");
-            CopticUnicodeAlphabet.Add("ⲧ", "t");
-            CopticUnicodeAlphabet.Add("ⲩ", "u");
-            CopticUnicodeAlphabet.Add("ⲫ", "v");
-            CopticUnicodeAlphabet.Add("ⲭ", ",");
-            CopticUnicodeAlphabet.Add("ⲯ", "'");
-            CopticUnicodeAlphabet.Add("ⲱ", "w");
-            CopticUnicodeAlphabet.Add("ϣ", "s");
-            CopticUnicodeAlphabet.Add("ϥ", "f");
-            CopticUnicodeAlphabet.Add("ϧ", "q");
-            CopticUnicodeAlphabet.Add("ϩ", "h");
-            CopticUnicodeAlphabet.Add("ϫ", "j");
-            CopticUnicodeAlphabet.Add("ϭ", "[");
-            CopticUnicodeAlphabet.Add("ϯ", "]");
+            CopticUnicodeAlphabet.Add("a", "ⲁ");
+            CopticUnicodeAlphabet.Add("b", "ⲃ");
+            CopticUnicodeAlphabet.Add("g", "ⲅ");
+            CopticUnicodeAlphabet.Add("d", "ⲇ");
+            CopticUnicodeAlphabet.Add("e", "ⲉ");
+            CopticUnicodeAlphabet.Add("6", "ⲋ");
+            CopticUnicodeAlphabet.Add("z", "ⲍ");
+            CopticUnicodeAlphabet.Add("y", "ⲏ");
+            CopticUnicodeAlphabet.Add(";", "ⲑ");
+            CopticUnicodeAlphabet.Add("i", "ⲓ");
+            CopticUnicodeAlphabet.Add("k", "ⲕ");
+            CopticUnicodeAlphabet.Add("l", "ⲗ");
+            CopticUnicodeAlphabet.Add("m", "ⲙ");
+            CopticUnicodeAlphabet.Add("n", "ⲛ");
+            CopticUnicodeAlphabet.Add("x", "ⲝ");
+            CopticUnicodeAlphabet.Add("o", "ⲟ");
+            CopticUnicodeAlphabet.Add("p", "ⲡ");
+            CopticUnicodeAlphabet.Add("r", "ⲣ");
+            CopticUnicodeAlphabet.Add("c", "ⲥ");
+            CopticUnicodeAlphabet.Add("t", "ⲧ");
+            CopticUnicodeAlphabet.Add("u", "ⲩ");
+            CopticUnicodeAlphabet.Add("v", "ⲫ");
+            CopticUnicodeAlphabet.Add(",", "ⲭ");
+            CopticUnicodeAlphabet.Add("'", "ⲯ");
+            CopticUnicodeAlphabet.Add("w", "ⲱ");
+            CopticUnicodeAlphabet.Add("s", "ϣ");
+            CopticUnicodeAlphabet.Add("f", "ϥ");
+            CopticUnicodeAlphabet.Add("q", "ϧ");
+            CopticUnicodeAlphabet.Add("h", "ϩ");
+            CopticUnicodeAlphabet.Add("j", "ϫ");
+            CopticUnicodeAlphabet.Add("[", "ϭ");
+            CopticUnicodeAlphabet.Add("]", "ϯ");
             #endregion
 
             // u0300 is the combining grave accent
             // u200D is the zero-width joiner
             // NOTE: Some text renderers and fonts put the accent on the character before it
-            CopticUnicodeAlphabet.Add("\u0300\u200D", "`");
+            CopticUnicodeAlphabet.Add("`", "\u0300\u200D");
+
+            CopticUnicodeAlphabet.Add("@", ":");
+            CopticUnicodeAlphabet.Add("&", ";");
+            CopticUnicodeAlphabet.Add("_", "=");
 
             return CopticUnicodeAlphabet;
         }

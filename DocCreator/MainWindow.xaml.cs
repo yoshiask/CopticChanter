@@ -604,8 +604,8 @@ namespace DocCreator
                 switch (System.IO.Path.GetExtension(dialogX.FileName))
                 {
                     case ".xml":
-                        bool isCoptic = !(LanguageOption.SelectedIndex == 0);
-                        CoptLib.CopticInterpreter.SaveDocXML(dialogX.FileName, Stanzas, isCoptic, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName));
+                        var lang = (CoptLib.CopticInterpreter.Language)LanguageOption.SelectedIndex;
+                        CoptLib.CopticInterpreter.SaveDocXML(dialogX.FileName, Stanzas, lang, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName));
                         return;
 
                     case ".zip":
@@ -623,9 +623,9 @@ namespace DocCreator
                     case ".txt":
                         string txtContents = "";
                         var txtDoc = CoptLib.CopticInterpreter.AllDocs.First().Value;
-                        foreach (DocXML.StanzaXML stanza in txtDoc.Stanzas)
+                        foreach (StanzaXML stanza in txtDoc.Content)
                         {
-                            txtContents += stanza.Content;
+                            txtContents += stanza.Text;
                             txtContents += "\r\n";
                         }
                         System.IO.File.WriteAllText(dialogX.FileName, txtContents);
@@ -635,7 +635,7 @@ namespace DocCreator
 
                 return;
 
-                List<string> content = new List<string>();
+                /*List<string> content = new List<string>();
                 if (LanguageOption.SelectedIndex == 0)
                 {
                     content = Stanzas;
@@ -649,7 +649,7 @@ namespace DocCreator
                         content.Add(CoptLib.CopticInterpreter.ConvertToString(s));
                     }
                     CoptLib.CopticInterpreter.SaveDocXML(dialogX.FileName, content, true, NameBox.Text);
-                }
+                }*/
             }
         }
 
@@ -685,23 +685,22 @@ namespace DocCreator
 
                         DocSelection.SelectedIndex = 0;
                         DocXML doc = set.IncludedDocs[0];
-                        if (!doc.Coptic)
+                        if (doc.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (DocXML.StanzaXML stanza in doc.Stanzas)
+                            foreach (StanzaXML stanza in doc.Content)
                             {
-                                Stanzas.Add(stanza.Content);
+                                Stanzas.Add(stanza.Text);
                             }
-                            LanguageOption.SelectedIndex = 0;
                         }
                         else
                         {
-                            foreach (DocXML.StanzaXML stanza in doc.Stanzas)
+                            foreach (StanzaXML stanza in doc.Content)
                             {
-                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Content));
+                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
-                            LanguageOption.SelectedIndex = 1;
                         }
 
+                        LanguageOption.SelectedIndex = (int)doc.Language;
                         NameBox.Text = doc.Name;
                         CurStanza = 1;
                         InputBox.Text = Stanzas[CurStanza];
@@ -715,23 +714,22 @@ namespace DocCreator
                         ResetControls();
                         Stanzas.Add("");
 
-                        if (!docXML.Coptic)
+                        if (docXML.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (DocXML.StanzaXML stanza in docXML.Stanzas)
+                            foreach (StanzaXML stanza in docXML.Content)
                             {
-                                Stanzas.Add(stanza.Content);
+                                Stanzas.Add(stanza.Text);
                             }
-                            LanguageOption.SelectedIndex = 0;
                         }
                         else
                         {
-                            foreach (DocXML.StanzaXML stanza in docXML.Stanzas)
+                            foreach (StanzaXML stanza in docXML.Content)
                             {
-                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Content));
+                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
-                            LanguageOption.SelectedIndex = 1;
                         }
 
+                        LanguageOption.SelectedIndex = (int)docXML.Language;
                         NameBox.Text = docXML.Name;
                         CurStanza = 1;
                         InputBox.Text = Stanzas[CurStanza];
@@ -862,27 +860,27 @@ namespace DocCreator
             if (CurDoc > 1)
             {
                 Stanzas[CurStanza] = InputBox.Text;
-                var SXML = new List<DocXML.StanzaXML>();
+                var SXML = new List<StanzaXML>();
                 foreach (string content in Stanzas)
                 {
-                    SXML.Add(new DocXML.StanzaXML()
+                    SXML.Add(new StanzaXML()
                     {
-                        Content = content
+                        Text = content
                     });
                 }
                 var doc = new DocXML()
                 {
                     Name = NameBox.Text,
-                    Stanzas = SXML,
+                    Content = SXML,
                 };
                 CurrentDoc = doc;
                 CoptLib.CopticInterpreter.AllDocs.Values.ToList()[CurDoc] = doc;
 
                 CurDoc--;
                 Stanzas.Clear();
-                foreach (DocXML.StanzaXML xml in CurrentDoc.Stanzas)
+                foreach (StanzaXML xml in CurrentDoc.Content)
                 {
-                    Stanzas.Add(xml.Content);
+                    Stanzas.Add(xml.Text);
                 }
                 StanzaLabel.Content = "1";
                 InputBox.Text = Stanzas[1];
@@ -922,32 +920,31 @@ namespace DocCreator
             if (LanguageOption.SelectedIndex == 0)
             {
                 // Convert the list of content to a serializable list of StanzaXML
-                List<DocXML.StanzaXML> stanzaXMLs = new List<DocXML.StanzaXML>();
+                List<StanzaXML> stanzaXMLs = new List<StanzaXML>();
                 foreach (string stanza in Stanzas)
                 {
-                    stanzaXMLs.Add(new DocXML.StanzaXML(stanza, "english"));
+                    stanzaXMLs.Add(new StanzaXML(stanza));
                 }
 
                 DocXML SaveX = new DocXML()
                 {
-                    Language = "english",
+                    Language = CoptLib.CopticInterpreter.Language.English,
                     UUID = docUUID,
-                    Coptic = false,
-                    Stanzas = stanzaXMLs,
+                    Content = stanzaXMLs,
                     Name = NameBox.Text,
-                    Script = CurrentDoc.Script
+                    NextScript = CurrentDoc.NextScript
                 };
                 // Checks if first stanza is empty
-                if (SaveX.Stanzas[0].Content == "")
+                if (SaveX.Content[0].Text == "")
                 {
-                    SaveX.Stanzas.RemoveAt(0);
+                    SaveX.Content.RemoveAt(0);
                 }
                 CoptLib.CopticInterpreter.AllDocs.Add(docUUID, SaveX);
             }
             else if (LanguageOption.SelectedIndex == 1)
             {
                 IList<string> contentCopt = new List<string>();
-                List<DocXML.StanzaXML> stanzaXMLs = new List<DocXML.StanzaXML>();
+                List<StanzaXML> stanzaXMLs = new List<StanzaXML>();
                 // Parse the Coptic-Font text to Coptic-Latin
                 foreach (string s in Stanzas)
                 {
@@ -955,24 +952,23 @@ namespace DocCreator
                 }
                 DocXML SaveX = new DocXML
                 {
-                    Name = NameBox.Text,
-                    Coptic = true,
-                    Stanzas = stanzaXMLs,
-                    Language = "coptic",
+                    Language = CoptLib.CopticInterpreter.Language.English,
                     UUID = docUUID,
-                    Script = CurrentDoc.Script
+                    Content = stanzaXMLs,
+                    Name = NameBox.Text,
+                    NextScript = CurrentDoc.NextScript
                 };
                 // Convert the list of content to a serializable list of StanzaXML
                 foreach (string s in contentCopt)
                 {
                     // Replaces c# escaped new lines with XML new lines
-                    SaveX.Stanzas.Add(new DocXML.StanzaXML(s.Replace("\r\n", "&#xD;"), "coptic"));
+                    SaveX.Content.Add(new StanzaXML(s.Replace("\r\n", "&#xD;")));
                 }
 
                 // Checks if first stanza is empty
-                if (SaveX.Stanzas[0].Content == "")
+                if (SaveX.Content[0].Text == "")
                 {
-                    SaveX.Stanzas.RemoveAt(0);
+                    SaveX.Content.RemoveAt(0);
                 }
                 CoptLib.CopticInterpreter.AllDocs.Add(docUUID, SaveX);
             }
@@ -1016,12 +1012,12 @@ namespace DocCreator
 
         private void ScriptButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Dialogs.ScriptingDialog(CurrentDoc.Script.ToString());
+            var dialog = new Dialogs.ScriptingDialog(CurrentDoc.NextScript.ToString());
             dialog.ShowDialog();
 
             try
             {
-                CurrentDoc.Script = IfXML.FromString(dialog.Script);
+                CurrentDoc.NextScript = dialog.Script;
             }
             catch (Exception ex)
             {
