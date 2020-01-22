@@ -111,8 +111,8 @@ namespace CopticWriter.Controls
             // _editContext.NotifyFocusLeaveCompleted += EditContext_NotifyFocusLeaveCompleted;
 
             // Set our initial UI.
-            UpdateTextUI();
-            UpdateFocusUI();
+            UpdateTextUi();
+            UpdateFocusUi();
             BlinkingText.Begin();
         }
 
@@ -150,8 +150,8 @@ namespace CopticWriter.Controls
                 _internalFocus = true;
 
                 // Update the UI.
-                UpdateTextUI();
-                UpdateFocusUI();
+                UpdateTextUi();
+                UpdateFocusUi();
 
                 // Notify the CoreTextEditContext that the edit context has focus,
                 // so it should start processing text input.
@@ -184,8 +184,8 @@ namespace CopticWriter.Controls
             _inputPane.TryHide();
 
             // Update our UI.
-            UpdateTextUI();
-            UpdateFocusUI();
+            UpdateTextUi();
+            UpdateFocusUi();
         }
 
         void EditContext_FocusRemoved(CoreTextEditContext sender, object args)
@@ -233,7 +233,7 @@ namespace CopticWriter.Controls
             _selection = selection;
 
             //Update the UI to show the new selection.
-            UpdateTextUI();
+            UpdateTextUi();
         }
 
         // Change the selection and notify CoreTextEditContext of the new selection.
@@ -542,12 +542,12 @@ namespace CopticWriter.Controls
             return s + "\ufeff";
         }
 
-        void UpdateFocusUI()
+        void UpdateFocusUi()
         {
             BorderPanel.BorderBrush = _internalFocus ? new SolidColorBrush(Windows.UI.Colors.Green) : null;
         }
 
-        void UpdateTextUI()
+        void UpdateTextUi()
         {
             // The raw materials we have are a string (_text) and information about
             // where the caret/selection is (_selection). We can render the control

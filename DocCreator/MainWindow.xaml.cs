@@ -25,27 +25,27 @@ namespace DocCreator
     /// </summary>
     public partial class MainWindow : Window
     {
-        bool Shift = false;
-        List<string> Stanzas = new List<string>();
-        int CurStanza = 1;
-        int CurDoc = 1;
-        int CharacterCaret = 0;
-        public static SolidColorBrush accentBrush = new SolidColorBrush(AccentColorSet.ActiveSet["SystemAccent"]);
-        public static SolidColorBrush unfocusedBrush = new SolidColorBrush(Color.FromRgb(245, 245, 245));
-        public static DocXML CurrentDoc = new DocXML();
+        bool _shift = false;
+        List<string> _stanzas = new List<string>();
+        int _curStanza = 1;
+        int _curDoc = 1;
+        int _characterCaret = 0;
+        public static SolidColorBrush AccentBrush = new SolidColorBrush(AccentColorSet.ActiveSet["SystemAccent"]);
+        public static SolidColorBrush UnfocusedBrush = new SolidColorBrush(Color.FromRgb(245, 245, 245));
+        public static DocXml CurrentDoc = new DocXml();
         public static MainWindow Current;
 
         public MainWindow()
         {
             InitializeComponent();
-            TopGrid.Background = accentBrush;
-            SaveButton.Background = accentBrush;
-            OpenButton.Background = accentBrush;
-            ConvertTasbehaButton.Background = accentBrush;
-            ScriptButton.Background = accentBrush;
-            KeyBackGrid.Background = accentBrush;
+            TopGrid.Background = AccentBrush;
+            SaveButton.Background = AccentBrush;
+            OpenButton.Background = AccentBrush;
+            ConvertTasbehaButton.Background = AccentBrush;
+            ScriptButton.Background = AccentBrush;
+            KeyBackGrid.Background = AccentBrush;
             InitEnglish();
-            Stanzas.Add("");
+            _stanzas.Add("");
             DocSelection.Items.Add("Name");
             DocSelection.SelectedIndex = 0;
             Current = this;
@@ -481,7 +481,7 @@ namespace DocCreator
                 if (LanguageOption.SelectedIndex > -1)
                 {
                     KeyShift.Background = new SolidColorBrush(Color.FromArgb(32, 0, 0, 0));
-                    Shift = false;
+                    _shift = false;
 
                     switch (LanguageOption.SelectedIndex)
                     {
@@ -510,9 +510,9 @@ namespace DocCreator
         #region Key Clicks
         private void Key_Click(object sender, RoutedEventArgs e)
         {
-            CharacterCaret = InputBox.CaretIndex;
+            _characterCaret = InputBox.CaretIndex;
             InputBox.Text = InputBox.Text.Insert(InputBox.CaretIndex, ((Button)sender).Content.ToString());
-            InputBox.CaretIndex = CharacterCaret += 1;
+            InputBox.CaretIndex = _characterCaret += 1;
         }
 
         private void KeySpace_Click(object sender, RoutedEventArgs e)
@@ -527,10 +527,10 @@ namespace DocCreator
 
         private void KeyShift_Click(object sender, RoutedEventArgs e)
         {
-            if (Shift == true)
+            if (_shift == true)
             {
                 KeyShift.Background = new SolidColorBrush(Color.FromArgb(33, 0, 0, 0));
-                Shift = false;
+                _shift = false;
 
                 if (LanguageOption.SelectedIndex > -1)
                 {
@@ -559,7 +559,7 @@ namespace DocCreator
             else
             {
                 KeyShift.Background = new SolidColorBrush(Color.FromArgb(14, 0, 0, 0));
-                Shift = true;
+                _shift = true;
 
                 if (LanguageOption.SelectedIndex > -1)
                 {
@@ -596,8 +596,8 @@ namespace DocCreator
                 DefaultExt = "zip"
             };
 
-            if (Stanzas.Count < 2)
-                Stanzas[0] = InputBox.Text;
+            if (_stanzas.Count < 2)
+                _stanzas[0] = InputBox.Text;
 
             if ((bool)dialogX.ShowDialog(this))
             {
@@ -605,25 +605,25 @@ namespace DocCreator
                 {
                     case ".xml":
                         var lang = (CoptLib.CopticInterpreter.Language)LanguageOption.SelectedIndex;
-                        CoptLib.CopticInterpreter.SaveDocXML(dialogX.FileName, Stanzas, lang, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName));
+                        CoptLib.CopticInterpreter.SaveDocXml(dialogX.FileName, _stanzas, lang, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName));
                         return;
 
                     case ".zip":
-                        string setUUID = Guid.NewGuid().ToString();
+                        string setUuid = Guid.NewGuid().ToString();
 
-                        foreach (DocXML doc in CoptLib.CopticInterpreter.AllDocs.Values)
+                        foreach (DocXml doc in CoptLib.CopticInterpreter.AllDocs.Values)
                         {
                             // TODO: Save multiple docs
                             
                         }
 
-                        CoptLib.CopticInterpreter.SaveSet(dialogX.FileName, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName), setUUID, CoptLib.CopticInterpreter.AllDocs.Keys.AsEnumerable());
+                        CoptLib.CopticInterpreter.SaveSet(dialogX.FileName, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName), setUuid, CoptLib.CopticInterpreter.AllDocs.Keys.AsEnumerable());
                         return;
 
                     case ".txt":
                         string txtContents = "";
                         var txtDoc = CoptLib.CopticInterpreter.AllDocs.First().Value;
-                        foreach (StanzaXML stanza in txtDoc.Content)
+                        foreach (StanzaXml stanza in txtDoc.Content)
                         {
                             txtContents += stanza.Text;
                             txtContents += "\r\n";
@@ -661,8 +661,8 @@ namespace DocCreator
                 DefaultExt = "zip"
             };
 
-            if (Stanzas.Count < 2)
-                Stanzas[0] = InputBox.Text;
+            if (_stanzas.Count < 2)
+                _stanzas[0] = InputBox.Text;
 
             if ((bool)dialogX.ShowDialog(this))
             {
@@ -674,65 +674,65 @@ namespace DocCreator
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Coptic Chanter", "Doc Creator", "temp"));
                         ResetControls();
-                        Stanzas.Add("");
+                        _stanzas.Add("");
                         DocSelection.Items.Clear();
 
-                        foreach (DocXML docX in set.IncludedDocs)
+                        foreach (DocXml docX in set.IncludedDocs)
                         {
-                            CoptLib.CopticInterpreter.AllDocs.Add(docX.UUID, set.IncludedDocs.Find((DocXML xml) => { if (xml.UUID == docX.UUID) return true; else { return false; } }));
+                            CoptLib.CopticInterpreter.AllDocs.Add(docX.Uuid, set.IncludedDocs.Find((DocXml xml) => { if (xml.Uuid == docX.Uuid) return true; else { return false; } }));
                             DocSelection.Items.Add(docX.Name);
                         }
 
                         DocSelection.SelectedIndex = 0;
-                        DocXML doc = set.IncludedDocs[0];
+                        DocXml doc = set.IncludedDocs[0];
                         if (doc.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (StanzaXML stanza in doc.Content)
+                            foreach (StanzaXml stanza in doc.Content)
                             {
-                                Stanzas.Add(stanza.Text);
+                                _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (StanzaXML stanza in doc.Content)
+                            foreach (StanzaXml stanza in doc.Content)
                             {
-                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
+                                _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
                         }
 
                         LanguageOption.SelectedIndex = (int)doc.Language;
                         NameBox.Text = doc.Name;
-                        CurStanza = 1;
-                        InputBox.Text = Stanzas[CurStanza];
+                        _curStanza = 1;
+                        InputBox.Text = _stanzas[_curStanza];
                         CurrentDoc = doc;
                         return;
                     #endregion
 
                     #region XML
                     case ".xml":
-                        var docXML = CoptLib.CopticInterpreter.ReadDocXML(dialogX.FileName);
+                        var docXml = CoptLib.CopticInterpreter.ReadDocXml(dialogX.FileName);
                         ResetControls();
-                        Stanzas.Add("");
+                        _stanzas.Add("");
 
-                        if (docXML.Language != CoptLib.CopticInterpreter.Language.Coptic)
+                        if (docXml.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (StanzaXML stanza in docXML.Content)
+                            foreach (StanzaXml stanza in docXml.Content)
                             {
-                                Stanzas.Add(stanza.Text);
+                                _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (StanzaXML stanza in docXML.Content)
+                            foreach (StanzaXml stanza in docXml.Content)
                             {
-                                Stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
+                                _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
                         }
 
-                        LanguageOption.SelectedIndex = (int)docXML.Language;
-                        NameBox.Text = docXML.Name;
-                        CurStanza = 1;
-                        InputBox.Text = Stanzas[CurStanza];
+                        LanguageOption.SelectedIndex = (int)docXml.Language;
+                        NameBox.Text = docXml.Name;
+                        _curStanza = 1;
+                        InputBox.Text = _stanzas[_curStanza];
                         return;
                         #endregion
 
@@ -783,32 +783,32 @@ namespace DocCreator
         #region Stanza Controls
         private void StanzaDecrement_Click(object sender, RoutedEventArgs e)
         {
-            if (CurStanza > 1)
+            if (_curStanza > 1)
             {
-                Stanzas[CurStanza] = InputBox.Text;
+                _stanzas[_curStanza] = InputBox.Text;
 
-                CurStanza--;
-                StanzaLabel.Content = CurStanza;
-                InputBox.Text = Stanzas[CurStanza];
+                _curStanza--;
+                StanzaLabel.Content = _curStanza;
+                InputBox.Text = _stanzas[_curStanza];
             }
         }
 
         private void StanzaIncrement_Click(object sender, RoutedEventArgs e)
         {
-            if (Stanzas.Count - 1 > CurStanza)
+            if (_stanzas.Count - 1 > _curStanza)
             {
                 try
                 {
-                    Stanzas[CurStanza] = InputBox.Text;
+                    _stanzas[_curStanza] = InputBox.Text;
                 }
                 catch
                 {
-                    Stanzas.Insert(CurStanza, InputBox.Text);
+                    _stanzas.Insert(_curStanza, InputBox.Text);
                 }
 
-                CurStanza++;
-                StanzaLabel.Content = CurStanza;
-                InputBox.Text = Stanzas[CurStanza];
+                _curStanza++;
+                StanzaLabel.Content = _curStanza;
+                InputBox.Text = _stanzas[_curStanza];
             }
         }
 
@@ -816,16 +816,16 @@ namespace DocCreator
         {
             try
             {
-                Stanzas[CurStanza] = InputBox.Text;
+                _stanzas[_curStanza] = InputBox.Text;
             }
             catch
             {
-                Stanzas.Insert(CurStanza, InputBox.Text);
+                _stanzas.Insert(_curStanza, InputBox.Text);
             }
 
-            Stanzas.Insert(Stanzas.Count, "");
-            CurStanza = Stanzas.Count - 1;
-            StanzaLabel.Content = CurStanza;
+            _stanzas.Insert(_stanzas.Count, "");
+            _curStanza = _stanzas.Count - 1;
+            StanzaLabel.Content = _curStanza;
             InputBox.Text = "";
         }
 
@@ -833,23 +833,23 @@ namespace DocCreator
         {
             try
             {
-                Stanzas[CurStanza] = InputBox.Text;
+                _stanzas[_curStanza] = InputBox.Text;
             }
             catch
             {
-                Stanzas.Insert(CurStanza, InputBox.Text);
+                _stanzas.Insert(_curStanza, InputBox.Text);
             }
-            Stanzas.RemoveAt(CurStanza);
+            _stanzas.RemoveAt(_curStanza);
 
             try
             {
-                InputBox.Text = Stanzas[CurStanza];
+                InputBox.Text = _stanzas[_curStanza];
             }
             catch
             {
-                CurStanza--;
-                StanzaLabel.Content = CurStanza;
-                InputBox.Text = Stanzas[CurStanza];
+                _curStanza--;
+                StanzaLabel.Content = _curStanza;
+                InputBox.Text = _stanzas[_curStanza];
             }
         }
         #endregion
@@ -857,33 +857,33 @@ namespace DocCreator
         #region Doc Controls
         private void DocDecrement_Click(object sender, RoutedEventArgs e)
         {
-            if (CurDoc > 1)
+            if (_curDoc > 1)
             {
-                Stanzas[CurStanza] = InputBox.Text;
-                var SXML = new List<StanzaXML>();
-                foreach (string content in Stanzas)
+                _stanzas[_curStanza] = InputBox.Text;
+                var sxml = new List<StanzaXml>();
+                foreach (string content in _stanzas)
                 {
-                    SXML.Add(new StanzaXML()
+                    sxml.Add(new StanzaXml()
                     {
                         Text = content
                     });
                 }
-                var doc = new DocXML()
+                var doc = new DocXml()
                 {
                     Name = NameBox.Text,
-                    Content = SXML,
+                    Content = sxml,
                 };
                 CurrentDoc = doc;
-                CoptLib.CopticInterpreter.AllDocs.Values.ToList()[CurDoc] = doc;
+                CoptLib.CopticInterpreter.AllDocs.Values.ToList()[_curDoc] = doc;
 
-                CurDoc--;
-                Stanzas.Clear();
-                foreach (StanzaXML xml in CurrentDoc.Content)
+                _curDoc--;
+                _stanzas.Clear();
+                foreach (StanzaXml xml in CurrentDoc.Content)
                 {
-                    Stanzas.Add(xml.Text);
+                    _stanzas.Add(xml.Text);
                 }
                 StanzaLabel.Content = "1";
-                InputBox.Text = Stanzas[1];
+                InputBox.Text = _stanzas[1];
             }
         }
 
@@ -899,62 +899,62 @@ namespace DocCreator
 
         private void DocCreate_Click(object sender, RoutedEventArgs e)
         {
-            var newDoc = new DocXML()
+            var newDoc = new DocXml()
             {
                 Name = "Name",
-                UUID = Guid.NewGuid().ToString(),
+                Uuid = Guid.NewGuid().ToString(),
             };
-            CoptLib.CopticInterpreter.AllDocs.Add(newDoc.UUID, newDoc);
+            CoptLib.CopticInterpreter.AllDocs.Add(newDoc.Uuid, newDoc);
             NameBox.Text = newDoc.Name;
             InputBox.Text = "";
-            CurDoc++;
-            CurStanza = 1;
-            DocSelection.SelectedIndex = CurDoc - 1;
+            _curDoc++;
+            _curStanza = 1;
+            DocSelection.SelectedIndex = _curDoc - 1;
             DocSelection.Items.Add(newDoc.Name);
-            Stanzas.Clear();
+            _stanzas.Clear();
         }
 
-        private void SaveDocToVariable(DocXML doc)
+        private void SaveDocToVariable(DocXml doc)
         {
-            string docUUID = Guid.NewGuid().ToString();
+            string docUuid = Guid.NewGuid().ToString();
             if (LanguageOption.SelectedIndex == 0)
             {
                 // Convert the list of content to a serializable list of StanzaXML
-                List<StanzaXML> stanzaXMLs = new List<StanzaXML>();
-                foreach (string stanza in Stanzas)
+                List<StanzaXml> stanzaXmLs = new List<StanzaXml>();
+                foreach (string stanza in _stanzas)
                 {
-                    stanzaXMLs.Add(new StanzaXML(stanza));
+                    stanzaXmLs.Add(new StanzaXml(stanza));
                 }
 
-                DocXML SaveX = new DocXML()
+                DocXml saveX = new DocXml()
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
-                    UUID = docUUID,
-                    Content = stanzaXMLs,
+                    Uuid = docUuid,
+                    Content = stanzaXmLs,
                     Name = NameBox.Text,
                     NextScript = CurrentDoc.NextScript
                 };
                 // Checks if first stanza is empty
-                if (SaveX.Content[0].Text == "")
+                if (saveX.Content[0].Text == "")
                 {
-                    SaveX.Content.RemoveAt(0);
+                    saveX.Content.RemoveAt(0);
                 }
-                CoptLib.CopticInterpreter.AllDocs.Add(docUUID, SaveX);
+                CoptLib.CopticInterpreter.AllDocs.Add(docUuid, saveX);
             }
             else if (LanguageOption.SelectedIndex == 1)
             {
                 IList<string> contentCopt = new List<string>();
-                List<StanzaXML> stanzaXMLs = new List<StanzaXML>();
+                List<StanzaXml> stanzaXmLs = new List<StanzaXml>();
                 // Parse the Coptic-Font text to Coptic-Latin
-                foreach (string s in Stanzas)
+                foreach (string s in _stanzas)
                 {
                     contentCopt.Add(CoptLib.CopticInterpreter.ConvertToString(s));
                 }
-                DocXML SaveX = new DocXML
+                DocXml saveX = new DocXml
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
-                    UUID = docUUID,
-                    Content = stanzaXMLs,
+                    Uuid = docUuid,
+                    Content = stanzaXmLs,
                     Name = NameBox.Text,
                     NextScript = CurrentDoc.NextScript
                 };
@@ -962,24 +962,24 @@ namespace DocCreator
                 foreach (string s in contentCopt)
                 {
                     // Replaces c# escaped new lines with XML new lines
-                    SaveX.Content.Add(new StanzaXML(s.Replace("\r\n", "&#xD;")));
+                    saveX.Content.Add(new StanzaXml(s.Replace("\r\n", "&#xD;")));
                 }
 
                 // Checks if first stanza is empty
-                if (SaveX.Content[0].Text == "")
+                if (saveX.Content[0].Text == "")
                 {
-                    SaveX.Content.RemoveAt(0);
+                    saveX.Content.RemoveAt(0);
                 }
-                CoptLib.CopticInterpreter.AllDocs.Add(docUUID, SaveX);
+                CoptLib.CopticInterpreter.AllDocs.Add(docUuid, saveX);
             }
         }
         #endregion
 
         private void ResetControls()
         {
-            CurStanza = 1;
+            _curStanza = 1;
             StanzaLabel.Content = "1";
-            Stanzas.Clear();
+            _stanzas.Clear();
             InputBox.Text = "";
         }
 
@@ -992,22 +992,22 @@ namespace DocCreator
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            TopGrid.Background = unfocusedBrush;
-            SaveButton.Background = unfocusedBrush;
-            OpenButton.Background = unfocusedBrush;
-            ConvertTasbehaButton.Background = unfocusedBrush;
-            ScriptButton.Background = unfocusedBrush;
-            KeyBackGrid.Background = unfocusedBrush;
+            TopGrid.Background = UnfocusedBrush;
+            SaveButton.Background = UnfocusedBrush;
+            OpenButton.Background = UnfocusedBrush;
+            ConvertTasbehaButton.Background = UnfocusedBrush;
+            ScriptButton.Background = UnfocusedBrush;
+            KeyBackGrid.Background = UnfocusedBrush;
         }
 
         private void Window_Activated(object sender, EventArgs e)
         {
-            TopGrid.Background = accentBrush;
-            SaveButton.Background = accentBrush;
-            OpenButton.Background = accentBrush;
-            ConvertTasbehaButton.Background = accentBrush;
-            ScriptButton.Background = accentBrush;
-            KeyBackGrid.Background = accentBrush;
+            TopGrid.Background = AccentBrush;
+            SaveButton.Background = AccentBrush;
+            OpenButton.Background = AccentBrush;
+            ConvertTasbehaButton.Background = AccentBrush;
+            ScriptButton.Background = AccentBrush;
+            KeyBackGrid.Background = AccentBrush;
         }
 
         private void ScriptButton_Click(object sender, RoutedEventArgs e)
@@ -1027,7 +1027,7 @@ namespace DocCreator
 
         private void InputBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            CharacterCaret = InputBox.CaretIndex;
+            _characterCaret = InputBox.CaretIndex;
         }
     }
 
@@ -1037,7 +1037,7 @@ namespace DocCreator
             get {
                 if (_allSets == null)
                 {
-                    UInt32 colorSetCount = UXTheme.GetImmersiveColorSetCount();
+                    UInt32 colorSetCount = UxTheme.GetImmersiveColorSetCount();
 
                     List<AccentColorSet> colorSets = new List<AccentColorSet>();
                     for (UInt32 i = 0; i < colorSetCount; i++)
@@ -1057,7 +1057,7 @@ namespace DocCreator
 
         public static AccentColorSet ActiveSet {
             get {
-                UInt32 activeSet = UXTheme.GetImmersiveUserColorSetPreference(false, false);
+                UInt32 activeSet = UxTheme.GetImmersiveUserColorSetPreference(false, false);
                 ActiveSet = AllSets[Math.Min(activeSet, AllSets.Length - 1)];
                 return _activeSet;
             }
@@ -1079,7 +1079,7 @@ namespace DocCreator
                 try
                 {
                     name = Marshal.StringToHGlobalUni("Immersive" + colorName);
-                    colorType = UXTheme.GetImmersiveColorTypeFromName(name);
+                    colorType = UxTheme.GetImmersiveColorTypeFromName(name);
                     if (colorType == 0xFFFFFFFF) throw new InvalidOperationException();
                 }
                 finally
@@ -1097,7 +1097,7 @@ namespace DocCreator
 
         public Color this[UInt32 colorType] {
             get {
-                UInt32 nativeColor = UXTheme.GetImmersiveColorFromColorSetEx(this._colorSet, colorType, false, 0);
+                UInt32 nativeColor = UxTheme.GetImmersiveColorFromColorSetEx(this._colorSet, colorType, false, 0);
                 //if (nativeColor == 0)
                 //    throw new InvalidOperationException();
                 return Color.FromArgb(
@@ -1128,7 +1128,7 @@ namespace DocCreator
             List<String> allColorNames = new List<String>();
             for (UInt32 i = 0; i < 0xFFF; i++)
             {
-                IntPtr typeNamePtr = UXTheme.GetImmersiveColorNamedTypeByIndex(i);
+                IntPtr typeNamePtr = UxTheme.GetImmersiveColorNamedTypeByIndex(i);
                 if (typeNamePtr != IntPtr.Zero)
                 {
                     IntPtr typeName = (IntPtr)Marshal.PtrToStructure(typeNamePtr, typeof(IntPtr));
@@ -1139,7 +1139,7 @@ namespace DocCreator
             return allColorNames;
         }
 
-        static class UXTheme
+        static class UxTheme
         {
             [DllImport("uxtheme.dll", EntryPoint = "#98", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto)]
             public static extern UInt32 GetImmersiveUserColorSetPreference(Boolean forceCheckRegistry, Boolean skipCheckOnFail);

@@ -21,14 +21,14 @@ namespace DocCreator.Dialogs
     /// </summary>
     public partial class ConvertTextDialog : Window
     {
-        SolidColorBrush accentBrush = new SolidColorBrush(AccentColorSet.ActiveSet["SystemAccent"]);
+        SolidColorBrush _accentBrush = new SolidColorBrush(AccentColorSet.ActiveSet["SystemAccent"]);
         public string ConvertedText = "";
 
         public ConvertTextDialog()
         {
             InitializeComponent();
-            MainGrid.Background = accentBrush;
-            ConvertButton.Background = accentBrush;
+            MainGrid.Background = _accentBrush;
+            ConvertButton.Background = _accentBrush;
             InputBox.Focus();
 
             ConvertFromOption.Items.Clear();
@@ -38,18 +38,18 @@ namespace DocCreator.Dialogs
             {
                 if (path.EndsWith(".fnt.xml"))
                 {
-                    CoptLib.CopticFont.ReadFontXML(path);
+                    CoptLib.CopticFont.ReadFontXml(path);
                 }
                 else if (path.EndsWith(".csv"))
                 {
-                    CoptLib.CopticInterpreter.CopticFonts.Add(CoptLib.CopticFont.GenerateFromCSV(path));
+                    CoptLib.CopticInterpreter.CopticFonts.Add(CoptLib.CopticFont.GenerateFromCsv(path));
                 }
             }
             foreach (CoptLib.CopticFont font in CoptLib.CopticInterpreter.CopticFonts)
             {
                 ConvertFromOption.Items.Add(new ComboBoxItem() { Content = font.Name });
 
-                font.SaveFontXML($@"C:\Users\jjask\Documents\Coptic Chanter\{font.Name}.fnt.xml", false);
+                font.SaveFontXml($@"C:\Users\jjask\Documents\Coptic Chanter\{font.Name}.fnt.xml", false);
             }
         }
 
@@ -73,9 +73,9 @@ namespace DocCreator.Dialogs
             if (ConvertFromOption.SelectedIndex >= 0)
             {
                 const string strConvertFrom = "Convert from ";
-                var Font = CoptLib.CopticInterpreter.CopticFonts[ConvertFromOption.SelectedIndex];
-                InputBox.FontFamily = new FontFamily(Font.FontName);
-                Title = strConvertFrom + Font.Name;
+                var font = CoptLib.CopticInterpreter.CopticFonts[ConvertFromOption.SelectedIndex];
+                InputBox.FontFamily = new FontFamily(font.FontName);
+                Title = strConvertFrom + font.Name;
             }
         }
     }

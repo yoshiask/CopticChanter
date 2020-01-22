@@ -57,7 +57,7 @@ namespace CopticWriter.Views
         #endregion
 
         #region Key Clicks
-        int CharacterCaret = 0;
+        int _characterCaret = 0;
 
         private void Key_Click(object sender, RoutedEventArgs e)
         {
@@ -395,7 +395,7 @@ namespace CopticWriter.Views
             ":" // 34
         };
 
-        bool isUpper;
+        bool _isUpper;
         private void InputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             /*CharacterCaret = InputBox.SelectionStart;

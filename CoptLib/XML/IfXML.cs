@@ -10,14 +10,14 @@ using System.Xml.Serialization;
 namespace CoptLib.XML
 {
     [XmlRoot(ElementName = "If")]
-    public class IfXML
+    public class IfXml
     {
         /// <summary>
         /// Specifies the left hand of a typical if statement.
         /// e.g. the "C" in "if (A > B) then do C"
         /// </summary>
         [XmlElement(ElementName = "If")]
-        public IfXML If;
+        public IfXml If;
 
         [XmlElement]
         public string Return = "";
@@ -53,20 +53,20 @@ namespace CoptLib.XML
             return xml.Root.ToString();
         }
 
-        public static IfXML FromString(string s)
+        public static IfXml FromString(string s)
         {
             if (s == "")
             {
-                return new IfXML();
+                return new IfXml();
             }
             // Create an instance of the XmlSerializer class;
             // specify the type of object to be deserialized.
-            XmlSerializer serializer = new XmlSerializer(typeof(IfXML));
+            XmlSerializer serializer = new XmlSerializer(typeof(IfXml));
 
             //Use the Deserialize method to restore the object's state with
             //data from the XML document.
             var reader = XDocument.Parse(s).CreateReader();
-            return (IfXML)serializer.Deserialize(reader);
+            return (IfXml)serializer.Deserialize(reader);
         }
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "WriterTools": {
       "commandName": "Project",
-      "commandLineArgs": "\"Bwl `ebol qen netenhyt@ `nnimokmek `nte ]kakia@ nem nimeui etsebswb@ etiri `mpinouc `n,aki.\""
+      "commandLineArgs": "--source-csv \"C:\\Users\\jjask\\Desktop\\test.csv\" --source-font \"Athanasius\" --csv-column 2"
     }
   }
 }

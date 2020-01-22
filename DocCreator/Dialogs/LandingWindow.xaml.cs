@@ -22,7 +22,7 @@ namespace DocCreator.Dialogs
         public LandingWindow()
         {
             InitializeComponent();
-            LayoutGrid.Background = MainWindow.accentBrush;
+            LayoutGrid.Background = MainWindow.AccentBrush;
         }
     }
 }

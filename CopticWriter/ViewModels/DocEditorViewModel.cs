@@ -10,7 +10,7 @@ namespace CopticWriter.ViewModels
 {
     public class DocEditorViewModel : INotifyPropertyChanged
     {
-        private string nextButtonText;
+        private string _nextButtonText;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -20,9 +20,9 @@ namespace CopticWriter.ViewModels
         }
 
         public string NextButtonText {
-            get { return this.nextButtonText; }
+            get { return this._nextButtonText; }
             set {
-                this.nextButtonText = value;
+                this._nextButtonText = value;
                 this.OnPropertyChanged();
             }
         }

@@ -1,13 +1,11 @@
-﻿using CoptLib.XML;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using CoptLib.XML;
 
 namespace CoptLib
 {
@@ -21,125 +19,7 @@ namespace CoptLib
         }
 
 
-        public static IDictionary<string, DocXML> AllDocs = new Dictionary<string, DocXML>();
-
-        /// <summary>
-        /// Converts Coptic-Latin to Coptic-Font for displaying
-        /// </summary>
-        /// <param name="input">Coptic-Latin</param>
-        /// <param name="isGreek"></param>
-        /// <returns></returns>
-        [Obsolete("Please save using Coptic Unicode.")]
-        public static string ConvertFromString(string input, bool isGreek = false)
-        {
-            // Characters must be separated by a dash
-            // For capital Coptic letters, capitalize the first letter of the Latin set
-            if (CopticAlphabet.Keys.Count == 0)
-            {
-                InitAlphabet(isGreek);
-            }
-            string output = "";
-
-            string[] split = input.Split(new string[] { "-" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string s in split)
-            {
-                string copt;
-                if (s.EndsWith("`"))
-                {
-                    CopticAlphabet.TryGetValue(s, out copt);
-                    output += copt;
-                    output += "~";
-                }
-                else if (s == " ")
-                {
-                    output += " ";
-                }
-                else if (s == ";")
-                {
-                    output += ";";
-                }
-                else if (s == ":")
-                {
-                    output += ":";
-                }
-                else if (s == ".")
-                {
-                    output += ".";
-                }
-                else
-                {
-                    CopticAlphabet.TryGetValue(s, out copt);
-                    output += copt;
-                }
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        /// Converts Coptic-Font to Coptic-Latin for saving
-        /// </summary>
-        /// <param name="input">Coptin-Font</param>
-        /// <param name="isGreek"></param>
-        /// <returns></returns>
-        [Obsolete("Please save using Coptic Unicode.")]
-        public static string ConvertToString(string input, bool isGreek = false)
-        {
-            if (CopticAlphabet.Keys.Count == 0)
-            {
-                InitAlphabet(isGreek);
-            }
-
-            string output = "";
-            foreach (char ch in input.ToList())
-            {
-                string s = ch.ToString();
-                if (s == " ")
-                {
-                    output += " -";
-                }
-                else if (s == "~")
-                {
-                    output += "`-";
-                }
-                else if (s == ";")
-                {
-                    output += ";-";
-                }
-                else if (s == ":")
-                {
-                    output += ":-";
-                }
-                else if (s == ".")
-                {
-                    output += ".-";
-                }
-                else if (s == "\n")
-                {
-                    output += "&amp;#xD;-";
-                }
-                else
-                {
-                    output += CopticAlphabet.FirstOrDefault(x => x.Value == s).Key + "-";
-                }
-            }
-            return output;
-        }
-
-        public static string ConvertToUnicode(string input)
-        {
-            string output = "";
-            Dictionary<string, string> charmap = DictionaryTools.SwitchColumns(CopticFont.CopticUnicode.Charmap);
-            var chars = input.ToCharArray();
-            foreach (char ch in chars)
-            {
-                if (charmap.ContainsKey(ch.ToString()))
-                    output += charmap[ch.ToString()];
-                else
-                    output += ch;
-            }
-            return output;
-        }
+        public static IDictionary<string, DocXml> AllDocs = new Dictionary<string, DocXml>();
 
         /// <summary>
         /// Serializes and save a DocXML file
@@ -149,27 +29,27 @@ namespace CoptLib
         /// <param name="coptic">If the input language is Coptic</param>
         /// <param name="name">Name of the reading or hymn</param>
         /// <returns></returns>
-        public static bool SaveDocXML(string filename, IEnumerable<string> content, Language lang, string name)
+        public static bool SaveDocXml(string filename, IEnumerable<string> content, Language lang, string name)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to serialize.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
                 TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
-                DocXML SaveX = new DocXML();
+                DocXml saveX = new DocXml();
 
-                SaveX.Language = lang;
-                SaveX.Content = new List<StanzaXML>();
+                saveX.Language = lang;
+                saveX.Content = new List<StanzaXml>();
                 foreach (string s in content)
                 {
                     // Replaces c# escaped new lines with XML new lines .Replace("\r\n", "&#xD;")
-                    SaveX.Content.Add(new StanzaXML(s));
+                    saveX.Content.Add(new StanzaXml(s));
                 }
-                SaveX.Name = name;
+                saveX.Name = name;
 
                 // Serialize the save file, and close the TextWriter.
-                serializer.Serialize(writer, SaveX);
+                serializer.Serialize(writer, saveX);
                 writer.Dispose();
                 return true;
             }
@@ -184,13 +64,13 @@ namespace CoptLib
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
-        public static DocXML ReadDocXML(string path)
+        public static DocXml ReadDocXml(string path)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
                 //If the XML document has been altered with unknown 
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
@@ -200,7 +80,7 @@ namespace CoptLib
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                return (DocXML)serializer.Deserialize(text);
+                return (DocXml)serializer.Deserialize(text);
             }
             catch (Exception ex)
             {
@@ -213,20 +93,20 @@ namespace CoptLib
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
-        public static DocXML ReadDocXML(Stream file)
+        public static DocXml ReadDocXml(Stream file)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
                 //If the XML document has been altered with unknown 
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                return (DocXML)serializer.Deserialize(file);
+                return (DocXml)serializer.Deserialize(file);
             }
             catch (Exception ex)
             {
@@ -259,137 +139,69 @@ namespace CoptLib
         /// </summary>
         /// <param name="filename">Name of file to be saved</param>
         /// <param name="setname">Name of set to be saved</param>
-        /// <param name="setUUID">Generated UUID of set</param>
+        /// <param name="setUuid">Generated UUID of set</param>
         /// <param name="incdocs">Docs to include in set</param>
-        public static void SaveSet(string filename, string setname, string setUUID, IEnumerable<string> incdocs)
+        public static void SaveSet(string filename, string setname, string setUuid, IEnumerable<string> incdocs)
         {
-            var setX = new IndexXML()
+            var setX = new IndexXml()
             {
                 Name = setname,
-                UUID = setUUID
+                Uuid = setUuid
             };
             List<string> incDocs = new List<string>();
 
-            foreach (string docUUID in incdocs)
+            foreach (string docUuid in incdocs)
             {
-                setX.IncludedDocs.Add(AllDocs[docUUID].ToIndexDocXML());
+                setX.IncludedDocs.Add(AllDocs[docUuid].ToIndexDocXml());
             }
 
             new DocSetWriter(setX).Write(filename);
-        }
-
-        /// <summary>
-        /// Converts CS fonts to Coptic-Font (Coptic1) for displaying
-        /// </summary>
-        /// <param name="input">Text from Tasbeha.org or other CS font</param>
-        /// <returns></returns>
-        [Obsolete("Please use ConvertFont() instead.")]
-        public static string ConvertFromCS(string input)
-        {
-            if (CopticStandardAlphabet.Keys.Count == 0)
-            {
-                InitCopticStandard();
-            }
-            string output = "";
-
-            bool accent = false;
-            foreach (char ch in input.ToCharArray())
-            {
-                if (CopticStandardAlphabet.Keys.Contains(ch.ToString()))
-                {
-                    if (ch == '`')
-                    {
-                        accent = true;
-                    }
-                    else
-                    {
-                        output += CopticStandardAlphabet[ch.ToString()];
-                        if (accent)
-                        {
-                            output += "~";
-                            accent = false;
-                        }
-                    }
-                }
-                else
-                {
-                    output += ch.ToString();
-                    if (accent)
-                    {
-                        output += "~";
-                        accent = false;
-                    }
-                }
-            }
-            return output;
-        }
-
-        /// <summary>
-        /// Converts Coptic-Unicode to Coptic-Font for display
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [Obsolete("Please use ConvertFont() instead.")]
-        public static string ConvertFromCopticUnicode(string input)
-        {
-            if (CopticUnicodeAlphabet.Keys.Count == 0)
-            {
-                InitCopticUnicode();
-            }
-            string output = "";
-
-            bool accent = false;
-            foreach (char ch in input.ToCharArray())
-            {
-                if (CopticUnicodeAlphabet.Keys.Contains(ch.ToString()))
-                {
-                    if (ch == '~')
-                    {
-                        accent = true;
-                    }
-                    else
-                    {
-                        output += CopticUnicodeAlphabet[ch.ToString()];
-                        if (accent)
-                        {
-                            output += "~";
-                            accent = false;
-                        }
-                    }
-                }
-                else
-                {
-                    output += ch.ToString();
-                    if (accent)
-                    {
-                        output += "~";
-                        accent = false;
-                    }
-                }
-            }
-            return output;
         }
 
         public static string ConvertFont(string input, CopticFont start, CopticFont target)
         {
             string output = "";
 
+            // Generate a dictionary that has the start mapping as keys and the target mapping as values
+            Dictionary<string, string> mergedMap = new Dictionary<string, string>();
+            var sourceMap = DictionaryTools.SwitchColumns<string, string>(start.Charmap);
+            foreach (KeyValuePair<string, string> spair in sourceMap)
+            {
+                if (target.Charmap.ContainsKey(spair.Value))
+                {
+                    var targetChar = target.Charmap[spair.Value];
+                    mergedMap.Add(spair.Key, targetChar);
+                }
+            }
+
+            /*foreach (KeyValuePair<string, string> tpair in target.Charmap)
+            {
+                if (!mergedMap.ContainsValue(tpair.Key))
+                {
+                    var targetChar = target.Charmap[tpair.Key];
+                    mergedMap.Add(tpair.Key, targetChar);
+                }
+            }*/
+
             if (start.IsJenkimBefore)
             {
                 bool accent = false;
-                foreach (char ch in input.ToCharArray())
+                foreach (char ch in input)
                 {
-                    if (target.Charmap.Keys.Contains(ch.ToString()))
+                    if (mergedMap.ContainsKey(ch.ToString()))
                     {
+                        // Find the source character in the target mapping and write it
                         if (ch == start.JenkimCharacter)
                         {
+                            // The character is an accent; save that for later
                             accent = true;
                         }
                         else
                         {
-                            output += target.Charmap[ch.ToString()];
+                            output += mergedMap[ch.ToString()];
                             if (accent)
                             {
+                                // It's time to write the accent
                                 output += target.JenkimCharacter;
                                 accent = false;
                             }
@@ -397,6 +209,7 @@ namespace CoptLib
                     }
                     else
                     {
+                        // Character is not in the character map, so leave it be
                         output += ch.ToString();
                         if (accent)
                         {
@@ -410,9 +223,9 @@ namespace CoptLib
             else
             {
                 bool accent = false;
-                foreach (char ch in input.ToCharArray())
+                foreach (char ch in input)
                 {
-                    if (target.Charmap.Keys.Contains(ch.ToString()))
+                    if (mergedMap.ContainsKey(ch.ToString()))
                     {
                         if (ch == start.JenkimCharacter)
                         {
@@ -420,7 +233,7 @@ namespace CoptLib
                         }
                         else
                         {
-                            output += target.Charmap[ch.ToString()];
+                            output += mergedMap[ch.ToString()];
                             if (accent)
                             {
                                 output += target.JenkimCharacter;
@@ -442,288 +255,6 @@ namespace CoptLib
             }
 
             return output;
-        }
-
-        public static string ConvertFromCoptic1(string input, CopticFont target)
-        {
-            var charmap = DictionaryTools.SwitchColumns(target.Charmap);
-
-            string output = "";
-            foreach (char ch in input.ToCharArray())
-            {
-                if (charmap.ContainsKey(ch.ToString()))
-                    output += charmap[ch.ToString()];
-                else
-                    output += ch;
-            }
-            return output;
-        }
-
-        public static List<CopticFont> CopticFonts = new List<CopticFont>()
-        {
-            CopticFont.CSAvvaShenouda, CopticFont.CSCopt, CopticFont.CSCopticManuscript,
-            CopticFont.CSCoptoManuscript, CopticFont.CSKoptosManuscript, CopticFont.CSNewAthanasius,
-            CopticFont.CSPishoi, CopticFont.CopticUnicode
-        };
-
-        public static Dictionary<string, string> CopticAlphabet = new Dictionary<string, string>();
-        private static void InitAlphabet(bool isGreek)
-        {
-            if (isGreek)
-            {
-                // Key is Latin phonetic
-                // Value is Greek unicode
-
-                #region Uppercase
-                CopticAlphabet.Add("A", "Ⲁ");
-                CopticAlphabet.Add("B", "Ⲃ");
-                CopticAlphabet.Add("G", "Ⲅ");
-                CopticAlphabet.Add("D", "Ⲇ");
-                CopticAlphabet.Add("Eh", "Ⲉ");
-                CopticAlphabet.Add("Ih", "Ⲉ");
-                CopticAlphabet.Add("So", "Ⲋ");
-                CopticAlphabet.Add("Z", "Ⲍ");
-                CopticAlphabet.Add("Ee", "Ⲏ");
-                CopticAlphabet.Add("Th", "Ⲑ");
-                CopticAlphabet.Add("I", "Ⲓ");
-                CopticAlphabet.Add("K", "Ⲕ");
-                CopticAlphabet.Add("L", "Ⲗ");
-                CopticAlphabet.Add("M", "Ⲙ");
-                CopticAlphabet.Add("N", "Ⲛ");
-                CopticAlphabet.Add("Ks", "Ⲝ");
-                CopticAlphabet.Add("O", "Ⲟ");
-                CopticAlphabet.Add("P", "Ⲡ");
-                CopticAlphabet.Add("R", "Ⲣ");
-                CopticAlphabet.Add("S", "Ⲥ");
-                CopticAlphabet.Add("T", "Ⲧ");
-                CopticAlphabet.Add("U", "Ⲩ");
-                CopticAlphabet.Add("Ou", "Ⲩ");
-                CopticAlphabet.Add("Ph", "Ⲫ");
-                CopticAlphabet.Add("Kh", "Ⲭ");
-                CopticAlphabet.Add("Ps", "Ⲯ");
-                CopticAlphabet.Add("Oh", "Ⲱ");
-                CopticAlphabet.Add("Sh", "Ϣ");
-                CopticAlphabet.Add("F", "Ϥ");
-                CopticAlphabet.Add("X", "Ϧ");
-                CopticAlphabet.Add("H", "Ϩ");
-                CopticAlphabet.Add("J", "Ϫ");
-                CopticAlphabet.Add("Q", "Ϭ");
-                CopticAlphabet.Add("Tee", "Ϯ");
-                #endregion
-
-                #region Lowercase
-                CopticAlphabet.Add("a", "ⲁ");
-                CopticAlphabet.Add("b", "ⲃ");
-                CopticAlphabet.Add("g", "ⲅ");
-                CopticAlphabet.Add("d", "ⲇ");
-                CopticAlphabet.Add("eh", "ⲉ");
-                CopticAlphabet.Add("ih", "ⲉ");
-                CopticAlphabet.Add("so", "ⲋ");
-                CopticAlphabet.Add("z", "ⲍ");
-                CopticAlphabet.Add("ee", "ⲏ");
-                CopticAlphabet.Add("th", "ⲑ");
-                CopticAlphabet.Add("i", "ⲓ");
-                CopticAlphabet.Add("k", "ⲕ");
-                CopticAlphabet.Add("l", "ⲗ");
-                CopticAlphabet.Add("m", "ⲙ");
-                CopticAlphabet.Add("n", "ⲛ");
-                CopticAlphabet.Add("ks", "ⲝ");
-                CopticAlphabet.Add("o", "ⲟ");
-                CopticAlphabet.Add("p", "ⲡ");
-                CopticAlphabet.Add("r", "ⲣ");
-                CopticAlphabet.Add("s", "ⲥ");
-                CopticAlphabet.Add("t", "ⲧ");
-                CopticAlphabet.Add("u", "ⲩ");
-                CopticAlphabet.Add("ou", "ⲩ");
-                CopticAlphabet.Add("ph", "ⲫ");
-                CopticAlphabet.Add("kh", "ⲭ");
-                CopticAlphabet.Add("ps", "ⲯ");
-                CopticAlphabet.Add("oh", "ⲱ");
-                CopticAlphabet.Add("sh", "	ϣ");
-                CopticAlphabet.Add("f", "ϥ");
-                CopticAlphabet.Add("x", "ϧ");
-                CopticAlphabet.Add("h", "ϩ");
-                CopticAlphabet.Add("j", "ϫ");
-                CopticAlphabet.Add("q", "ϭ");
-                CopticAlphabet.Add("tee", "ϯ");
-                #endregion
-            }
-            else
-            {
-                // Key is Latin phonetic
-                // Value is Coptic font character
-
-                #region Uppercase
-                CopticAlphabet.Add("A", "A");
-                CopticAlphabet.Add("B", "B");
-                CopticAlphabet.Add("G", "G");
-                CopticAlphabet.Add("D", "D");
-                CopticAlphabet.Add("Eh", "E");
-                CopticAlphabet.Add("Ih", "E");
-                CopticAlphabet.Add("So", "^");
-                CopticAlphabet.Add("Z", "Z");
-                CopticAlphabet.Add("Ee", "?");
-                CopticAlphabet.Add("Th", "Y");
-                CopticAlphabet.Add("I", "I");
-                CopticAlphabet.Add("K", "K");
-                CopticAlphabet.Add("L", "L");
-                CopticAlphabet.Add("M", "M");
-                CopticAlphabet.Add("N", "N");
-                CopticAlphabet.Add("Ks", "X");
-                CopticAlphabet.Add("O", "O");
-                CopticAlphabet.Add("P", "P");
-                CopticAlphabet.Add("R", "R");
-                CopticAlphabet.Add("S", "C");
-                CopticAlphabet.Add("T", "T");
-                CopticAlphabet.Add("U", "U");
-                CopticAlphabet.Add("Ou", "U");
-                CopticAlphabet.Add("Ph", "V");
-                CopticAlphabet.Add("Kh", "<");
-                CopticAlphabet.Add("Ps", "\"");
-                CopticAlphabet.Add("Oh", "W");
-                CopticAlphabet.Add("Sh", "S");
-                CopticAlphabet.Add("F", "F");
-                CopticAlphabet.Add("X", "Q");
-                CopticAlphabet.Add("H", "H");
-                CopticAlphabet.Add("J", "J");
-                CopticAlphabet.Add("Q", "{");
-                CopticAlphabet.Add("Tee", "}");
-                #endregion
-
-                #region Lowercase
-                CopticAlphabet.Add("a", "a");
-                CopticAlphabet.Add("b", "b");
-                CopticAlphabet.Add("g", "g");
-                CopticAlphabet.Add("d", "d");
-                CopticAlphabet.Add("eh", "e");
-                CopticAlphabet.Add("ih", "e");
-                CopticAlphabet.Add("so", "6");
-                CopticAlphabet.Add("z", "z");
-                CopticAlphabet.Add("ee", "/");
-                CopticAlphabet.Add("th", "y");
-                CopticAlphabet.Add("i", "i");
-                CopticAlphabet.Add("k", "k");
-                CopticAlphabet.Add("l", "l");
-                CopticAlphabet.Add("m", "m");
-                CopticAlphabet.Add("n", "n");
-                CopticAlphabet.Add("ks", "x");
-                CopticAlphabet.Add("o", "o");
-                CopticAlphabet.Add("p", "p");
-                CopticAlphabet.Add("r", "r");
-                CopticAlphabet.Add("s", "c");
-                CopticAlphabet.Add("t", "t");
-                CopticAlphabet.Add("u", "u");
-                CopticAlphabet.Add("ou", "u");
-                CopticAlphabet.Add("ph", "v");
-                CopticAlphabet.Add("kh", ",");
-                CopticAlphabet.Add("ps", "'");
-                CopticAlphabet.Add("oh", "w");
-                CopticAlphabet.Add("sh", "	s");
-                CopticAlphabet.Add("f", "f");
-                CopticAlphabet.Add("x", "q");
-                CopticAlphabet.Add("h", "h");
-                CopticAlphabet.Add("j", "j");
-                CopticAlphabet.Add("q", "[");
-                CopticAlphabet.Add("tee", "]");
-                #endregion
-            }
-        }
-
-        public static Dictionary<string, string> CopticStandardAlphabet = new Dictionary<string, string>();
-        private static void InitCopticStandard()
-        {
-            // Key is Coptic Standard
-            // Value is CoptLib
-
-            CopticStandardAlphabet.Add("`", "~");
-            CopticStandardAlphabet.Add("@", ":");
-
-            #region Uppercase
-            CopticStandardAlphabet.Add("y", "/");
-            CopticStandardAlphabet.Add(";", "y");
-            #endregion
-
-            #region Lowercase
-            CopticStandardAlphabet.Add("Y", "?");
-            CopticStandardAlphabet.Add(":", "Y");
-            #endregion
-        }
-
-        public static Dictionary<string, string> CopticUnicodeAlphabet = new Dictionary<string, string>();
-        private static void InitCopticUnicode()
-        {
-            // Key is Greek unicode
-            // Value is CopticLib
-
-            #region Uppercase
-            CopticUnicodeAlphabet.Add("Ⲁ", "A");
-            CopticUnicodeAlphabet.Add("Ⲃ", "B");
-            CopticUnicodeAlphabet.Add("Ⲅ", "G");
-            CopticUnicodeAlphabet.Add("Ⲇ", "D");
-            CopticUnicodeAlphabet.Add("Ⲉ", "E");
-            CopticUnicodeAlphabet.Add("Ⲋ", "^");
-            CopticUnicodeAlphabet.Add("Ⲍ", "Z");
-            CopticUnicodeAlphabet.Add("Ⲏ", "?");
-            CopticUnicodeAlphabet.Add("Ⲑ", "Y");
-            CopticUnicodeAlphabet.Add("Ⲓ", "I");
-            CopticUnicodeAlphabet.Add("Ⲕ", "K");
-            CopticUnicodeAlphabet.Add("Ⲗ", "L");
-            CopticUnicodeAlphabet.Add("Ⲙ", "M");
-            CopticUnicodeAlphabet.Add("Ⲛ", "N");
-            CopticUnicodeAlphabet.Add("Ⲝ", "X");
-            CopticUnicodeAlphabet.Add("Ⲟ", "O");
-            CopticUnicodeAlphabet.Add("Ⲡ", "P");
-            CopticUnicodeAlphabet.Add("Ⲣ", "R");
-            CopticUnicodeAlphabet.Add("Ⲥ", "C");
-            CopticUnicodeAlphabet.Add("Ⲧ", "T");
-            CopticUnicodeAlphabet.Add("Ⲩ", "U");
-            CopticUnicodeAlphabet.Add("Ⲫ", "V");
-            CopticUnicodeAlphabet.Add("Ⲭ", "<");
-            CopticUnicodeAlphabet.Add("Ⲯ", "\"");
-            CopticUnicodeAlphabet.Add("Ⲱ", "W");
-            CopticUnicodeAlphabet.Add("Ϣ", "S");
-            CopticUnicodeAlphabet.Add("Ϥ", "F");
-            CopticUnicodeAlphabet.Add("Ϧ", "Q");
-            CopticUnicodeAlphabet.Add("Ϩ", "H");
-            CopticUnicodeAlphabet.Add("Ϫ", "J");
-            CopticUnicodeAlphabet.Add("Ϭ", "{");
-            CopticUnicodeAlphabet.Add("Ϯ", "}");
-            #endregion
-
-            #region Lowercase
-            CopticUnicodeAlphabet.Add("ⲁ", "a");
-            CopticUnicodeAlphabet.Add("ⲃ", "b");
-            CopticUnicodeAlphabet.Add("ⲅ", "g");
-            CopticUnicodeAlphabet.Add("ⲇ", "d");
-            CopticUnicodeAlphabet.Add("ⲉ", "e");
-            CopticUnicodeAlphabet.Add("ⲋ", "6");
-            CopticUnicodeAlphabet.Add("ⲍ", "z");
-            CopticUnicodeAlphabet.Add("ⲏ", "/");
-            CopticUnicodeAlphabet.Add("ⲑ", "y");
-            CopticUnicodeAlphabet.Add("ⲓ", "i");
-            CopticUnicodeAlphabet.Add("ⲕ", "k");
-            CopticUnicodeAlphabet.Add("ⲗ", "l");
-            CopticUnicodeAlphabet.Add("ⲙ", "m");
-            CopticUnicodeAlphabet.Add("ⲛ", "n");
-            CopticUnicodeAlphabet.Add("ⲝ", "x");
-            CopticUnicodeAlphabet.Add("ⲟ", "o");
-            CopticUnicodeAlphabet.Add("ⲡ", "p");
-            CopticUnicodeAlphabet.Add("ⲣ", "r");
-            CopticUnicodeAlphabet.Add("ⲥ", "c");
-            CopticUnicodeAlphabet.Add("ⲧ", "t");
-            CopticUnicodeAlphabet.Add("ⲩ", "u");
-            CopticUnicodeAlphabet.Add("ⲫ", "v");
-            CopticUnicodeAlphabet.Add("ⲭ", ",");
-            CopticUnicodeAlphabet.Add("ⲯ", "'");
-            CopticUnicodeAlphabet.Add("ⲱ", "w");
-            CopticUnicodeAlphabet.Add("ϣ", "s");
-            CopticUnicodeAlphabet.Add("ϥ", "f");
-            CopticUnicodeAlphabet.Add("ϧ", "q");
-            CopticUnicodeAlphabet.Add("ϩ", "h");
-            CopticUnicodeAlphabet.Add("ϫ", "j");
-            CopticUnicodeAlphabet.Add("ϭ", "[");
-            CopticUnicodeAlphabet.Add("ϯ", "]");
-            #endregion
         }
     }
 
@@ -756,42 +287,42 @@ namespace CoptLib
         /// <returns></returns>
         public ReadResults Read(string tempPath)
         {
-            string FolderPath = Path.Combine(tempPath, Name);
-            if (Directory.Exists(FolderPath))
+            string folderPath = Path.Combine(tempPath, Name);
+            if (Directory.Exists(folderPath))
             {
-                foreach (string file in Directory.EnumerateFiles(FolderPath))
+                foreach (string file in Directory.EnumerateFiles(folderPath))
                 {
                     File.Delete(file);
                 }
-                Directory.Delete(FolderPath);
+                Directory.Delete(folderPath);
             }
-            Directory.CreateDirectory(FolderPath);
+            Directory.CreateDirectory(folderPath);
 
-            bool isSuccess = ZipStream == null ? UnzipFile(ZipPath, FolderPath) : UnzipFile(ZipStream, FolderPath);
+            bool isSuccess = ZipStream == null ? UnzipFile(ZipPath, folderPath) : UnzipFile(ZipStream, folderPath);
             if (isSuccess)
             {
                 var results = new ReadResults();
-                List<string> files = Directory.EnumerateFiles(FolderPath).ToList();
-                if (files.Contains(Path.Combine(FolderPath, "index.xml")))
+                List<string> files = Directory.EnumerateFiles(folderPath).ToList();
+                if (files.Contains(Path.Combine(folderPath, "index.xml")))
                 {
                     // Create an instance of the XmlSerializer class;
                     // specify the type of object to be deserialized.
-                    XmlSerializer serializer = new XmlSerializer(typeof(IndexXML));
+                    XmlSerializer serializer = new XmlSerializer(typeof(IndexXml));
 
                     // A FileStream is needed to read the XML document.
-                    string text = File.ReadAllText(Path.Combine(FolderPath, "index.xml"));
+                    string text = File.ReadAllText(Path.Combine(folderPath, "index.xml"));
 
                     //Use the Deserialize method to restore the object's state with
                     //data from the XML document.
-                    results.Index = (IndexXML)serializer.Deserialize(XDocument.Parse(text).CreateReader());
+                    results.Index = (IndexXml)serializer.Deserialize(XDocument.Parse(text).CreateReader());
 
                     foreach (string filename in files)
                     {
-                        if (filename != Path.Combine(FolderPath,"index.xml") && !filename.EndsWith(".zip"))
+                        if (filename != Path.Combine(folderPath,"index.xml") && !filename.EndsWith(".zip"))
                         {
                             try
                             {
-                                var doc = CopticInterpreter.ReadDocXML(filename);
+                                var doc = CopticInterpreter.ReadDocXml(filename);
                                 results.IncludedDocs.Add(doc);
 
                                 /*// Create an instance of the XmlSerializer class;
@@ -834,7 +365,7 @@ namespace CoptLib
         {
             try
             {
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extractPath);
+                ZipFile.ExtractToDirectory(zipPath, extractPath);
                 return true;
             }
             catch
@@ -863,8 +394,8 @@ namespace CoptLib
 
         public class ReadResults
         {
-            public IndexXML Index;
-            public List<DocXML> IncludedDocs = new List<DocXML>();
+            public IndexXml Index;
+            public List<DocXml> IncludedDocs = new List<DocXml>();
         }
     }
 
@@ -873,12 +404,12 @@ namespace CoptLib
         /// <summary>
         /// An Index XML object that contains data to write to set
         /// </summary>
-        public IndexXML Index {
+        public IndexXml Index {
             get;
             private set;
         }
 
-        public DocSetWriter(IndexXML index = null)
+        public DocSetWriter(IndexXml index = null)
         {
             Index = index;
         }
@@ -895,16 +426,16 @@ namespace CoptLib
                 Directory.CreateDirectory(rootPath);
 
                 // Let's sort out the documents first
-                foreach (IndexDocXML indexDoc in Index.IncludedDocs)
+                foreach (IndexDocXml indexDoc in Index.IncludedDocs)
                 {
-                    XmlSerializer docSerializer = new XmlSerializer(typeof(DocXML));
+                    XmlSerializer docSerializer = new XmlSerializer(typeof(DocXml));
                     TextWriter docWriter = new StreamWriter(new FileStream(Path.Combine(rootPath, indexDoc.Name + ".xml"), FileMode.Create));
-                    docSerializer.Serialize(docWriter, CopticInterpreter.AllDocs[indexDoc.UUID]);
+                    docSerializer.Serialize(docWriter, CopticInterpreter.AllDocs[indexDoc.Uuid]);
                     docWriter.Dispose();
                 }
 
                 // Now save the index
-                XmlSerializer serializer = new XmlSerializer(typeof(IndexXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(IndexXml));
                 TextWriter writer = new StreamWriter(new FileStream(Path.Combine(rootPath, "index.xml"), FileMode.Create));
                 serializer.Serialize(writer, Index);
                 writer.Dispose();
@@ -928,24 +459,24 @@ namespace CoptLib
             }
         }
 
-        public void AddContent(DocXML xml)
+        public void AddContent(DocXml xml)
         {
-            Index.IncludedDocs.Add(new IndexDocXML()
+            Index.IncludedDocs.Add(new IndexDocXml()
             {
                 Name = xml.Name,
-                UUID = xml.UUID,
+                Uuid = xml.Uuid,
                 Language = xml.Language,
             });
         }
 
-        public void AddContent(IEnumerable<DocXML> docs)
+        public void AddContent(IEnumerable<DocXml> docs)
         {
-            foreach (DocXML xml in docs)
+            foreach (DocXml xml in docs)
             {
-                Index.IncludedDocs.Add(new IndexDocXML()
+                Index.IncludedDocs.Add(new IndexDocXml()
                 {
                     Name = xml.Name,
-                    UUID = xml.UUID,
+                    Uuid = xml.Uuid,
                     Language = xml.Language
                 });
             }
@@ -956,7 +487,7 @@ namespace CoptLib
             Index.IncludedDocs.Clear();
         }
 
-        public void SetIndex(IndexXML index)
+        public void SetIndex(IndexXml index)
         {
             Index = index;
         }
@@ -988,222 +519,382 @@ namespace CoptLib
         public bool IsJenkimBefore = true;
         public bool IsCopticStandard = true;
 
-        public static CopticFont CSAvvaShenouda {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Avva Shenouda",
-                    FontName = "CS Avva Shenouda",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSCopt {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Copt",
-                    FontName = "CS Copt",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSCopticManuscript {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Coptic Manuscript",
-                    FontName = "CS Coptic Manuscript",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSCoptoManuscript {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Copto Manuscript",
-                    FontName = "CS Copto Manuscript",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSKoptosManuscript {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Koptos Manuscript",
-                    FontName = "CS Koptos Manuscript",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSNewAthanasius {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS New Athanasius",
-                    FontName = "CS New Athanasius",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CSPishoi {
-            get {
-                return new CopticFont()
-                {
-                    Name = "CS Pishoi",
-                    FontName = "CS Pishoi",
-                    IsCopticStandard = true,
-                    IsJenkimBefore = true,
-                    Charmap = InitCopticStandard()
-                };
-            }
-        }
-        public static CopticFont CopticUnicode {
-            get {
-                return new CopticFont()
-                {
-                    Name = "Coptic Unicode",
-                    FontName = "Segoe UI",
-                    IsCopticStandard = false,
-                    IsJenkimBefore = false,
-                    Charmap = InitCopticUnicode()
-                };
-            }
-        }
-        public static CopticFont Coptic1 {
-            get {
-                return new CopticFont()
-                {
-                    Name = "Coptic1",
-                    FontName = "Coptic1",
-                    IsCopticStandard = false,
-                    IsJenkimBefore = false,
-                    Charmap = new Dictionary<string, string>()
-                };
-            }
-        }
+        public static CopticFont CsAvvaShenouda =>
+            new CopticFont()
+            {
+                Name = "CS Avva Shenouda",
+                FontName = "CS Avva Shenouda",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
 
+        public static CopticFont CsCopt =>
+            new CopticFont()
+            {
+                Name = "CS Copt",
+                FontName = "CS Copt",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CsCopticManuscript =>
+            new CopticFont()
+            {
+                Name = "CS Coptic Manuscript",
+                FontName = "CS Coptic Manuscript",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CsCoptoManuscript =>
+            new CopticFont()
+            {
+                Name = "CS Copto Manuscript",
+                FontName = "CS Copto Manuscript",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CsKoptosManuscript =>
+            new CopticFont()
+            {
+                Name = "CS Koptos Manuscript",
+                FontName = "CS Koptos Manuscript",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CsNewAthanasius =>
+            new CopticFont()
+            {
+                Name = "CS New Athanasius",
+                FontName = "CS New Athanasius",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CsPishoi =>
+            new CopticFont()
+            {
+                Name = "CS Pishoi",
+                FontName = "CS Pishoi",
+                IsCopticStandard = true,
+                IsJenkimBefore = true,
+                Charmap = InitCopticStandard()
+            };
+
+        public static CopticFont CopticUnicode =>
+            new CopticFont()
+            {
+                Name = "Coptic Unicode",
+                FontName = "Segoe UI",
+                IsCopticStandard = false,
+                IsJenkimBefore = false,
+                Charmap = InitCopticUnicode()
+            };
+
+        public static CopticFont Coptic1 =>
+            new CopticFont()
+            {
+                Name = "Coptic1",
+                FontName = "Coptic1",
+                IsCopticStandard = false,
+                IsJenkimBefore = false,
+                Charmap = new Dictionary<string, string>()
+            };
+
+        public static CopticFont Athanasius =>
+            new CopticFont()
+            {
+                Name = "Athanasius",
+                FontName = "Athanasius Plain",
+                IsCopticStandard = false,
+                IsJenkimBefore = true,
+                Charmap = InitAthanasuis()
+            };
+
+        public static List<CopticFont> Fonts = new List<CopticFont>()
+        {
+            CsAvvaShenouda, CsCopt, CsCopticManuscript, CsCoptoManuscript,
+            CsKoptosManuscript, CsNewAthanasius, CsPishoi,
+            CopticUnicode, Coptic1, Athanasius
+        };
         private static Dictionary<string, string> InitCopticStandard()
         {
-            Dictionary<string, string> CopticStandardAlphabet = new Dictionary<string, string>();
-            // Key is Coptic Standard
-            // Value is Coptic Standard
+            Dictionary<string, string> alphabet = new Dictionary<string, string>
+            {
+                // Key is Coptic Standard
+                // Value is Coptic Standard
 
-            //CopticStandardAlphabet.Add("`", "~");
-            //CopticStandardAlphabet.Add("@", ":");
+                #region Uppercase
+                { "A", "A" },
+                { "B", "B" },
+                { "G", "G" },
+                { "D", "D" },
+                { "E", "E" },
+                { "^", "^" },
+                { "Z", "Z" },
+                { "Y", "Y" },
+                { ":", ":" },
+                { "I", "I" },
+                { "K", "K" },
+                { "L", "L" },
+                { "M", "M" },
+                { "N", "N" },
+                { "X", "X" },
+                { "O", "O" },
+                { "P", "P" },
+                { "R", "R" },
+                { "C", "C" },
+                { "T", "T" },
+                { "U", "U" },
+                { "V", "V" },
+                { "<", "<" },
+                { "\"", "\"" },
+                { "W", "W" },
+                { "S", "S" },
+                { "F", "F" },
+                { "Q", "Q" },
+                { "H", "H" },
+                { "J", "J" },
+                { "{", "{" },
+                { "}", "}" },
+                #endregion
 
-            #region Uppercase
-            //CopticStandardAlphabet.Add("y", "/");
-            //CopticStandardAlphabet.Add(";", "y");
-            #endregion
+                #region Lowercase
+                { "a", "a" },
+                { "b", "b" },
+                { "g", "g" },
+                { "d", "d" },
+                { "e", "e" },
+                { "6", "6" },
+                { "z", "z" },
+                { "y", "y" },
+                { ";", ";" },
+                { "i", "i" },
+                { "k", "k" },
+                { "l", "l" },
+                { "m", "m" },
+                { "n", "n" },
+                { "x", "x" },
+                { "o", "o" },
+                { "p", "p" },
+                { "r", "r" },
+                { "c", "c" },
+                { "t", "t" },
+                { "u", "u" },
+                { "v", "v" },
+                { ",", "," },
+                { "'", "'" },
+                { "w", "w" },
+                { "s", "s" },
+                { "f", "f" },
+                { "q", "q" },
+                { "h", "h" },
+                { "j", "j" },
+                { "[", "[" },
+                { "]", "]" },
+                #endregion
 
-            #region Lowercase
-            //CopticStandardAlphabet.Add("Y", "?");
-            //CopticStandardAlphabet.Add(":", "Y");
-            #endregion
+                // u0300 is the combining grave accent
+                // u200D is the zero-width joiner
+                // NOTE: Some text renderers and fonts put the accent on the character before it
+                { "`", "`" },
+                // u0305 is the combining overline
+                { "=", "=" },
 
-            return CopticStandardAlphabet;
+                { "@", "@" },
+                { "&", "&" },
+                { "_", "_" },
+            };
+
+            return alphabet;
         }
         private static Dictionary<string, string> InitCopticUnicode()
         {
-            Dictionary<string, string> CopticUnicodeAlphabet = new Dictionary<string, string>();
-            // Key is Coptic Standard
-            // Value is Greek unicode
+            Dictionary<string, string> alphabet = new Dictionary<string, string>
+            {
+                // Key is Coptic Standard
+                // Value is Greek unicode
 
-            #region Uppercase
-            CopticUnicodeAlphabet.Add("A", "Ⲁ");
-            CopticUnicodeAlphabet.Add("B", "Ⲃ");
-            CopticUnicodeAlphabet.Add("G", "Ⲅ");
-            CopticUnicodeAlphabet.Add("D", "Ⲇ");
-            CopticUnicodeAlphabet.Add("E", "Ⲉ");
-            CopticUnicodeAlphabet.Add("^", "Ⲋ");
-            CopticUnicodeAlphabet.Add("Z", "Ⲍ");
-            CopticUnicodeAlphabet.Add("Y", "Ⲏ");
-            CopticUnicodeAlphabet.Add(":", "Ⲑ");
-            CopticUnicodeAlphabet.Add("I", "Ⲓ");
-            CopticUnicodeAlphabet.Add("K", "Ⲕ");
-            CopticUnicodeAlphabet.Add("L", "Ⲗ");
-            CopticUnicodeAlphabet.Add("M", "Ⲙ");
-            CopticUnicodeAlphabet.Add("N", "Ⲛ");
-            CopticUnicodeAlphabet.Add("X", "Ⲝ");
-            CopticUnicodeAlphabet.Add("O", "Ⲟ");
-            CopticUnicodeAlphabet.Add("P", "Ⲡ");
-            CopticUnicodeAlphabet.Add("R", "Ⲣ");
-            CopticUnicodeAlphabet.Add("C", "Ⲥ");
-            CopticUnicodeAlphabet.Add("T", "Ⲧ");
-            CopticUnicodeAlphabet.Add("U", "Ⲩ");
-            CopticUnicodeAlphabet.Add("V", "Ⲫ");
-            CopticUnicodeAlphabet.Add("<", "Ⲭ");
-            CopticUnicodeAlphabet.Add("\"", "Ⲯ");
-            CopticUnicodeAlphabet.Add("W", "Ⲱ");
-            CopticUnicodeAlphabet.Add("S", "Ϣ");
-            CopticUnicodeAlphabet.Add("F", "Ϥ");
-            CopticUnicodeAlphabet.Add("Q", "Ϧ");
-            CopticUnicodeAlphabet.Add("H", "Ϩ");
-            CopticUnicodeAlphabet.Add("J", "Ϫ");
-            CopticUnicodeAlphabet.Add("{", "Ϭ");
-            CopticUnicodeAlphabet.Add("}", "Ϯ");
-            #endregion
+                #region Uppercase
+                { "A", "Ⲁ" },
+                { "B", "Ⲃ" },
+                { "G", "Ⲅ" },
+                { "D", "Ⲇ" },
+                { "E", "Ⲉ" },
+                { "^", "Ⲋ" },
+                { "Z", "Ⲍ" },
+                { "Y", "Ⲏ" },
+                { ":", "Ⲑ" },
+                { "I", "Ⲓ" },
+                { "K", "Ⲕ" },
+                { "L", "Ⲗ" },
+                { "M", "Ⲙ" },
+                { "N", "Ⲛ" },
+                { "X", "Ⲝ" },
+                { "O", "Ⲟ" },
+                { "P", "Ⲡ" },
+                { "R", "Ⲣ" },
+                { "C", "Ⲥ" },
+                { "T", "Ⲧ" },
+                { "U", "Ⲩ" },
+                { "V", "Ⲫ" },
+                { "<", "Ⲭ" },
+                { "\"", "Ⲯ" },
+                { "W", "Ⲱ" },
+                { "S", "Ϣ" },
+                { "F", "Ϥ" },
+                { "Q", "Ϧ" },
+                { "H", "Ϩ" },
+                { "J", "Ϫ" },
+                { "{", "Ϭ" },
+                { "}", "Ϯ" },
+                #endregion
 
-            #region Lowercase
-            CopticUnicodeAlphabet.Add("a", "ⲁ");
-            CopticUnicodeAlphabet.Add("b", "ⲃ");
-            CopticUnicodeAlphabet.Add("g", "ⲅ");
-            CopticUnicodeAlphabet.Add("d", "ⲇ");
-            CopticUnicodeAlphabet.Add("e", "ⲉ");
-            CopticUnicodeAlphabet.Add("6", "ⲋ");
-            CopticUnicodeAlphabet.Add("z", "ⲍ");
-            CopticUnicodeAlphabet.Add("y", "ⲏ");
-            CopticUnicodeAlphabet.Add(";", "ⲑ");
-            CopticUnicodeAlphabet.Add("i", "ⲓ");
-            CopticUnicodeAlphabet.Add("k", "ⲕ");
-            CopticUnicodeAlphabet.Add("l", "ⲗ");
-            CopticUnicodeAlphabet.Add("m", "ⲙ");
-            CopticUnicodeAlphabet.Add("n", "ⲛ");
-            CopticUnicodeAlphabet.Add("x", "ⲝ");
-            CopticUnicodeAlphabet.Add("o", "ⲟ");
-            CopticUnicodeAlphabet.Add("p", "ⲡ");
-            CopticUnicodeAlphabet.Add("r", "ⲣ");
-            CopticUnicodeAlphabet.Add("c", "ⲥ");
-            CopticUnicodeAlphabet.Add("t", "ⲧ");
-            CopticUnicodeAlphabet.Add("u", "ⲩ");
-            CopticUnicodeAlphabet.Add("v", "ⲫ");
-            CopticUnicodeAlphabet.Add(",", "ⲭ");
-            CopticUnicodeAlphabet.Add("'", "ⲯ");
-            CopticUnicodeAlphabet.Add("w", "ⲱ");
-            CopticUnicodeAlphabet.Add("s", "ϣ");
-            CopticUnicodeAlphabet.Add("f", "ϥ");
-            CopticUnicodeAlphabet.Add("q", "ϧ");
-            CopticUnicodeAlphabet.Add("h", "ϩ");
-            CopticUnicodeAlphabet.Add("j", "ϫ");
-            CopticUnicodeAlphabet.Add("[", "ϭ");
-            CopticUnicodeAlphabet.Add("]", "ϯ");
-            #endregion
+                #region Lowercase
+                { "a", "ⲁ" },
+                { "b", "ⲃ" },
+                { "g", "ⲅ" },
+                { "d", "ⲇ" },
+                { "e", "ⲉ" },
+                { "6", "ⲋ" },
+                { "z", "ⲍ" },
+                { "y", "ⲏ" },
+                { ";", "ⲑ" },
+                { "i", "ⲓ" },
+                { "k", "ⲕ" },
+                { "l", "ⲗ" },
+                { "m", "ⲙ" },
+                { "n", "ⲛ" },
+                { "x", "ⲝ" },
+                { "o", "ⲟ" },
+                { "p", "ⲡ" },
+                { "r", "ⲣ" },
+                { "c", "ⲥ" },
+                { "t", "ⲧ" },
+                { "u", "ⲩ" },
+                { "v", "ⲫ" },
+                { ",", "ⲭ" },
+                { "'", "ⲯ" },
+                { "w", "ⲱ" },
+                { "s", "ϣ" },
+                { "f", "ϥ" },
+                { "q", "ϧ" },
+                { "h", "ϩ" },
+                { "j", "ϫ" },
+                { "[", "ϭ" },
+                { "]", "ϯ" },
+                #endregion
 
-            // u0300 is the combining grave accent
-            // u200D is the zero-width joiner
-            // NOTE: Some text renderers and fonts put the accent on the character before it
-            CopticUnicodeAlphabet.Add("`", "\u0300\u200D");
+                // u0300 is the combining grave accent
+                // u200D is the zero-width joiner
+                // NOTE: Some text renderers and fonts put the accent on the character before it
+                { "`", "\u0300\u200D" },
+                // u0305 is the combining overline
+                { "=", "\u0305\u200D" },
 
-            CopticUnicodeAlphabet.Add("@", ":");
-            CopticUnicodeAlphabet.Add("&", ";");
-            CopticUnicodeAlphabet.Add("_", "=");
+                { "@", ":" },
+                { "&", ";" },
+                { "_", "=" },
+                { "¡", "⳪" }
+            };
 
-            return CopticUnicodeAlphabet;
+            return alphabet;
+        }
+        private static Dictionary<string, string> InitAthanasuis()
+        {
+            Dictionary<string, string> alphabet = new Dictionary<string, string>
+            {
+                // Key is Coptic Standard
+                // Value is Athanasius
+
+                #region Uppercase
+                { "A", "A" },
+                { "B", "B" },
+                { "G", "G" },
+                { "D", "D" },
+                { "E", "E" },
+                { "^", "," },
+                { "Z", "Z" },
+                { "Y", "H" },
+                { ":", "Q" },
+                { "I", "I" },
+                { "K", "K" },
+                { "L", "L" },
+                { "M", "M" },
+                { "N", "N" },
+                { "X", "{" },
+                { "O", "O" },
+                { "P", "P" },
+                { "R", "R" },
+                { "C", "C" },
+                { "T", "T" },
+                { "U", "U" },
+                { "V", "V" },
+                { "<", "X" },
+                { "\"", "Y" },
+                { "W", "W" },
+                { "S", "}" },
+                { "F", "F" },
+                { "Q", "\"" },
+                { "H", "|" },
+                { "J", "J" },
+                { "{", "S" },
+                { "}", ":" },
+                #endregion
+
+                #region Lowercase
+                { "a", "a" },
+                { "b", "b" },
+                { "g", "g" },
+                { "d", "d" },
+                { "e", "e" },
+                { "6", "6" },
+                { "z", "z" },
+                { "y", "h" },
+                { ";", "q" },
+                { "i", "i" },
+                { "k", "k" },
+                { "l", "l" },
+                { "m", "m" },
+                { "n", "n" },
+                { "x", "[" },
+                { "o", "o" },
+                { "p", "p" },
+                { "r", "r" },
+                { "c", "c" },
+                { "t", "t" },
+                { "u", "u" },
+                { "v", "v" },
+                { ",", "ⲭ" },
+                { "'", "y" },
+                { "w", "w" },
+                { "s", "]" },
+                { "f", "f" },
+                { "q", "\'" },
+                { "h", "\\" },
+                { "j", "j" },
+                { "[", "s" },
+                { "]", ";" },
+                #endregion
+
+                { "`", "`" },
+
+                { "@", ">" },
+                { "&", "^" },
+                { "¡", "_" },
+
+                { "=", "?" }
+            };
+
+            return alphabet;
         }
 
         /// <summary>
@@ -1211,15 +902,15 @@ namespace CoptLib
         /// </summary>
         /// <param name="path">Location to save file</param>
         /// <returns></returns>
-        public bool SaveFontXML(string path, bool addToList)
+        public bool SaveFontXml(string path, bool addToList)
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(FontXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(FontXml));
                 TextWriter writer = new StreamWriter(new FileStream(path, FileMode.Create));
-                serializer.Serialize(writer, FontXML.ToFontXML(this));
+                serializer.Serialize(writer, FontXml.ToFontXml(this));
                 if (addToList)
-                    CopticInterpreter.CopticFonts.Add(this);
+                    Fonts.Add(this);
                 return true;
             }
             catch (Exception ex)
@@ -1234,13 +925,13 @@ namespace CoptLib
         /// </summary>
         /// <param name="path">File to read</param>
         /// <returns></returns>
-        public static CopticFont ReadFontXML(string path, bool addToList = true)
+        public static CopticFont ReadFontXml(string path, bool addToList = true)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(FontXML));
+                XmlSerializer serializer = new XmlSerializer(typeof(FontXml));
                 //If the XML document has been altered with unknown 
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
@@ -1250,9 +941,9 @@ namespace CoptLib
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                var data = ((FontXML)serializer.Deserialize(text)).ToCopticFont();
+                var data = ((FontXml)serializer.Deserialize(text)).ToCopticFont();
                 if (addToList)
-                    CopticInterpreter.CopticFonts.Add(data);
+                    Fonts.Add(data);
                 return data;
             }
             catch (Exception ex)
@@ -1267,7 +958,7 @@ namespace CoptLib
         /// </summary>
         /// <param name="path">File to generate from. Must have comma sparated values.</param>
         /// <returns></returns>
-        public static CopticFont GenerateFromCSV(string path)
+        public static CopticFont GenerateFromCsv(string path)
         {
             var font = new CopticFont()
             {
@@ -1283,87 +974,5 @@ namespace CoptLib
 
             return font;
         }
-
-        /// <summary>
-        /// Defines the mapping of Coptic Standard to Unicode characters
-        /// </summary>
-        public static readonly Dictionary<string, string> UnicodeMapping = new Dictionary<string, string>()
-        {
-            // Lowercase
-            { "q", "ϧ" },
-            { "w", "ω" },
-            { "e", "ε" },
-            { "r", "ρ" },
-            { "t", "τ" },
-            { "y", "η" },
-            { "u", "υ" },
-            { "i", "ι" },
-            { "o", "ο" },
-            { "p", "π" },
-            { "[", "ϭ" },
-            { "]", "ϯ" },
-            { "\\", "\\" },
-
-            { "a", "α" },
-            { "s", "ϣ" },
-            { "d", "δ" },
-            { "f", "ϥ" },
-            { "g", "γ" },
-            { "h", "ϩ" },
-            { "j", "ϫ" },
-            { "k", "κ" },
-            { "l", "λ" },
-            { ";", "θ" },
-            { "'", "ψ" },
-
-            { "z", "ζ" },
-            { "x", "ξ" },
-            { "c", "σ" },
-            { "v", "φ" },
-            { "b", "β" },
-            { "n", "ν" },
-            { "m", "μ" },
-            { ",", "χ" },
-            { ".", "." },
-            { "/", "/" },
-
-            // Uppercase
-            { "Q", "Ϧ" },
-            { "W", "Ω" },
-            { "E", "Ε" },
-            { "R", "Ρ" },
-            { "T", "Τ" },
-            { "Y", "Ν" },
-            { "U", "Υ" },
-            { "I", "Ι" },
-            { "O", "Ο" },
-            { "P", "Π" },
-            { "{", "Ϭ" },
-            { "}", "Ϯ" },
-            { "|", "|" },
-
-            { "A", "Α" },
-            { "S", "Ϣ" },
-            { "D", "Δ" },
-            { "F", "Ϥ" },
-            { "G", "Γ" },
-            { "H", "Ϩ" },
-            { "J", "Ϫ" },
-            { "K", "Κ" },
-            { "L", "Λ" },
-            { ":", "Θ" },
-            { "\"", "Ψ" },
-
-            { "Z", "Ζ" },
-            { "X", "Ξ" },
-            { "C", "Σ" },
-            { "V", "Φ" },
-            { "B", "Β" },
-            { "N", "Ν" },
-            { "M", "Μ" },
-            { "<", "Χ" },
-            { ">", "," },
-            { "?", "?" },
-        };
     }
 }

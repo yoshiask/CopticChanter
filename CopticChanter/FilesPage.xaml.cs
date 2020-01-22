@@ -26,12 +26,12 @@ namespace CopticChanter
     /// </summary>
     public sealed partial class FilesPage : Page
     {
-        Color[] langColors = {
+        Color[] _langColors = {
             Windows.UI.Color.FromArgb(255, 139, 133, 191), // English
             Windows.UI.Color.FromArgb(255, 153, 148, 98), // Coptic
             Windows.UI.Color.FromArgb(255, 74, 128, 151) // Arabic
         };
-        IList<StorageFile> Files;
+        IList<StorageFile> _files;
 
         public FilesPage()
         {
@@ -55,7 +55,7 @@ namespace CopticChanter
                     if (copy != null)
                     {
                         Debug.WriteLine(file.Path);
-                        var doc = CopticInterpreter.ReadDocXML(file.Path);
+                        var doc = CopticInterpreter.ReadDocXml(file.Path);
                         string lang;
                         if (doc.Coptic)
                         {
@@ -70,7 +70,7 @@ namespace CopticChanter
                         {
                             Content = $"[{lang}] {doc.Name}",
                         });
-                        Files.Add(copy);
+                        _files.Add(copy);
                         //Common.Docs.Add(doc);
 
                         StatusBlock.Visibility = Visibility.Visible;
@@ -97,18 +97,18 @@ namespace CopticChanter
 
             // Begin loading files
             var readFiles = await ApplicationData.Current.RoamingFolder.GetFilesAsync();
-            Files = readFiles.ToList();
+            _files = readFiles.ToList();
             try
             {
-                if (Files != null)
+                if (_files != null)
                 {
-                    if (Files.Count > 0)
+                    if (_files.Count > 0)
                     {
                         Common.Docs.Clear();
-                        foreach (StorageFile file in Files)
+                        foreach (StorageFile file in _files)
                         {
                             Debug.WriteLine(file.Path);
-                            var doc = CopticInterpreter.ReadDocXML(file.Path);
+                            var doc = CopticInterpreter.ReadDocXml(file.Path);
                             string lang;
                             if (doc.Coptic)
                             {
@@ -169,24 +169,24 @@ namespace CopticChanter
             {
                 if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
                 {
-                    AcrylicBrush BackBrush = new AcrylicBrush();
-                    BackBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
-                    BackBrush.TintColor = Color.FromArgb(255, 246, 246, 246);
-                    BackBrush.FallbackColor = Color.FromArgb(255, 246, 246, 246);
-                    BackBrush.TintOpacity = 0.6;
-                    MainGrid.Background = BackBrush;
+                    AcrylicBrush backBrush = new AcrylicBrush();
+                    backBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
+                    backBrush.TintColor = Color.FromArgb(255, 246, 246, 246);
+                    backBrush.FallbackColor = Color.FromArgb(255, 246, 246, 246);
+                    backBrush.TintOpacity = 0.6;
+                    MainGrid.Background = backBrush;
 
-                    AcrylicBrush BarBrush = new AcrylicBrush();
-                    BarBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
-                    BarBrush.TintColor = Common.GetAccentBrush().Color;
-                    BarBrush.FallbackColor = Common.GetAccentBrush().Color;
-                    BarBrush.TintOpacity = 0.6;
-                    BottomBar.Background = BarBrush;
+                    AcrylicBrush barBrush = new AcrylicBrush();
+                    barBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
+                    barBrush.TintColor = Common.GetAccentBrush().Color;
+                    barBrush.FallbackColor = Common.GetAccentBrush().Color;
+                    barBrush.TintOpacity = 0.6;
+                    BottomBar.Background = barBrush;
                 }
                 else
                 {
-                    SolidColorBrush BackBrush = new SolidColorBrush(Color.FromArgb(255, 246, 246, 246));
-                    MainGrid.Background = BackBrush;
+                    SolidColorBrush backBrush = new SolidColorBrush(Color.FromArgb(255, 246, 246, 246));
+                    MainGrid.Background = backBrush;
 
                     BottomBar.Background = Common.GetAccentBrush();
                 }
@@ -203,9 +203,9 @@ namespace CopticChanter
             {
                 try
                 {
-                    string name = Files[FileView.SelectedIndex].Name;
-                    await Files[FileView.SelectedIndex].DeleteAsync();
-                    Files.RemoveAt(FileView.SelectedIndex);
+                    string name = _files[FileView.SelectedIndex].Name;
+                    await _files[FileView.SelectedIndex].DeleteAsync();
+                    _files.RemoveAt(FileView.SelectedIndex);
                     //Common.Docs.RemoveAt(FileView.SelectedIndex);
                     FileView.Items.Remove(FileView.SelectedItem);
                     StatusBlock.Visibility = Visibility.Visible;

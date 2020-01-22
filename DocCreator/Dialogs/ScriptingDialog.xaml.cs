@@ -12,19 +12,19 @@ namespace DocCreator.Dialogs
     /// </summary>
     public partial class ScriptingDialog : Window
     {
-        private Window ConsoleDialog;
-        private ListBox IntellisenseBox;
-        private int Caret;
+        private Window _consoleDialog;
+        private ListBox _intellisenseBox;
+        private int _caret;
         public string Script;
 
         public ScriptingDialog(string script)
         {
             InitializeComponent();
-            TopGrid.Background = MainWindow.accentBrush;
-            SaveButton.Background = MainWindow.accentBrush;
-            ClearButton.Background = MainWindow.accentBrush;
-            CancelButton.Background = MainWindow.accentBrush;
-            RunScriptButton.Background = MainWindow.accentBrush;
+            TopGrid.Background = MainWindow.AccentBrush;
+            SaveButton.Background = MainWindow.AccentBrush;
+            ClearButton.Background = MainWindow.AccentBrush;
+            CancelButton.Background = MainWindow.AccentBrush;
+            RunScriptButton.Background = MainWindow.AccentBrush;
 
             InputBox.TextArea.TextEntered += InputBox_TextEntered;
 
@@ -37,7 +37,7 @@ namespace DocCreator.Dialogs
         #region Code Suggestions
         private void InputBox_TextEntered(object sender, TextCompositionEventArgs e)
         {
-            IntellisenseBox = new ListBox();
+            _intellisenseBox = new ListBox();
 
             #region Get prestring "\"
             // first find the caret position
@@ -54,47 +54,47 @@ namespace DocCreator.Dialogs
 
             if (lettersBeforeCaret.StartsWith("\"date:"))
             {
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "M/D/YYYY",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "today",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Spring Equinox",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Palm Sunday",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Pascha",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Holy Week",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Great Lent",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Nativity",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "NativitySunday",
                     Focusable = false
@@ -104,12 +104,12 @@ namespace DocCreator.Dialogs
             }
             if (lettersBeforeCaret.StartsWith("\"bool:"))
             {
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "true",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "false",
                     Focusable = false
@@ -133,17 +133,17 @@ namespace DocCreator.Dialogs
 
             if (lettersBeforeCaret == " LeftHand=\"" || lettersBeforeCaret == " RightHand=\"")
             {
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "bool",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "date",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "int",
                     Focusable = false
@@ -153,32 +153,32 @@ namespace DocCreator.Dialogs
             }
             else if (lettersBeforeCaret == " Comparator=\"")
             {
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "lth",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "lth=",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "gth",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "gth=",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "==",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "!=",
                     Focusable = false
@@ -189,12 +189,12 @@ namespace DocCreator.Dialogs
 
             if (e.Text == "<")
             {
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "If",
                     Focusable = false
                 });
-                IntellisenseBox.Items.Add(new ListBoxItem()
+                _intellisenseBox.Items.Add(new ListBoxItem()
                 {
                     Content = "Return",
                     Focusable = false
@@ -239,24 +239,24 @@ namespace DocCreator.Dialogs
 
         private void ShowIntellisense()
         {
-            IntellisenseBox.Height = Double.NaN;
-            IntellisenseBox.Width = Double.NaN;
-            IntellisenseBox.Name = "IntellisenseBox";
+            _intellisenseBox.Height = Double.NaN;
+            _intellisenseBox.Width = Double.NaN;
+            _intellisenseBox.Name = "IntellisenseBox";
             var location = InputBox.TextArea.PointToScreen(new Point(0, 0));
-            Caret = InputBox.TextArea.Caret.Offset;
+            _caret = InputBox.TextArea.Caret.Offset;
             Rect rect = InputBox.TextArea.Caret.CalculateCaretRectangle();
-            MainGrid.Children.Add(IntellisenseBox);
-            IntellisenseBox.SelectedIndex = 0;
-            IntellisenseBox.HorizontalAlignment = HorizontalAlignment.Left;
-            IntellisenseBox.VerticalAlignment = VerticalAlignment.Top;
-            IntellisenseBox.Margin = new Thickness(rect.X, rect.Y + TopGrid.ActualHeight + 18, 0, 0);
-            IntellisenseBox.Focusable = false;
+            MainGrid.Children.Add(_intellisenseBox);
+            _intellisenseBox.SelectedIndex = 0;
+            _intellisenseBox.HorizontalAlignment = HorizontalAlignment.Left;
+            _intellisenseBox.VerticalAlignment = VerticalAlignment.Top;
+            _intellisenseBox.Margin = new Thickness(rect.X, rect.Y + TopGrid.ActualHeight + 18, 0, 0);
+            _intellisenseBox.Focusable = false;
             InputBox.TextArea.KeyDown += InputBox_KeyDown;
             InputBox.TextArea.KeyUp += TextArea_KeyUp;
             InputBox.TextArea.ActiveInputHandler.Detach();
         }
 
-        bool Shift = false;
+        bool _shift = false;
         private void InputBox_KeyDown(object sender, KeyEventArgs e)
         {
             string selected;
@@ -264,30 +264,30 @@ namespace DocCreator.Dialogs
             {
                 #region Suggestion Navigation
                 case Key.Down:
-                    if (IntellisenseBox.SelectedIndex < (IntellisenseBox.Items.Count - 1))
-                        IntellisenseBox.SelectedIndex += 1;
+                    if (_intellisenseBox.SelectedIndex < (_intellisenseBox.Items.Count - 1))
+                        _intellisenseBox.SelectedIndex += 1;
                     else
-                        IntellisenseBox.SelectedIndex = 0;
+                        _intellisenseBox.SelectedIndex = 0;
                     break;
 
                 case Key.Up:
-                    if (IntellisenseBox.SelectedIndex > 0)
-                        IntellisenseBox.SelectedIndex -= 1;
+                    if (_intellisenseBox.SelectedIndex > 0)
+                        _intellisenseBox.SelectedIndex -= 1;
                     else
-                        IntellisenseBox.SelectedIndex = (IntellisenseBox.Items.Count - 1);
+                        _intellisenseBox.SelectedIndex = (_intellisenseBox.Items.Count - 1);
                     break;
                 #endregion
 
                 #region Insert Suggestion
                 case Key.Tab:
-                    selected = ((ListBoxItem)IntellisenseBox.SelectedItem).Content.ToString();
+                    selected = ((ListBoxItem)_intellisenseBox.SelectedItem).Content.ToString();
                     InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, selected);
                     MainGrid.Children.RemoveAt(2);
                     e.Handled = true;
                     InputBox.TextArea.KeyDown -= InputBox_KeyDown;
                     InputBox.TextArea.ActiveInputHandler.Attach();
-                    InputBox.TextArea.Caret.Offset = Caret + selected.Length;
-                    IntellisenseBox = null;
+                    InputBox.TextArea.Caret.Offset = _caret + selected.Length;
+                    _intellisenseBox = null;
 
                     // Extras for neater code
                     if (selected == "bool" || selected == "date" || selected == "int")
@@ -320,8 +320,8 @@ namespace DocCreator.Dialogs
                     e.Handled = true;
                     InputBox.TextArea.KeyDown -= InputBox_KeyDown;
                     InputBox.TextArea.ActiveInputHandler.Attach();
-                    InputBox.TextArea.Caret.Offset = Caret;
-                    IntellisenseBox = null;
+                    InputBox.TextArea.Caret.Offset = _caret;
+                    _intellisenseBox = null;
                     break;
 
                 case Key.Enter:
@@ -329,24 +329,24 @@ namespace DocCreator.Dialogs
                     e.Handled = true;
                     InputBox.TextArea.KeyDown -= InputBox_KeyDown;
                     InputBox.TextArea.ActiveInputHandler.Attach();
-                    InputBox.TextArea.Caret.Offset = Caret;
-                    IntellisenseBox = null;
+                    InputBox.TextArea.Caret.Offset = _caret;
+                    _intellisenseBox = null;
                     InputBox.TextArea.PerformTextInput("\r\n");
                     break;
                 #endregion
 
                 #region General Keys
                 case Key.LeftShift:
-                    Shift = true;
+                    _shift = true;
                     break;
                 case Key.RightShift:
-                    Shift = true;
+                    _shift = true;
                     break;
 
                 case Key.Back:
                     InputBox.Text = InputBox.Text.Remove(InputBox.TextArea.Caret.Offset - 1, 1);
-                    Caret -= 1;
-                    InputBox.TextArea.Caret.Offset = Caret;
+                    _caret -= 1;
+                    InputBox.TextArea.Caret.Offset = _caret;
                     break;
 
                 case Key.Space:
@@ -354,8 +354,8 @@ namespace DocCreator.Dialogs
                     e.Handled = true;
                     InputBox.TextArea.KeyDown -= InputBox_KeyDown;
                     InputBox.TextArea.ActiveInputHandler.Attach();
-                    InputBox.TextArea.Caret.Offset = Caret;
-                    IntellisenseBox = null;
+                    InputBox.TextArea.Caret.Offset = _caret;
+                    _intellisenseBox = null;
                     InputBox.TextArea.PerformTextInput(" ");
                     break;
 
@@ -365,14 +365,14 @@ namespace DocCreator.Dialogs
                         selected = e.Key.ToString();
                         if (selected.Length == 1)
                         {
-                            if (!Shift)
+                            if (!_shift)
                                 selected = e.Key.ToString().ToLower();
-                            InputBox.TextArea.Caret.Offset = Caret;
+                            InputBox.TextArea.Caret.Offset = _caret;
                             MainGrid.Children.RemoveAt(2);
                             e.Handled = true;
                             InputBox.TextArea.KeyDown -= InputBox_KeyDown;
                             InputBox.TextArea.ActiveInputHandler.Attach();
-                            IntellisenseBox = null;
+                            _intellisenseBox = null;
                             InputBox.TextArea.PerformTextInput(selected);
                         }
                         e.Handled = true;
@@ -392,10 +392,10 @@ namespace DocCreator.Dialogs
             switch (e.Key)
             {
                 case Key.LeftShift:
-                    Shift = false;
+                    _shift = false;
                     break;
                 case Key.RightShift:
-                    Shift = false;
+                    _shift = false;
                     break;
             }
         }
@@ -429,7 +429,7 @@ namespace DocCreator.Dialogs
 
         private void RunScriptButton_Click(object sender, RoutedEventArgs e)
         {
-            var Console = new TextBlock()
+            var console = new TextBlock()
             {
                 Name = "Console",
                 Background = new SolidColorBrush(Colors.Transparent),
@@ -438,20 +438,20 @@ namespace DocCreator.Dialogs
                 FontSize = 14,
                 Margin = new Thickness(5, 0, 5, 0)
             };
-            Console.MouseDown += Console_MouseDown;
-            ConsoleDialog = new Window()
+            console.MouseDown += Console_MouseDown;
+            _consoleDialog = new Window()
             {
-                Content = Console,
+                Content = console,
                 Title = "Script Output",
                 Width = 300,
                 Height = 75,
-                Background = MainWindow.accentBrush,
+                Background = MainWindow.AccentBrush,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
-            ConsoleDialog.Show();
+            _consoleDialog.Show();
             //Console.Text = (string) await Scripting.ParseNextDocScriptFunctionAsync(InputBox.Text);
-            Console.Text = Scripting.RunScript(InputBox.Text, MainWindow.CurrentDoc);
+            console.Text = Scripting.RunScript(InputBox.Text, MainWindow.CurrentDoc);
         }
 
         private void Console_MouseDown(object sender, MouseButtonEventArgs e)
@@ -461,20 +461,20 @@ namespace DocCreator.Dialogs
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            TopGrid.Background = MainWindow.unfocusedBrush;
-            SaveButton.Background = MainWindow.unfocusedBrush;
-            ClearButton.Background = MainWindow.unfocusedBrush;
-            CancelButton.Background = MainWindow.unfocusedBrush;
-            RunScriptButton.Background = MainWindow.unfocusedBrush;
+            TopGrid.Background = MainWindow.UnfocusedBrush;
+            SaveButton.Background = MainWindow.UnfocusedBrush;
+            ClearButton.Background = MainWindow.UnfocusedBrush;
+            CancelButton.Background = MainWindow.UnfocusedBrush;
+            RunScriptButton.Background = MainWindow.UnfocusedBrush;
         }
 
         private void Window_Activated(object sender, EventArgs e)
         {
-            TopGrid.Background = MainWindow.accentBrush;
-            SaveButton.Background = MainWindow.accentBrush;
-            ClearButton.Background = MainWindow.accentBrush;
-            CancelButton.Background = MainWindow.accentBrush;
-            RunScriptButton.Background = MainWindow.accentBrush;
+            TopGrid.Background = MainWindow.AccentBrush;
+            SaveButton.Background = MainWindow.AccentBrush;
+            ClearButton.Background = MainWindow.AccentBrush;
+            CancelButton.Background = MainWindow.AccentBrush;
+            RunScriptButton.Background = MainWindow.AccentBrush;
         }
     }
 }

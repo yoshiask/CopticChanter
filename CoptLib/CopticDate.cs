@@ -13,7 +13,7 @@ namespace CoptLib
             get;
             internal set;
         }
-        public int Greg_Year {
+        public int GregYear {
             get {
                 return Year + 284;
             }
@@ -88,16 +88,16 @@ namespace CoptLib
         {
             // From http://www.copticchurch.net/topics/coptic_calendar/ortheast.html,
             // returns Easter Day on the Julian Calendar
-            int G = year % 19;
-            int I = (19 * G + 15) % 30;
-            int J = (year + year / 4 + I) % 7;
-            int L = I - J;
-            int EasterMonth = 3 + (L + 40) / 44;
-            int EasterDay = L + 28 - 31 * (EasterMonth / 4);
+            int g = year % 19;
+            int I = (19 * g + 15) % 30;
+            int j = (year + year / 4 + I) % 7;
+            int l = I - j;
+            int easterMonth = 3 + (l + 40) / 44;
+            int easterDay = l + 28 - 31 * (easterMonth / 4);
 
             // Convert the output above to the Gregorian calendar
             // Accurate to 2100
-            var julDate = new DateTime(year, EasterMonth, EasterDay);
+            var julDate = new DateTime(year, easterMonth, easterDay);
             return julDate.AddDays(13);
         }
         public static List<DateTime> PalmSundayDays {
@@ -741,38 +741,38 @@ namespace CoptLib
         public static DateTime JulianToDateTime(double julianDate)
         {
             DateTime date;
-            double Z, W, X, A, B, C, D, E, F;
+            double z, w, x, a, b, c, d, e, f;
             int day, month, year;
 
             try
             {
-                Z = Math.Floor(julianDate + 0.5);
-                W = Math.Floor((Z - 1867216.25) / 36524.25);
-                X = Math.Floor(W / 4);
-                A = Z + 1 + W - X;
-                B = A + 1524;
-                C = Math.Floor((B - 122.1) / 365.25);
-                D = Math.Floor(365.25 * C);
-                E = Math.Floor((B - D) / 30.6001);
-                F = Math.Floor(30.6001 * E);
+                z = Math.Floor(julianDate + 0.5);
+                w = Math.Floor((z - 1867216.25) / 36524.25);
+                x = Math.Floor(w / 4);
+                a = z + 1 + w - x;
+                b = a + 1524;
+                c = Math.Floor((b - 122.1) / 365.25);
+                d = Math.Floor(365.25 * c);
+                e = Math.Floor((b - d) / 30.6001);
+                f = Math.Floor(30.6001 * e);
 
-                day = Convert.ToInt32(B - D - F);
-                if (E > 13)
+                day = Convert.ToInt32(b - d - f);
+                if (e > 13)
                 {
-                    month = Convert.ToInt32(E - 13);
+                    month = Convert.ToInt32(e - 13);
                 }
                 else
                 {
-                    month = Convert.ToInt32(E - 1);
+                    month = Convert.ToInt32(e - 1);
                 }
 
                 if ((month == 1) || (month == 2))
                 {
-                    year = Convert.ToInt32(C - 4715);
+                    year = Convert.ToInt32(c - 4715);
                 }
                 else
                 {
-                    year = Convert.ToInt32(C - 4716);
+                    year = Convert.ToInt32(c - 4716);
                 }
 
                 date = new DateTime(year, month, day);

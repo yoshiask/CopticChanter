@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace CoptLib.XML
 {
     [XmlRoot(ElementName = "CopticFont")]
-    public class FontXML
+    public class FontXml
     {
         [XmlElement]
         public string Name;
@@ -22,34 +22,34 @@ namespace CoptLib.XML
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Char")]
-        public List<MapXML> Charmap;
+        public List<MapXml> Charmap;
 
-        public static FontXML ToFontXML(CopticFont font)
+        public static FontXml ToFontXml(CopticFont font)
         {
-            var XML = new FontXML()
+            var xml = new FontXml()
             {
                 Name = font.Name,
                 FontName = font.FontName,
                 IsJenkimBefore = font.IsJenkimBefore,
                 IsCopticStandard = font.IsCopticStandard,
-                Charmap = new List<MapXML>()
+                Charmap = new List<MapXml>()
             };
             foreach (string key in font.Charmap.Keys)
             {
                 string value;
                 font.Charmap.TryGetValue(key, out value);
-                var pair = new MapXML()
+                var pair = new MapXml()
                 {
                     BaseCharacter = key,
                     NewCharacter = value
                 };
-                XML.Charmap.Add(pair);
+                xml.Charmap.Add(pair);
             }
-            return XML;
+            return xml;
         }
         public CopticFont ToCopticFont()
         {
-            var Font = new CopticFont()
+            var font = new CopticFont()
             {
                 Name = Name,
                 FontName = FontName,
@@ -57,14 +57,14 @@ namespace CoptLib.XML
                 IsCopticStandard = IsCopticStandard,
                 Charmap = new Dictionary<string, string>()
             };
-            foreach (MapXML map in Charmap)
+            foreach (MapXml map in Charmap)
             {
-                Font.Charmap.Add(map.BaseCharacter, map.NewCharacter);
+                font.Charmap.Add(map.BaseCharacter, map.NewCharacter);
             }
-            return Font;
+            return font;
         }
 
-        public class MapXML
+        public class MapXml
         {
             [XmlAttribute("Base")]
             public string BaseCharacter;

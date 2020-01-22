@@ -30,7 +30,7 @@ namespace CopticChanter
             {
                 if (Common.Docs.Count > 0)
                 {
-                    foreach (CoptLib.XML.DocXML doc in Common.Docs)
+                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
                     {
                         Debug.WriteLine(doc.Name);
 
@@ -86,7 +86,7 @@ namespace CopticChanter
                         foreach (StorageFile file in files)
                         {
                             Debug.WriteLine(file.Path);
-                            var doc = CopticInterpreter.ReadDocXML(file.Path);
+                            var doc = CopticInterpreter.ReadDocXml(file.Path);
 
                             Common.Docs.Add(doc);
                             if (doc.Coptic)
@@ -210,7 +210,7 @@ namespace CopticChanter
 
             StorageFile file = await picker.PickSingleFileAsync();
 
-            var doc = CopticInterpreter.ReadDocXML(file.Path);
+            var doc = CopticInterpreter.ReadDocXml(file.Path);
             if (String.IsNullOrWhiteSpace(OutputBox.Text))
             {
                 //OutputBox.Text += CopticInterpreter.ConvertFromString(doc.Content);

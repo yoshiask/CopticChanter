@@ -9,22 +9,22 @@ using System.Xml.Serialization;
 namespace CoptLib.XML
 {
     [XmlRoot(ElementName = "CopticDoc")]
-    public class DocXML
+    public class DocXml
     {
         [XmlElement]
         public string Name { get; set; }
 
         [XmlElement]
-        public string UUID { get; set; }
+        public string Uuid { get; set; }
 
         [XmlElement]
         public string Parent { get; set; }
 
         [XmlArray(ElementName = "Content")]
-        public List<StanzaXML> Content { get; set; } = new List<StanzaXML>();
+        public List<StanzaXml> Content { get; set; } = new List<StanzaXml>();
 
         [XmlIgnore]
-        public ObservableCollection<StanzaXML> ContentCollection { get; set; } = new ObservableCollection<StanzaXML>();
+        public ObservableCollection<StanzaXml> ContentCollection { get; set; } = new ObservableCollection<StanzaXml>();
 
         [XmlElement]
         public CopticInterpreter.Language Language { get; set; }
@@ -38,21 +38,21 @@ namespace CoptLib.XML
         //[XmlElement(ElementName = "DefaultNext", IsNullable = false)]
         //public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
 
-        public IndexDocXML ToIndexDocXML()
+        public IndexDocXml ToIndexDocXml()
         {
-            return new IndexDocXML()
+            return new IndexDocXml()
             {
                 Name = this.Name,
-                UUID = this.UUID,
+                Uuid = this.Uuid,
                 Language = this.Language
             };
         }
     }
 
-    public class StanzaXML
+    public class StanzaXml
     {
-        public StanzaXML() { }
-        public StanzaXML(string content)
+        public StanzaXml() { }
+        public StanzaXml(string content)
         {
             Text = content;
         }

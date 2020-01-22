@@ -36,11 +36,11 @@ namespace CopticChanter.Pages
             private set;
         }
 
-        private DeviceWatcher deviceWatcher = null;
-        private StreamSocket chatSocket = null;
-        private DataWriter chatWriter = null;
-        private RfcommDeviceService chatService = null;
-        private BluetoothDevice bluetoothDevice;
+        private DeviceWatcher _deviceWatcher = null;
+        private StreamSocket _chatSocket = null;
+        private DataWriter _chatWriter = null;
+        private RfcommDeviceService _chatService = null;
+        private BluetoothDevice _bluetoothDevice;
 
         public BluetoothRemoteConnectPage()
         {
@@ -61,14 +61,14 @@ namespace CopticChanter.Pages
 
         private void StopWatcher()
         {
-            if (null != deviceWatcher)
+            if (null != _deviceWatcher)
             {
-                if ((DeviceWatcherStatus.Started == deviceWatcher.Status ||
-                     DeviceWatcherStatus.EnumerationCompleted == deviceWatcher.Status))
+                if ((DeviceWatcherStatus.Started == _deviceWatcher.Status ||
+                     DeviceWatcherStatus.EnumerationCompleted == _deviceWatcher.Status))
                 {
-                    deviceWatcher.Stop();
+                    _deviceWatcher.Stop();
                 }
-                deviceWatcher = null;
+                _deviceWatcher = null;
             }
         }
 
@@ -86,18 +86,18 @@ namespace CopticChanter.Pages
         /// <param name="e">Event data describing the conditions that led to the event.</param>
         private void RunButton_Click(object sender, RoutedEventArgs e)
         {
-            if (deviceWatcher == null)
+            if (_deviceWatcher == null)
             {
-                SetDeviceWatcherUI();
+                SetDeviceWatcherUi();
                 StartUnpairedDeviceWatcher();
             }
             else
             {
-                ResetMainUI();
+                ResetMainUi();
             }
         }
 
-        private void SetDeviceWatcherUI()
+        private void SetDeviceWatcherUi()
         {
             // Disable the button while we do async operations so the user can't Run twice.
             RunButton.Content = "Stop";
@@ -106,7 +106,7 @@ namespace CopticChanter.Pages
             resultsListView.IsEnabled = true;
         }
 
-        private void ResetMainUI()
+        private void ResetMainUi()
         {
             RunButton.Content = "Start";
             RunButton.IsEnabled = true;
@@ -126,12 +126,12 @@ namespace CopticChanter.Pages
             // Request additional properties
             string[] requestedProperties = new string[] { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
 
-            deviceWatcher = DeviceInformation.CreateWatcher("(System.Devices.Aep.ProtocolId:=\"{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}\")",
+            _deviceWatcher = DeviceInformation.CreateWatcher("(System.Devices.Aep.ProtocolId:=\"{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}\")",
                                                             requestedProperties,
                                                             DeviceInformationKind.AssociationEndpoint);
 
             // Hook up handlers for the watcher events before starting the watcher
-            deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (watcher, deviceInfo) =>
+            _deviceWatcher.Added += new TypedEventHandler<DeviceWatcher, DeviceInformation>(async (watcher, deviceInfo) =>
             {
                 // Since we have the collection databound to a UI element, we need to update the collection on the UI thread.
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -147,7 +147,7 @@ namespace CopticChanter.Pages
                 });
             });
 
-            deviceWatcher.Updated += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
+            _deviceWatcher.Updated += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
             {
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
@@ -162,7 +162,7 @@ namespace CopticChanter.Pages
                 });
             });
 
-            deviceWatcher.EnumerationCompleted += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
+            _deviceWatcher.EnumerationCompleted += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
             {
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
@@ -171,7 +171,7 @@ namespace CopticChanter.Pages
                 });
             });
 
-            deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
+            _deviceWatcher.Removed += new TypedEventHandler<DeviceWatcher, DeviceInformationUpdate>(async (watcher, deviceInfoUpdate) =>
             {
                 // Since we have the collection databound to a UI element, we need to update the collection on the UI thread.
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
@@ -191,7 +191,7 @@ namespace CopticChanter.Pages
                 });
             });
 
-            deviceWatcher.Stopped += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
+            _deviceWatcher.Stopped += new TypedEventHandler<DeviceWatcher, Object>(async (watcher, obj) =>
             {
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Low, () =>
                 {
@@ -199,7 +199,7 @@ namespace CopticChanter.Pages
                 });
             });
 
-            deviceWatcher.Start();
+            _deviceWatcher.Start();
         }
 
         /// <summary>
@@ -234,44 +234,44 @@ namespace CopticChanter.Pages
             // If not, try to get the Bluetooth device
             try
             {
-                bluetoothDevice = await BluetoothDevice.FromIdAsync(deviceInfoDisp.Id);
+                _bluetoothDevice = await BluetoothDevice.FromIdAsync(deviceInfoDisp.Id);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR: " + ex.Message);
-                ResetMainUI();
+                ResetMainUi();
                 return;
             }
             // If we were unable to get a valid Bluetooth device object,
             // it's most likely because the user has specified that all unpaired devices
             // should not be interacted with.
-            if (bluetoothDevice == null)
+            if (_bluetoothDevice == null)
             {
                 Console.WriteLine("ERROR: Bluetooth Device returned null. Access Status = " + accessStatus.ToString());
             }
 
             // This should return a list of uncached Bluetooth services (so if the server was not active when paired, it will still be detected by this call
-            var rfcommServices = await bluetoothDevice.GetRfcommServicesForIdAsync(
+            var rfcommServices = await _bluetoothDevice.GetRfcommServicesForIdAsync(
                 RfcommServiceId.FromUuid(Common.RemoteConstants.RfcommChatServiceUuid), BluetoothCacheMode.Uncached);
 
             if (rfcommServices.Services.Count > 0)
             {
-                chatService = rfcommServices.Services[0];
+                _chatService = rfcommServices.Services[0];
             }
             else
             {
                 Console.WriteLine("ERROR: Could not discover the chat service on the remote device");
-                ResetMainUI();
+                ResetMainUi();
                 return;
             }
 
             // Do various checks of the SDP record to make sure you are talking to a device that actually supports the Bluetooth Rfcomm Chat Service
-            var attributes = await chatService.GetSdpRawAttributesAsync();
+            var attributes = await _chatService.GetSdpRawAttributesAsync();
             if (!attributes.ContainsKey(Common.RemoteConstants.SdpServiceNameAttributeId))
             {
                 Console.WriteLine("ERROR: The Chat service is not advertising the Service Name attribute (attribute id=0x100). " +
                     "Please verify that you are running the BluetoothRfcommChat server.");
-                ResetMainUI();
+                ResetMainUi();
                 return;
             }
             var attributeReader = DataReader.FromBuffer(attributes[Common.RemoteConstants.SdpServiceNameAttributeId]);
@@ -280,7 +280,7 @@ namespace CopticChanter.Pages
             {
                 Console.WriteLine("ERROR: The Chat service is using an unexpected format for the Service Name attribute. " +
                     "Please verify that you are running the BluetoothRfcommChat server.");
-                ResetMainUI();
+                ResetMainUi();
                 return;
             }
             var serviceNameLength = attributeReader.ReadByte();
@@ -292,27 +292,27 @@ namespace CopticChanter.Pages
 
             lock (this)
             {
-                chatSocket = new StreamSocket();
+                _chatSocket = new StreamSocket();
             }
             try
             {
-                await chatSocket.ConnectAsync(chatService.ConnectionHostName, chatService.ConnectionServiceName);
+                await _chatSocket.ConnectAsync(_chatService.ConnectionHostName, _chatService.ConnectionServiceName);
 
-                SetChatUI(attributeReader.ReadString(serviceNameLength), bluetoothDevice.Name);
-                chatWriter = new DataWriter(chatSocket.OutputStream);
+                SetChatUi(attributeReader.ReadString(serviceNameLength), _bluetoothDevice.Name);
+                _chatWriter = new DataWriter(_chatSocket.OutputStream);
 
-                DataReader chatReader = new DataReader(chatSocket.InputStream);
+                DataReader chatReader = new DataReader(_chatSocket.InputStream);
                 ReceiveStringLoop(chatReader);
             }
             catch (Exception ex) when ((uint)ex.HResult == 0x80070490) // ERROR_ELEMENT_NOT_FOUND
             {
                 Console.WriteLine("ERROR: Please verify that you are running the BluetoothRfcommChat server.");
-                ResetMainUI();
+                ResetMainUi();
             }
             catch (Exception ex) when ((uint)ex.HResult == 0x80072740) // WSAEADDRINUSE
             {
                 Console.WriteLine("ERROR: Please verify that there is no other RFCOMM connection to the same device.");
-                ResetMainUI();
+                ResetMainUi();
             }
         }
 
@@ -328,7 +328,7 @@ namespace CopticChanter.Pages
         private async void RequestAccessButton_Click(object sender, RoutedEventArgs e)
         {
             // Make sure user has given consent to access device
-            DeviceAccessStatus accessStatus = await bluetoothDevice.RequestAccessAsync();
+            DeviceAccessStatus accessStatus = await _bluetoothDevice.RequestAccessAsync();
 
             if (accessStatus != DeviceAccessStatus.Allowed)
             {
@@ -361,12 +361,12 @@ namespace CopticChanter.Pages
             {
                 if (MessageTextBox.Text.Length != 0)
                 {
-                    chatWriter.WriteUInt32((uint)MessageTextBox.Text.Length);
-                    chatWriter.WriteString(MessageTextBox.Text);
+                    _chatWriter.WriteUInt32((uint)MessageTextBox.Text.Length);
+                    _chatWriter.WriteString(MessageTextBox.Text);
 
                     ConversationList.Items.Add("Sent: " + MessageTextBox.Text);
                     MessageTextBox.Text = "";
-                    await chatWriter.StoreAsync();
+                    await _chatWriter.StoreAsync();
 
                 }
             }
@@ -400,41 +400,41 @@ namespace CopticChanter.Pages
                 string outputText = "";
                 switch (message)
                 {
-                    case Common.RemoteConstants.RemoteCMDString.CMD_NEXT:
+                    case Common.RemoteConstants.RemoteCmdString.CmdNext:
                         outputText = "Device requested next slide";
                         //RightButton_Click(sender, new RoutedEventArgs());
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_PREV:
+                    case Common.RemoteConstants.RemoteCmdString.CmdPrev:
                         outputText = "Device requested previous slide";
                         //LeftButton_Click(sender, new RoutedEventArgs());
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_SETASREMOTE:
+                    case Common.RemoteConstants.RemoteCmdString.CmdSetasremote:
                         outputText = "Device requested remote";
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_SETASDISPLAY:
+                    case Common.RemoteConstants.RemoteCmdString.CmdSetasdisplay:
                         outputText = "Device requested display";
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_ENDMSG:
+                    case Common.RemoteConstants.RemoteCmdString.CmdEndmsg:
                         // Nothing more to read, continue to listen
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_DISCONNECT:
+                    case Common.RemoteConstants.RemoteCmdString.CmdDisconnect:
                         Disconnect("Remote requested disconnect via command");
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_RECIEVEDOK:
+                    case Common.RemoteConstants.RemoteCmdString.CmdRecievedok:
                         outputText = "Device recieved and executed command without errors";
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_RECIEVEDERROR:
+                    case Common.RemoteConstants.RemoteCmdString.CmdRecievederror:
                         outputText = "Device failed to parse command";
                         break;
 
-                    case Common.RemoteConstants.RemoteCMDString.CMD_ERROR:
+                    case Common.RemoteConstants.RemoteCmdString.CmdError:
                         outputText = "Device failed to execute command";
                         break;
 
@@ -450,7 +450,7 @@ namespace CopticChanter.Pages
             {
                 lock (this)
                 {
-                    if (chatSocket == null)
+                    if (_chatSocket == null)
                     {
                         // Do not print anything here -  the user closed the socket.
                         if ((uint)ex.HResult == 0x80072745)
@@ -478,32 +478,32 @@ namespace CopticChanter.Pages
         /// <param name="disconnectReason"></param>
         private void Disconnect(string disconnectReason)
         {
-            if (chatWriter != null)
+            if (_chatWriter != null)
             {
-                chatWriter.DetachStream();
-                chatWriter = null;
+                _chatWriter.DetachStream();
+                _chatWriter = null;
             }
 
 
-            if (chatService != null)
+            if (_chatService != null)
             {
-                chatService.Dispose();
-                chatService = null;
+                _chatService.Dispose();
+                _chatService = null;
             }
             lock (this)
             {
-                if (chatSocket != null)
+                if (_chatSocket != null)
                 {
-                    chatSocket.Dispose();
-                    chatSocket = null;
+                    _chatSocket.Dispose();
+                    _chatSocket = null;
                 }
             }
 
             Console.WriteLine(disconnectReason);
-            ResetMainUI();
+            ResetMainUi();
         }
 
-        private void SetChatUI(string serviceName, string deviceName)
+        private void SetChatUi(string serviceName, string deviceName)
         {
             Console.WriteLine("STATUS: Connected");
             ServiceName.Text = "Service Name: " + serviceName;
@@ -538,33 +538,33 @@ namespace CopticChanter.Pages
 
     public class RfcommChatDeviceDisplay : INotifyPropertyChanged
     {
-        private DeviceInformation deviceInfo;
+        private DeviceInformation _deviceInfo;
 
         public RfcommChatDeviceDisplay(DeviceInformation deviceInfoIn)
         {
-            deviceInfo = deviceInfoIn;
+            _deviceInfo = deviceInfoIn;
             UpdateGlyphBitmapImage();
         }
 
         public DeviceInformation DeviceInformation {
             get {
-                return deviceInfo;
+                return _deviceInfo;
             }
 
             private set {
-                deviceInfo = value;
+                _deviceInfo = value;
             }
         }
 
         public string Id {
             get {
-                return deviceInfo.Id;
+                return _deviceInfo.Id;
             }
         }
 
         public string Name {
             get {
-                return deviceInfo.Name;
+                return _deviceInfo.Name;
             }
         }
 
@@ -575,13 +575,13 @@ namespace CopticChanter.Pages
 
         public void Update(DeviceInformationUpdate deviceInfoUpdate)
         {
-            deviceInfo.Update(deviceInfoUpdate);
+            _deviceInfo.Update(deviceInfoUpdate);
             UpdateGlyphBitmapImage();
         }
 
         private async void UpdateGlyphBitmapImage()
         {
-            DeviceThumbnail deviceThumbnail = await deviceInfo.GetGlyphThumbnailAsync();
+            DeviceThumbnail deviceThumbnail = await _deviceInfo.GetGlyphThumbnailAsync();
             BitmapImage glyphBitmapImage = new BitmapImage();
             await glyphBitmapImage.SetSourceAsync(deviceThumbnail);
             GlyphBitmapImage = glyphBitmapImage;

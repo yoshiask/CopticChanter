@@ -25,7 +25,7 @@ namespace CopticChanter
         public static int EnglishDocCount = 0;
         public static int CopticDocCount = 0;
         public static int ArabicDocCount = 0;
-        public static List<CoptLib.XML.DocXML> Docs = new List<CoptLib.XML.DocXML>();
+        public static List<CoptLib.XML.DocXml> Docs = new List<CoptLib.XML.DocXml>();
         public static CoptLib.CopticDate CopticDate = CoptLib.CopticDate.Today;
         #endregion
 
@@ -53,83 +53,83 @@ namespace CopticChanter
             // The value of the Service Name SDP attribute
             public const string SdpServiceName = "Coptic Chanter Remote Service";
 
-            public static class RemoteCMDByte
+            public static class RemoteCmdByte
             {
                 /// <summary>
                 /// Remote Protocol: Proceeds to next page
                 /// </summary>
-                public const byte CMD_NEXT = 0x20;
+                public const byte CmdNext = 0x20;
                 /// <summary>
                 /// Remote Protocol: Proceeds to previous page
                 /// </summary>
-                public const byte CMD_PREV = 0x40;
+                public const byte CmdPrev = 0x40;
                 /// <summary>
                 /// Remote Protocol: The sending device is delcared as the remote.
                 /// </summary>
-                public const byte CMD_SETASREMOTE = 0x80;
+                public const byte CmdSetasremote = 0x80;
                 /// <summary>
                 /// Remote Protocol: The sending device is delcared as the display device.
                 /// </summary>
-                public const byte CMD_SETASDISPLAY = 0x81;
+                public const byte CmdSetasdisplay = 0x81;
                 /// <summary>
                 /// Remote Protocol: End message
                 /// </summary>
-                public const byte CMD_ENDMSG = 0x00;
+                public const byte CmdEndmsg = 0x00;
                 /// <summary>
                 /// Remote Protocol: Closes connection.
                 /// </summary>
-                public const byte CMD_DISCONNECT = 0xE0;
+                public const byte CmdDisconnect = 0xE0;
                 /// <summary>
                 /// Remote Protocol: Messages recieved and interpreted
                 /// </summary>
-                public const byte CMD_RECIEVEDOK = 0xE1;
+                public const byte CmdRecievedok = 0xE1;
                 /// <summary>
                 /// Remote Protocol: Messages recieved but not interpreted
                 /// </summary>
-                public const byte CMD_RECIEVEDERROR = 0xE2;
+                public const byte CmdRecievederror = 0xE2;
                 /// <summary>
                 /// Remote Protocol: Messages recieved but error executing
                 /// </summary>
-                public const byte CMD_ERROR = 0xE3;
+                public const byte CmdError = 0xE3;
             }
-            public static class RemoteCMDString
+            public static class RemoteCmdString
             {
                 /// <summary>
                 /// Remote Protocol: Proceeds to next page
                 /// </summary>
-                public const string CMD_NEXT = "cmd:next";
+                public const string CmdNext = "cmd:next";
                 /// <summary>
                 /// Remote Protocol: Proceeds to previous page
                 /// </summary>
-                public const string CMD_PREV = "cmd:prev";
+                public const string CmdPrev = "cmd:prev";
                 /// <summary>
                 /// Remote Protocol: The sending device is delcared as the remote.
                 /// </summary>
-                public const string CMD_SETASREMOTE = "cmd:setasremote";
+                public const string CmdSetasremote = "cmd:setasremote";
                 /// <summary>
                 /// Remote Protocol: The sending device is delcared as the display device.
                 /// </summary>
-                public const string CMD_SETASDISPLAY = "cmd:setasdisplay";
+                public const string CmdSetasdisplay = "cmd:setasdisplay";
                 /// <summary>
                 /// Remote Protocol: End message (Exclamation mark and seven spaces)
                 /// </summary>
-                public const string CMD_ENDMSG = "!       ";
+                public const string CmdEndmsg = "!       ";
                 /// <summary>
                 /// Remote Protocol: Closes connection.
                 /// </summary>
-                public const string CMD_DISCONNECT = "co:disconnect";
+                public const string CmdDisconnect = "co:disconnect";
                 /// <summary>
                 /// Remote Protocol: Messages recieved and interpreted
                 /// </summary>
-                public const string CMD_RECIEVEDOK = "status:ok";
+                public const string CmdRecievedok = "status:ok";
                 /// <summary>
                 /// Remote Protocol: Messages recieved but not interpreted
                 /// </summary>
-                public const string CMD_RECIEVEDERROR = "status:parseerror";
+                public const string CmdRecievederror = "status:parseerror";
                 /// <summary>
                 /// Remote Protocol: Messages recieved but error executing
                 /// </summary>
-                public const string CMD_ERROR = "status:execerror";
+                public const string CmdError = "status:execerror";
             }
         }
         #endregion
@@ -137,8 +137,8 @@ namespace CopticChanter
         #region Styles
         public static FontFamily Segoe = new FontFamily("Segoe UI");
         public static FontFamily Coptic1 = new FontFamily("/Assets/Coptic1.ttf#Coptic1");
-        private static SolidColorBrush AccentBrush;
-        private static Color AccentColor;
+        private static SolidColorBrush _accentBrush;
+        private static Color _accentColor;
         #endregion
 
         public enum Language
@@ -150,20 +150,20 @@ namespace CopticChanter
 
         public static SolidColorBrush GetAccentBrush()
         {
-            if (AccentBrush == null)
+            if (_accentBrush == null)
             {
-                if (AccentColor == null)
-                    AccentBrush = Application.Current.Resources["SystemControlHighlightAccentBrush"] as SolidColorBrush;
+                if (_accentColor == null)
+                    _accentBrush = Application.Current.Resources["SystemControlHighlightAccentBrush"] as SolidColorBrush;
                 else
                 {
-                    AccentBrush = new SolidColorBrush(AccentColor);
+                    _accentBrush = new SolidColorBrush(_accentColor);
                 }
             }
-            return AccentBrush;
+            return _accentBrush;
         }
         public static void SetAccentColor(Color accent)
         {
-            AccentColor = accent;
+            _accentColor = accent;
         }
 
         public static int GetFontSize(Language lang)
@@ -279,8 +279,8 @@ namespace CopticChanter
 
     public class WinVer
     {
-        static ulong WinVersion;
-        static ulong WinBuild;
+        static ulong _winVersion;
+        static ulong _winBuild;
 
         /// <summary>
         /// Returns short Version number (ex. 1709)
@@ -288,7 +288,7 @@ namespace CopticChanter
         /// <returns></returns>
         public static ulong GetWinVer()
         {
-            if (WinVersion == 0)
+            if (_winVersion == 0)
             {
                 string sv = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
                 ulong v = ulong.Parse(sv);
@@ -297,39 +297,39 @@ namespace CopticChanter
                 ulong v3 = (v & 0x00000000FFFF0000L) >> 16;
                 ulong v4 = v & 0x000000000000FFFFL;
                 string version = $"{v1}.{v2}.{v3}.{v4}"; // == 10.0.10240.16413
-                WinBuild = v3;
+                _winBuild = v3;
 
-                if (WinBuild >= 17134)
+                if (_winBuild >= 17134)
                 {
-                    WinVersion = 1803;
+                    _winVersion = 1803;
                 }
-                else if (WinBuild >= 16299)
+                else if (_winBuild >= 16299)
                 {
-                    WinVersion = 1709;
+                    _winVersion = 1709;
                 }
-                else if (WinBuild >= 15063)
+                else if (_winBuild >= 15063)
                 {
-                    WinVersion = 1703;
+                    _winVersion = 1703;
                 }
-                else if (WinBuild >= 14393)
+                else if (_winBuild >= 14393)
                 {
-                    WinVersion = 1607;
+                    _winVersion = 1607;
                 }
-                else if (WinBuild >= 10586)
+                else if (_winBuild >= 10586)
                 {
-                    WinVersion = 1511;
+                    _winVersion = 1511;
                 }
-                else if (WinBuild >= 10240)
+                else if (_winBuild >= 10240)
                 {
-                    WinVersion = 1507;
+                    _winVersion = 1507;
                 }
-                else if (WinBuild < 10240)
+                else if (_winBuild < 10240)
                 {
-                    WinVersion = 1;
+                    _winVersion = 1;
                 }
             }
 
-            return WinVersion;
+            return _winVersion;
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace CopticChanter
         /// <returns></returns>
         public static ulong GetWinBuild()
         {
-            if (WinVersion == 0)
+            if (_winVersion == 0)
             {
                 string sv = Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
                 ulong v = ulong.Parse(sv);
@@ -347,45 +347,45 @@ namespace CopticChanter
                 ulong v3 = (v & 0x00000000FFFF0000L) >> 16;
                 ulong v4 = v & 0x000000000000FFFFL;
                 string version = $"{v1}.{v2}.{v3}.{v4}"; // == 10.0.10240.16413
-                WinBuild = v3;
+                _winBuild = v3;
 
-                if (WinBuild >= 17134)
+                if (_winBuild >= 17134)
                 {
-                    WinVersion = 1803;
+                    _winVersion = 1803;
                 }
-                else if (WinBuild >= 16299)
+                else if (_winBuild >= 16299)
                 {
-                    WinVersion = 1709;
+                    _winVersion = 1709;
                 }
-                else if (WinBuild >= 15063)
+                else if (_winBuild >= 15063)
                 {
-                    WinVersion = 1703;
+                    _winVersion = 1703;
                 }
-                else if (WinBuild >= 14393)
+                else if (_winBuild >= 14393)
                 {
-                    WinVersion = 1607;
+                    _winVersion = 1607;
                 }
-                else if (WinBuild >= 10586)
+                else if (_winBuild >= 10586)
                 {
-                    WinVersion = 1511;
+                    _winVersion = 1511;
                 }
-                else if (WinBuild >= 10240)
+                else if (_winBuild >= 10240)
                 {
-                    WinVersion = 1507;
+                    _winVersion = 1507;
                 }
-                else if (WinBuild < 10240)
+                else if (_winBuild < 10240)
                 {
-                    WinVersion = 1;
+                    _winVersion = 1;
                 }
             }
 
-            return WinBuild;
+            return _winBuild;
         }
     }
 
     public static class ColorExtensions
     {
-        public static Windows.UI.Color ToUIColor(this Windows.UI.Color color)
+        public static Windows.UI.Color ToUiColor(this Windows.UI.Color color)
         {
             return Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B);
         }

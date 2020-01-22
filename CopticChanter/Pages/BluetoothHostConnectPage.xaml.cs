@@ -23,10 +23,10 @@ namespace CopticChanter.Pages
 {
     public sealed partial class BluetoothHostConnectPage : Page
     {
-        private StreamSocket socket;
-        private DataWriter writer;
-        private RfcommServiceProvider rfcommProvider;
-        private StreamSocketListener socketListener;
+        private StreamSocket _socket;
+        private DataWriter _writer;
+        private RfcommServiceProvider _rfcommProvider;
+        private StreamSocketListener _socketListener;
 
         public BluetoothHostConnectPage()
         {
@@ -54,7 +54,7 @@ namespace CopticChanter.Pages
 
             try
             {
-                rfcommProvider = await RfcommServiceProvider.CreateAsync(RfcommServiceId.FromUuid(Common.RemoteConstants.RfcommChatServiceUuid));
+                _rfcommProvider = await RfcommServiceProvider.CreateAsync(RfcommServiceId.FromUuid(Common.RemoteConstants.RfcommChatServiceUuid));
             }
             // Catch exception HRESULT_FROM_WIN32(ERROR_DEVICE_NOT_AVAILABLE).
             catch (Exception ex) when ((uint)ex.HResult == 0x800710DF)
@@ -68,19 +68,19 @@ namespace CopticChanter.Pages
 
 
             // Create a listener for this service and start listening
-            socketListener = new StreamSocketListener();
-            socketListener.ConnectionReceived += OnConnectionReceived;
-            var rfcomm = rfcommProvider.ServiceId.AsString();
+            _socketListener = new StreamSocketListener();
+            _socketListener.ConnectionReceived += OnConnectionReceived;
+            var rfcomm = _rfcommProvider.ServiceId.AsString();
 
-            await socketListener.BindServiceNameAsync(rfcommProvider.ServiceId.AsString(),
+            await _socketListener.BindServiceNameAsync(_rfcommProvider.ServiceId.AsString(),
                 SocketProtectionLevel.BluetoothEncryptionAllowNullAuthentication);
 
             // Set the SDP attributes and start Bluetooth advertising
-            InitializeServiceSdpAttributes(rfcommProvider);
+            InitializeServiceSdpAttributes(_rfcommProvider);
 
             try
             {
-                rfcommProvider.StartAdvertising(socketListener, true);
+                _rfcommProvider.StartAdvertising(_socketListener, true);
             }
             catch (Exception e)
             {
@@ -135,17 +135,17 @@ namespace CopticChanter.Pages
             if (MessageTextBox.Text.Length != 0)
             {
                 // Make sure that the connection is still up and there is a message to send
-                if (socket != null)
+                if (_socket != null)
                 {
                     string message = MessageTextBox.Text;
-                    writer.WriteUInt32((uint)message.Length);
-                    writer.WriteString(message);
+                    _writer.WriteUInt32((uint)message.Length);
+                    _writer.WriteString(message);
 
                     ConversationListBox.Items.Add("Sent: " + message);
                     // Clear the messageTextBox for a new message
                     MessageTextBox.Text = "";
 
-                    await writer.StoreAsync();
+                    await _writer.StoreAsync();
 
                 }
                 else
@@ -164,28 +164,28 @@ namespace CopticChanter.Pages
 
         private async void Disconnect()
         {
-            if (rfcommProvider != null)
+            if (_rfcommProvider != null)
             {
-                rfcommProvider.StopAdvertising();
-                rfcommProvider = null;
+                _rfcommProvider.StopAdvertising();
+                _rfcommProvider = null;
             }
 
-            if (socketListener != null)
+            if (_socketListener != null)
             {
-                socketListener.Dispose();
-                socketListener = null;
+                _socketListener.Dispose();
+                _socketListener = null;
             }
 
-            if (writer != null)
+            if (_writer != null)
             {
-                writer.DetachStream();
-                writer = null;
+                _writer.DetachStream();
+                _writer = null;
             }
 
-            if (socket != null)
+            if (_socket != null)
             {
-                socket.Dispose();
-                socket = null;
+                _socket.Dispose();
+                _socket = null;
             }
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
@@ -204,12 +204,12 @@ namespace CopticChanter.Pages
             StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args)
         {
             // Don't need the listener anymore
-            socketListener.Dispose();
-            socketListener = null;
+            _socketListener.Dispose();
+            _socketListener = null;
 
             try
             {
-                socket = args.Socket;
+                _socket = args.Socket;
             }
             catch (Exception e)
             {
@@ -222,10 +222,10 @@ namespace CopticChanter.Pages
             }
 
             // Note - this is the supported way to get a Bluetooth device from a given socket
-            var remoteDevice = await BluetoothDevice.FromHostNameAsync(socket.Information.RemoteHostName);
+            var remoteDevice = await BluetoothDevice.FromHostNameAsync(_socket.Information.RemoteHostName);
 
-            writer = new DataWriter(socket.OutputStream);
-            var reader = new DataReader(socket.InputStream);
+            _writer = new DataWriter(_socket.OutputStream);
+            var reader = new DataReader(_socket.InputStream);
             bool remoteDisconnection = false;
 
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>

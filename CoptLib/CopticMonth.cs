@@ -8,7 +8,7 @@ namespace CoptLib
 {
     public class CopticMonth : IComparable, IComparable<CopticMonth>, IEquatable<CopticMonth>
     {
-        public Months_E EnglishName {
+        public MonthsE EnglishName {
             get;
         }
 
@@ -22,7 +22,7 @@ namespace CoptLib
 
         public CopticMonth(int num)
         {
-            EnglishName = (Months_E)num;
+            EnglishName = (MonthsE)num;
             CopticName = CopticMonths[num];
             
             if (num > 13)
@@ -52,7 +52,7 @@ namespace CoptLib
             "P-i-k-o-u-j-i- -n-`-a-`-b-o-t-" // 13
         };
 
-        public enum Months_E
+        public enum MonthsE
         {
             Tout = 1,
             Baba = 2,

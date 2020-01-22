@@ -15,17 +15,17 @@ namespace UWPRemoteTask
     public sealed class RfcommServerTask : IBackgroundTask
     {
         // Networking
-        private StreamSocket socket = null;
-        private DataReader reader = null;
-        private DataWriter writer = null;
-        private BluetoothDevice remoteDevice = null;
+        private StreamSocket _socket = null;
+        private DataReader _reader = null;
+        private DataWriter _writer = null;
+        private BluetoothDevice _remoteDevice = null;
 
-        private BackgroundTaskDeferral deferral = null;
-        private IBackgroundTaskInstance taskInstance = null;
-        private BackgroundTaskCancellationReason cancelReason = BackgroundTaskCancellationReason.Abort;
-        private bool cancelRequested = false;
+        private BackgroundTaskDeferral _deferral = null;
+        private IBackgroundTaskInstance _taskInstance = null;
+        private BackgroundTaskCancellationReason _cancelReason = BackgroundTaskCancellationReason.Abort;
+        private bool _cancelRequested = false;
 
-        ThreadPoolTimer periodicTimer = null;
+        ThreadPoolTimer _periodicTimer = null;
         /// <summary>
         /// The entry point of a background task.
         /// </summary>
@@ -33,44 +33,44 @@ namespace UWPRemoteTask
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
             // Get the deferral to prevent the task from closing prematurely
-            deferral = taskInstance.GetDeferral();
+            _deferral = taskInstance.GetDeferral();
 
             // Setup our onCanceled callback and progress
-            this.taskInstance = taskInstance;
-            this.taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
-            this.taskInstance.Progress = 0;
+            this._taskInstance = taskInstance;
+            this._taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
+            this._taskInstance.Progress = 0;
 
             // Store a setting so that the app knows that the task is running. 
             ApplicationData.Current.LocalSettings.Values["IsBackgroundTaskActive"] = true;
 
-            periodicTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler(PeriodicTimerCallback), TimeSpan.FromSeconds(1));
+            _periodicTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler(PeriodicTimerCallback), TimeSpan.FromSeconds(1));
 
             try
             {
                 RfcommConnectionTriggerDetails details = (RfcommConnectionTriggerDetails)taskInstance.TriggerDetails;
                 if (details != null)
                 {
-                    socket = details.Socket;
-                    remoteDevice = details.RemoteDevice;
-                    ApplicationData.Current.LocalSettings.Values["RemoteDeviceName"] = remoteDevice.Name;
+                    _socket = details.Socket;
+                    _remoteDevice = details.RemoteDevice;
+                    ApplicationData.Current.LocalSettings.Values["RemoteDeviceName"] = _remoteDevice.Name;
 
-                    writer = new DataWriter(socket.OutputStream);
-                    reader = new DataReader(socket.InputStream);
+                    _writer = new DataWriter(_socket.OutputStream);
+                    _reader = new DataReader(_socket.InputStream);
                 }
                 else
                 {
                     ApplicationData.Current.LocalSettings.Values["BackgroundTaskStatus"] = "Trigger details returned null";
-                    deferral.Complete();
+                    _deferral.Complete();
                 }
 
                 var result = await ReceiveDataAsync();
             }
             catch (Exception ex)
             {
-                reader = null;
-                writer = null;
-                socket = null;
-                deferral.Complete();
+                _reader = null;
+                _writer = null;
+                _socket = null;
+                _deferral.Complete();
 
                 Debug.WriteLine("Exception occurred while initializing the connection, hr = " + ex.HResult.ToString("X"));
             }
@@ -78,40 +78,40 @@ namespace UWPRemoteTask
 
         private void OnCanceled(IBackgroundTaskInstance taskInstance, BackgroundTaskCancellationReason reason)
         {
-            cancelReason = reason;
-            cancelRequested = true;
+            _cancelReason = reason;
+            _cancelRequested = true;
 
-            ApplicationData.Current.LocalSettings.Values["TaskCancelationReason"] = cancelReason.ToString();
+            ApplicationData.Current.LocalSettings.Values["TaskCancelationReason"] = _cancelReason.ToString();
             ApplicationData.Current.LocalSettings.Values["IsBackgroundTaskActive"] = false;
             ApplicationData.Current.LocalSettings.Values["ReceivedMessage"] = "";
             // Complete the background task (this raises the OnCompleted event on the corresponding BackgroundTaskRegistration). 
-            deferral.Complete();
+            _deferral.Complete();
         }
 
         private async Task<int> ReceiveDataAsync()
         {
             while (true)
             {
-                uint readLength = await reader.LoadAsync(sizeof(uint));
+                uint readLength = await _reader.LoadAsync(sizeof(uint));
                 if (readLength < sizeof(uint))
                 {
                     ApplicationData.Current.LocalSettings.Values["IsBackgroundTaskActive"] = false;
                     // Complete the background task (this raises the OnCompleted event on the corresponding BackgroundTaskRegistration). 
-                    deferral.Complete();
+                    _deferral.Complete();
                 }
-                uint currentLength = reader.ReadUInt32();
+                uint currentLength = _reader.ReadUInt32();
 
-                readLength = await reader.LoadAsync(currentLength);
+                readLength = await _reader.LoadAsync(currentLength);
                 if (readLength < currentLength)
                 {
                     ApplicationData.Current.LocalSettings.Values["IsBackgroundTaskActive"] = false;
                     // Complete the background task (this raises the OnCompleted event on the corresponding BackgroundTaskRegistration). 
-                    deferral.Complete();
+                    _deferral.Complete();
                 }
-                string message = reader.ReadString(currentLength);
+                string message = _reader.ReadString(currentLength);
 
                 ApplicationData.Current.LocalSettings.Values["ReceivedMessage"] = message;
-                taskInstance.Progress += 1;
+                _taskInstance.Progress += 1;
             }
         }
 
@@ -121,7 +121,7 @@ namespace UWPRemoteTask
         /// <param name="timer"></param>
         private async void PeriodicTimerCallback(ThreadPoolTimer timer)
         {
-            if (!cancelRequested)
+            if (!_cancelRequested)
             {
                 string message = (string)ApplicationData.Current.LocalSettings.Values["SendMessage"];
                 if (!string.IsNullOrEmpty(message))
@@ -129,36 +129,36 @@ namespace UWPRemoteTask
                     try
                     {
                         // Make sure that the connection is still up and there is a message to send
-                        if (socket != null)
+                        if (_socket != null)
                         {
-                            writer.WriteUInt32((uint)message.Length);
-                            writer.WriteString(message);
-                            await writer.StoreAsync();
+                            _writer.WriteUInt32((uint)message.Length);
+                            _writer.WriteString(message);
+                            await _writer.StoreAsync();
 
                             ApplicationData.Current.LocalSettings.Values["SendMessage"] = null;
                         }
                         else
                         {
-                            cancelReason = BackgroundTaskCancellationReason.ConditionLoss;
-                            deferral.Complete();
+                            _cancelReason = BackgroundTaskCancellationReason.ConditionLoss;
+                            _deferral.Complete();
                         }
                     }
                     catch (Exception ex)
                     {
                         ApplicationData.Current.LocalSettings.Values["TaskCancelationReason"] = ex.Message;
                         ApplicationData.Current.LocalSettings.Values["SendMessage"] = null;
-                        deferral.Complete();
+                        _deferral.Complete();
                     }
                 }
             }
             else
             {
                 // Timer clean up
-                periodicTimer.Cancel();
+                _periodicTimer.Cancel();
                 //
                 // Write to LocalSettings to indicate that this background task ran.
                 //
-                ApplicationData.Current.LocalSettings.Values["TaskCancelationReason"] = cancelReason.ToString();
+                ApplicationData.Current.LocalSettings.Values["TaskCancelationReason"] = _cancelReason.ToString();
             }
         }
     }
