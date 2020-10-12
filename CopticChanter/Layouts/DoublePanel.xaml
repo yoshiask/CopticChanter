@@ -6,18 +6,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Patha.CustomUWPControls"
-    mc:Ignorable="d" ManipulationStarted="Page_ManipulationStarted" ManipulationDelta="Page_ManipulationDelta" ManipulationCompleted="Page_ManipulationCompleted" RequestedTheme="Dark" Loaded="Page_Loaded">
+    mc:Ignorable="d"
+	ManipulationStarted="Page_ManipulationStarted" ManipulationDelta="Page_ManipulationDelta" ManipulationCompleted="Page_ManipulationCompleted"
+	RequestedTheme="Dark"
+	Loaded="Page_Loaded">
 
-    <Grid x:Name="MainGrid" Background="White">
+	<Grid x:Name="MainGrid" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="64*"/>
             <ColumnDefinition Width="64*"/>
         </Grid.ColumnDefinitions>
         <ScrollViewer x:Name="ContentViewLeft" Margin="10,10,10,0" HorizontalAlignment="Stretch">
-            <StackPanel x:Name="ContentPanelLeft" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+			<StackPanel x:Name="ContentPanelLeft" Spacing="20"
+						ScrollViewer.VerticalScrollBarVisibility="Disabled" />
         </ScrollViewer>
         <ScrollViewer x:Name="ContentViewRight" Margin="10,10,10,0" HorizontalAlignment="Stretch" Grid.Column="1">
-            <StackPanel x:Name="ContentPanelRight" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+            <StackPanel x:Name="ContentPanelRight" Spacing="20"
+						ScrollViewer.VerticalScrollBarVisibility="Disabled" />
         </ScrollViewer>
         <Button x:Name="RightButton" Content="Right" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0" Grid.Column="1" FontSize="72" FontWeight="Bold" Foreground="White" Visibility="Visible" Click="RightButton_Click" d:IsHidden="True"/>
         <Button x:Name="LeftButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0" FontSize="72" FontWeight="Bold" Foreground="White" Click="LeftButton_Click" Visibility="Visible" d:IsHidden="True"/>

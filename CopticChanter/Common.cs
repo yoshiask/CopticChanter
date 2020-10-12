@@ -129,7 +129,7 @@ namespace CopticChanter
         #endregion
 
         #region Styles
-        public static FontFamily Segoe = new FontFamily("Segoe UI");
+        public static FontFamily Segoe = new FontFamily("Segoe UI Coptic");
         public static FontFamily Coptic1 = new FontFamily("/Assets/Coptic1.ttf#Coptic1");
         private static SolidColorBrush _accentBrush;
         private static Color _accentColor;
@@ -258,7 +258,7 @@ namespace CopticChanter
         {
             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-c"))
             {
-                ApplicationData.Current.LocalSettings.Values.Add("font-size-c", 45);
+                ApplicationData.Current.LocalSettings.Values.Add("font-size-c", 40);
             }
             return (int)ApplicationData.Current.LocalSettings.Values["font-size-c"];
         }

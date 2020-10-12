@@ -47,19 +47,15 @@ namespace CopticChanter.Layouts
                     {
                         foreach (string content in doc.Content)
                         {
-                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                            foreach (string s in split)
+                            var contentBlockE = new TextBlock
                             {
-                                var contentBlockE = new TextBlock
-                                {
-                                    Text = s,
-                                    FontFamily = Common.Segoe,
-                                    FontSize = Common.GetEnglishFontSize(),
-                                    TextWrapping = TextWrapping.WrapWholeWords,
-                                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-                                };
-                                ContentPanelLeft.Children.Add(contentBlockE);
-                            }
+                                Text = content,
+                                FontFamily = Common.Segoe,
+                                FontSize = Common.GetEnglishFontSize(),
+                                TextWrapping = TextWrapping.Wrap,
+                                Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                            };
+                            ContentPanelLeft.Children.Add(contentBlockE);
                         }
                     }
                     break;
@@ -71,20 +67,16 @@ namespace CopticChanter.Layouts
                     {
                         foreach (string content in doc.Content)
                         {
-                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                            foreach (string s in split)
+                            string cont = CopticInterpreter.ConvertFont(content, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                            var contentBlockC = new TextBlock
                             {
-                                string cont = CopticInterpreter.ConvertFont(s, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
-                                var contentBlockC = new TextBlock
-                                {
-                                    Text = cont,
-                                    FontFamily = Common.Segoe,
-                                    FontSize = Common.GetCopticFontSize(),
-                                    TextWrapping = TextWrapping.WrapWholeWords,
-                                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-                                };
-                                ContentPanelLeft.Children.Add(contentBlockC);
-                            }
+                                Text = cont.Replace(" ", " \u200B"),
+                                FontFamily = Common.Segoe,
+                                FontSize = Common.GetCopticFontSize(),
+                                TextWrapping = TextWrapping.Wrap,
+                                Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                            };
+                            ContentPanelLeft.Children.Add(contentBlockC);
                         }
                     }
                     break;
@@ -115,19 +107,15 @@ namespace CopticChanter.Layouts
                     {
                         foreach (string content in doc.Content)
                         {
-                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                            foreach (string s in split)
+                            var contentBlockE = new TextBlock
                             {
-								var contentBlockE = new TextBlock
-								{
-									Text = s,
-									FontFamily = Common.Segoe,
-									FontSize = Common.GetEnglishFontSize(),
-									TextWrapping = TextWrapping.WrapWholeWords,
-									Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-								};
-								ContentPanelRight.Children.Add(contentBlockE);
-                            }
+                                Text = content,
+                                FontFamily = Common.Segoe,
+                                FontSize = Common.GetEnglishFontSize(),
+                                TextWrapping = TextWrapping.Wrap,
+                                Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                            };
+                            ContentPanelRight.Children.Add(contentBlockE);
                         }
                     }
                     break;
@@ -139,20 +127,16 @@ namespace CopticChanter.Layouts
                     {
                         foreach (string content in doc.Content)
                         {
-                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                            foreach (string s in split)
+                            string cont = CopticInterpreter.ConvertFont(content, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                            var contentBlockC = new TextBlock
                             {
-                                string cont = CopticInterpreter.ConvertFont(s, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
-								var contentBlockC = new TextBlock
-								{
-									Text = cont,
-									FontFamily = Common.Segoe,
-									FontSize = Common.GetCopticFontSize(),
-									TextWrapping = TextWrapping.WrapWholeWords,
-									Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-								};
-								ContentPanelRight.Children.Add(contentBlockC);
-                            }
+                                Text = cont.Replace(" ", " \u200B"),
+                                FontFamily = Common.Segoe,
+                                FontSize = Common.GetCopticFontSize(),
+                                TextWrapping = TextWrapping.Wrap,
+                                Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                            };
+                            ContentPanelRight.Children.Add(contentBlockC);
                         }
                     }
                     break;
