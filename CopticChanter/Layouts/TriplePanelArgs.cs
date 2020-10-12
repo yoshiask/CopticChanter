@@ -1,4 +1,5 @@
-﻿using Windows.UI;
+﻿using System;
+using Windows.UI;
 using static CoptLib.CopticInterpreter;
 
 namespace CopticChanter.Layouts
@@ -18,6 +19,42 @@ namespace CopticChanter.Layouts
             Language3 = lang3;
             BackColor = bcolor;
             ForeColor = fcolor;
+        }
+
+        public TriplePanelArgs(Language[] langs, Color bcolor, Color fcolor)
+        {
+            if (langs.Length < 3)
+                throw new ArgumentException("Three languages must be specified for TriplePanel");
+
+            Language1 = langs[0];
+            Language2 = langs[1];
+            Language3 = langs[2];
+            BackColor = bcolor;
+            ForeColor = fcolor;
+        }
+
+        public TriplePanelArgs(Color bcolor, Color fcolor, params Language[] langs)
+        {
+            if (langs.Length < 3)
+                throw new ArgumentException("Three languages must be specified for TriplePanel");
+
+            Language1 = langs[0];
+            Language2 = langs[1];
+            Language3 = langs[2];
+            BackColor = bcolor;
+            ForeColor = fcolor;
+        }
+
+        public TriplePanelArgs(params Language[] langs)
+        {
+            if (langs.Length < 3)
+                throw new ArgumentException("Three languages must be specified for TriplePanel");
+
+            Language1 = langs[0];
+            Language2 = langs[1];
+            Language3 = langs[2];
+            BackColor = Colors.Black;
+            ForeColor = Colors.White;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -22,7 +23,7 @@ namespace CopticChanter
             LoadDocs(true);
         }
 
-        private async void NewLoadDocs(bool present = false)
+        private async Task NewLoadDocs(bool present = false)
         {
             OutputBox.Text = "";
             InputBox.Text = "";
@@ -133,70 +134,32 @@ namespace CopticChanter
 
         private void Present()
         {
-            bool eng = Common.EnglishDocCount > 0;
-            Debug.WriteLine("English: " + eng);
-            bool copt = Common.CopticDocCount > 0;
-            Debug.WriteLine("Coptic: " + copt);
-            bool arabic = Common.ArabicDocCount > 0;
-            Debug.WriteLine("Arabic: " + arabic);
+            var langs = new List<CopticInterpreter.Language>(3);
 
-            if (eng && !copt && !arabic)
-            {
-                Frame.Navigate(typeof(Layouts.SinglePanel),
-                    new Layouts.SinglePanelArgs(
-                        CopticInterpreter.Language.English,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
-                );
-            }
-            else if (!eng && copt && !arabic)
-            {
-                Frame.Navigate(typeof(Layouts.SinglePanel),
-                    new Layouts.SinglePanelArgs(
-                        CopticInterpreter.Language.Coptic,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
-                );
-            }
-            else if (!eng && !copt && arabic)
-            {
-                Frame.Navigate(typeof(Layouts.SinglePanel),
-                    new Layouts.SinglePanelArgs(
-                        CopticInterpreter.Language.Arabic,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
-                );
-            }
+            if (Common.EnglishDocCount > 0)
+                langs.Add(CopticInterpreter.Language.English);
+            if (Common.CopticDocCount > 0)
+                langs.Add(CopticInterpreter.Language.Coptic);
+            if (Common.ArabicDocCount > 0)
+                langs.Add(CopticInterpreter.Language.Arabic);
 
-            else if (eng && copt && !arabic)
-            {
-                Frame.Navigate(typeof(Layouts.DoublePanel),
-                    new Layouts.DoublePanelArgs(
-                        CopticInterpreter.Language.English,
-                        CopticInterpreter.Language.Coptic,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
+            if (langs.Count == 1)
+			{
+                Frame.Navigate(typeof(Layouts.SinglePanel),
+                    new Layouts.SinglePanelArgs(langs.ToArray())
                 );
             }
-            else if (!eng && copt && arabic)
-            {
+            else if (langs.Count == 2)
+			{
                 Frame.Navigate(typeof(Layouts.DoublePanel),
-                    new Layouts.DoublePanelArgs(
-                        CopticInterpreter.Language.Coptic,
-                        CopticInterpreter.Language.Arabic,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
+                    new Layouts.DoublePanelArgs(langs.ToArray())
                 );
             }
-            else if (eng && !copt && arabic)
-            {
-                Frame.Navigate(typeof(Layouts.DoublePanel),
-                    new Layouts.DoublePanelArgs(
-                        CopticInterpreter.Language.English,
-                        CopticInterpreter.Language.Arabic,
-                        Windows.UI.Colors.Black,
-                        Windows.UI.Colors.White)
-                );
+            else if (langs.Count == 3)
+			{
+                //Frame.Navigate(typeof(Layouts.TriplePanel),
+                //    new Layouts.TriplePanelArgs(langs.ToArray())
+                //);
             }
         }
 
