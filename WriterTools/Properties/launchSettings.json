@@ -2,7 +2,7 @@
   "profiles": {
     "WriterTools": {
       "commandName": "Project",
-      "commandLineArgs": "--source-csv \"C:\\Users\\jjask\\Desktop\\test.csv\" --source-font \"Athanasius\" --csv-column 2"
+      "commandLineArgs": "--source-txt --source-file \"C:\\Users\\jjask\\Desktop\\test.txt\" --source-font \"CS Avva Shenouda\" --target-font \"Coptic Unicode\""
     }
   }
 }
