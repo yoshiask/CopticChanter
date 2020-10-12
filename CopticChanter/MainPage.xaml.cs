@@ -98,11 +98,11 @@ namespace CopticChanter
                             {
                                 Common.EnglishDocCount++;
                             }
+                        }
 
-                            if (present)
-                            {
-                                Present();
-                            }
+                        if (present)
+                        {
+                            Present();
                         }
                     }
                     else
@@ -165,10 +165,12 @@ namespace CopticChanter
 
         private async void ConvertButton_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".xml");
+			var picker = new Windows.Storage.Pickers.FileOpenPicker
+			{
+				ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail,
+				SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
+			};
+			picker.FileTypeFilter.Add(".xml");
             picker.FileTypeFilter.Add(".txt");
 
             StorageFile file = await picker.PickSingleFileAsync();

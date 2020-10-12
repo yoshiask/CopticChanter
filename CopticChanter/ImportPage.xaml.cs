@@ -32,10 +32,12 @@ namespace CopticChanter
 
         private async void ImportButton_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".xml");
+			var picker = new Windows.Storage.Pickers.FileOpenPicker
+			{
+				ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail,
+				SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
+			};
+			picker.FileTypeFilter.Add(".xml");
 
             StorageFile file = await picker.PickSingleFileAsync();
 

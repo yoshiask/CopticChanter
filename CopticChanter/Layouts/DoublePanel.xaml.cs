@@ -1,6 +1,7 @@
 ﻿using CoptLib;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -42,23 +43,22 @@ namespace CopticChanter.Layouts
             {
                 #region English
                 case CopticInterpreter.Language.English:
-                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
+                    foreach (CoptLib.XML.DocXml doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.English))
                     {
-                        if (doc.Language == CopticInterpreter.Language.English)
+                        foreach (string content in doc.Content)
                         {
-                            foreach (string content in doc.Content)
+                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                            foreach (string s in split)
                             {
-                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                                foreach (string s in split)
+                                var contentBlockE = new TextBlock
                                 {
-                                    var contentBlockE = new TextBlock();
-                                    contentBlockE.Text = s + "\r\n";
-                                    contentBlockE.FontFamily = Common.Segoe;
-                                    contentBlockE.FontSize = Common.GetEnglishFontSize();
-                                    contentBlockE.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockE.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanelLeft.Children.Add(contentBlockE);
-                                }
+                                    Text = s,
+                                    FontFamily = Common.Segoe,
+                                    FontSize = Common.GetEnglishFontSize(),
+                                    TextWrapping = TextWrapping.WrapWholeWords,
+                                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                                };
+                                ContentPanelLeft.Children.Add(contentBlockE);
                             }
                         }
                     }
@@ -67,24 +67,23 @@ namespace CopticChanter.Layouts
 
                 #region Coptic
                 case CopticInterpreter.Language.Coptic:
-                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
+                    foreach (CoptLib.XML.DocXml doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.Coptic))
                     {
-                        if (doc.Language == CopticInterpreter.Language.Coptic)
+                        foreach (string content in doc.Content)
                         {
-                            foreach (string content in doc.Content)
+                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                            foreach (string s in split)
                             {
-                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                                foreach (string s in split)
+                                string cont = CopticInterpreter.ConvertFont(s, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                                var contentBlockC = new TextBlock
                                 {
-                                    string cont = CopticInterpreter.ConvertFont(s, CopticFont.Coptic1, CopticFont.CopticUnicode);
-                                    var contentBlockC = new TextBlock();
-                                    contentBlockC.Text = cont + "\r\n";
-                                    contentBlockC.FontFamily = Common.Coptic1;
-                                    contentBlockC.FontSize = Common.GetCopticFontSize();
-                                    contentBlockC.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockC.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanelLeft.Children.Add(contentBlockC);
-                                }
+                                    Text = cont,
+                                    FontFamily = Common.Segoe,
+                                    FontSize = Common.GetCopticFontSize(),
+                                    TextWrapping = TextWrapping.WrapWholeWords,
+                                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+                                };
+                                ContentPanelLeft.Children.Add(contentBlockC);
                             }
                         }
                     }
@@ -94,11 +93,13 @@ namespace CopticChanter.Layouts
                 #region Arabic
                 // TODO: Support Arabic text
                 case CopticInterpreter.Language.Arabic:
-                    var contentBlockA = new TextBlock();
-                    contentBlockA.Text = "\n";
-                    contentBlockA.FontFamily = Common.Segoe;
-                    contentBlockA.FontSize = 40;
-                    contentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
+                    var contentBlockA = new TextBlock
+                    {
+                        Text = "\n",
+                        FontFamily = Common.Segoe,
+                        FontSize = 40,
+                        TextWrapping = TextWrapping.WrapWholeWords
+                    };
                     ContentPanelLeft.Children.Add(contentBlockA);
                     break;
                     #endregion
@@ -106,27 +107,26 @@ namespace CopticChanter.Layouts
             #endregion
 
             #region Right
-            switch (args.Language1)
+            switch (args.Language2)
             {
                 #region English
                 case CopticInterpreter.Language.English:
-                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
+                    foreach (CoptLib.XML.DocXml doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.English))
                     {
-                        if (doc.Language == CopticInterpreter.Language.English)
+                        foreach (string content in doc.Content)
                         {
-                            foreach (string content in doc.Content)
+                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                            foreach (string s in split)
                             {
-                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                                foreach (string s in split)
-                                {
-                                    var contentBlockE = new TextBlock();
-                                    contentBlockE.Text = s + "\r\n";
-                                    contentBlockE.FontFamily = Common.Segoe;
-                                    contentBlockE.FontSize = Common.GetEnglishFontSize();
-                                    contentBlockE.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockE.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanelRight.Children.Add(contentBlockE);
-                                }
+								var contentBlockE = new TextBlock
+								{
+									Text = s,
+									FontFamily = Common.Segoe,
+									FontSize = Common.GetEnglishFontSize(),
+									TextWrapping = TextWrapping.WrapWholeWords,
+									Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+								};
+								ContentPanelRight.Children.Add(contentBlockE);
                             }
                         }
                     }
@@ -135,24 +135,23 @@ namespace CopticChanter.Layouts
 
                 #region Coptic
                 case CopticInterpreter.Language.Coptic:
-                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
+                    foreach (CoptLib.XML.DocXml doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.Coptic))
                     {
-                        if (doc.Language == CopticInterpreter.Language.Coptic)
+                        foreach (string content in doc.Content)
                         {
-                            foreach (string content in doc.Content)
+                            string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                            foreach (string s in split)
                             {
-                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
-                                foreach (string s in split)
-                                {
-                                    string cont = CopticInterpreter.ConvertFont(s, CopticFont.Coptic1, CopticFont.CopticUnicode);
-                                    var contentBlockC = new TextBlock();
-                                    contentBlockC.Text = cont + "\r\n";
-                                    contentBlockC.FontFamily = Common.Coptic1;
-                                    contentBlockC.FontSize = Common.GetCopticFontSize();
-                                    contentBlockC.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockC.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanelRight.Children.Add(contentBlockC);
-                                }
+                                string cont = CopticInterpreter.ConvertFont(s, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+								var contentBlockC = new TextBlock
+								{
+									Text = cont,
+									FontFamily = Common.Segoe,
+									FontSize = Common.GetCopticFontSize(),
+									TextWrapping = TextWrapping.WrapWholeWords,
+									Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+								};
+								ContentPanelRight.Children.Add(contentBlockC);
                             }
                         }
                     }
@@ -162,12 +161,14 @@ namespace CopticChanter.Layouts
                 #region Arabic
                 // TODO: Support Arabic text
                 case CopticInterpreter.Language.Arabic:
-                    var contentBlockA = new TextBlock();
-                    contentBlockA.Text = "\n";
-                    contentBlockA.FontFamily = Common.Segoe;
-                    contentBlockA.FontSize = 40;
-                    contentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
-                    ContentPanelRight.Children.Add(contentBlockA);
+					var contentBlockA = new TextBlock
+					{
+						Text = "\n",
+						FontFamily = Common.Segoe,
+						FontSize = 40,
+						TextWrapping = TextWrapping.WrapWholeWords
+					};
+					ContentPanelRight.Children.Add(contentBlockA);
                     break;
                     #endregion
             }

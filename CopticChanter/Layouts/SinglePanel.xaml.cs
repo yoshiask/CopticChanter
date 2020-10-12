@@ -51,13 +51,15 @@ namespace CopticChanter.Layouts
                                 string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
                                 foreach (string s in split)
                                 {
-                                    var contentBlockE = new TextBlock();
-                                    contentBlockE.Text = s + "\r\n";
-                                    contentBlockE.FontFamily = Common.Segoe;
-                                    contentBlockE.FontSize = Common.GetEnglishFontSize();
-                                    contentBlockE.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockE.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanel.Children.Add(contentBlockE);
+									var contentBlockE = new TextBlock
+									{
+										Text = s,
+										FontFamily = Common.Segoe,
+										FontSize = Common.GetEnglishFontSize(),
+										TextWrapping = TextWrapping.WrapWholeWords,
+										Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+									};
+									ContentPanel.Children.Add(contentBlockE);
                                 }
                             }
                         }
@@ -76,14 +78,16 @@ namespace CopticChanter.Layouts
                                 string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
                                 foreach (string s in split)
                                 {
-                                    string cont = CopticInterpreter.ConvertFont(s, CopticFont.Coptic1, CopticFont.CopticUnicode);
-                                    var contentBlockC = new TextBlock();
-                                    contentBlockC.Text = cont + "\r\n";
-                                    contentBlockC.FontFamily = Common.Coptic1;
-                                    contentBlockC.FontSize = Common.GetCopticFontSize();
-                                    contentBlockC.TextWrapping = TextWrapping.WrapWholeWords;
-                                    contentBlockC.Foreground = new SolidColorBrush(args.ForeColor.ToUiColor());
-                                    ContentPanel.Children.Add(contentBlockC);
+                                    string cont = CopticInterpreter.ConvertFont(s, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+									var contentBlockC = new TextBlock
+									{
+										Text = cont,
+										FontFamily = Common.Segoe,
+										FontSize = Common.GetCopticFontSize(),
+										TextWrapping = TextWrapping.WrapWholeWords,
+										Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
+									};
+									ContentPanel.Children.Add(contentBlockC);
                                 }
                             }
                         }
@@ -94,12 +98,14 @@ namespace CopticChanter.Layouts
                 #region Arabic
                 // TODO: Support Arabic text
                 case CopticInterpreter.Language.Arabic:
-                    var contentBlockA = new TextBlock();
-                    contentBlockA.Text = "\n";
-                    contentBlockA.FontFamily = Common.Segoe;
-                    contentBlockA.FontSize = 40;
-                    contentBlockA.TextWrapping = TextWrapping.WrapWholeWords;
-                    ContentPanel.Children.Add(contentBlockA);
+					var contentBlockA = new TextBlock
+					{
+						Text = "\n",
+						FontFamily = Common.Segoe,
+						FontSize = 40,
+						TextWrapping = TextWrapping.WrapWholeWords
+					};
+					ContentPanel.Children.Add(contentBlockA);
                     break;
                     #endregion
             }

@@ -32,10 +32,12 @@ namespace CopticChanter
 
         private async void ImportButton_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".xml");
+			var picker = new Windows.Storage.Pickers.FileOpenPicker
+			{
+				ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail,
+				SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
+			};
+			picker.FileTypeFilter.Add(".xml");
 
             StorageFile file = await picker.PickSingleFileAsync();
 
@@ -145,19 +147,23 @@ namespace CopticChanter
             {
                 if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
                 {
-                    AcrylicBrush backBrush = new AcrylicBrush();
-                    backBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
-                    backBrush.TintColor = Color.FromArgb(255, 246, 246, 246);
-                    backBrush.FallbackColor = Color.FromArgb(255, 246, 246, 246);
-                    backBrush.TintOpacity = 0.6;
-                    MainGrid.Background = backBrush;
+					AcrylicBrush backBrush = new AcrylicBrush
+					{
+						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+						TintColor = Color.FromArgb(255, 246, 246, 246),
+						FallbackColor = Color.FromArgb(255, 246, 246, 246),
+						TintOpacity = 0.6
+					};
+					MainGrid.Background = backBrush;
 
-                    AcrylicBrush barBrush = new AcrylicBrush();
-                    barBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
-                    barBrush.TintColor = Common.GetAccentBrush().Color;
-                    barBrush.FallbackColor = Common.GetAccentBrush().Color;
-                    barBrush.TintOpacity = 0.6;
-                    BottomBar.Background = barBrush;
+					AcrylicBrush barBrush = new AcrylicBrush
+					{
+						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+						TintColor = Common.GetAccentBrush().Color,
+						FallbackColor = Common.GetAccentBrush().Color,
+						TintOpacity = 0.6
+					};
+					BottomBar.Background = barBrush;
                 }
                 else
                 {

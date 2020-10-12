@@ -43,12 +43,14 @@ namespace CopticChanter
             {
                 if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
                 {
-                    AcrylicBrush backBrush = new AcrylicBrush();
-                    backBrush.BackgroundSource = AcrylicBackgroundSource.HostBackdrop;
-                    backBrush.TintColor = Color.FromArgb(255, 246, 246, 246);
-                    backBrush.FallbackColor = Color.FromArgb(255, 246, 246, 246);
-                    backBrush.TintOpacity = 0.6;
-                    MainGrid.Background = backBrush;
+					AcrylicBrush backBrush = new AcrylicBrush
+					{
+						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+						TintColor = Color.FromArgb(255, 246, 246, 246),
+						FallbackColor = Color.FromArgb(255, 246, 246, 246),
+						TintOpacity = 0.6
+					};
+					MainGrid.Background = backBrush;
                 }
                 else
                 {
