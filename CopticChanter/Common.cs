@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
-using Windows.Networking.Sockets;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using static CoptLib.CopticInterpreter;
 
 namespace CopticChanter
 {
@@ -140,13 +134,6 @@ namespace CopticChanter
         private static SolidColorBrush _accentBrush;
         private static Color _accentColor;
         #endregion
-
-        public enum Language
-        {
-            English = 0,
-            Coptic = 1,
-            Arabic = 2
-        }
 
         public static SolidColorBrush GetAccentBrush()
         {
@@ -441,8 +428,11 @@ namespace CopticChanter
     public static class ViewExtensions
     {
         public static void ScrollToElement(this ScrollViewer scrollViewer, UIElement element,
-    bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null)
+            bool isVerticalScrolling = true, bool smoothScrolling = true, float? zoomFactor = null)
         {
+            if (element == null)
+                return;
+
             var transform = element.TransformToVisual((UIElement)scrollViewer.Content);
             var position = transform.TransformPoint(new Windows.Foundation.Point(0, 0));
 

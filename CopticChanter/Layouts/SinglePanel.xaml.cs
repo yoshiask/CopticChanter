@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CoptLib;
+using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.System.Profile;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -49,14 +41,14 @@ namespace CopticChanter.Layouts
             switch (args.Language)
             {
                 #region English
-                case Common.Language.English:
+                case CopticInterpreter.Language.English:
                     foreach (CoptLib.XML.DocXml doc in Common.Docs)
                     {
-                        if (!doc.Coptic)
+                        if (doc.Language == CopticInterpreter.Language.English)
                         {
-                            foreach (CoptLib.XML.DocXml.StanzaXML content in doc.Stanzas)
+                            foreach (string content in doc.Content)
                             {
-                                string[] split = content.Content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
                                 foreach (string s in split)
                                 {
                                     var contentBlockE = new TextBlock();
@@ -74,17 +66,17 @@ namespace CopticChanter.Layouts
                 #endregion
 
                 #region Coptic
-                case Common.Language.Coptic:
+                case CopticInterpreter.Language.Coptic:
                     foreach (CoptLib.XML.DocXml doc in Common.Docs)
                     {
-                        if (doc.Coptic)
+                        if (doc.Language == CopticInterpreter.Language.Coptic)
                         {
-                            foreach (CoptLib.XML.DocXml.StanzaXML content in doc.Stanzas)
+                            foreach (string content in doc.Content)
                             {
-                                string[] split = content.Content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
+                                string[] split = content.Split(new string[] { "&amp;#xD;", "&#xD;" }, StringSplitOptions.None);
                                 foreach (string s in split)
                                 {
-                                    string cont = CoptLib.CopticInterpreter.ConvertFromString(s);
+                                    string cont = CopticInterpreter.ConvertFont(s, CopticFont.Coptic1, CopticFont.CopticUnicode);
                                     var contentBlockC = new TextBlock();
                                     contentBlockC.Text = cont + "\r\n";
                                     contentBlockC.FontFamily = Common.Coptic1;
@@ -100,7 +92,8 @@ namespace CopticChanter.Layouts
                 #endregion
 
                 #region Arabic
-                case Common.Language.Arabic:
+                // TODO: Support Arabic text
+                case CopticInterpreter.Language.Arabic:
                     var contentBlockA = new TextBlock();
                     contentBlockA.Text = "\n";
                     contentBlockA.FontFamily = Common.Segoe;

@@ -17,18 +17,13 @@ Useful features:
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLua" Version="1.5.2" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="MoonSharp.Interpreter">
-      <HintPath>C:\Users\jjask\.nuget\packages\moonsharp\2.0.0\lib\netstandard1.6\MoonSharp.Interpreter.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

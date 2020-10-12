@@ -34,7 +34,7 @@ namespace CopticChanter
                     {
                         Debug.WriteLine(doc.Name);
 
-                        if (doc.Coptic)
+                        if (doc.Language == CopticInterpreter.Language.Coptic)
                         {
                             Common.CopticDocCount++;
                         }
@@ -89,7 +89,7 @@ namespace CopticChanter
                             var doc = CopticInterpreter.ReadDocXml(file.Path);
 
                             Common.Docs.Add(doc);
-                            if (doc.Coptic)
+                            if (doc.Language == CopticInterpreter.Language.Coptic)
                             {
                                 Common.CopticDocCount++;
                             }
@@ -144,7 +144,7 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.SinglePanel),
                     new Layouts.SinglePanelArgs(
-                        Common.Language.English,
+                        CopticInterpreter.Language.English,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -153,7 +153,7 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.SinglePanel),
                     new Layouts.SinglePanelArgs(
-                        Common.Language.Coptic,
+                        CopticInterpreter.Language.Coptic,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -162,7 +162,7 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.SinglePanel),
                     new Layouts.SinglePanelArgs(
-                        Common.Language.Arabic,
+                        CopticInterpreter.Language.Arabic,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -172,8 +172,8 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.DoublePanel),
                     new Layouts.DoublePanelArgs(
-                        Common.Language.English,
-                        Common.Language.Coptic,
+                        CopticInterpreter.Language.English,
+                        CopticInterpreter.Language.Coptic,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -182,8 +182,8 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.DoublePanel),
                     new Layouts.DoublePanelArgs(
-                        Common.Language.Coptic,
-                        Common.Language.Arabic,
+                        CopticInterpreter.Language.Coptic,
+                        CopticInterpreter.Language.Arabic,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -192,8 +192,8 @@ namespace CopticChanter
             {
                 Frame.Navigate(typeof(Layouts.DoublePanel),
                     new Layouts.DoublePanelArgs(
-                        Common.Language.English,
-                        Common.Language.Arabic,
+                        CopticInterpreter.Language.English,
+                        CopticInterpreter.Language.Arabic,
                         Windows.UI.Colors.Black,
                         Windows.UI.Colors.White)
                 );
@@ -214,12 +214,12 @@ namespace CopticChanter
             if (String.IsNullOrWhiteSpace(OutputBox.Text))
             {
                 //OutputBox.Text += CopticInterpreter.ConvertFromString(doc.Content);
-                InputBox.Text += doc.Stanzas[0].Content;
+                InputBox.Text += doc.Content[0];
             }
             else
             {
-                OutputBox.Text += CopticInterpreter.ConvertFromString("- -" + doc.Stanzas[0].Content);
-                InputBox.Text += "- -" + doc.Stanzas[0].Content;
+                OutputBox.Text += CopticInterpreter.ConvertFont(doc.Content[0], CopticFont.Coptic1, CopticFont.CopticUnicode);
+                InputBox.Text += "- -" + doc.Content[0];
             }
             //OutputBox.Text = CopticInterpreter.ConvertFromString(InputBox.Text);
         }

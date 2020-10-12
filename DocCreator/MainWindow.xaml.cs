@@ -671,8 +671,9 @@ namespace DocCreator
                     #region ZIP
                     case ".zip":
                         var set = CoptLib.CopticInterpreter.ReadSet(dialogX.FileName, System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "Coptic Chanter", "Doc Creator", "temp"));
+                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                            "Coptic Chanter", "Doc Creator", "temp")
+                        );
                         ResetControls();
                         _stanzas.Add("");
                         DocSelection.Items.Clear();

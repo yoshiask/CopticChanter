@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.UI;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Windows.UI;
+using static CoptLib.CopticInterpreter;
 
 namespace CopticChanter.Layouts
 {
     public class SinglePanelArgs
     {
-        public Common.Language Language;
+        public Language Language;
         public Color BackColor;
         public Color ForeColor;
 
-        public SinglePanelArgs(Common.Language lang, Color bcolor, Color fcolor)
+        public SinglePanelArgs(Language lang, Color bcolor, Color fcolor)
         {
             Language = lang;
             BackColor = bcolor;

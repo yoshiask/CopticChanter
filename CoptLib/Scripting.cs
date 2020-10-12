@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CoptLib.XML;
-using MoonSharp.Interpreter;
+using NLua;
 
 namespace CoptLib
 {
@@ -299,35 +299,35 @@ namespace CoptLib
 
         public static string RunLuaScript(string scriptBody)
         {
-            string scriptCode = "function getNext()\n" + scriptBody + "\nend";
-            var script = new Script();
+            string scriptCode = "function GetNext()\n" + scriptBody + "\nend";
+            Lua state = new Lua();
 
             // Add the CoptLib date functions
-            script.Globals["Today"] = DateTime.Today.Ticks;
-            script.Globals["NextCovenantThursday"] = (Func<long>)CopticDate.GetNextCovenantThursday;
-            script.Globals["NextFeastResurrection"] = (Func<long>)CopticDate.GetNextFeastResurrection;
-            script.Globals["NextGoodFriday"] = (Func<long>)CopticDate.GetNextGoodFriday;
-            script.Globals["NextHosannaSunday"] = (Func<long>)CopticDate.GetNextHosannaSunday;
-            script.Globals["NextLazarusSaturday"] = (Func<long>)CopticDate.GetNextLazarusSaturday;
-            script.Globals["NextNativity"] = (Func<long>)CopticDate.GetNextNativity;
-            script.Globals["NextNativityFast"] = (Func<long>)CopticDate.GetNextNativityFast;
-            script.Globals["NextNativitySunday"] = (Func<long>)CopticDate.GetNextNativitySunday;
-            script.Globals["NextPascha"] = (Func<long>)CopticDate.GetNextPascha;
-            script.Globals["NextSpringEquinox"] = (Func<long>)CopticDate.GetNextSpringEquinox;
+            state["Today"] = DateTime.Today.Ticks;
+            state["NextCovenantThursday"] = (Func<long>)CopticDate.GetNextCovenantThursday;
+            state["NextFeastResurrection"] = (Func<long>)CopticDate.GetNextFeastResurrection;
+            state["NextGoodFriday"] = (Func<long>)CopticDate.GetNextGoodFriday;
+            state["NextHosannaSunday"] = (Func<long>)CopticDate.GetNextHosannaSunday;
+            state["NextLazarusSaturday"] = (Func<long>)CopticDate.GetNextLazarusSaturday;
+            state["NextNativity"] = (Func<long>)CopticDate.GetNextNativity;
+            state["NextNativityFast"] = (Func<long>)CopticDate.GetNextNativityFast;
+            state["NextNativitySunday"] = (Func<long>)CopticDate.GetNextNativitySunday;
+            state["NextPascha"] = (Func<long>)CopticDate.GetNextPascha;
+            state["NextSpringEquinox"] = (Func<long>)CopticDate.GetNextSpringEquinox;
 
             try
             {
-                script.DoString(scriptCode);
+                state.DoString(scriptCode);
+                var script = state["GetNext"] as LuaFunction;
 
-                DynValue res = script.Call(script.Globals["getNext"]);
-
-                // Check the return type.
-                if (res.Type != DataType.String)
-                {
-                    throw new InvalidCastException("Invalid return type: " + res.Type.ToString());
+                if (script.Call()[0] is string res)
+				{
+                    return res;
+				}
+                else
+				{
+                    throw new InvalidCastException("Invalid return type");
                 }
-
-                return res.String;
             }
             catch (Exception ex)
             {

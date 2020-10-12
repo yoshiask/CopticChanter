@@ -40,11 +40,11 @@ namespace CoptLib
                 DocXml saveX = new DocXml();
 
                 saveX.Language = lang;
-                saveX.Content = new List<StanzaXml>();
+                saveX.Content = new List<string>();
                 foreach (string s in content)
                 {
                     // Replaces c# escaped new lines with XML new lines .Replace("\r\n", "&#xD;")
-                    saveX.Content.Add(new StanzaXml(s));
+                    saveX.Content.Add(s);
                 }
                 saveX.Name = name;
 

@@ -20,8 +20,9 @@ namespace CoptLib.XML
         [XmlElement]
         public string Parent { get; set; }
 
-        [XmlArray(ElementName = "Content")]
-        public List<StanzaXml> Content { get; set; } = new List<StanzaXml>();
+        [XmlArray("Content")]
+        [XmlArrayItem("Text", typeof(string))]
+        public List<string> Content { get; set; } = new List<string>();
 
         [XmlIgnore]
         public ObservableCollection<StanzaXml> ContentCollection { get; set; } = new ObservableCollection<StanzaXml>();
