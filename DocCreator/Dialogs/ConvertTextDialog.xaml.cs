@@ -32,7 +32,7 @@ namespace DocCreator.Dialogs
             InputBox.Focus();
 
             ConvertFromOption.Items.Clear();
-            CoptLib.CopticInterpreter.CopticFonts.Clear();
+            CoptLib.CopticFont.Fonts.Clear();
 
             foreach (string path in Directory.EnumerateFiles(@"C:\Users\jjask\Documents\Coptic Chanter"))
             {
@@ -42,10 +42,10 @@ namespace DocCreator.Dialogs
                 }
                 else if (path.EndsWith(".csv"))
                 {
-                    CoptLib.CopticInterpreter.CopticFonts.Add(CoptLib.CopticFont.GenerateFromCsv(path));
+                    CoptLib.CopticFont.Fonts.Add(CoptLib.CopticFont.GenerateFromCsv(path));
                 }
             }
-            foreach (CoptLib.CopticFont font in CoptLib.CopticInterpreter.CopticFonts)
+            foreach (CoptLib.CopticFont font in CoptLib.CopticFont.Fonts)
             {
                 ConvertFromOption.Items.Add(new ComboBoxItem() { Content = font.Name });
 
@@ -57,7 +57,7 @@ namespace DocCreator.Dialogs
         {
             ConvertedText = CoptLib.CopticInterpreter.ConvertFont(
                 InputBox.Text,
-                CoptLib.CopticInterpreter.CopticFonts[ConvertFromOption.SelectedIndex],
+                CoptLib.CopticFont.Fonts[ConvertFromOption.SelectedIndex],
                 CoptLib.CopticFont.CopticUnicode
             );
 
@@ -73,7 +73,7 @@ namespace DocCreator.Dialogs
             if (ConvertFromOption.SelectedIndex >= 0)
             {
                 const string strConvertFrom = "Convert from ";
-                var font = CoptLib.CopticInterpreter.CopticFonts[ConvertFromOption.SelectedIndex];
+                var font = CoptLib.CopticFont.Fonts[ConvertFromOption.SelectedIndex];
                 InputBox.FontFamily = new FontFamily(font.FontName);
                 Title = strConvertFrom + font.Name;
             }

@@ -48,20 +48,7 @@ namespace CopticChanter
                     var copy = await file.CopyAsync(ApplicationData.Current.RoamingFolder);
                     if (copy != null)
                     {
-                        Debug.WriteLine(file.Path);
-                        var doc = CopticInterpreter.ReadDocXml(file.Path);
-                        string lang = doc.Language.ToString();
-
-                        FileView.Items.Add(new ListViewItem()
-                        {
-                            Content = $"[{lang}] {doc.Name}",
-                        });
-                        _files.Add(copy);
-                        //Common.Docs.Add(doc);
-
-                        StatusBlock.Visibility = Visibility.Visible;
-                        StatusBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 15, 166, 0));
-                        StatusBlock.Text = "Successfully copied " + copy.Name;
+                        ImportDoc(copy);
                     }
                 }
             }
@@ -93,14 +80,7 @@ namespace CopticChanter
                         Common.Docs.Clear();
                         foreach (StorageFile file in _files)
                         {
-                            Debug.WriteLine(file.Path);
-                            var doc = CopticInterpreter.ReadDocXml(file.Path);
-                            string lang = doc.Language.ToString();
-
-                            FileView.Items.Add(new ListViewItem()
-                            {
-                                Content = $"[{lang}] {doc.Name}"
-                            });
+                            ImportDoc(file);
                         }
                     }
                     else
@@ -200,6 +180,23 @@ namespace CopticChanter
                     StatusBlock.Text = "Error deleting selected file";
                 }
             }
+        }
+
+        private void ImportDoc(StorageFile file)
+		{
+            Debug.WriteLine(file.Path);
+            var doc = CopticInterpreter.ReadDocXml(file.Path);
+
+            FileView.Items.Add(new ListViewItem()
+            {
+                Content = $"{doc.Name} [{doc.Uuid}]",
+            });
+            _files.Add(file);
+            //Common.Docs.Add(doc);
+
+            StatusBlock.Visibility = Visibility.Visible;
+            StatusBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 15, 166, 0));
+            StatusBlock.Text = "Successfully copied " + file.Name;
         }
     }
 }

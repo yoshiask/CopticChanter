@@ -19,7 +19,7 @@ namespace CoptLib
         }
 
 
-        public static IDictionary<string, DocXml> AllDocs = new Dictionary<string, DocXml>();
+        public static IDictionary<string, Doc> AllDocs = new Dictionary<string, Doc>();
 
         /// <summary>
         /// Serializes and save a DocXML file
@@ -29,23 +29,17 @@ namespace CoptLib
         /// <param name="coptic">If the input language is Coptic</param>
         /// <param name="name">Name of the reading or hymn</param>
         /// <returns></returns>
-        public static bool SaveDocXml(string filename, IEnumerable<string> content, Language lang, string name)
+        public static bool SaveDocXml(string filename, IEnumerable<Translation> content, string name)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to serialize.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
+                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
                 TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
-                DocXml saveX = new DocXml();
+                Doc saveX = new Doc();
 
-                saveX.Language = lang;
-                saveX.Content = new List<string>();
-                foreach (string s in content)
-                {
-                    // Replaces c# escaped new lines with XML new lines .Replace("\r\n", "&#xD;")
-                    saveX.Content.Add(s);
-                }
+                saveX.Content = new List<Translation>(content);
                 saveX.Name = name;
 
                 // Serialize the save file, and close the TextWriter.
@@ -64,23 +58,41 @@ namespace CoptLib
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
-        public static DocXml ReadDocXml(string path)
+        public static Doc ReadDocXml(string path)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
-                //If the XML document has been altered with unknown 
-                //nodes or attributes, handle them with the 
-                //UnknownNode and UnknownAttribute events.
+                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
+                // If the XML document has been altered with unknown 
+                // nodes or attributes, handle them with the 
+                // UnknownNode and UnknownAttribute events.
 
                 // A FileStream is needed to read the XML document.
                 var text = File.OpenRead(path);
 
-                //Use the Deserialize method to restore the object's state with
-                //data from the XML document.
-                return (DocXml)serializer.Deserialize(text);
+                // Use the Deserialize method to restore the object's state with
+                // data from the XML document.
+                var doc = (Doc)serializer.Deserialize(text);
+
+                // Coptic text needs to be interpreted before it can be displayed
+                foreach (Translation coptic in doc.Content.Where(d => d.Language == Language.Coptic))
+				{
+                    if (coptic.Font == null)
+                        continue;
+
+                    var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == coptic.Font.ToLower());
+                    if (font != null)
+					{
+                        foreach (Stanza stanza in coptic.Stanzas)
+						{
+                            stanza.Text = ConvertFont(stanza.Text, font, CopticFont.CopticUnicode);
+						}
+					}
+				}
+
+                return doc;
             }
             catch (Exception ex)
             {
@@ -93,20 +105,20 @@ namespace CoptLib
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
-        public static DocXml ReadDocXml(Stream file)
+        public static Doc ReadDocXml(Stream file)
         {
             try
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(DocXml));
+                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
                 //If the XML document has been altered with unknown 
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                return (DocXml)serializer.Deserialize(file);
+                return (Doc)serializer.Deserialize(file);
             }
             catch (Exception ex)
             {
@@ -143,7 +155,7 @@ namespace CoptLib
         /// <param name="incdocs">Docs to include in set</param>
         public static void SaveSet(string filename, string setname, string setUuid, IEnumerable<string> incdocs)
         {
-            var setX = new IndexXml()
+            var setX = new Index()
             {
                 Name = setname,
                 Uuid = setUuid
@@ -307,14 +319,14 @@ namespace CoptLib
                 {
                     // Create an instance of the XmlSerializer class;
                     // specify the type of object to be deserialized.
-                    XmlSerializer serializer = new XmlSerializer(typeof(IndexXml));
+                    XmlSerializer serializer = new XmlSerializer(typeof(Index));
 
                     // A FileStream is needed to read the XML document.
                     string text = File.ReadAllText(Path.Combine(folderPath, "index.xml"));
 
                     //Use the Deserialize method to restore the object's state with
                     //data from the XML document.
-                    results.Index = (IndexXml)serializer.Deserialize(XDocument.Parse(text).CreateReader());
+                    results.Index = (Index)serializer.Deserialize(XDocument.Parse(text).CreateReader());
 
                     foreach (string filename in files)
                     {
@@ -394,8 +406,8 @@ namespace CoptLib
 
         public class ReadResults
         {
-            public IndexXml Index;
-            public List<DocXml> IncludedDocs = new List<DocXml>();
+            public Index Index;
+            public List<Doc> IncludedDocs = new List<Doc>();
         }
     }
 
@@ -404,12 +416,12 @@ namespace CoptLib
         /// <summary>
         /// An Index XML object that contains data to write to set
         /// </summary>
-        public IndexXml Index {
+        public Index Index {
             get;
             private set;
         }
 
-        public DocSetWriter(IndexXml index = null)
+        public DocSetWriter(Index index = null)
         {
             Index = index;
         }
@@ -426,16 +438,16 @@ namespace CoptLib
                 Directory.CreateDirectory(rootPath);
 
                 // Let's sort out the documents first
-                foreach (IndexDocXml indexDoc in Index.IncludedDocs)
+                foreach (IndexDoc indexDoc in Index.IncludedDocs)
                 {
-                    XmlSerializer docSerializer = new XmlSerializer(typeof(DocXml));
+                    XmlSerializer docSerializer = new XmlSerializer(typeof(Doc));
                     TextWriter docWriter = new StreamWriter(new FileStream(Path.Combine(rootPath, indexDoc.Name + ".xml"), FileMode.Create));
                     docSerializer.Serialize(docWriter, CopticInterpreter.AllDocs[indexDoc.Uuid]);
                     docWriter.Dispose();
                 }
 
                 // Now save the index
-                XmlSerializer serializer = new XmlSerializer(typeof(IndexXml));
+                XmlSerializer serializer = new XmlSerializer(typeof(Index));
                 TextWriter writer = new StreamWriter(new FileStream(Path.Combine(rootPath, "index.xml"), FileMode.Create));
                 serializer.Serialize(writer, Index);
                 writer.Dispose();
@@ -459,25 +471,23 @@ namespace CoptLib
             }
         }
 
-        public void AddContent(DocXml xml)
+        public void AddContent(Doc xml)
         {
-            Index.IncludedDocs.Add(new IndexDocXml()
+            Index.IncludedDocs.Add(new IndexDoc()
             {
                 Name = xml.Name,
                 Uuid = xml.Uuid,
-                Language = xml.Language,
             });
         }
 
-        public void AddContent(IEnumerable<DocXml> docs)
+        public void AddContent(IEnumerable<Doc> docs)
         {
-            foreach (DocXml xml in docs)
+            foreach (Doc xml in docs)
             {
-                Index.IncludedDocs.Add(new IndexDocXml()
+                Index.IncludedDocs.Add(new IndexDoc()
                 {
                     Name = xml.Name,
-                    Uuid = xml.Uuid,
-                    Language = xml.Language
+                    Uuid = xml.Uuid
                 });
             }
         }
@@ -487,7 +497,7 @@ namespace CoptLib
             Index.IncludedDocs.Clear();
         }
 
-        public void SetIndex(IndexXml index)
+        public void SetIndex(Index index)
         {
             Index = index;
         }
@@ -906,9 +916,9 @@ namespace CoptLib
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(FontXml));
+                XmlSerializer serializer = new XmlSerializer(typeof(Font));
                 TextWriter writer = new StreamWriter(new FileStream(path, FileMode.Create));
-                serializer.Serialize(writer, FontXml.ToFontXml(this));
+                serializer.Serialize(writer, Font.ToFontXml(this));
                 if (addToList)
                     Fonts.Add(this);
                 return true;
@@ -931,7 +941,7 @@ namespace CoptLib
             {
                 // Create an instance of the XmlSerializer class;
                 // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(FontXml));
+                XmlSerializer serializer = new XmlSerializer(typeof(Font));
                 //If the XML document has been altered with unknown 
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
@@ -941,7 +951,7 @@ namespace CoptLib
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                var data = ((FontXml)serializer.Deserialize(text)).ToCopticFont();
+                var data = ((Font)serializer.Deserialize(text)).ToCopticFont();
                 if (addToList)
                     Fonts.Add(data);
                 return data;

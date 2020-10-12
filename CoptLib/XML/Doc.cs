@@ -8,8 +8,8 @@ using System.Xml.Serialization;
 
 namespace CoptLib.XML
 {
-    [XmlRoot(ElementName = "CopticDoc")]
-    public class DocXml
+    [XmlRoot(ElementName = "Document")]
+    public class Doc
     {
         [XmlElement]
         public string Name { get; set; }
@@ -21,14 +21,14 @@ namespace CoptLib.XML
         public string Parent { get; set; }
 
         [XmlArray("Content")]
-        [XmlArrayItem("Text", typeof(string))]
-        public List<string> Content { get; set; } = new List<string>();
+        [XmlArrayItem("Translation", typeof(Translation))]
+        public List<Translation> Content { get; set; } = new List<Translation>();
 
         [XmlIgnore]
-        public ObservableCollection<StanzaXml> ContentCollection { get; set; } = new ObservableCollection<StanzaXml>();
+        public ObservableCollection<Stanza> ContentCollection { get; set; } = new ObservableCollection<Stanza>();
 
-        [XmlElement]
-        public CopticInterpreter.Language Language { get; set; }
+        //[XmlElement]
+        //public CopticInterpreter.Language Language { get; set; }
 
         [XmlElement]
         public string NextScript { get; set; }
@@ -39,26 +39,39 @@ namespace CoptLib.XML
         //[XmlElement(ElementName = "DefaultNext", IsNullable = false)]
         //public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
 
-        public IndexDocXml ToIndexDocXml()
+        public IndexDoc ToIndexDocXml()
         {
-            return new IndexDocXml()
+            return new IndexDoc()
             {
                 Name = this.Name,
-                Uuid = this.Uuid,
-                Language = this.Language
+                Uuid = this.Uuid
             };
         }
     }
 
-    public class StanzaXml
+    public class Translation
+	{
+        [XmlArray]
+        public List<Stanza> Stanzas { get; set; } = new List<Stanza>();
+
+        [XmlElement]
+        public CopticInterpreter.Language Language { get; set; }
+
+        [XmlElement]
+        public string Font { get; set; }
+    }
+
+    public class Stanza
     {
-        public StanzaXml() { }
-        public StanzaXml(string content)
+        public Stanza() { }
+        public Stanza(string content)
         {
             Text = content;
         }
 
-        [XmlElement]
+        [XmlText]
         public string Text { get; set; }
+
+        public CopticInterpreter.Language Language { get; set; }
     }
 }

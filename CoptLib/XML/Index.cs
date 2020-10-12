@@ -8,18 +8,18 @@ using System.Xml.Serialization;
 namespace CoptLib.XML
 {
     [XmlRoot(ElementName = "CopticDocIndex")]
-    public class IndexXml
+    public class Index
     {
         public string Name;
 
         public string Uuid;
 
         [XmlElement]
-        public List<IndexDocXml> IncludedDocs = new List<IndexDocXml>();
+        public List<IndexDoc> IncludedDocs = new List<IndexDoc>();
     }
 
     [XmlRoot(ElementName = "Doc")]
-    public class IndexDocXml
+    public class IndexDoc
     {
         [XmlAttribute]
         public string Name;
@@ -27,7 +27,7 @@ namespace CoptLib.XML
         [XmlAttribute]
         public string Uuid;
 
-        [XmlAttribute]
-        public CopticInterpreter.Language Language;
+        //[XmlAttribute]
+        //public CopticInterpreter.Language Language;
     }
 }

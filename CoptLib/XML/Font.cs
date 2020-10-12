@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace CoptLib.XML
 {
     [XmlRoot(ElementName = "CopticFont")]
-    public class FontXml
+    public class Font
     {
         [XmlElement]
         public string Name;
@@ -24,9 +24,9 @@ namespace CoptLib.XML
         [XmlArrayItem(ElementName = "Char")]
         public List<MapXml> Charmap;
 
-        public static FontXml ToFontXml(CopticFont font)
+        public static Font ToFontXml(CopticFont font)
         {
-            var xml = new FontXml()
+            var xml = new Font()
             {
                 Name = font.Name,
                 FontName = font.FontName,

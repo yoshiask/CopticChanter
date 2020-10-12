@@ -79,7 +79,7 @@ namespace CoptLib
             return args;
         }
 
-        public static string RunScript(IfXml script, IfXml parentIf, DocXml parentDoc)
+        public static string RunScript(IfXml script, IfXml parentIf, Doc parentDoc)
         {
             var type = script.LeftHand.Split(':')[0];
             if (type == script.RightHand.Split(':')[0])
@@ -140,12 +140,12 @@ namespace CoptLib
                 return "error:Types are different";
             }
         }
-        public static string RunScript(string xml, DocXml parentDoc)
+        public static string RunScript(string xml, Doc parentDoc)
         {
             return RunScript(IfXml.FromString(xml), null, parentDoc);
         }
 
-        private static string ReturnHandler(bool boolean, IfXml script, IfXml parentIf, DocXml parentDoc)
+        private static string ReturnHandler(bool boolean, IfXml script, IfXml parentIf, Doc parentDoc)
         {
             if (boolean)
             {

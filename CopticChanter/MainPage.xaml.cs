@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
@@ -31,18 +32,19 @@ namespace CopticChanter
             {
                 if (Common.Docs.Count > 0)
                 {
-                    foreach (CoptLib.XML.DocXml doc in Common.Docs)
+                    foreach (CoptLib.XML.Doc doc in Common.Docs)
                     {
+                        doc.Content.Any(t => t.Language == CopticInterpreter.Language.English);
                         Debug.WriteLine(doc.Name);
 
-                        if (doc.Language == CopticInterpreter.Language.Coptic)
-                        {
-                            Common.CopticDocCount++;
-                        }
-                        else
-                        {
-                            Common.EnglishDocCount++;
-                        }
+                        //if (doc.Language == CopticInterpreter.Language.Coptic)
+                        //{
+                        //    Common.AnyCoptic++;
+                        //}
+                        //else
+                        //{
+                        //    Common.AnyEnglish++;
+                        //}
 
                         if (present)
                         {
@@ -90,20 +92,17 @@ namespace CopticChanter
                             var doc = CopticInterpreter.ReadDocXml(file.Path);
 
                             Common.Docs.Add(doc);
-                            if (doc.Language == CopticInterpreter.Language.Coptic)
-                            {
-                                Common.CopticDocCount++;
-                            }
-                            else
-                            {
-                                Common.EnglishDocCount++;
-                            }
+                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.English))
+                                Common.AnyEnglish = true;
+                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.Coptic))
+                                Common.AnyCoptic = true;
+                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.Arabic))
+                                Common.AnyArabic = true;
+                            Debug.WriteLine(doc.Name);
                         }
 
                         if (present)
-                        {
                             Present();
-                        }
                     }
                     else
                     {
@@ -136,11 +135,11 @@ namespace CopticChanter
         {
             var langs = new List<CopticInterpreter.Language>(3);
 
-            if (Common.EnglishDocCount > 0)
+            if (Common.AnyEnglish)
                 langs.Add(CopticInterpreter.Language.English);
-            if (Common.CopticDocCount > 0)
+            if (Common.AnyCoptic)
                 langs.Add(CopticInterpreter.Language.Coptic);
-            if (Common.ArabicDocCount > 0)
+            if (Common.AnyArabic)
                 langs.Add(CopticInterpreter.Language.Arabic);
 
             if (langs.Count == 1)
@@ -183,8 +182,11 @@ namespace CopticChanter
             }
             else
             {
-                OutputBox.Text += CopticInterpreter.ConvertFont(doc.Content[0], CopticFont.Coptic1, CopticFont.CopticUnicode);
-                InputBox.Text += "- -" + doc.Content[0];
+                string input = String.Join("\r\n", doc.Content[0].Stanzas.Select(s => s.Text));
+                OutputBox.Text += CopticInterpreter.ConvertFont(
+                    input, CopticFont.Coptic1, CopticFont.CopticUnicode
+                );
+                InputBox.Text += input;
             }
             //OutputBox.Text = CopticInterpreter.ConvertFromString(InputBox.Text);
         }

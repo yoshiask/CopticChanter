@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CoptLib;
+using CoptLib.XML;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -16,11 +18,11 @@ namespace CopticChanter
     public class Common
     {
         #region Doc Info
-        public static int EnglishDocCount = 0;
-        public static int CopticDocCount = 0;
-        public static int ArabicDocCount = 0;
-        public static List<CoptLib.XML.DocXml> Docs = new List<CoptLib.XML.DocXml>();
-        public static CoptLib.CopticDate CopticDate = CoptLib.CopticDate.Today;
+        public static bool AnyEnglish = false;
+        public static bool AnyCoptic = false;
+        public static bool AnyArabic = false;
+        public static List<Doc> Docs = new List<Doc>();
+        public static CopticDate CopticDate = CopticDate.Today;
         #endregion
 
         #region Bluetooth Remote
@@ -134,6 +136,66 @@ namespace CopticChanter
         private static SolidColorBrush _accentBrush;
         private static Color _accentColor;
         #endregion
+
+        public static List<TextBlock> TextBlocksFromTranslation(Translation translation, Color foreground)
+		{
+            var blocks = new List<TextBlock>();
+            switch (translation.Language)
+            {
+                #region English
+                case Language.English:
+                    foreach (Stanza content in translation.Stanzas)
+                    {
+                        var contentBlockE = new TextBlock
+                        {
+                            Text = content.Text,
+                            FontFamily = Segoe,
+                            FontSize = GetEnglishFontSize(),
+                            TextWrapping = TextWrapping.Wrap,
+                            Foreground = new SolidColorBrush(foreground)
+                        };
+                        blocks.Add(contentBlockE);
+                    }
+                    break;
+                #endregion
+
+                #region Coptic
+                case Language.Coptic:
+                    foreach (Stanza content in translation.Stanzas)
+                    {
+                        var contentBlockC = new TextBlock
+                        {
+                            Text = content.Text.Replace(" ", " \u200B"),
+                            FontFamily = Segoe,
+                            FontSize = GetCopticFontSize(),
+                            TextWrapping = TextWrapping.Wrap,
+                            Foreground = new SolidColorBrush(foreground)
+                        };
+                        blocks.Add(contentBlockC);
+                    }
+                    break;
+                #endregion
+
+                #region Arabic
+                // TODO: Support Arabic text
+                case Language.Arabic:
+                    foreach (Stanza content in translation.Stanzas)
+                    {
+                        var contentBlockA = new TextBlock
+                        {
+                            Text = content.Text,
+                            FontFamily = Segoe,
+                            FontSize = GetEnglishFontSize(),
+                            TextWrapping = TextWrapping.Wrap,
+                            Foreground = new SolidColorBrush(foreground)
+                        };
+                        blocks.Add(contentBlockA);
+                    }
+                    break;
+                    #endregion
+            }
+            return blocks;
+        }
 
         public static SolidColorBrush GetAccentBrush()
         {
@@ -367,14 +429,6 @@ namespace CopticChanter
             }
 
             return _winBuild;
-        }
-    }
-
-    public static class ColorExtensions
-    {
-        public static Windows.UI.Color ToUiColor(this Windows.UI.Color color)
-        {
-            return Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
     }
 

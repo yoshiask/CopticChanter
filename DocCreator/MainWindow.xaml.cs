@@ -32,7 +32,7 @@ namespace DocCreator
         int _characterCaret = 0;
         public static SolidColorBrush AccentBrush = new SolidColorBrush(AccentColorSet.ActiveSet["SystemAccent"]);
         public static SolidColorBrush UnfocusedBrush = new SolidColorBrush(Color.FromRgb(245, 245, 245));
-        public static DocXml CurrentDoc = new DocXml();
+        public static Doc CurrentDoc = new Doc();
         public static MainWindow Current;
 
         public MainWindow()
@@ -611,7 +611,7 @@ namespace DocCreator
                     case ".zip":
                         string setUuid = Guid.NewGuid().ToString();
 
-                        foreach (DocXml doc in CoptLib.CopticInterpreter.AllDocs.Values)
+                        foreach (Doc doc in CoptLib.CopticInterpreter.AllDocs.Values)
                         {
                             // TODO: Save multiple docs
                             
@@ -623,7 +623,7 @@ namespace DocCreator
                     case ".txt":
                         string txtContents = "";
                         var txtDoc = CoptLib.CopticInterpreter.AllDocs.First().Value;
-                        foreach (StanzaXml stanza in txtDoc.Content)
+                        foreach (Stanza stanza in txtDoc.Content)
                         {
                             txtContents += stanza.Text;
                             txtContents += "\r\n";
@@ -678,24 +678,24 @@ namespace DocCreator
                         _stanzas.Add("");
                         DocSelection.Items.Clear();
 
-                        foreach (DocXml docX in set.IncludedDocs)
+                        foreach (Doc docX in set.IncludedDocs)
                         {
-                            CoptLib.CopticInterpreter.AllDocs.Add(docX.Uuid, set.IncludedDocs.Find((DocXml xml) => { if (xml.Uuid == docX.Uuid) return true; else { return false; } }));
+                            CoptLib.CopticInterpreter.AllDocs.Add(docX.Uuid, set.IncludedDocs.Find((Doc xml) => { if (xml.Uuid == docX.Uuid) return true; else { return false; } }));
                             DocSelection.Items.Add(docX.Name);
                         }
 
                         DocSelection.SelectedIndex = 0;
-                        DocXml doc = set.IncludedDocs[0];
+                        Doc doc = set.IncludedDocs[0];
                         if (doc.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (StanzaXml stanza in doc.Content)
+                            foreach (Stanza stanza in doc.Content)
                             {
                                 _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (StanzaXml stanza in doc.Content)
+                            foreach (Stanza stanza in doc.Content)
                             {
                                 _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
@@ -717,14 +717,14 @@ namespace DocCreator
 
                         if (docXml.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (StanzaXml stanza in docXml.Content)
+                            foreach (Stanza stanza in docXml.Content)
                             {
                                 _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (StanzaXml stanza in docXml.Content)
+                            foreach (Stanza stanza in docXml.Content)
                             {
                                 _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
@@ -861,15 +861,15 @@ namespace DocCreator
             if (_curDoc > 1)
             {
                 _stanzas[_curStanza] = InputBox.Text;
-                var sxml = new List<StanzaXml>();
+                var sxml = new List<Stanza>();
                 foreach (string content in _stanzas)
                 {
-                    sxml.Add(new StanzaXml()
+                    sxml.Add(new Stanza()
                     {
                         Text = content
                     });
                 }
-                var doc = new DocXml()
+                var doc = new Doc()
                 {
                     Name = NameBox.Text,
                     Content = sxml,
@@ -879,7 +879,7 @@ namespace DocCreator
 
                 _curDoc--;
                 _stanzas.Clear();
-                foreach (StanzaXml xml in CurrentDoc.Content)
+                foreach (Stanza xml in CurrentDoc.Content)
                 {
                     _stanzas.Add(xml.Text);
                 }
@@ -900,7 +900,7 @@ namespace DocCreator
 
         private void DocCreate_Click(object sender, RoutedEventArgs e)
         {
-            var newDoc = new DocXml()
+            var newDoc = new Doc()
             {
                 Name = "Name",
                 Uuid = Guid.NewGuid().ToString(),
@@ -915,19 +915,19 @@ namespace DocCreator
             _stanzas.Clear();
         }
 
-        private void SaveDocToVariable(DocXml doc)
+        private void SaveDocToVariable(Doc doc)
         {
             string docUuid = Guid.NewGuid().ToString();
             if (LanguageOption.SelectedIndex == 0)
             {
                 // Convert the list of content to a serializable list of StanzaXML
-                List<StanzaXml> stanzaXmLs = new List<StanzaXml>();
+                List<Stanza> stanzaXmLs = new List<Stanza>();
                 foreach (string stanza in _stanzas)
                 {
-                    stanzaXmLs.Add(new StanzaXml(stanza));
+                    stanzaXmLs.Add(new Stanza(stanza));
                 }
 
-                DocXml saveX = new DocXml()
+                Doc saveX = new Doc()
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
                     Uuid = docUuid,
@@ -945,13 +945,13 @@ namespace DocCreator
             else if (LanguageOption.SelectedIndex == 1)
             {
                 IList<string> contentCopt = new List<string>();
-                List<StanzaXml> stanzaXmLs = new List<StanzaXml>();
+                List<Stanza> stanzaXmLs = new List<Stanza>();
                 // Parse the Coptic-Font text to Coptic-Latin
                 foreach (string s in _stanzas)
                 {
                     contentCopt.Add(CoptLib.CopticInterpreter.ConvertToString(s));
                 }
-                DocXml saveX = new DocXml
+                Doc saveX = new Doc
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
                     Uuid = docUuid,
@@ -963,7 +963,7 @@ namespace DocCreator
                 foreach (string s in contentCopt)
                 {
                     // Replaces c# escaped new lines with XML new lines
-                    saveX.Content.Add(new StanzaXml(s.Replace("\r\n", "&#xD;")));
+                    saveX.Content.Add(new Stanza(s.Replace("\r\n", "&#xD;")));
                 }
 
                 // Checks if first stanza is empty
