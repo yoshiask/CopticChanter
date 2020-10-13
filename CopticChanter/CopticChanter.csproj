@@ -110,6 +110,10 @@
     <Compile Include="ImportPage.xaml.cs">
       <DependentUpon>ImportPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Layouts\DocumentLayout.xaml.cs">
+      <DependentUpon>DocumentLayout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Layouts\DocumentLayoutArgs.cs" />
     <Compile Include="Layouts\DoublePanel.xaml.cs">
       <DependentUpon>DoublePanel.xaml</DependentUpon>
     </Compile>
@@ -201,6 +205,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ImportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Layouts\DocumentLayout.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

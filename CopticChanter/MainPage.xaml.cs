@@ -142,24 +142,9 @@ namespace CopticChanter
             if (Common.AnyArabic)
                 langs.Add(CopticInterpreter.Language.Arabic);
 
-            if (langs.Count == 1)
-			{
-                Frame.Navigate(typeof(Layouts.SinglePanel),
-                    new Layouts.SinglePanelArgs(langs.ToArray())
-                );
-            }
-            else if (langs.Count == 2)
-			{
-                Frame.Navigate(typeof(Layouts.DoublePanel),
-                    new Layouts.DoublePanelArgs(langs.ToArray())
-                );
-            }
-            else if (langs.Count == 3)
-			{
-                //Frame.Navigate(typeof(Layouts.TriplePanel),
-                //    new Layouts.TriplePanelArgs(langs.ToArray())
-                //);
-            }
+            Frame.Navigate(typeof(Layouts.DocumentLayout),
+                new Layouts.DocumentLayoutArgs(langs.ToArray())
+            );
         }
 
         private async void ConvertButton_Click(object sender, RoutedEventArgs e)
