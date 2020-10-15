@@ -321,11 +321,11 @@ namespace CoptLib
                 var script = state["GetNext"] as LuaFunction;
 
                 if (script.Call()[0] is string res)
-				{
+                {
                     return res;
-				}
+                }
                 else
-				{
+                {
                     throw new InvalidCastException("Invalid return type");
                 }
             }
@@ -337,9 +337,9 @@ namespace CoptLib
 
         public static void ParseTextCommands(string input)
         {
-            // Define a regular expression for repeated words.
-            Regex rx = new Regex(@"(\\)(?<command>\w+)(\{)(?<param>\w+)*(\})",
-              RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            // Define a regular expression that captures LaTeX-style commands with 0, 1, or 2 parameters
+            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{([^\{\}]*)\})?(?:\{([^\{\}]*)\})+?",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             // Find matches.
             MatchCollection matches = rx.Matches(input);

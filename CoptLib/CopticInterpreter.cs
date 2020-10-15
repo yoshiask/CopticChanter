@@ -13,6 +13,7 @@ namespace CoptLib
     {
         public enum Language
         {
+            Default,
             English,
             Coptic,
             Arabic
