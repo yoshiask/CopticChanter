@@ -90,7 +90,7 @@ namespace CopticWriter
                         var set = CoptLib.CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
                         ShowDocControls();
                         Docs = new ObservableCollection<CoptLib.XML.Doc>(set.IncludedDocs);
-                        CurrentStanza = set.IncludedDocs[0].Content[0].Text;
+                        CurrentStanza = set.IncludedDocs[0].Translations[0].Text;
                         OnPropertyChanged();
                         return;
                 }

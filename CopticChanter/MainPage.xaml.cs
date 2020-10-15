@@ -34,7 +34,7 @@ namespace CopticChanter
                 {
                     foreach (CoptLib.XML.Doc doc in Common.Docs)
                     {
-                        doc.Content.Any(t => t.Language == CopticInterpreter.Language.English);
+                        doc.Translations.Any(t => t.Language == CopticInterpreter.Language.English);
                         Debug.WriteLine(doc.Name);
 
                         //if (doc.Language == CopticInterpreter.Language.Coptic)
@@ -92,11 +92,11 @@ namespace CopticChanter
                             var doc = CopticInterpreter.ReadDocXml(file.Path);
 
                             Common.Docs.Add(doc);
-                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.English))
+                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.English))
                                 Common.AnyEnglish = true;
-                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.Coptic))
+                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.Coptic))
                                 Common.AnyCoptic = true;
-                            if (doc.Content.Any(t => t.Language == CopticInterpreter.Language.Arabic))
+                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.Arabic))
                                 Common.AnyArabic = true;
                             Debug.WriteLine(doc.Name);
                         }
@@ -163,15 +163,15 @@ namespace CopticChanter
             if (String.IsNullOrWhiteSpace(OutputBox.Text))
             {
                 //OutputBox.Text += CopticInterpreter.ConvertFromString(doc.Content);
-                InputBox.Text += doc.Content[0];
+                InputBox.Text += doc.Translations[0];
             }
             else
             {
-                string input = String.Join("\r\n", doc.Content[0].Stanzas.Select(s => s.Text));
-                OutputBox.Text += CopticInterpreter.ConvertFont(
-                    input, CopticFont.Coptic1, CopticFont.CopticUnicode
-                );
-                InputBox.Text += input;
+                //string input = String.Join("\r\n", doc.Translations[0].Content.Select(s => s.Text));
+                //OutputBox.Text += CopticInterpreter.ConvertFont(
+                //    input, CopticFont.Coptic1, CopticFont.CopticUnicode
+                //);
+                //InputBox.Text += input;
             }
             //OutputBox.Text = CopticInterpreter.ConvertFromString(InputBox.Text);
         }

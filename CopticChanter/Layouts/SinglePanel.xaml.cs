@@ -42,7 +42,7 @@ namespace CopticChanter.Layouts
             // Populate the column
             foreach (Doc doc in Common.Docs)
             {
-                foreach (Translation translation in doc.Content)
+                foreach (Translation translation in doc.Translations)
                 {
                     if (translation.Language == args.Language)
                     {

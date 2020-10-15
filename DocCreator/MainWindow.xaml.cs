@@ -623,7 +623,7 @@ namespace DocCreator
                     case ".txt":
                         string txtContents = "";
                         var txtDoc = CoptLib.CopticInterpreter.AllDocs.First().Value;
-                        foreach (Stanza stanza in txtDoc.Content)
+                        foreach (Stanza stanza in txtDoc.Translations)
                         {
                             txtContents += stanza.Text;
                             txtContents += "\r\n";
@@ -688,14 +688,14 @@ namespace DocCreator
                         Doc doc = set.IncludedDocs[0];
                         if (doc.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (Stanza stanza in doc.Content)
+                            foreach (Stanza stanza in doc.Translations)
                             {
                                 _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (Stanza stanza in doc.Content)
+                            foreach (Stanza stanza in doc.Translations)
                             {
                                 _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
@@ -717,14 +717,14 @@ namespace DocCreator
 
                         if (docXml.Language != CoptLib.CopticInterpreter.Language.Coptic)
                         {
-                            foreach (Stanza stanza in docXml.Content)
+                            foreach (Stanza stanza in docXml.Translations)
                             {
                                 _stanzas.Add(stanza.Text);
                             }
                         }
                         else
                         {
-                            foreach (Stanza stanza in docXml.Content)
+                            foreach (Stanza stanza in docXml.Translations)
                             {
                                 _stanzas.Add(CoptLib.CopticInterpreter.ConvertFromString(stanza.Text));
                             }
@@ -872,14 +872,14 @@ namespace DocCreator
                 var doc = new Doc()
                 {
                     Name = NameBox.Text,
-                    Content = sxml,
+                    Translations = sxml,
                 };
                 CurrentDoc = doc;
                 CoptLib.CopticInterpreter.AllDocs.Values.ToList()[_curDoc] = doc;
 
                 _curDoc--;
                 _stanzas.Clear();
-                foreach (Stanza xml in CurrentDoc.Content)
+                foreach (Stanza xml in CurrentDoc.Translations)
                 {
                     _stanzas.Add(xml.Text);
                 }
@@ -931,14 +931,14 @@ namespace DocCreator
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
                     Uuid = docUuid,
-                    Content = stanzaXmLs,
+                    Translations = stanzaXmLs,
                     Name = NameBox.Text,
                     NextScript = CurrentDoc.NextScript
                 };
                 // Checks if first stanza is empty
-                if (saveX.Content[0].Text == "")
+                if (saveX.Translations[0].Text == "")
                 {
-                    saveX.Content.RemoveAt(0);
+                    saveX.Translations.RemoveAt(0);
                 }
                 CoptLib.CopticInterpreter.AllDocs.Add(docUuid, saveX);
             }
@@ -955,7 +955,7 @@ namespace DocCreator
                 {
                     Language = CoptLib.CopticInterpreter.Language.English,
                     Uuid = docUuid,
-                    Content = stanzaXmLs,
+                    Translations = stanzaXmLs,
                     Name = NameBox.Text,
                     NextScript = CurrentDoc.NextScript
                 };
@@ -963,13 +963,13 @@ namespace DocCreator
                 foreach (string s in contentCopt)
                 {
                     // Replaces c# escaped new lines with XML new lines
-                    saveX.Content.Add(new Stanza(s.Replace("\r\n", "&#xD;")));
+                    saveX.Translations.Add(new Stanza(s.Replace("\r\n", "&#xD;")));
                 }
 
                 // Checks if first stanza is empty
-                if (saveX.Content[0].Text == "")
+                if (saveX.Translations[0].Text == "")
                 {
-                    saveX.Content.RemoveAt(0);
+                    saveX.Translations.RemoveAt(0);
                 }
                 CoptLib.CopticInterpreter.AllDocs.Add(docUuid, saveX);
             }

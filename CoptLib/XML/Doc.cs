@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace CoptLib.XML
@@ -20,15 +16,12 @@ namespace CoptLib.XML
         [XmlElement]
         public string Parent { get; set; }
 
-        [XmlArray("Content")]
+        [XmlArray("Translations")]
         [XmlArrayItem("Translation", typeof(Translation))]
-        public List<Translation> Content { get; set; } = new List<Translation>();
+        public List<Translation> Translations { get; set; } = new List<Translation>();
 
         [XmlIgnore]
         public ObservableCollection<Stanza> ContentCollection { get; set; } = new ObservableCollection<Stanza>();
-
-        //[XmlElement]
-        //public CopticInterpreter.Language Language { get; set; }
 
         [XmlElement]
         public string NextScript { get; set; }
@@ -52,26 +45,12 @@ namespace CoptLib.XML
     public class Translation
 	{
         [XmlArray]
-        public List<Stanza> Stanzas { get; set; } = new List<Stanza>();
+        public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 
         [XmlElement]
         public CopticInterpreter.Language Language { get; set; }
 
         [XmlElement]
         public string Font { get; set; }
-    }
-
-    public class Stanza
-    {
-        public Stanza() { }
-        public Stanza(string content)
-        {
-            Text = content;
-        }
-
-        [XmlText]
-        public string Text { get; set; }
-
-        public CopticInterpreter.Language Language { get; set; }
     }
 }

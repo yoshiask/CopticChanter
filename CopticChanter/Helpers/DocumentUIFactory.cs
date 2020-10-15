@@ -14,70 +14,58 @@ namespace CopticChanter.Helpers
         public static List<TextBlock> CreateBlocksFromTranslation(Translation translation, Color foreground)
         {
             var blocks = new List<TextBlock>();
-            foreach (Stanza stanza in translation.Stanzas)
+            foreach (ContentPart part in translation.Content)
 			{
-                if (stanza.Language == Language.Default)
-                    stanza.Language = translation.Language;
-
-                switch (stanza.Language)
-                {
-                    #region English
-                    case Language.English:
-                        foreach (Stanza content in translation.Stanzas)
-                        {
-                            var contentBlockE = new TextBlock
-                            {
-                                Text = content.Text,
-                                FontFamily = Common.Segoe,
-                                FontSize = Common.GetEnglishFontSize(),
-                                TextWrapping = TextWrapping.Wrap,
-                                Foreground = new SolidColorBrush(foreground)
-                            };
-                            blocks.Add(contentBlockE);
-                        }
-                        break;
-                    #endregion
-
-                    #region Coptic
-                    case Language.Coptic:
-                        foreach (Stanza content in translation.Stanzas)
-                        {
-                            var contentBlockC = new TextBlock
-                            {
-                                // TextBlock doesn't seem to know where to break Coptic (Unicode?)
-                                // lines, so insert a zero-width space at every space so
-                                // word wrap acutally works
-                                Text = content.Text.Replace(" ", " \u200B"),
-                                FontFamily = Common.Segoe,
-                                FontSize = Common.GetCopticFontSize(),
-                                TextWrapping = TextWrapping.Wrap,
-                                Foreground = new SolidColorBrush(foreground)
-                            };
-                            blocks.Add(contentBlockC);
-                        }
-                        break;
-                    #endregion
-
-                    #region Arabic
-                    // TODO: Support Arabic text
-                    case Language.Arabic:
-                        foreach (Stanza content in translation.Stanzas)
-                        {
-                            var contentBlockA = new TextBlock
-                            {
-                                Text = content.Text,
-                                FontFamily = Common.Segoe,
-                                FontSize = Common.GetEnglishFontSize(),
-                                TextWrapping = TextWrapping.Wrap,
-                                Foreground = new SolidColorBrush(foreground)
-                            };
-                            blocks.Add(contentBlockA);
-                        }
-                        break;
-                        #endregion
-                }
+                var stanza = part as Stanza;
+                if (stanza != null)
+				{
+                    blocks.Add(CreateBlockFromStanza(stanza, translation.Language, foreground));
+				}
             }
             return blocks;
+        }
+
+        public static TextBlock CreateBlockFromStanza(Stanza stanza, Language translationLanguage, Color foreground)
+		{
+            TextBlock contentBlock = null;
+
+            if (stanza.Language == Language.Default)
+                stanza.Language = translationLanguage;
+
+            switch (stanza.Language)
+            {
+                #region English & Arabic
+                case Language.English:
+                case Language.Arabic:
+                    contentBlock = new TextBlock
+                    {
+                        Text = stanza.Text,
+                        FontFamily = Common.Segoe,
+                        FontSize = Common.GetEnglishFontSize(),
+                        TextWrapping = TextWrapping.Wrap,
+                        Foreground = new SolidColorBrush(foreground)
+                    };
+                    break;
+                #endregion
+
+                #region Coptic
+                case Language.Coptic:
+                    contentBlock = new TextBlock
+                    {
+                        // TextBlock doesn't seem to know where to break Coptic (Unicode?)
+                        // lines, so insert a zero-width space at every space so
+                        // word wrap acutally works
+                        Text = stanza.Text.Replace(" ", " \u200B"),
+                        FontFamily = Common.Segoe,
+                        FontSize = Common.GetCopticFontSize(),
+                        TextWrapping = TextWrapping.Wrap,
+                        Foreground = new SolidColorBrush(foreground)
+                    };
+                    return contentBlock;
+                #endregion
+            }
+
+            return contentBlock;
         }
 
         public static TextBlock CreateHeader(string title, Color foreground, bool addPadding = true)

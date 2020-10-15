@@ -40,7 +40,7 @@ namespace CoptLib
                 TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
                 Doc saveX = new Doc();
 
-                saveX.Content = new List<Translation>(content);
+                saveX.Translations = new List<Translation>(content);
                 saveX.Name = name;
 
                 // Serialize the save file, and close the TextWriter.
@@ -71,27 +71,56 @@ namespace CoptLib
                 // UnknownNode and UnknownAttribute events.
 
                 // A FileStream is needed to read the XML document.
-                var text = File.OpenRead(path);
+                var sr = new StreamReader(path);
+                string xmlText = sr.ReadToEnd();
 
-                // Use the Deserialize method to restore the object's state with
-                // data from the XML document.
-                var doc = (Doc)serializer.Deserialize(text);
+                // Open the document in the XML parser so we can get the
+                // translation content later
+                var xml = XDocument.Parse(xmlText);
 
-                // Coptic text needs to be interpreted before it can be displayed
-                foreach (Translation coptic in doc.Content.Where(d => d.Language == Language.Coptic))
-				{
-                    if (coptic.Font == null)
-                        continue;
+                Doc doc = new Doc()
+                {
+                    Name = xml.Root.Element("Name")?.Value,
+                    Uuid = xml.Root.Element("Uuid")?.Value,
+                };
 
-                    var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == coptic.Font.ToLower());
-                    if (font != null)
+                // The actual content can't be deserialized, so they need to be manually parsed
+                foreach (XElement transElem in xml.Root.Element("Translations").Elements())
+                {
+                    Translation translation = new Translation()
+                    {
+                        Font = transElem.Attribute("Font")?.Value,
+                        Language = (Language)Enum.Parse(typeof(Language),
+                            transElem.Attribute("Language")?.Value),
+                    };
+
+                    foreach (XElement contentElem in transElem.Elements())
 					{
-                        foreach (Stanza stanza in coptic.Stanzas)
+                        if (contentElem.Name == "Stanza")
 						{
-                            stanza.Text = ConvertFont(stanza.Text, font, CopticFont.CopticUnicode);
+                            var stanza = new Stanza()
+                            {
+                                Language = (Language)Enum.Parse(typeof(Language),
+                                    transElem.Attribute("Language")?.Value ?? "Default"),
+                            };
+
+                            if (stanza.Language == Language.Coptic && translation.Font != null)
+							{
+                                // Coptic text needs to be interpreted before it can be displayed
+                                var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == translation.Font.ToLower());
+                                stanza.Text = ConvertFont(contentElem.Value, font, CopticFont.CopticUnicode);
+                            }
+                            else
+							{
+                                stanza.Text = contentElem.Value;
+                            }
+
+                            translation.Content.Add(stanza);
 						}
 					}
-				}
+
+                    doc.Translations.Add(translation);
+                }
 
                 return doc;
             }
