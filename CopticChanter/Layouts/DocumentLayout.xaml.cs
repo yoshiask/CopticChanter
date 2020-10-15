@@ -20,15 +20,15 @@ using Windows.UI.Xaml.Navigation;
 
 namespace CopticChanter.Layouts
 {
-	/// <summary>
-	/// An empty page that can be used on its own or navigated to within a Frame.
-	/// </summary>
-	public sealed partial class DocumentLayout : Page
-	{
-		public DocumentLayout()
-		{
-			this.InitializeComponent();
-		}
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class DocumentLayout : Page
+    {
+        public DocumentLayout()
+        {
+            this.InitializeComponent();
+        }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -43,11 +43,12 @@ namespace CopticChanter.Layouts
 
             // Create rows for each stanza
             // Don't forget one for each header too
-            int numRows = Common.Docs.Select(d => d.Content.Sum(t => t.Stanzas.Count)).Max() + Common.Docs.Count;
+            int numRows = Common.Docs.Select(d => d.Content.Max(t => t.Stanzas.Count)).Sum() + Common.Docs.Count;
             for (int i = 0; i <= numRows; i++)
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
             // Populate the columns with translations and rows with stanzas
+            // TODO: Multiple docs requires multiple headers, which will offset the following items.
             int lastRow = 0;
             foreach (Doc doc in Common.Docs)
             {
@@ -60,9 +61,17 @@ namespace CopticChanter.Layouts
                     TextWrapping = TextWrapping.Wrap,
                     Foreground = new SolidColorBrush(args.ForeColor)
                 };
+                if (lastRow != 0)
+                {
+                    // Every header except for the first one should have a top margin
+                    // to distinguish it from the previous document
+                    headerBlock.Margin = new Thickness(0, 20, 0, 0);
+                }
+
                 MainGrid.Children.Add(headerBlock);
                 Grid.SetColumnSpan(headerBlock, args.Languages.Length);
                 Grid.SetRow(headerBlock, lastRow);
+                lastRow++;
 
                 foreach (Translation translation in doc.Content)
                 {
@@ -72,12 +81,15 @@ namespace CopticChanter.Layouts
 
                     var blocks = Common.TextBlocksFromTranslation(translation, args.ForeColor);
                     for (int i = 0; i < translation.Stanzas.Count; i++)
-					{
+                    {
                         MainGrid.Children.Add(blocks[i]);
                         Grid.SetColumn(blocks[i], column);
-                        Grid.SetRow(blocks[i], i + 1);
+                        Grid.SetRow(blocks[i], lastRow + i);
                     }
                 }
+
+                // Account for the header, subheaders, and stanzas
+                lastRow += doc.Content.Max(t => t.Stanzas.Count) + 1;
             }
 
             base.OnNavigatedTo(e);
