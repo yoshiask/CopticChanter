@@ -1,4 +1,5 @@
-﻿using CoptLib.XML;
+﻿using CopticChanter.Helpers;
+using CoptLib.XML;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,22 +53,7 @@ namespace CopticChanter.Layouts
             int lastRow = 0;
             foreach (Doc doc in Common.Docs)
             {
-                var headerBlock = new TextBlock
-                {
-                    Text = doc.Name,
-                    FontFamily = Common.Segoe,
-                    FontWeight = FontWeights.Bold,
-                    FontSize = Common.GetEnglishFontSize() * 1.25,
-                    TextWrapping = TextWrapping.Wrap,
-                    Foreground = new SolidColorBrush(args.ForeColor)
-                };
-                if (lastRow != 0)
-                {
-                    // Every header except for the first one should have a top margin
-                    // to distinguish it from the previous document
-                    headerBlock.Margin = new Thickness(0, 20, 0, 0);
-                }
-
+                var headerBlock = DocumentUIFactory.CreateHeader(doc.Name, args.ForeColor, lastRow != 0);
                 MainGrid.Children.Add(headerBlock);
                 Grid.SetColumnSpan(headerBlock, args.Languages.Length);
                 Grid.SetRow(headerBlock, lastRow);
@@ -79,7 +65,7 @@ namespace CopticChanter.Layouts
                     if (column < 0)
                         continue;
 
-                    var blocks = Common.TextBlocksFromTranslation(translation, args.ForeColor);
+                    var blocks = DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor);
                     for (int i = 0; i < translation.Stanzas.Count; i++)
                     {
                         MainGrid.Children.Add(blocks[i]);

@@ -1,4 +1,4 @@
-﻿using CoptLib;
+﻿using CopticChanter.Helpers;
 using CoptLib.XML;
 using System;
 using System.Diagnostics;
@@ -46,7 +46,7 @@ namespace CopticChanter.Layouts
                 {
                     if (translation.Language == args.Language)
                     {
-                        foreach (UIElement element in Common.TextBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
                             ContentPanel.Children.Add(element);
                     }
                 }

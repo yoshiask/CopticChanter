@@ -1,8 +1,7 @@
-﻿using CoptLib;
+﻿using CopticChanter.Helpers;
 using CoptLib.XML;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -46,12 +45,12 @@ namespace CopticChanter.Layouts
                 {
                     if (translation.Language == args.Language1)
                     {
-                        foreach (UIElement element in Common.TextBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
                             ContentPanelLeft.Children.Add(element);
                     }
                     else if (translation.Language == args.Language2)
                     {
-                        foreach (UIElement element in Common.TextBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
                             ContentPanelRight.Children.Add(element);
                     }
                 }
