@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
 namespace CoptLib.XML
@@ -20,8 +19,8 @@ namespace CoptLib.XML
         [XmlArrayItem("Translation", typeof(Translation))]
         public List<Translation> Translations { get; set; } = new List<Translation>();
 
-        [XmlIgnore]
-        public ObservableCollection<Stanza> ContentCollection { get; set; } = new ObservableCollection<Stanza>();
+        [XmlArray]
+        public List<Definition> Definitions { get; set; } = new List<Definition>();
 
         [XmlElement]
         public string NextScript { get; set; }
@@ -43,7 +42,7 @@ namespace CoptLib.XML
     }
 
     public class Translation
-	{
+    {
         [XmlArray]
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 

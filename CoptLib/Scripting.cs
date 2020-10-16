@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CoptLib.XML;
 using NLua;
+using static CoptLib.CopticInterpreter;
 
 namespace CoptLib
 {
@@ -335,10 +336,10 @@ namespace CoptLib
             }
         }
 
-        public static void ParseTextCommands(string input)
+        public static string ParseTextCommands(string input)
         {
             // Define a regular expression that captures LaTeX-style commands with 0, 1, or 2 parameters
-            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{([^\{\}]*)\})?(?:\{([^\{\}]*)\})+?",
+            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<param1>[^\{\}]*)\})?(?:\{(?<param2>[^\{\}]*)\})+?",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             // Find matches.
@@ -350,8 +351,31 @@ namespace CoptLib
                               input);
             foreach (Match m in matches)
             {
-                Console.WriteLine($"\tCommand: {m.Groups["command"]}\r\n\tParameters: {m.Groups["params"]}\r\n");
+                Console.WriteLine($"\tCommand: {m.Groups["command"]}");
+                string cmd = m.Groups["command"].Value;
+                if (cmd == "language")
+				{
+                    string[] langParts = m.Groups["param1"].Value.Split(':');
+                    Language language = (Language)Enum.Parse(typeof(Language), langParts[0]);
+                    switch (language)
+					{
+                        case Language.Coptic:
+                            var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower());
+                            string text = m.Groups[3].Value;
+                            if (font != null)
+							{
+                                input = input.Remove(m.Index, m.Length);
+                                input = input.Insert(m.Index, ConvertFont(text, font, CopticFont.CopticUnicode).Replace(" ", " \u200B"));
+                                // TextBlock doesn't seem to know where to break Coptic (Unicode?)
+                                // lines, so insert a zero-width space at every space so
+                                // word wrap acutally works
+                            }
+                            break;
+					}
+				}
             }
+
+            return input;
         }
     }
 }

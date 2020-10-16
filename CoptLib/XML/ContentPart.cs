@@ -6,18 +6,23 @@ namespace CoptLib.XML
 	/// <summary>
 	/// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
 	/// </summary>
-	public abstract class ContentPart
+	public abstract class ContentPart : Definition
 	{
+        /// <summary>
+        /// A key that can be used to identify this specific content part.
+        /// This value does not have to be unique between documents or translations.
+        /// </summary>
+        /// <remarks>
+        /// If the same key is used on content parts from two different translations
+        /// in the same document, any scripts that use that key will reference
+        /// both parts.
+        /// </remarks>
+        [XmlAttribute]
+        public new string Key { get; set; }
     }
 
     public class Stanza : ContentPart
     {
-        public Stanza() { }
-        public Stanza(string content)
-        {
-            Text = content;
-        }
-
         [XmlText]
         public string Text { get; set; }
 
@@ -25,10 +30,12 @@ namespace CoptLib.XML
         public CopticInterpreter.Language Language { get; set; }
     }
 
-    [XmlRoot("Section")]
-    public class SectionHeader : ContentPart
+    public class Section : ContentPart
 	{
-        [XmlAttribute()]
+        [XmlArray]
+        public List<ContentPart> Content { get; set; } = new List<ContentPart>();
+
+        [XmlAttribute]
         public string Title { get; set; }
-	}
+    }
 }

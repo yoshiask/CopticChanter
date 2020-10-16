@@ -7,7 +7,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+	<Page.Resources>
+		<Style TargetType="Grid">
+			<Setter Property="Padding" Value="10"/>
+			<Setter Property="ColumnSpacing" Value="10"/>
+			<Setter Property="RowSpacing" Value="10"/>
+		</Style>
+	</Page.Resources>
+	
 	<ScrollViewer>
-		<Grid x:Name="MainGrid" Padding="10" ColumnSpacing="10" RowSpacing="10"/>
+		<StackPanel x:Name="MainPanel" Spacing="20"/>
 	</ScrollViewer>
 </Page>

@@ -72,11 +72,9 @@ namespace CoptLib
 
                 // A FileStream is needed to read the XML document.
                 var sr = new StreamReader(path);
-                string xmlText = sr.ReadToEnd();
+                var xml = XDocument.Parse(sr.ReadToEnd());
 
-                // Open the document in the XML parser so we can get the
-                // translation content later
-                var xml = XDocument.Parse(xmlText);
+                // The actual content can't be deserialized, so it needs to be manually parsed
 
                 Doc doc = new Doc()
                 {
@@ -84,7 +82,46 @@ namespace CoptLib
                     Uuid = xml.Root.Element("Uuid")?.Value,
                 };
 
-                // The actual content can't be deserialized, so they need to be manually parsed
+                var defsElem = xml.Root.Element("Definitions");
+                if (defsElem != null)
+                {
+                    foreach (XElement defElem in defsElem?.Elements())
+                    {
+                        if (defElem.Name == nameof(Script))
+                        {
+                            var script = new Script()
+                            {
+                                LuaScript = defElem.Value,
+                                Key = defElem.Attribute("Key")?.Value
+                            };
+                            doc.Definitions.Add(script);
+                        }
+                        else if (defElem.Name == nameof(Variable))
+                        {
+                            var variable = new Variable()
+                            {
+                                Label = defElem.Attribute("Label")?.Value,
+                                DefaultValue = defElem.Attribute("DefaultValue")?.Value,
+                                Configurable = Boolean.Parse(defElem.Attribute("Configurable")?.Value),
+                                Key = defElem.Attribute("Key")?.Value
+                            };
+                            doc.Definitions.Add(variable);
+                        }
+                        else if (defElem.Name == nameof(XML.String))
+                        {
+                            var _string = new XML.String()
+                            {
+                                Value = defElem.Value,
+                                Font = defElem.Attribute("Font")?.Value,
+                                Language = (Language)Enum.Parse(typeof(Language),
+                                    defElem.Attribute("Language")?.Value ?? "Default"),
+                                Key = defElem.Attribute("Key")?.Value
+                            };
+                            doc.Definitions.Add(_string);
+                        }
+                    }
+                }
+
                 foreach (XElement transElem in xml.Root.Element("Translations").Elements())
                 {
                     Translation translation = new Translation()
@@ -93,32 +130,7 @@ namespace CoptLib
                         Language = (Language)Enum.Parse(typeof(Language),
                             transElem.Attribute("Language")?.Value),
                     };
-
-                    foreach (XElement contentElem in transElem.Elements())
-					{
-                        if (contentElem.Name == "Stanza")
-						{
-                            var stanza = new Stanza()
-                            {
-                                Language = (Language)Enum.Parse(typeof(Language),
-                                    transElem.Attribute("Language")?.Value ?? "Default"),
-                            };
-
-                            if (stanza.Language == Language.Coptic && translation.Font != null)
-							{
-                                // Coptic text needs to be interpreted before it can be displayed
-                                var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == translation.Font.ToLower());
-                                stanza.Text = ConvertFont(contentElem.Value, font, CopticFont.CopticUnicode);
-                            }
-                            else
-							{
-                                stanza.Text = contentElem.Value;
-                            }
-
-                            translation.Content.Add(stanza);
-						}
-					}
-
+                    translation.Content = ParseContentParts(transElem.Elements(), translation, doc);
                     doc.Translations.Add(translation);
                 }
 
@@ -156,6 +168,87 @@ namespace CoptLib
                 return null;
             }
         }
+
+        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation, Doc doc)
+		{
+            var content = new List<ContentPart>(elements.Count());
+
+            foreach (XElement contentElem in elements)
+            {
+                if (contentElem.Name == nameof(Stanza))
+                {
+                    var stanza = new Stanza()
+                    {
+                        Language = (Language)Enum.Parse(typeof(Language),
+                            contentElem.Attribute("Language")?.Value ?? translation.Language.ToString()),
+                        Key = contentElem.Attribute("Key")?.Value
+                    };
+
+                    if (stanza.Language == Language.Coptic && translation.Font != null)
+                    {
+                        // Coptic text needs to be interpreted before it can be displayed
+                        var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == translation.Font.ToLower());
+                        stanza.Text = ConvertFont(contentElem.Value, font, CopticFont.CopticUnicode);
+                    }
+                    else
+                    {
+                        stanza.Text = contentElem.Value;
+                    }
+
+                    content.Add(stanza);
+                }
+                else if (contentElem.Name == nameof(Section))
+                {
+                    var section = new Section()
+                    {
+                        Key = contentElem.Attribute("Key")?.Value,
+                        Title = ResolveReference(contentElem.Attribute("Title")?.Value, doc)
+                    };
+                    section.Content = ParseContentParts(contentElem.Elements(), translation, doc);
+                    content.Add(section);
+                }
+            }
+
+            return content;
+        }
+
+        public static string ResolveReference(string valueString, Doc doc)
+		{
+            if (valueString.StartsWith("{") && valueString.EndsWith("}"))
+			{
+                string[] parts = valueString.Substring(1, valueString.Length - 2).Split(' ');
+                if (parts.Length < 2)
+				{
+                    return valueString;
+				}
+                else
+				{
+                    // Find the element with the given key in the doc's definitions
+                    XML.String refValue = doc.Definitions.Find(def => def.Key == parts[1] && def is XML.String) as XML.String;
+                    if (refValue != null)
+					{
+                        if (refValue.Language == Language.Coptic && refValue.Font != null)
+                        {
+                            // Coptic text needs to be interpreted before it can be displayed
+                            var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == refValue.Font.ToLower());
+                            return ConvertFont(refValue.Value, font, CopticFont.CopticUnicode);
+                        }
+                        else
+                        {
+                            return refValue.Value;
+                        }
+					}
+                    else
+					{
+                        return valueString;
+					}
+				}
+			}
+            else
+			{
+                return valueString;
+			}
+		}
 
         /// <summary>
         /// Unzips, serializes, and returns an Index and list of Docs
