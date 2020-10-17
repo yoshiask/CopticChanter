@@ -62,9 +62,9 @@ namespace CopticWriter.Views
 
         private void Key_Click(object sender, RoutedEventArgs e)
         {
-            /*CharacterCaret = InputBox.SelectionStart;
+            _characterCaret = InputBox.SelectionStart;
             InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, ((Button)sender).Content.ToString());
-            InputBox.SelectionStart = CharacterCaret += 1;*/
+            InputBox.SelectionStart = _characterCaret += 1;
 
             // Reset the shift keys
             KeyLeftShift.IsChecked = false;
@@ -73,92 +73,92 @@ namespace CopticWriter.Views
 
         private void KeySpace_Click(object sender, RoutedEventArgs e)
         {
-            /*CharacterCaret = InputBox.SelectionStart;
+            _characterCaret = InputBox.SelectionStart;
             InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, " ");
-            InputBox.SelectionStart = CharacterCaret += 1;*/
+            InputBox.SelectionStart = _characterCaret += 1;
         }
 
         private void KeyEnter_Click(object sender, RoutedEventArgs e)
         {
-            /*CharacterCaret = InputBox.SelectionStart;
+            _characterCaret = InputBox.SelectionStart;
             InputBox.Text = InputBox.Text.Insert(InputBox.SelectionStart, "\n");
-            InputBox.SelectionStart = CharacterCaret += 1;*/
+            InputBox.SelectionStart = _characterCaret += 1;
         }
 
         private void KeyBackspace_Click(object sender, RoutedEventArgs e)
         {
-            /*CharacterCaret = InputBox.SelectionStart;
-            if (CharacterCaret > 0)
+            _characterCaret = InputBox.SelectionStart;
+            if (_characterCaret > 0)
             {
-                InputBox.SelectionStart = CharacterCaret - 1;
+                InputBox.SelectionStart = _characterCaret - 1;
                 InputBox.Text = InputBox.Text.Remove(InputBox.SelectionStart);
-                InputBox.SelectionStart = CharacterCaret;
+                InputBox.SelectionStart = _characterCaret;
 
                 if (InputBox.Text == String.Empty)
                 {
                     InputBox.SelectionStart = 0;
                 }
-            }*/
+            }
         }
 
         private void KeyShift_Checked(object sender, RoutedEventArgs e)
         {
-            /*KeyLeftShift.IsChecked = true;
+            KeyLeftShift.IsChecked = true;
             KeyRightShift.IsChecked = true;
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch (LanguageOption.SelectedIndex)
+                switch ((CopticInterpreter.Language)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case 0:
+                    case CopticInterpreter.Language.English:
                         InitEnglishSft();
                         break;
                     #endregion
 
                     #region Coptic
-                    case 1:
+                    case CopticInterpreter.Language.Coptic:
                         InitCopticSft();
                         break;
                     #endregion
 
                     #region Arabic
-                    case 2:
+                    case CopticInterpreter.Language.Arabic:
                         InitArabicSft();
                         break;
                         #endregion
                 }
-            }*/
+            }
         }
 
         private void KeyShift_Unchecked(object sender, RoutedEventArgs e)
         {
-            /*KeyLeftShift.IsChecked = false;
+            KeyLeftShift.IsChecked = false;
             KeyRightShift.IsChecked = false;
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch (LanguageOption.SelectedIndex)
+                switch ((CopticInterpreter.Language)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case 0:
+                    case CopticInterpreter.Language.English:
                         InitEnglish();
                         break;
                     #endregion
 
                     #region Coptic
-                    case 1:
+                    case CopticInterpreter.Language.Coptic:
                         InitCoptic();
                         break;
                     #endregion
 
                     #region Arabic
-                    case 2:
+                    case CopticInterpreter.Language.Arabic:
                         InitArabic();
                         break;
                         #endregion
                 }
-            }*/
+            }
         }
         #endregion
 
@@ -430,86 +430,99 @@ namespace CopticWriter.Views
         /// <param name="btn">The key to initialize</param>
         /// <param name="keytype">Language to load: eng / copt / arabic + ":sft"</param>
         /// <param name="index"></param>
-        private void InitKey(Button btn, string keytype, int index)
+        private void InitKey(Button btn, CopticInterpreter.Language language, bool shift, int index)
         {
-            switch (keytype)
-            {
-                case "eng":
-                    if (English[index] != null)
+            switch (language)
+			{
+				#region English
+				case CopticInterpreter.Language.English:
+                    if (shift)
+					{
+                        if (EnglishSft[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            btn.Content = EnglishSft[index];
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    else
+					{
+                        if (English[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            btn.Content = English[index];
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    return;
+				#endregion
+
+				#region Coptic
+				case CopticInterpreter.Language.Coptic:
+                    if (shift)
+					{
+                        if (CopticSft[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            btn.Content = CopticInterpreter.ConvertFont(EnglishSft[index], CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    else
+					{
+                        if (Coptic[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            var vals = CopticFont.CopticUnicode.Charmap.Values.ToList();
+                            btn.Content = CopticInterpreter.ConvertFont(English[index], CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    return;
+                #endregion
+
+                #region Arabic
+                case CopticInterpreter.Language.Arabic:
+                    if (!shift)
                     {
-                        btn.Visibility = Visibility.Visible;
-                        btn.Content = English[index];
+                        if (ArabicSft[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            btn.Content = ArabicSft[index];
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
                     }
                     else
                     {
-                        btn.Visibility = Visibility.Collapsed;
+                        if (Arabic[index] != null)
+                        {
+                            btn.Visibility = Visibility.Visible;
+                            btn.Content = Arabic[index];
+                        }
+                        else
+                        {
+                            btn.Visibility = Visibility.Collapsed;
+                        }
                     }
                     return;
-
-                case "eng:sft":
-                    if (EnglishSft[index] != null)
-                    {
-                        btn.Visibility = Visibility.Visible;
-                        btn.Content = EnglishSft[index];
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-
-                case "copt":
-                    if (Coptic[index] != null)
-                    {
-                        btn.Visibility = Visibility.Visible;
-                        btn.Content = CoptLib.CopticFont.CopticUnicode.Charmap.Values.ElementAt(index - 1);
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-
-                case "copt:sft":
-                    if (CopticSft[index] != null)
-                    {
-                        btn.Visibility = Visibility.Visible;
-                        var vals = CoptLib.CopticFont.CopticUnicode.Charmap.Values.ToList();
-                        btn.Content = vals[index + 33];
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-
-                case "arabic":
-
-                    if (Arabic[index] != null)
-                    {
-                        btn.Visibility = Visibility.Visible;
-                        btn.Content = Arabic[index];
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-
-                case "arabic:sft":
-
-                    if (ArabicSft[index] != null)
-                    {
-                        btn.Visibility = Visibility.Visible;
-                        btn.Content = ArabicSft[index];
-                    }
-                    else
-                    {
-                        btn.Visibility = Visibility.Collapsed;
-                    }
-                    return;
-            }
-        }
+				#endregion
+			}
+		}
 
         private void InitEnglish()
         {
@@ -519,7 +532,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "eng", i);
+                        InitKey((Button)key, CopticInterpreter.Language.English, false, i);
                 }
             }
             return;
@@ -532,7 +545,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "eng:sft", i);
+                        InitKey((Button)key, CopticInterpreter.Language.English, true, i);
                 }
             }
             return;
@@ -546,7 +559,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "copt", i);
+                        InitKey((Button)key, CopticInterpreter.Language.Coptic, false, i);
                 }
             }
             return;
@@ -559,7 +572,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "copt:sft", i);
+                        InitKey((Button)key, CopticInterpreter.Language.Coptic, true, i);
                 }
             }
             return;
@@ -573,7 +586,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "arabic", i);
+                        InitKey((Button)key, CopticInterpreter.Language.Arabic, false, i);
                 }
             }
             return;
@@ -586,7 +599,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, "arabic:sft", i);
+                        InitKey((Button)key, CopticInterpreter.Language.Arabic, true, i);
                 }
             }
             return;
@@ -694,7 +707,7 @@ namespace CopticWriter.Views
             switch (LanguageOption.SelectedIndex)
             {
                 case 2:
-                    InputBox.Text = CopticInterpreter.ConvertFont(InputBox.Text, CopticFont.Athanasius, CopticFont.CopticUnicode);
+                    InputBox.Text = CopticInterpreter.ConvertFont(InputBox.Text, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
                     break;
             }
             InputBox.SelectionStart = caret;

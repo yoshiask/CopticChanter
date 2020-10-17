@@ -32,8 +32,22 @@
 
                 <Viewbox Margin="10,10,10,10">
                     <Grid x:Name="KeyboardGrid" HorizontalAlignment="Center" Width="715">
+						<Grid.Resources>
+							<Style TargetType="Button">
+								<Setter Property="CornerRadius" Value="0"/>
+							</Style>
+							<Style TargetType="ToggleButton">
+								<Setter Property="CornerRadius" Value="0"/>
+							</Style>
+						</Grid.Resources>
+						
                         <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                            <Button x:Name="Key1" Content="q" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="CornerRadius" Value="0"/>
+								</Style>
+							</StackPanel.Resources>
+							<Button x:Name="Key1" Content="q" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key2" Content="w" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key3" Content="e" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key4" Content="r" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
@@ -48,8 +62,13 @@
                             <Button x:Name="Key13" Content="\" VerticalAlignment="Top" Width="50" Padding="1" Height="50" Margin="5,0,0,0" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                         </StackPanel>
 
-                        <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,55,105,0">
-                            <Button x:Name="Key14" Content="a" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18"                  Click="Key_Click" FontFamily="Segoe UI Coptic" />
+						<StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,55,105,0">
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="CornerRadius" Value="0"/>
+								</Style>
+							</StackPanel.Resources>
+							<Button x:Name="Key14" Content="a" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18"                  Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key15" Content="s" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key16" Content="d" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key17" Content="f" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
@@ -61,7 +80,7 @@
                             <Button x:Name="Key23" Content=";" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key24" Content="'" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                         </StackPanel>
-                        <Button x:Name="KeyEnter" VerticalAlignment="Top" Width="105" Padding="1" Height="50" FontSize="24" Click="KeyEnter_Click" HorizontalAlignment="Right" Margin="0,55,0,0">
+                        <Button x:Name="KeyEnter" VerticalAlignment="Top" Width="105" Padding="1" Height="50" FontSize="24" Click="KeyEnter_Click" HorizontalAlignment="Right" Margin="0,55,5,0">
                             <FontIcon Glyph="&#xE751;" FontFamily="Segoe MDL2 Assets"/>
                         </Button>
                         <ToggleButton x:Name="KeyLeftShift" VerticalAlignment="Bottom" Margin="0,0,0,55"
@@ -70,8 +89,13 @@
                             <FontIcon Glyph="&#xE752;" FontFamily="Segoe MDL2 Assets"/>
                         </ToggleButton>
 
-                        <StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="55,110,105,0">
-                            <Button x:Name="Key25" Content="z" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
+						<StackPanel Orientation="Horizontal" Height="50" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="55,110,105,0">
+							<StackPanel.Resources>
+								<Style TargetType="Button">
+									<Setter Property="CornerRadius" Value="0"/>
+								</Style>
+							</StackPanel.Resources>
+							<Button x:Name="Key25" Content="z" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key26" Content="x" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key27" Content="c" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
                             <Button x:Name="Key28" Content="v" VerticalAlignment="Top" Width="50" Padding="1" Height="50" FontSize="18" Margin="5,0,0,0" Click="Key_Click" FontFamily="Segoe UI Coptic" />
@@ -84,13 +108,13 @@
                         </StackPanel>
                         <ToggleButton x:Name="KeyRightShift" VerticalAlignment="Bottom"
                                   Width="105" Padding="1" Height="50" FontSize="24"
-                                  Unchecked="KeyShift_Unchecked" Checked="KeyShift_Checked" HorizontalAlignment="Right" Margin="0,0,0,55" >
+                                  Unchecked="KeyShift_Unchecked" Checked="KeyShift_Checked" HorizontalAlignment="Right" Margin="0,0,5,55" >
                             <FontIcon Glyph="&#xE752;" FontFamily="Segoe MDL2 Assets"/>
                         </ToggleButton>
-                        <Button x:Name="KeyBackspace" Width="105" FontSize="18" Height="50" Click="KeyBackspace_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                        <Button x:Name="KeyBackspace" Width="105" FontSize="18" Height="50" Click="KeyBackspace_Click" Margin="0,0,5,0" CornerRadius="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                             <FontIcon Glyph="&#xE750;" FontFamily="Segoe MDL2 Assets"/>
                         </Button>
-                        <Button x:Name="KeySpace" Width="270" FontSize="18" Height="50" Click="KeySpace_Click" VerticalAlignment="Top" Margin="0,165,110,0" HorizontalAlignment="Center">
+						<Button x:Name="KeySpace" Width="270" FontSize="18" Height="50" Click="KeySpace_Click" VerticalAlignment="Top" CornerRadius="0" Margin="0,165,115,0" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE75D;" FontFamily="Segoe MDL2 Assets"/>
                         </Button>
 
