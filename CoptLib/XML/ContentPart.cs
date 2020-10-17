@@ -37,5 +37,23 @@ namespace CoptLib.XML
 
         [XmlAttribute]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Returns the number of rows this section requires to display
+        /// all section headers and stanzas
+        /// </summary>
+        /// <returns></returns>
+        public int CountRows()
+        {
+            int count = 0;
+            foreach (ContentPart part in Content)
+            {
+                if (part is Stanza)
+                    count++;
+                else if (part is Section section)
+                    count += section.CountRows() + 1;
+            }
+            return count;
+        }
     }
 }

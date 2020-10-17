@@ -145,18 +145,7 @@ namespace CopticChanter.Helpers
 
             // Create rows for each stanza
             // Don't forget one for each header too
-            int numRows = doc.Translations.Max(t =>
-            {
-                int count = 0;
-                foreach (ContentPart part in t.Content)
-				{
-                    if (part is Stanza)
-                        count++;
-                    else if (part is Section section)
-                        count += section.Content.Count + 1;
-				}
-                return count;
-            });
+            int numRows = doc.Translations.Max(t => t.CountRows());
             for (int i = 0; i <= numRows; i++)
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
