@@ -34,10 +34,10 @@ namespace CopticChanter
                 {
                     foreach (CoptLib.Models.Doc doc in Common.Docs)
                     {
-                        doc.Translations.Any(t => t.Language == CopticInterpreter.Language.English);
+                        doc.Translations.Any(t => t.Language == CoptLib.Language.English);
                         Debug.WriteLine(doc.Name);
 
-                        //if (doc.Language == CopticInterpreter.Language.Coptic)
+                        //if (doc.Language == Language.Coptic)
                         //{
                         //    Common.AnyCoptic++;
                         //}
@@ -92,11 +92,11 @@ namespace CopticChanter
                             var doc = CopticInterpreter.ReadDocXml(file.Path);
 
                             Common.Docs.Add(doc);
-                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.English))
+                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.English))
                                 Common.AnyEnglish = true;
-                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.Coptic))
+                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.Coptic))
                                 Common.AnyCoptic = true;
-                            if (doc.Translations.Any(t => t.Language == CopticInterpreter.Language.Arabic))
+                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.Arabic))
                                 Common.AnyArabic = true;
                             Debug.WriteLine(doc.Name);
                         }
@@ -133,14 +133,14 @@ namespace CopticChanter
 
         private void Present()
         {
-            var langs = new List<CopticInterpreter.Language>(3);
+            var langs = new List<Language>(3);
 
             if (Common.AnyEnglish)
-                langs.Add(CopticInterpreter.Language.English);
+                langs.Add(CoptLib.Language.English);
             if (Common.AnyCoptic)
-                langs.Add(CopticInterpreter.Language.Coptic);
+                langs.Add(CoptLib.Language.Coptic);
             if (Common.AnyArabic)
-                langs.Add(CopticInterpreter.Language.Arabic);
+                langs.Add(CoptLib.Language.Arabic);
 
             Frame.Navigate(typeof(Layouts.DocumentLayout),
                 new Layouts.DocumentLayoutArgs(langs.ToArray())

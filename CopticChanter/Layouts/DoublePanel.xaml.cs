@@ -60,8 +60,8 @@ namespace CopticChanter.Layouts
             //switch (args.Language2)
             //{
             //    #region English
-            //    case CopticInterpreter.Language.English:
-            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.English))
+            //    case Language.English:
+            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == Language.English))
             //        {
             //            foreach (string content in doc.Content)
             //            {
@@ -80,8 +80,8 @@ namespace CopticChanter.Layouts
             //    #endregion
 
             //    #region Coptic
-            //    case CopticInterpreter.Language.Coptic:
-            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == CopticInterpreter.Language.Coptic))
+            //    case Language.Coptic:
+            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == Language.Coptic))
             //        {
             //            foreach (string content in doc.Content)
             //            {
@@ -102,7 +102,7 @@ namespace CopticChanter.Layouts
 
             //    #region Arabic
             //    // TODO: Support Arabic text
-            //    case CopticInterpreter.Language.Arabic:
+            //    case Language.Arabic:
             //        var contentBlockA = new TextBlock
             //        {
             //            Text = "\n",

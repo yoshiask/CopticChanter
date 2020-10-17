@@ -604,7 +604,7 @@ namespace DocCreator
                 switch (System.IO.Path.GetExtension(dialogX.FileName))
                 {
                     case ".xml":
-                        var lang = (CoptLib.CopticInterpreter.Language)LanguageOption.SelectedIndex;
+                        var lang = (CoptLib.Language)LanguageOption.SelectedIndex;
                         CoptLib.CopticInterpreter.SaveDocXml(dialogX.FileName, _stanzas, lang, System.IO.Path.GetFileNameWithoutExtension(dialogX.FileName));
                         return;
 
@@ -686,7 +686,7 @@ namespace DocCreator
 
                         DocSelection.SelectedIndex = 0;
                         Doc doc = set.IncludedDocs[0];
-                        if (doc.Language != CoptLib.CopticInterpreter.Language.Coptic)
+                        if (doc.Language != CoptLib.Language.Coptic)
                         {
                             foreach (Stanza stanza in doc.Translations)
                             {
@@ -715,7 +715,7 @@ namespace DocCreator
                         ResetControls();
                         _stanzas.Add("");
 
-                        if (docXml.Language != CoptLib.CopticInterpreter.Language.Coptic)
+                        if (docXml.Language != CoptLib.Language.Coptic)
                         {
                             foreach (Stanza stanza in docXml.Translations)
                             {
@@ -929,7 +929,7 @@ namespace DocCreator
 
                 Doc saveX = new Doc()
                 {
-                    Language = CoptLib.CopticInterpreter.Language.English,
+                    Language = CoptLib.Language.English,
                     Uuid = docUuid,
                     Translations = stanzaXmLs,
                     Name = NameBox.Text,
@@ -953,7 +953,7 @@ namespace DocCreator
                 }
                 Doc saveX = new Doc
                 {
-                    Language = CoptLib.CopticInterpreter.Language.English,
+                    Language = CoptLib.Language.English,
                     Uuid = docUuid,
                     Translations = stanzaXmLs,
                     Name = NameBox.Text,

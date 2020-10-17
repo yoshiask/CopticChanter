@@ -1,18 +1,13 @@
 ﻿using CoptLib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+
+using Language =  CoptLib.Language;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -108,22 +103,22 @@ namespace CopticWriter.Views
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch ((CopticInterpreter.Language)LanguageOption.SelectedIndex)
+                switch ((Language)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case CopticInterpreter.Language.English:
+                    case CoptLib.Language.English:
                         InitEnglishSft();
                         break;
                     #endregion
 
                     #region Coptic
-                    case CopticInterpreter.Language.Coptic:
+                    case CoptLib.Language.Coptic:
                         InitCopticSft();
                         break;
                     #endregion
 
                     #region Arabic
-                    case CopticInterpreter.Language.Arabic:
+                    case CoptLib.Language.Arabic:
                         InitArabicSft();
                         break;
                         #endregion
@@ -138,22 +133,22 @@ namespace CopticWriter.Views
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch ((CopticInterpreter.Language)LanguageOption.SelectedIndex)
+                switch ((Language)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case CopticInterpreter.Language.English:
+                    case CoptLib.Language.English:
                         InitEnglish();
                         break;
                     #endregion
 
                     #region Coptic
-                    case CopticInterpreter.Language.Coptic:
+                    case CoptLib.Language.Coptic:
                         InitCoptic();
                         break;
                     #endregion
 
                     #region Arabic
-                    case CopticInterpreter.Language.Arabic:
+                    case CoptLib.Language.Arabic:
                         InitArabic();
                         break;
                         #endregion
@@ -430,12 +425,12 @@ namespace CopticWriter.Views
         /// <param name="btn">The key to initialize</param>
         /// <param name="keytype">Language to load: eng / copt / arabic + ":sft"</param>
         /// <param name="index"></param>
-        private void InitKey(Button btn, CopticInterpreter.Language language, bool shift, int index)
+        private void InitKey(Button btn, Language language, bool shift, int index)
         {
             switch (language)
 			{
 				#region English
-				case CopticInterpreter.Language.English:
+				case CoptLib.Language.English:
                     if (shift)
 					{
                         if (EnglishSft[index] != null)
@@ -464,7 +459,7 @@ namespace CopticWriter.Views
 				#endregion
 
 				#region Coptic
-				case CopticInterpreter.Language.Coptic:
+				case CoptLib.Language.Coptic:
                     if (shift)
 					{
                         if (CopticSft[index] != null)
@@ -494,7 +489,7 @@ namespace CopticWriter.Views
                 #endregion
 
                 #region Arabic
-                case CopticInterpreter.Language.Arabic:
+                case CoptLib.Language.Arabic:
                     if (!shift)
                     {
                         if (ArabicSft[index] != null)
@@ -532,7 +527,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.English, false, i);
+                        InitKey((Button)key, CoptLib.Language.English, false, i);
                 }
             }
             return;
@@ -545,7 +540,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.English, true, i);
+                        InitKey((Button)key, CoptLib.Language.English, true, i);
                 }
             }
             return;
@@ -559,7 +554,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.Coptic, false, i);
+                        InitKey((Button)key, CoptLib.Language.Coptic, false, i);
                 }
             }
             return;
@@ -572,7 +567,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.Coptic, true, i);
+                        InitKey((Button)key, CoptLib.Language.Coptic, true, i);
                 }
             }
             return;
@@ -586,7 +581,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.Arabic, false, i);
+                        InitKey((Button)key, CoptLib.Language.Arabic, false, i);
                 }
             }
             return;
@@ -599,7 +594,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CopticInterpreter.Language.Arabic, true, i);
+                        InitKey((Button)key, CoptLib.Language.Arabic, true, i);
                 }
             }
             return;
@@ -614,23 +609,23 @@ namespace CopticWriter.Views
             {
                 if (LanguageOption.SelectedIndex > -1)
                 {
-                    var language = (CoptLib.CopticInterpreter.Language)LanguageOption.SelectedIndex;
+                    var language = (Language)LanguageOption.SelectedIndex;
                     switch (language)
                     {
                         #region English
-                        case CoptLib.CopticInterpreter.Language.English:
+                        case CoptLib.Language.English:
                             InitEnglish();
                             break;
                         #endregion
 
                         #region Coptic
-                        case CoptLib.CopticInterpreter.Language.Coptic:
+                        case CoptLib.Language.Coptic:
                             InitCoptic();
                             break;
                         #endregion
 
                         #region Arabic
-                        case CoptLib.CopticInterpreter.Language.Arabic:
+                        case CoptLib.Language.Arabic:
                             InitArabic();
                             break;
                             #endregion
@@ -704,9 +699,9 @@ namespace CopticWriter.Views
 		private void InputBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
             int caret = InputBox.SelectionStart;
-            switch (LanguageOption.SelectedIndex)
+            switch ((Language)LanguageOption.SelectedIndex)
             {
-                case 2:
+                case CoptLib.Language.Coptic:
                     InputBox.Text = CopticInterpreter.ConvertFont(InputBox.Text, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
                     break;
             }

@@ -40,7 +40,7 @@ namespace CoptLib.Models
 		public string Value { get; set; }
 
 		[XmlAttribute]
-		public CopticInterpreter.Language Language { get; set; }
+		public Language Language { get; set; }
 
 		[XmlAttribute]
 		public string Font { get; set; }

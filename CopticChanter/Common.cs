@@ -443,7 +443,7 @@ namespace CopticChanter
 
     public static class DateTimeExtensions
     {
-        public static CoptLib.CopticDate ToCoptic(this DateTime date)
+        public static CopticDate ToCoptic(this DateTime date)
         {
             return CoptLib.CopticDate.ToCopticDate(date);
         }

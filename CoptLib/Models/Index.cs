@@ -28,6 +28,6 @@ namespace CoptLib.Models
         public string Uuid;
 
         //[XmlAttribute]
-        //public CopticInterpreter.Language Language;
+        //public Language Language;
     }
 }

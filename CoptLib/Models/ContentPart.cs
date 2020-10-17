@@ -21,7 +21,7 @@ namespace CoptLib.Models
         public new string Key { get; set; }
 
         [XmlAttribute]
-        public CopticInterpreter.Language Language { get; set; }
+        public Language Language { get; set; }
 
         [XmlAttribute]
         public string Font { get; set; }

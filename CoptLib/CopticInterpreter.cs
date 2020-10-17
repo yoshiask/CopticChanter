@@ -9,17 +9,16 @@ using CoptLib.Models;
 
 namespace CoptLib
 {
+    public enum Language
+    {
+        Default,
+        English,
+        Coptic,
+        Arabic
+    }
+
     public static class CopticInterpreter
     {
-        public enum Language
-        {
-            Default,
-            English,
-            Coptic,
-            Arabic
-        }
-
-
         public static IDictionary<string, Doc> AllDocs = new Dictionary<string, Doc>();
 
         /// <summary>
@@ -299,7 +298,7 @@ namespace CoptLib
 
             // Generate a dictionary that has the start mapping as keys and the target mapping as values
             Dictionary<string, string> mergedMap = new Dictionary<string, string>();
-            var sourceMap = DictionaryTools.SwitchColumns<string, string>(start.Charmap);
+            var sourceMap = DictionaryTools.SwitchColumns(start.Charmap);
             foreach (KeyValuePair<string, string> spair in sourceMap)
             {
                 if (target.Charmap.ContainsKey(spair.Value))

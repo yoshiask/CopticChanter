@@ -9,7 +9,7 @@ namespace CoptLib.Models
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 
         [XmlElement]
-        public CopticInterpreter.Language Language { get; set; }
+        public Language Language { get; set; }
 
         [XmlElement]
         public string Font { get; set; }

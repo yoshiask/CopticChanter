@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.UI;
-using static CoptLib.CopticInterpreter;
+using CoptLib;
 
 namespace CopticChanter.Layouts
 {
