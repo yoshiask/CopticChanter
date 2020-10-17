@@ -461,7 +461,7 @@ namespace CopticWriter.Views
                     if (Coptic[index] != null)
                     {
                         btn.Visibility = Visibility.Visible;
-                        btn.Content = CoptLib.CopticFont.UnicodeMapping.Values.ElementAt(index - 1);
+                        btn.Content = CoptLib.CopticFont.CopticUnicode.Charmap.Values.ElementAt(index - 1);
                     }
                     else
                     {
@@ -473,7 +473,7 @@ namespace CopticWriter.Views
                     if (CopticSft[index] != null)
                     {
                         btn.Visibility = Visibility.Visible;
-                        var vals = CoptLib.CopticFont.UnicodeMapping.Values.ToList();
+                        var vals = CoptLib.CopticFont.CopticUnicode.Charmap.Values.ToList();
                         btn.Content = vals[index + 33];
                     }
                     else

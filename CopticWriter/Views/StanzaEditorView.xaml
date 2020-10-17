@@ -24,6 +24,7 @@
                   Height="255" VerticalAlignment="Bottom">
 
                 <ComboBox x:Name="LanguageOption" VerticalAlignment="Top" Width="120" SelectedIndex="0" SelectionChanged="LanguageOption_SelectionChanged" FontSize="14" HorizontalAlignment="Right" Margin="0,10,10,0">
+                    <ComboBoxItem Content="Default"/>
                     <ComboBoxItem Content="English"/>
                     <ComboBoxItem Content="Coptic"/>
                     <ComboBoxItem Content="Arabic"/>

@@ -7,7 +7,6 @@ using Windows.UI.Text.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -111,8 +110,8 @@ namespace CopticWriter.Controls
             // _editContext.NotifyFocusLeaveCompleted += EditContext_NotifyFocusLeaveCompleted;
 
             // Set our initial UI.
-            UpdateTextUi();
-            UpdateFocusUi();
+            UpdateTextUI();
+            UpdateFocusUI();
             BlinkingText.Begin();
         }
 
@@ -150,8 +149,8 @@ namespace CopticWriter.Controls
                 _internalFocus = true;
 
                 // Update the UI.
-                UpdateTextUi();
-                UpdateFocusUi();
+                UpdateTextUI();
+                UpdateFocusUI();
 
                 // Notify the CoreTextEditContext that the edit context has focus,
                 // so it should start processing text input.
@@ -184,8 +183,8 @@ namespace CopticWriter.Controls
             _inputPane.TryHide();
 
             // Update our UI.
-            UpdateTextUi();
-            UpdateFocusUi();
+            UpdateTextUI();
+            UpdateFocusUI();
         }
 
         void EditContext_FocusRemoved(CoreTextEditContext sender, object args)
@@ -205,9 +204,9 @@ namespace CopticWriter.Controls
         void ReplaceText(CoreTextRange modifiedRange, string text)
         {
             // Modify the internal text store.
-            _text = _text.Substring(0, modifiedRange.StartCaretPosition) +
+            _text = _text.Substring(0, Math.Clamp(modifiedRange.StartCaretPosition, 0, Math.Max(0, _text.Length - 1))) +
               text +
-              _text.Substring(modifiedRange.EndCaretPosition);
+              _text.Substring(Math.Clamp(modifiedRange.EndCaretPosition, 0, Math.Max(0, _text.Length)));
 
             // Move the caret to the end of the replacement text.
             _selection.StartCaretPosition = modifiedRange.StartCaretPosition + text.Length;
@@ -233,7 +232,7 @@ namespace CopticWriter.Controls
             _selection = selection;
 
             //Update the UI to show the new selection.
-            UpdateTextUi();
+            UpdateTextUI();
         }
 
         // Change the selection and notify CoreTextEditContext of the new selection.
@@ -509,8 +508,7 @@ namespace CopticWriter.Controls
                         // Delete the character to the right of the caret, if one exists,
                         // by creating a range that encloses the character to the right
                         // of the caret, and setting the contents of that range to nothing.
-                        range.StartCaretPosition = Math.Max(0, range.StartCaretPosition + 1);
-                        range.EndCaretPosition = range.StartCaretPosition;
+                        range.EndCaretPosition = Math.Max(0, range.StartCaretPosition + 1);
                         ReplaceText(range, "");
                     }
                     break;
@@ -542,18 +540,22 @@ namespace CopticWriter.Controls
             return s + "\ufeff";
         }
 
-        void UpdateFocusUi()
+        void UpdateFocusUI()
         {
             BorderPanel.BorderBrush = _internalFocus ? new SolidColorBrush(Windows.UI.Colors.Green) : null;
         }
 
-        void UpdateTextUi()
+        void UpdateTextUI()
         {
             // The raw materials we have are a string (_text) and information about
             // where the caret/selection is (_selection). We can render the control
             // any way we like.
 
-            BeforeSelectionText.Text = PreserveTrailingSpaces(_text.Substring(0, _selection.StartCaretPosition));
+            BeforeSelectionText.Text = PreserveTrailingSpaces(
+                _text.Substring(0, Math.Clamp(
+                    _selection.StartCaretPosition, 0, Math.Max(0, _text.Length)
+                ))
+            );
             if (HasSelection())
             {
                 // There is a selection. Draw that.
@@ -584,6 +586,30 @@ namespace CopticWriter.Controls
             Point point = transform.TransformPoint(new Point());
             return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
         }
-        #endregion
-    }
+		#endregion
+
+		private async void Paste_Invoked(Windows.UI.Xaml.Input.KeyboardAccelerator sender, Windows.UI.Xaml.Input.KeyboardAcceleratorInvokedEventArgs args)
+		{
+            Windows.ApplicationModel.DataTransfer.DataPackageView dataPackageView = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+            if (dataPackageView.Contains(Windows.ApplicationModel.DataTransfer.StandardDataFormats.Text))
+            {
+                string newText = await dataPackageView.GetTextAsync();
+
+                // Modify the internal text store.
+                _text = _text.Substring(0, _selection.StartCaretPosition) +
+                    newText +
+                    _text.Substring(Math.Min(_text.Length, _selection.EndCaretPosition));
+
+                // You can set the proper font or direction for the updated text based on the language by checking
+                // args.InputLanguage.  We will not do that in this sample.
+
+                // Modify the current selection.
+                _selection.StartCaretPosition = _selection.EndCaretPosition += newText.Length;
+
+                // Update the selection of the edit context. There is no need to notify the system
+                // because the system itself changed the selection.
+                SetSelectionAndNotify(_selection);
+            }
+        }
+	}
 }

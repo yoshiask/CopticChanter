@@ -12,6 +12,10 @@
     <StackPanel>
         <!-- Our custom edit control -->
         <StackPanel x:Name="BorderPanel" BorderThickness="4" Background="White">
+			<StackPanel.KeyboardAccelerators>
+				<KeyboardAccelerator Key="V" Modifiers="Control" Invoked="Paste_Invoked"/>
+			</StackPanel.KeyboardAccelerators>
+
             <StackPanel x:Name="ContentPanel" Orientation="Horizontal" HorizontalAlignment="Left">
                 <TextBlock x:Name="BeforeSelectionText" Foreground="Black"/>
                 <TextBlock x:Name="CaretText" Text="|" Foreground="Black" FontFamily="Segoe UI Bold">
@@ -31,7 +35,7 @@
                     </TextBlock.Resources>
                 </TextBlock>
                 <Border Background="Blue">
-                    <TextBlock x:Name="SelectionText" Foreground="White"/>
+                    <TextBlock x:Name="SelectionText" Foreground="White" TextWrapping="Wrap"/>
                 </Border>
                 <TextBlock x:Name="AfterSelectionText" Foreground="Black"/>
             </StackPanel>

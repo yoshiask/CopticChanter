@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoptLib.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,8 +22,8 @@ namespace CopticWriter
     /// </summary>
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
-        ObservableCollection<CoptLib.Models.Doc> _docs = new ObservableCollection<CoptLib.Models.Doc>();
-        ObservableCollection<CoptLib.Models.Doc> Docs {
+        ObservableCollection<Doc> _docs = new ObservableCollection<Doc>();
+        ObservableCollection<Doc> Docs {
             get { return _docs; }
             set {
                 _docs = value;
@@ -89,8 +90,8 @@ namespace CopticWriter
                         // Read the file
                         var set = CoptLib.CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
                         ShowDocControls();
-                        Docs = new ObservableCollection<CoptLib.Models.Doc>(set.IncludedDocs);
-                        CurrentStanza = set.IncludedDocs[0].Translations[0].Text;
+                        Docs = new ObservableCollection<Doc>(set.IncludedDocs);
+                        CurrentStanza = (set.IncludedDocs[0].Translations[0].Content[0] as Stanza)?.Text;
                         OnPropertyChanged();
                         return;
                 }

@@ -134,11 +134,11 @@
         <WinUI:TabView x:Name="MainTabControl" TabItemsSource="{x:Bind Docs, Mode=TwoWay}"
                     controls:DockPanel.Dock="Top">
             <WinUI:TabView.TabItemTemplate>
-                <DataTemplate x:DataType="CoptXml:DocXml" >
+                <DataTemplate x:DataType="CoptXml:Doc">
                     <WinUI:TabViewItem Header="{Binding Name}">
                         <ItemsControl ItemsSource="{Binding Content}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="CoptXml:StanzaXml">
+                                <DataTemplate x:DataType="CoptXml:Stanza">
                                     <TextBox Text="{Binding Text}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
