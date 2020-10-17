@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoptLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -398,29 +399,29 @@ namespace CopticWriter.Views
         bool _isUpper;
         private void InputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
-            /*CharacterCaret = InputBox.SelectionStart;
-            if (LanguageOption.SelectedIndex == 1)
-            {
-                
-                // Language is set to Coptic, so intercept English keystrokes
-                // and replace with Coptic unicode
-                isUpper = e.Key == Windows.System.VirtualKey.Shift;
+            //_characterCaret = InputBox.SelectionStart;
+            //if (LanguageOption.SelectedIndex == 2)
+            //{
 
-                if (e.OriginalKey.ToString().Length <= 1 && char.IsLetterOrDigit(e.OriginalKey.ToString().ToCharArray()[0]))
-                {
-                    string englishText = e.OriginalKey.ToString();
-                    if (isUpper)
-                        englishText = englishText.ToUpper();
-                    else
-                        englishText = englishText.ToLower();
-                    string oldText = InputBox.Text;
-                    string newText = CoptLib.CopticInterpreter.ConvertToUnicode(englishText);
-                    //InputBox.Text.Insert(CharacterCaret, newText);
-                    InputBox.Text += newText;
-                    InputBox.SelectionStart = ++CharacterCaret;
-                    e.Handled = true;
-                }
-            }*/
+            //	// Language is set to Coptic, so intercept English keystrokes
+            //	// and replace with Coptic unicode
+            //	_isUpper = e.Key == Windows.System.VirtualKey.Shift;
+
+            //	if (e.OriginalKey.ToString().Length <= 1 && char.IsLetterOrDigit(e.OriginalKey.ToString().ToCharArray()[0]))
+            //	{
+            //		string englishText = e.OriginalKey.ToString();
+            //		if (_isUpper)
+            //			englishText = englishText.ToUpper();
+            //		else
+            //			englishText = englishText.ToLower();
+            //		string oldText = InputBox.Text;
+            //		string newText = CopticInterpreter.ConvertFont(englishText, CopticFont.Coptic1, CopticFont.CopticUnicode);
+            //		//InputBox.Text.Insert(CharacterCaret, newText);
+            //		InputBox.Text += newText;
+            //		InputBox.SelectionStart = ++_characterCaret;
+            //		e.Handled = true;
+            //	}
+            //}
         }
 
         /// <summary>
@@ -594,6 +595,8 @@ namespace CopticWriter.Views
 
         private void LanguageOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!IsLoaded)
+                return;
             try
             {
                 if (LanguageOption.SelectedIndex > -1)
@@ -644,11 +647,16 @@ namespace CopticWriter.Views
         public StanzaEditorView()
         {
             this.InitializeComponent();
-            InitEnglish();
+            Loaded += StanzaEditorView_Loaded;
 #if x
             // Handle touch event to manage focus.
             CoreWindow.GetForCurrentThread().PointerPressed += Page_PointerPressed;
 #endif
+        }
+
+        private void StanzaEditorView_Loaded(object sender, RoutedEventArgs e)
+        {
+            InitEnglish();
         }
 
 #if x
@@ -679,5 +687,17 @@ namespace CopticWriter.Views
             base.OnNavigatingFrom(e);
 #endif
         }
-    }
+
+		private void InputBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+            int caret = InputBox.SelectionStart;
+            switch (LanguageOption.SelectedIndex)
+            {
+                case 2:
+                    InputBox.Text = CopticInterpreter.ConvertFont(InputBox.Text, CopticFont.Athanasius, CopticFont.CopticUnicode);
+                    break;
+            }
+            InputBox.SelectionStart = caret;
+        }
+	}
 }

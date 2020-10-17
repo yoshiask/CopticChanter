@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.System;
@@ -18,6 +19,13 @@ namespace CopticWriter.Controls
     // it manages focus explicitly by tracking pointer activity.
     public sealed partial class MultiLanguageTextInput : UserControl
     {
+        readonly char[] PUNCTUATION_CHARS = new char[]
+        {
+            ' ', ',', '"', '\'', ':', ';', '/', '<', '>', '~', '!', '@', '#',
+            '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}',
+            '[', ']', '?', '.'
+        };
+
         // The _editContext lets us communicate with the input system.
         CoreTextEditContext _editContext;
 
@@ -290,6 +298,31 @@ namespace CopticWriter.Controls
             // because the system itself changed the selection.
             SetSelection(range);
         }
+
+        void SelectPreviousWord()
+		{
+            string beforeCaret = _text.Substring(0, Math.Clamp(_selection.StartCaretPosition, 0, Math.Max(0, _text.Length)));
+            int extensionAmount = -(beforeCaret.Length - beforeCaret.LastIndexOfAny(PUNCTUATION_CHARS));
+            if (beforeCaret.LastIndexOfAny(PUNCTUATION_CHARS) == _selection.StartCaretPosition - 1)
+                extensionAmount--;
+            AdjustSelectionEndpoint(extensionAmount + 1);
+        }
+
+        void SelectNextWord()
+		{
+            string afterCaret = _text.Substring(Math.Clamp(_selection.EndCaretPosition, 0, Math.Max(0, _text.Length)));
+            int extensionAmount = afterCaret.IndexOfAny(PUNCTUATION_CHARS);
+            if (afterCaret.IndexOfAny(PUNCTUATION_CHARS) == _selection.EndCaretPosition + 1)
+                extensionAmount++;
+            if (extensionAmount == -1)
+			{
+                AdjustSelectionEndpoint(afterCaret.Length);
+			}
+            else
+			{
+                AdjustSelectionEndpoint(extensionAmount + 1);
+            }
+        }
         #endregion
 
         #region Formatting and layout
@@ -441,7 +474,14 @@ namespace CopticWriter.Controls
                         }
 
                         // Adjust the selection and notify CoreTextEditContext.
-                        AdjustSelectionEndpoint(-1);
+                        if (_coreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down))
+						{
+                            SelectPreviousWord();
+						}
+                        else
+						{
+                            AdjustSelectionEndpoint(-1);
+                        }
                     }
                     else
                     {
@@ -474,7 +514,14 @@ namespace CopticWriter.Controls
                         }
 
                         // Adjust the selection and notify CoreTextEditContext.
-                        AdjustSelectionEndpoint(+1);
+                        if (_coreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down))
+						{
+                            SelectNextWord();
+						}
+                        else
+						{
+                            AdjustSelectionEndpoint(+1);
+                        }
                     }
                     else
                     {

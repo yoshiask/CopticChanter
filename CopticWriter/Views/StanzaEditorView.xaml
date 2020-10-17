@@ -23,7 +23,7 @@
             <Grid x:Name="KeyBackGrid" Background="{ThemeResource SystemControlAccentAcrylicWindowAccentMediumHighBrush}"
                   Height="255" VerticalAlignment="Bottom">
 
-                <ComboBox x:Name="LanguageOption" VerticalAlignment="Top" Width="120" SelectedIndex="0" SelectionChanged="LanguageOption_SelectionChanged" FontSize="14" HorizontalAlignment="Right" Margin="0,10,10,0">
+                <ComboBox x:Name="LanguageOption" VerticalAlignment="Top" Width="120" SelectedIndex="1" SelectionChanged="LanguageOption_SelectionChanged" FontSize="14" HorizontalAlignment="Right" Margin="0,10,10,0">
                     <ComboBoxItem Content="Default"/>
                     <ComboBoxItem Content="English"/>
                     <ComboBoxItem Content="Coptic"/>
@@ -130,19 +130,18 @@
                 </StackPanel>
             </Grid>
 
-            <!--TextBox x:Name="InputBox" TextWrapping="Wrap" AcceptsReturn="True"
+            <TextBox x:Name="InputBox" TextWrapping="Wrap" AcceptsReturn="True"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" FontSize="18"
                  Text="{x:Bind StanzaContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 LostFocus="InputBox_LostFocus" KeyDown="InputBox_KeyDown" TextChanged="InputBox_TextChanged"
-                 FontFamily="Segoe UI Coptic" >
+                 TextChanged="InputBox_TextChanged" FontFamily="Segoe UI Coptic">
                 <TextBox.Background>
                     <SolidColorBrush Color="{ThemeResource SystemColorBackgroundColor}"/>
                 </TextBox.Background>
-            </TextBox!-->
+            </TextBox>
 
-            <StackPanel Margin="0,10,0,0">
+            <!--<StackPanel Margin="0,10,0,0">
                 <lcontrols:MultiLanguageTextInput/>
-            </StackPanel>
+            </StackPanel>-->
         </controls:DockPanel>
     </controls:DockPanel>
 </Page>

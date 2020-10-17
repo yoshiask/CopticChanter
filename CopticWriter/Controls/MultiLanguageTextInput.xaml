@@ -44,5 +44,6 @@
         <TextBlock>Full text: <Run x:Name="FullText"/></TextBlock>
         <TextBlock>Selection start index: <Run x:Name="SelectionStartIndexText"/></TextBlock>
         <TextBlock>Selection end index: <Run x:Name="SelectionEndIndexText"/></TextBlock>
+        <TextBlock>Debug data: <Run x:Name="DebugText"/></TextBlock>
     </StackPanel>
 </UserControl>
