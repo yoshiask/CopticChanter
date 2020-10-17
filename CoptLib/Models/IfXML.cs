@@ -7,7 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace CoptLib.XML
+namespace CoptLib.Models
 {
     [XmlRoot(ElementName = "If")]
     public class IfXml

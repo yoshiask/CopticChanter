@@ -1,5 +1,5 @@
 ﻿using CoptLib;
-using CoptLib.XML;
+using CoptLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CoptLib.XML
+namespace CoptLib.Models
 {
 	/// <summary>
 	/// A base class for anything that can be defined in a <see cref="Doc"/>.

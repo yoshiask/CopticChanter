@@ -21,8 +21,8 @@ namespace CopticWriter
     /// </summary>
     public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
-        ObservableCollection<CoptLib.XML.Doc> _docs = new ObservableCollection<CoptLib.XML.Doc>();
-        ObservableCollection<CoptLib.XML.Doc> Docs {
+        ObservableCollection<CoptLib.Models.Doc> _docs = new ObservableCollection<CoptLib.Models.Doc>();
+        ObservableCollection<CoptLib.Models.Doc> Docs {
             get { return _docs; }
             set {
                 _docs = value;
@@ -89,7 +89,7 @@ namespace CopticWriter
                         // Read the file
                         var set = CoptLib.CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
                         ShowDocControls();
-                        Docs = new ObservableCollection<CoptLib.XML.Doc>(set.IncludedDocs);
+                        Docs = new ObservableCollection<CoptLib.Models.Doc>(set.IncludedDocs);
                         CurrentStanza = set.IncludedDocs[0].Translations[0].Text;
                         OnPropertyChanged();
                         return;

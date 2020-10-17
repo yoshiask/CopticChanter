@@ -1,5 +1,5 @@
 ﻿using CopticChanter.Helpers;
-using CoptLib.XML;
+using CoptLib.Models;
 using System;
 using System.Diagnostics;
 using Windows.Foundation;

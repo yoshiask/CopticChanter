@@ -1,5 +1,5 @@
 ﻿using CoptLib;
-using CoptLib.XML;
+using CoptLib.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
@@ -36,9 +36,8 @@ namespace CopticChanter.Helpers
 
             switch (stanza.Language)
             {
-                #region English & Arabic
+                #region English
                 case Language.English:
-                case Language.Arabic:
                     contentBlock = new TextBlock
                     {
                         Text = Scripting.ParseTextCommands(stanza.Text),
@@ -65,19 +64,36 @@ namespace CopticChanter.Helpers
                     };
                     return contentBlock;
                 #endregion
+
+                #region Arabic
+                case Language.Arabic:
+                    contentBlock = new TextBlock
+                    {
+                        Text = Scripting.ParseTextCommands(stanza.Text),
+                        FontFamily = Common.Segoe,
+                        FontSize = Common.GetEnglishFontSize(),
+                        TextWrapping = TextWrapping.Wrap,
+                        TextAlignment = TextAlignment.Right,
+                        Foreground = new SolidColorBrush(foreground)
+                    };
+                    break;
+                    #endregion
             }
 
-            return contentBlock;
+			return contentBlock;
         }
 
-        public static List<TextBlock> CreateBlocksFromSection(Section section, Language translationLanguage, Color foreground)
+        public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container, Language translationLanguage, Color foreground)
 		{
-            var blocks = new List<TextBlock>(section.Content.Count + 1);
+            var blocks = new List<TextBlock>(container.Content.Count + 1);
 
-            var headerBlock = CreateSubheader(section.Title, foreground);
-            blocks.Add(headerBlock);
+            if (container is Section section)
+			{
+                var headerBlock = CreateSubheader(section.Title, foreground);
+                blocks.Add(headerBlock);
+            }
 
-            foreach (ContentPart part in section.Content)
+            foreach (ContentPart part in container.Content)
             {
                 if (part is Stanza stanza)
                 {
@@ -86,7 +102,7 @@ namespace CopticChanter.Helpers
                 }
                 else if (part is Section subsection)
                 {
-                    var subblocks = CreateBlocksFromSection(subsection, translationLanguage, foreground);
+                    var subblocks = CreateBlocksFromContentCollectionContainer(subsection, translationLanguage, foreground);
                     blocks.AddRange(subblocks);
                 }
             }
@@ -156,7 +172,7 @@ namespace CopticChanter.Helpers
 
             for (int t = 0; t < doc.Translations.Count; t++)
 			{
-                var translation = doc.Translations[t];
+                Translation translation = doc.Translations[t];
 
                 int i = 0;
                 foreach (ContentPart part in translation.Content)
@@ -170,7 +186,7 @@ namespace CopticChanter.Helpers
                     }
                     else if (part is Section section)
 					{
-                        var blocks = CreateBlocksFromSection(section, translation.Language, foreground);
+                        var blocks = CreateBlocksFromContentCollectionContainer(section, translation.Language, foreground);
                         foreach (TextBlock block in blocks)
 						{
                             MainGrid.Children.Add(block);

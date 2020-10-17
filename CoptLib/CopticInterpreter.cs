@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using CoptLib.XML;
+using CoptLib.Models;
 
 namespace CoptLib
 {
@@ -107,9 +107,9 @@ namespace CoptLib
                             };
                             doc.Definitions.Add(variable);
                         }
-                        else if (defElem.Name == nameof(XML.String))
+                        else if (defElem.Name == nameof(Models.String))
                         {
-                            var _string = new XML.String()
+                            var _string = new Models.String()
                             {
                                 Value = defElem.Value,
                                 Font = defElem.Attribute("Font")?.Value,
@@ -224,7 +224,7 @@ namespace CoptLib
                 else
 				{
                     // Find the element with the given key in the doc's definitions
-                    XML.String refValue = doc.Definitions.Find(def => def.Key == parts[1] && def is XML.String) as XML.String;
+                    Models.String refValue = doc.Definitions.Find(def => def.Key == parts[1] && def is Models.String) as Models.String;
                     if (refValue != null)
 					{
                         if (refValue.Language == Language.Coptic && refValue.Font != null)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using CoptLib.XML;
+using CoptLib.Models;
 using NLua;
 using static CoptLib.CopticInterpreter;
 

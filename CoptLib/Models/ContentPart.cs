@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CoptLib.XML
+namespace CoptLib.Models
 {
 	/// <summary>
 	/// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
@@ -19,18 +19,21 @@ namespace CoptLib.XML
         /// </remarks>
         [XmlAttribute]
         public new string Key { get; set; }
+
+        [XmlAttribute]
+        public CopticInterpreter.Language Language { get; set; }
+
+        [XmlAttribute]
+        public string Font { get; set; }
     }
 
     public class Stanza : ContentPart
     {
         [XmlText]
         public string Text { get; set; }
-
-        [XmlAttribute]
-        public CopticInterpreter.Language Language { get; set; }
     }
 
-    public class Section : ContentPart
+    public class Section : ContentPart, IContentCollectionContainer
 	{
         [XmlArray]
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();

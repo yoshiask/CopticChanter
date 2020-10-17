@@ -7,7 +7,7 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:NotWindows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractNotPresent(Windows.Foundation.UniversalApiContract, 7)"
-    xmlns:CoptXml="using:CoptLib.XML"
+    xmlns:CoptXml="using:CoptLib.Models"
     xmlns:WinUI="using:Microsoft.UI.Xaml.Controls"
     xmlns:views="using:CopticWriter.Views"
     mc:Ignorable="d"

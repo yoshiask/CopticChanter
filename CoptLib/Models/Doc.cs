@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CoptLib.XML
+namespace CoptLib.Models
 {
     [XmlRoot(ElementName = "Document")]
     public class Doc
@@ -25,9 +25,6 @@ namespace CoptLib.XML
         [XmlElement]
         public string NextScript { get; set; }
 
-        //[XmlElement(ElementName = "If", IsNullable = true)]
-        //public IfXML Script = new IfXML();
-
         //[XmlElement(ElementName = "DefaultNext", IsNullable = false)]
         //public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
 
@@ -38,36 +35,6 @@ namespace CoptLib.XML
                 Name = this.Name,
                 Uuid = this.Uuid
             };
-        }
-    }
-
-    public class Translation
-    {
-        [XmlArray]
-        public List<ContentPart> Content { get; set; } = new List<ContentPart>();
-
-        [XmlElement]
-        public CopticInterpreter.Language Language { get; set; }
-
-        [XmlElement]
-        public string Font { get; set; }
-
-        /// <summary>
-        /// Returns the number of rows this translation requires to display
-        /// all section headers and stanzas
-        /// </summary>
-        /// <returns></returns>
-        public int CountRows()
-		{
-            int count = 0;
-            foreach (ContentPart part in Content)
-            {
-                if (part is Stanza)
-                    count++;
-                else if (part is Section section)
-                    count += section.CountRows() + 1;
-            }
-            return count;
         }
     }
 }

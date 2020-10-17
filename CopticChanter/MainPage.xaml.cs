@@ -32,7 +32,7 @@ namespace CopticChanter
             {
                 if (Common.Docs.Count > 0)
                 {
-                    foreach (CoptLib.XML.Doc doc in Common.Docs)
+                    foreach (CoptLib.Models.Doc doc in Common.Docs)
                     {
                         doc.Translations.Any(t => t.Language == CopticInterpreter.Language.English);
                         Debug.WriteLine(doc.Name);

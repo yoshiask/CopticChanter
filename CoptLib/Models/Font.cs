@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace CoptLib.XML
+namespace CoptLib.Models
 {
     [XmlRoot(ElementName = "CopticFont")]
     public class Font

@@ -27,7 +27,7 @@ Useful features:
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="XML\IfXML.xsd">
+    <None Update="Models\IfXML.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
