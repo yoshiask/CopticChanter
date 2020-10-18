@@ -3,7 +3,6 @@ using CoptLib.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Windows.ApplicationModel.Core;
@@ -20,16 +19,9 @@ namespace CopticWriter
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    public sealed partial class MainPage : Page
     {
-        ObservableCollection<Doc> _docs = new ObservableCollection<Doc>();
-        ObservableCollection<Doc> Docs {
-            get { return _docs; }
-            set {
-                _docs = value;
-                OnPropertyChanged();
-            }
-        }
+        ObservableCollection<Doc> Docs { get; set; } = new ObservableCollection<Doc>();
         public string CurrentStanza { get; set; }
 
         public MainPage()
@@ -89,17 +81,24 @@ namespace CopticWriter
                 {
                     case ".xml":
                         // Read the file
-                        var docXml = CoptLib.CopticInterpreter.ReadDocXml(await file.OpenStreamForReadAsync());
-                        HideDocControls();
+                        var docXml = CopticInterpreter.ReadDocXml(await file.OpenStreamForReadAsync());
+                        InputBox.Text = string.Join("\r\n", docXml.Translations[1].Content.Select(p => {
+                            if (p is Stanza stanza)
+                            {
+                                return stanza.Text;
+                            }
+                            else return "";
+                        }));
+                        Docs.Add(docXml);
+                        //HideDocControls();
                         return;
 
                     case ".zip":
                         // Read the file
-                        var set = CoptLib.CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+                        var set = CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
                         ShowDocControls();
                         Docs = new ObservableCollection<Doc>(set.IncludedDocs);
                         CurrentStanza = (set.IncludedDocs[0].Translations[0].Content[0] as Stanza)?.Text;
-                        OnPropertyChanged();
                         return;
                 }
             }
@@ -145,13 +144,6 @@ namespace CopticWriter
             DocControlButtons.Visibility = Visibility.Visible;
         }
         #endregion
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        public void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
-        {
-            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         #region Stanza Editor
         #region Stanza Controls
@@ -747,6 +739,11 @@ namespace CopticWriter
             }
             InputBox.SelectionStart = caret;
         }
-        #endregion
-    }
+		#endregion
+
+		private void MainTabControl_AddTabButtonClick(Microsoft.UI.Xaml.Controls.TabView sender, object args)
+		{
+            // TODO: Create new doc
+		}
+	}
 }

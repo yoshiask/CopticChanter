@@ -71,69 +71,7 @@ namespace CoptLib
 
                 // A FileStream is needed to read the XML document.
                 var sr = new StreamReader(path);
-                var xml = XDocument.Parse(sr.ReadToEnd());
-
-                // The actual content can't be deserialized, so it needs to be manually parsed
-
-                Doc doc = new Doc()
-                {
-                    Name = xml.Root.Element("Name")?.Value,
-                    Uuid = xml.Root.Element("Uuid")?.Value,
-                };
-
-                var defsElem = xml.Root.Element("Definitions");
-                if (defsElem != null)
-                {
-                    foreach (XElement defElem in defsElem?.Elements())
-                    {
-                        if (defElem.Name == nameof(Script))
-                        {
-                            var script = new Script()
-                            {
-                                LuaScript = defElem.Value,
-                                Key = defElem.Attribute("Key")?.Value
-                            };
-                            doc.Definitions.Add(script);
-                        }
-                        else if (defElem.Name == nameof(Variable))
-                        {
-                            var variable = new Variable()
-                            {
-                                Label = defElem.Attribute("Label")?.Value,
-                                DefaultValue = defElem.Attribute("DefaultValue")?.Value,
-                                Configurable = Boolean.Parse(defElem.Attribute("Configurable")?.Value),
-                                Key = defElem.Attribute("Key")?.Value
-                            };
-                            doc.Definitions.Add(variable);
-                        }
-                        else if (defElem.Name == nameof(Models.String))
-                        {
-                            var _string = new Models.String()
-                            {
-                                Value = defElem.Value,
-                                Font = defElem.Attribute("Font")?.Value,
-                                Language = (Language)Enum.Parse(typeof(Language),
-                                    defElem.Attribute("Language")?.Value ?? "Default"),
-                                Key = defElem.Attribute("Key")?.Value
-                            };
-                            doc.Definitions.Add(_string);
-                        }
-                    }
-                }
-
-                foreach (XElement transElem in xml.Root.Element("Translations").Elements())
-                {
-                    Translation translation = new Translation()
-                    {
-                        Font = transElem.Attribute("Font")?.Value,
-                        Language = (Language)Enum.Parse(typeof(Language),
-                            transElem.Attribute("Language")?.Value),
-                    };
-                    translation.Content = ParseContentParts(transElem.Elements(), translation, doc);
-                    doc.Translations.Add(translation);
-                }
-
-                return doc;
+                return ParseDocXml(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
@@ -157,15 +95,81 @@ namespace CoptLib
                 //nodes or attributes, handle them with the 
                 //UnknownNode and UnknownAttribute events.
 
-                //Use the Deserialize method to restore the object's state with
-                //data from the XML document.
-                return (Doc)serializer.Deserialize(file);
+                var sr = new StreamReader(file);
+                return ParseDocXml(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return null;
             }
+        }
+
+        public static Doc ParseDocXml(string xmlText)
+		{
+            var xml = XDocument.Parse(xmlText);
+
+            // The actual content can't be deserialized, so it needs to be manually parsed
+
+            Doc doc = new Doc()
+            {
+                Name = xml.Root.Element("Name")?.Value,
+                Uuid = xml.Root.Element("Uuid")?.Value,
+            };
+
+            var defsElem = xml.Root.Element("Definitions");
+            if (defsElem != null)
+            {
+                foreach (XElement defElem in defsElem?.Elements())
+                {
+                    if (defElem.Name == nameof(Script))
+                    {
+                        var script = new Script()
+                        {
+                            LuaScript = defElem.Value,
+                            Key = defElem.Attribute("Key")?.Value
+                        };
+                        doc.Definitions.Add(script);
+                    }
+                    else if (defElem.Name == nameof(Variable))
+                    {
+                        var variable = new Variable()
+                        {
+                            Label = defElem.Attribute("Label")?.Value,
+                            DefaultValue = defElem.Attribute("DefaultValue")?.Value,
+                            Configurable = Boolean.Parse(defElem.Attribute("Configurable")?.Value),
+                            Key = defElem.Attribute("Key")?.Value
+                        };
+                        doc.Definitions.Add(variable);
+                    }
+                    else if (defElem.Name == nameof(Models.String))
+                    {
+                        var _string = new Models.String()
+                        {
+                            Value = defElem.Value,
+                            Font = defElem.Attribute("Font")?.Value,
+                            Language = (Language)Enum.Parse(typeof(Language),
+                                defElem.Attribute("Language")?.Value ?? "Default"),
+                            Key = defElem.Attribute("Key")?.Value
+                        };
+                        doc.Definitions.Add(_string);
+                    }
+                }
+            }
+
+            foreach (XElement transElem in xml.Root.Element("Translations").Elements())
+            {
+                Translation translation = new Translation()
+                {
+                    Font = transElem.Attribute("Font")?.Value,
+                    Language = (Language)Enum.Parse(typeof(Language),
+                        transElem.Attribute("Language")?.Value),
+                };
+                translation.Content = ParseContentParts(transElem.Elements(), translation, doc);
+                doc.Translations.Add(translation);
+            }
+
+            return doc;
         }
 
         private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation, Doc doc)

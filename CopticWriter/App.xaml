@@ -2,8 +2,27 @@
     x:Class="CopticWriter.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CopticWriter">
+    xmlns:local="using:CopticWriter"
+	xmlns:selectors="using:CopticWriter.Selectors"
+	xmlns:models="using:CoptLib.Models">
     <Application.Resources>
-        <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				
+				<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+
+				<ResourceDictionary>
+					<DataTemplate x:Key="StanzaTemplate">
+						<TextBox Text="{Binding Text}" FontFamily="Segoe UI Coptic" TextWrapping="Wrap" />
+					</DataTemplate>
+
+					<DataTemplate x:Key="SectionTemplate">
+						<TextBox Text="{Binding Title, Mode=TwoWay}"/>
+					</DataTemplate>
+					
+				</ResourceDictionary>
+
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
     </Application.Resources>
 </Application>
