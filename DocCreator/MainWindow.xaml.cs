@@ -1072,7 +1072,7 @@ namespace DocCreator
 
         public Boolean Active { get; private set; }
 
-        public Color this[String colorName] {
+        public Color this[string colorName] {
             get {
                 IntPtr name = IntPtr.Zero;
                 UInt32 colorType;
