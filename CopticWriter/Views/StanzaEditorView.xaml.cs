@@ -638,20 +638,6 @@ namespace CopticWriter.Views
             }
         }
 
-        /*private void InputBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-
-        }*/
-
-        /*private void InputBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // If the input language is Coptic, map the input to its Coptic unicode equivalent
-            if (LanguageOption.SelectedIndex == 1)
-            {
-                
-            }
-        }*/
-
         public StanzaEditorView()
         {
             this.InitializeComponent();
@@ -666,25 +652,6 @@ namespace CopticWriter.Views
         {
             InitEnglish();
         }
-
-#if x
-        //Used to check if the pointer is within the bounds of the edit control.
-        //If it is, focus should go to the edit control.  If it is outside the bounds
-        //Focus should not be in the edit control.
-        private void Page_PointerPressed(CoreWindow sender, PointerEventArgs args)
-        {
-            Rect _boundingbox = EditControl.GetLayout();
-            if (_boundingbox.Contains(args.CurrentPoint.Position))
-            {
-                _textEditContext.InternalSetFocus();
-                EditControl.Focus(FocusState.Programmatic);
-            }
-            else
-            {
-                _textEditContext.InternalRemoveFocus();
-            }
-        }
-#endif
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
