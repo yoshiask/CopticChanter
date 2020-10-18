@@ -5,8 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
-    xmlns:NotWindows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractNotPresent(Windows.Foundation.UniversalApiContract, 7)"
     xmlns:CoptXml="using:CoptLib.Models"
     xmlns:WinUI="using:Microsoft.UI.Xaml.Controls"
     xmlns:views="using:CopticWriter.Views"
@@ -14,9 +12,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <Windows10version1809:Style x:Key="SharpCornerStyle" TargetType="Button">
+        <Style x:Key="SharpCornerStyle" TargetType="Button">
             <Setter Property="CornerRadius" Value="0" />
-        </Windows10version1809:Style>
+        </Style>
 
         <Style x:Key="KeyboardButtonStyle" TargetType="Button">
             <Setter Property="VerticalAlignment" Value="Top"/>
@@ -35,16 +33,10 @@
             <TextBlock Text="Coptic Writer" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI" Margin="10,0,0,0"/>
         </Grid>
 
-        <Grid x:Name="TopGrid" VerticalAlignment="Top" controls:DockPanel.Dock="Top"
+		<Grid x:Name="TopGrid" VerticalAlignment="Top" controls:DockPanel.Dock="Top"
               Background="{ThemeResource SystemControlAccentAcrylicWindowAccentMediumHighBrush}">
-            <NotWindows10version1809:StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top">
-                <Button x:Name="SaveButton" Content="Save" VerticalAlignment="Center" Click="SaveButton_Click" MinWidth="75"/>
-                <Button x:Name="OpenButton" Content="Open" VerticalAlignment="Center" Click="OpenButton_Click" MinWidth="75" Margin="10,0,0,0"/>
-                <Button x:Name="ConvertTasbehaButton" Content="Convert Text" VerticalAlignment="Center" Click="ConvertTasbehaButton_Click" MinWidth="75" Margin="10,0,0,0"/>
-                <Button x:Name="ScriptButton" Content="Edit Script" VerticalAlignment="Center" Click="ScriptButton_Click" MinWidth="75" Margin="10,0,0,0"/>
-            </NotWindows10version1809:StackPanel>
-            <Windows10version1809:MenuBar VerticalAlignment="Center">
-                <Windows10version1809:MenuBarItem Title="File">
+			<MenuBar VerticalAlignment="Center">
+                <MenuBarItem Title="File">
                     <MenuFlyoutItem Text="New">
                         <MenuFlyoutItem.KeyboardAccelerators>
                             <KeyboardAccelerator Modifiers="Control" Key="N"/>
@@ -86,9 +78,9 @@
                             <SymbolIcon Symbol="Clear"/>
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                </Windows10version1809:MenuBarItem>
+                </MenuBarItem>
 
-                <Windows10version1809:MenuBarItem Title="Edit">
+                <MenuBarItem Title="Edit">
                     <MenuFlyoutItem Text="Undo">
                         <MenuFlyoutItem.KeyboardAccelerators>
                             <KeyboardAccelerator Modifiers="Control" Key="Z"/>
@@ -127,8 +119,8 @@
                             <FontIcon Glyph="" FontFamily="Segoe MDL2 Assets"/>
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                </Windows10version1809:MenuBarItem>
-            </Windows10version1809:MenuBar>
+                </MenuBarItem>
+            </MenuBar>
         </Grid>
 
         <WinUI:TabView x:Name="MainTabControl" TabItemsSource="{x:Bind Docs, Mode=TwoWay}"
