@@ -32,7 +32,7 @@
 
         <Grid x:Name="TitleGrid" Background="{ThemeResource SystemControlAccentAcrylicWindowAccentMediumHighBrush}"
               controls:DockPanel.Dock="Top" Height="50">
-            <TextBlock Text="Coptic Writer" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI" Margin="20,0,0,0"/>
+            <TextBlock Text="Coptic Writer" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI" Margin="10,0,0,0"/>
         </Grid>
 
         <Grid x:Name="TopGrid" VerticalAlignment="Top" controls:DockPanel.Dock="Top"
@@ -43,7 +43,7 @@
                 <Button x:Name="ConvertTasbehaButton" Content="Convert Text" VerticalAlignment="Center" Click="ConvertTasbehaButton_Click" MinWidth="75" Margin="10,0,0,0"/>
                 <Button x:Name="ScriptButton" Content="Edit Script" VerticalAlignment="Center" Click="ScriptButton_Click" MinWidth="75" Margin="10,0,0,0"/>
             </NotWindows10version1809:StackPanel>
-            <Windows10version1809:MenuBar Margin="10,0,0,0" VerticalAlignment="Center">
+            <Windows10version1809:MenuBar VerticalAlignment="Center">
                 <Windows10version1809:MenuBarItem Title="File">
                     <MenuFlyoutItem Text="New">
                         <MenuFlyoutItem.KeyboardAccelerators>
