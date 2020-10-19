@@ -11,13 +11,14 @@ namespace CopticWriter.Selectors
 
         protected override DataTemplate SelectTemplateCore(object item)
         {
-            if (item is Section)
+            switch (item)
 			{
-                return Section;
-			}
-            else 
-			{
-                return Stanza;
+                default:
+                case Stanza _:
+                    return Stanza;
+
+                case Section _:
+                    return Section;
 			}
         }
 

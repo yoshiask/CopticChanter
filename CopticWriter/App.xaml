@@ -12,6 +12,7 @@
 				<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 
 				<ResourceDictionary>
+					
 					<DataTemplate x:Key="StanzaTemplate">
 						<TextBox Text="{Binding Text}" FontFamily="Segoe UI Coptic" TextWrapping="Wrap" />
 					</DataTemplate>
