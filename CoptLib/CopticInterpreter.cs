@@ -202,12 +202,12 @@ namespace CoptLib
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
-                    var section = new Section()
+                    var section = new Section
                     {
                         Key = contentElem.Attribute("Key")?.Value,
-                        Title = ResolveReference(contentElem.Attribute("Title")?.Value, doc)
+                        Title = ResolveReference(contentElem.Attribute("Title")?.Value, doc),
+                        Content = ParseContentParts(contentElem.Elements(), translation, doc)
                     };
-                    section.Content = ParseContentParts(contentElem.Elements(), translation, doc);
                     content.Add(section);
                 }
             }

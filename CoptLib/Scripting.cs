@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using CoptLib.Models;
 using NLua;
@@ -346,12 +347,11 @@ namespace CoptLib
             MatchCollection matches = rx.Matches(input);
 
             // Report the number of matches found.
-            Console.WriteLine("{0} matches found in:\n   {1}",
-                              matches.Count,
-                              input);
+            Debug.WriteLine("{0} matches found in:\n\t{1}",
+                             matches.Count, input);
             foreach (Match m in matches)
             {
-                Console.WriteLine($"\tCommand: {m.Groups["command"]}");
+                Debug.WriteLine($"\tCommand: {m.Groups["command"]}");
                 string cmd = m.Groups["command"].Value;
                 if (cmd == "language")
 				{
@@ -360,7 +360,9 @@ namespace CoptLib
                     switch (language)
 					{
                         case Language.Coptic:
-                            var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower());
+                            CopticFont font = CopticFont.CsAvvaShenouda;
+                            if (langParts.Length >= 2)
+                                font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower()) ?? font;
                             string text = m.Groups[3].Value;
                             if (font != null)
 							{
@@ -368,7 +370,7 @@ namespace CoptLib
                                 input = input.Insert(m.Index, ConvertFont(text, font, CopticFont.CopticUnicode).Replace(" ", " \u200B"));
                                 // TextBlock doesn't seem to know where to break Coptic (Unicode?)
                                 // lines, so insert a zero-width space at every space so
-                                // word wrap acutally works
+                                // word wrap actually works
                             }
                             break;
 					}
