@@ -18,7 +18,20 @@
 					</DataTemplate>
 
 					<DataTemplate x:Key="SectionTemplate">
-						<TextBox Text="{Binding Title, Mode=TwoWay}"/>
+						<Grid RowSpacing="10">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+							<TextBox Text="{Binding Title, Mode=TwoWay}"/>
+							<ItemsControl Grid.Row="1" ItemsSource="{Binding Content}" ItemTemplate="{StaticResource StanzaTemplate}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Spacing="10"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+							</ItemsControl>
+						</Grid>
 					</DataTemplate>
 					
 				</ResourceDictionary>

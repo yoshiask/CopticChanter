@@ -18,7 +18,7 @@ namespace CoptLib.Models
         /// both parts.
         /// </remarks>
         [XmlAttribute]
-        public new string Key { get; set; }
+        public string Key { get; set; }
 
         [XmlAttribute]
         public Language Language { get; set; }

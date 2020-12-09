@@ -11,7 +11,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using static CoptLib.CopticInterpreter;
 
 namespace CopticChanter
 {
@@ -445,7 +444,7 @@ namespace CopticChanter
     {
         public static CopticDate ToCoptic(this DateTime date)
         {
-            return CoptLib.CopticDate.ToCopticDate(date);
+            return CopticDate.ToCopticDate(date);
         }
     }
 }
