@@ -322,7 +322,7 @@ namespace CoptLib
                 state.DoString(scriptCode);
                 var script = state["GetNext"] as LuaFunction;
 
-                if (script.Call()[0] is string res)
+                if (script?.Call()[0] is string res)
                 {
                     return res;
                 }

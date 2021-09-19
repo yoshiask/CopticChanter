@@ -147,7 +147,7 @@
             </MenuBar>
         </Grid>
 
-		<winui:TabView x:Name="MainTabControl" TabItemsSource="{x:Bind Docs, Mode=TwoWay}" controls:DockPanel.Dock="Top"
+		<winui:TabView x:Name="MainTabControl" TabItemsSource="{x:Bind Docs, Mode=OneWay}" controls:DockPanel.Dock="Top"
                        TabWidthMode="SizeToContent" AddTabButtonClick="MainTabControl_AddTabButtonClick"
                        Background="{ThemeResource SystemControlAccentAcrylicWindowAccentMediumHighBrush}">
 			<winui:TabView.TabItemTemplate>

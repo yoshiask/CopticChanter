@@ -21,7 +21,7 @@ namespace CopticWriter
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        ObservableCollection<Doc> Docs { get; set; } = new ObservableCollection<Doc>();
+        ObservableCollection<Doc> Docs { get; } = new ObservableCollection<Doc>();
         public string CurrentStanza { get; set; }
 
         public MainPage()
@@ -68,26 +68,29 @@ namespace CopticWriter
             picker.FileTypeFilter.Add(".zip");
 
             Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-            if (file != null)
+            if (file == null) return;
+
+            var mru = Windows.Storage.AccessCache.StorageApplicationPermissions.MostRecentlyUsedList;
+            _ = mru.Add(file, file.Name);
+
+            var stream = await file.OpenStreamForReadAsync();
+            switch (Path.GetExtension(file.Name))
             {
-                var mru = Windows.Storage.AccessCache.StorageApplicationPermissions.MostRecentlyUsedList;
-                _ = mru.Add(file, file.Name);
+                case ".xml":
+                    // Read the file
+                    var docXml = CopticInterpreter.ReadDocXml(stream);
+                    Docs.Add(docXml);
+                    MainTabControl.SelectedIndex = Docs.Count - 1;
+                    return;
 
-                switch (Path.GetExtension(file.Name))
-                {
-                    case ".xml":
-                        // Read the file
-                        var docXml = CopticInterpreter.ReadDocXml(await file.OpenStreamForReadAsync());
-                        Docs.Add(docXml);
-                        return;
-
-                    case ".zip":
-                        // Read the file
-                        var set = CopticInterpreter.ReadSet(await file.OpenStreamForReadAsync(), file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
-                        Docs = new ObservableCollection<Doc>(set.IncludedDocs);
-                        CurrentStanza = (set.IncludedDocs[0].Translations[0].Content[0] as Stanza)?.Text;
-                        return;
-                }
+                case ".zip":
+                    // Read the set
+                    var set = CopticInterpreter.ReadSet(stream, file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+                    Docs.Clear();
+                    set.IncludedDocs.ForEach(d => Docs.Add(d));
+                    MainTabControl.SelectedIndex = 0;
+                    CurrentStanza = (set.IncludedDocs[0].Translations[0].Content[0] as Stanza)?.Text;
+                    return;
             }
         }
 
@@ -101,33 +104,14 @@ namespace CopticWriter
 
         }
 
-        #region Doc Controls
-        private void DocDecrement_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void DocIncrement_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void DocDelete_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void DocCreate_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-        #endregion
-
-        
-
 		private void MainTabControl_AddTabButtonClick(Microsoft.UI.Xaml.Controls.TabView sender, object args)
 		{
             // TODO: Create new doc
-		}
+            Docs.Add(new Doc()
+            {
+                Name = "Untitled",
+                Uuid = "42c70071-ce5e-4add-aa5c-d093acfb2784"
+            });
+        }
 	}
 }

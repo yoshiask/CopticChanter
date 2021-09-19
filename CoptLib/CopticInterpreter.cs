@@ -6,6 +6,11 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using CoptLib.Models;
+#if DEBUG
+using Output = System.Diagnostics.Debug;
+#else
+using Output = System.Console;
+#endif
 
 namespace CoptLib
 {
@@ -62,20 +67,13 @@ namespace CoptLib
         {
             try
             {
-                // Create an instance of the XmlSerializer class;
-                // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
-                // If the XML document has been altered with unknown 
-                // nodes or attributes, handle them with the 
-                // UnknownNode and UnknownAttribute events.
-
                 // A FileStream is needed to read the XML document.
                 var sr = new StreamReader(path);
                 return ParseDocXml(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Output.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -88,19 +86,12 @@ namespace CoptLib
         {
             try
             {
-                // Create an instance of the XmlSerializer class;
-                // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
-                //If the XML document has been altered with unknown 
-                //nodes or attributes, handle them with the 
-                //UnknownNode and UnknownAttribute events.
-
                 var sr = new StreamReader(file);
                 return ParseDocXml(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Output.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -478,8 +469,8 @@ namespace CoptLib
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Error: ", ex.Message);
-                                Console.WriteLine("Unexpected file in set");
+                                Output.WriteLine("Error: ", ex.Message);
+                                Output.WriteLine("Unexpected file in set");
                             }
                         }
                     }
@@ -488,7 +479,7 @@ namespace CoptLib
                 }
                 else
                 {
-                    Console.WriteLine("Set file not valid: No index found");
+                    Output.WriteLine("Set file not valid: No index found");
                 }
             }
             return null;
@@ -592,7 +583,7 @@ namespace CoptLib
             }
             else
             {
-                Console.WriteLine("Index or Content is null");
+                Output.WriteLine("Index or Content is null");
                 return false;
             }
         }
@@ -1051,7 +1042,7 @@ namespace CoptLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Output.WriteLine(ex);
                 return false;
             }
         }
@@ -1084,7 +1075,7 @@ namespace CoptLib
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Output.WriteLine(ex.Message);
                 return null;
             }
         }

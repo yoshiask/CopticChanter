@@ -145,7 +145,7 @@ namespace CopticWriter.Helpers
 
             // Create rows for each stanza
             // Don't forget one for each header too
-            int numRows = doc.Translations.Max(t => t.CountRows());
+            int numRows = doc.Translations?.Max(t => t.CountRows()) ?? 0;
             for (int i = 0; i <= numRows; i++)
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
