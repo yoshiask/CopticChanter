@@ -354,18 +354,18 @@ namespace CoptLib
                 Debug.WriteLine($"\tCommand: {m.Groups["command"]}");
                 string cmd = m.Groups["command"].Value;
                 if (cmd == "language")
-				{
+                {
                     string[] langParts = m.Groups["param1"].Value.Split(':');
                     Language language = (Language)Enum.Parse(typeof(Language), langParts[0]);
                     switch (language)
-					{
+                    {
                         case Language.Coptic:
                             CopticFont font = CopticFont.CsAvvaShenouda;
                             if (langParts.Length >= 2)
                                 font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower()) ?? font;
                             string text = m.Groups[3].Value;
                             if (font != null)
-							{
+                            {
                                 input = input.Remove(m.Index, m.Length);
                                 input = input.Insert(m.Index, ConvertFont(text, font, CopticFont.CopticUnicode).Replace(" ", " \u200B"));
                                 // TextBlock doesn't seem to know where to break Coptic (Unicode?)
@@ -373,8 +373,8 @@ namespace CoptLib
                                 // word wrap actually works
                             }
                             break;
-					}
-				}
+                    }
+                }
             }
 
             return input;

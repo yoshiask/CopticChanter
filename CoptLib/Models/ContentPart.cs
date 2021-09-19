@@ -3,11 +3,11 @@ using System.Xml.Serialization;
 
 namespace CoptLib.Models
 {
-	/// <summary>
-	/// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
-	/// </summary>
-	public abstract class ContentPart : Definition
-	{
+    /// <summary>
+    /// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
+    /// </summary>
+    public abstract class ContentPart : Definition
+    {
         /// <summary>
         /// A key that can be used to identify this specific content part.
         /// This value does not have to be unique between documents or translations.
@@ -34,7 +34,7 @@ namespace CoptLib.Models
     }
 
     public class Section : ContentPart, IContentCollectionContainer
-	{
+    {
         [XmlArray]
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 

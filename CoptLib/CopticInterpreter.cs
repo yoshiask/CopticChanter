@@ -97,7 +97,7 @@ namespace CoptLib
         }
 
         public static Doc ParseDocXml(string xmlText)
-		{
+        {
             var xml = XDocument.Parse(xmlText);
 
             // The actual content can't be deserialized, so it needs to be manually parsed
@@ -164,7 +164,7 @@ namespace CoptLib
         }
 
         private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation, Doc doc)
-		{
+        {
             var content = new List<ContentPart>(elements.Count());
 
             foreach (XElement contentElem in elements)
@@ -207,20 +207,20 @@ namespace CoptLib
         }
 
         public static string ResolveReference(string valueString, Doc doc)
-		{
+        {
             if (valueString.StartsWith("{") && valueString.EndsWith("}"))
-			{
+            {
                 string[] parts = valueString.Substring(1, valueString.Length - 2).Split(' ');
                 if (parts.Length < 2)
-				{
+                {
                     return valueString;
-				}
+                }
                 else
-				{
+                {
                     // Find the element with the given key in the doc's definitions
                     Models.String refValue = doc.Definitions.Find(def => def.Key == parts[1] && def is Models.String) as Models.String;
                     if (refValue != null)
-					{
+                    {
                         if (refValue.Language == Language.Coptic && refValue.Font != null)
                         {
                             // Coptic text needs to be interpreted before it can be displayed
@@ -231,18 +231,18 @@ namespace CoptLib
                         {
                             return refValue.Value;
                         }
-					}
+                    }
                     else
-					{
+                    {
                         return valueString;
-					}
-				}
-			}
+                    }
+                }
+            }
             else
-			{
+            {
                 return valueString;
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// Unzips, serializes, and returns an Index and list of Docs
@@ -389,13 +389,16 @@ namespace CoptLib
 
     public class DocSetReader
     {
-        private string ZipPath {
+        private string ZipPath
+        {
             get;
         }
-        private Stream ZipStream {
+        private Stream ZipStream
+        {
             get;
         }
-        public string Name {
+        public string Name
+        {
             get;
         }
 
@@ -447,7 +450,7 @@ namespace CoptLib
 
                     foreach (string filename in files)
                     {
-                        if (filename != Path.Combine(folderPath,"index.xml") && !filename.EndsWith(".zip"))
+                        if (filename != Path.Combine(folderPath, "index.xml") && !filename.EndsWith(".zip"))
                         {
                             try
                             {
@@ -533,7 +536,8 @@ namespace CoptLib
         /// <summary>
         /// An Index XML object that contains data to write to set
         /// </summary>
-        public Index Index {
+        public Index Index
+        {
             get;
             private set;
         }

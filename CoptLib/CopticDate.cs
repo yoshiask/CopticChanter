@@ -9,47 +9,53 @@ namespace CoptLib
         private CopticMonth _month;
         private int _day;
 
-        public int Year {
+        public int Year
+        {
             get;
             internal set;
         }
-        public int GregYear {
-            get {
-                return Year + 284;
-            }
-        }
+        public int GregYear => Year + 284;
 
-        public int Day {
+        public int Day
+        {
             get => _day;
-            internal set {
+            internal set
+            {
                 _day = value;
             }
         }
 
-        public CopticMonth Month {
+        public CopticMonth Month
+        {
             get => _month;
-            internal set {
+            internal set
+            {
                 _month = value;
             }
         }
 
-        public DayOfWeek DayOfWeek {
+        public DayOfWeek DayOfWeek
+        {
             get;
         }
 
-        public int WeekNumber {
+        public int WeekNumber
+        {
             get;
         }
 
-        public long Ticks {
+        public long Ticks
+        {
             get;
             private set;
         }
         #endregion
 
         #region Static Dates
-        public static CopticDate Today {
-            get {
+        public static CopticDate Today
+        {
+            get
+            {
                 return CopticDate.ToCopticDate(DateTime.Today);
             }
         }
@@ -100,8 +106,10 @@ namespace CoptLib
             var julDate = new DateTime(year, easterMonth, easterDay);
             return julDate.AddDays(13);
         }
-        public static List<DateTime> PalmSundayDays {
-            get {
+        public static List<DateTime> PalmSundayDays
+        {
+            get
+            {
                 var list = new List<DateTime>();
                 for (int i = 1; i <= 2100; i++)
                 {

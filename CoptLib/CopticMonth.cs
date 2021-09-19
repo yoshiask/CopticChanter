@@ -8,15 +8,18 @@ namespace CoptLib
 {
     public class CopticMonth : IComparable, IComparable<CopticMonth>, IEquatable<CopticMonth>
     {
-        public MonthsE EnglishName {
+        public MonthsE EnglishName
+        {
             get;
         }
 
-        public string CopticName {
+        public string CopticName
+        {
             get;
         }
 
-        public int Number {
+        public int Number
+        {
             get;
         }
 
@@ -24,7 +27,7 @@ namespace CoptLib
         {
             EnglishName = (MonthsE)num;
             CopticName = CopticMonths[num];
-            
+
             if (num > 13)
             {
                 Number = num % 13;
