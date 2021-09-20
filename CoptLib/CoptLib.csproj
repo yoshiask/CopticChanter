@@ -24,6 +24,7 @@ Useful features:
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+    <PackageReference Include="NodaTime" Version="3.0.5" />
   </ItemGroup>
 
   <ItemGroup>

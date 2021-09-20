@@ -244,6 +244,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.9</Version>
     </PackageReference>
+    <PackageReference Include="NodaTime">
+      <Version>3.0.5</Version>
+    </PackageReference>
     <PackageReference Include="Patha.CustomUWPControls">
       <Version>1.1.6034.12</Version>
     </PackageReference>

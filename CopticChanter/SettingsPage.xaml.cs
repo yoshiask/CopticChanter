@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using System.Diagnostics;
+using CoptLib;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -32,8 +33,7 @@ namespace CopticChanter
 
         private void GregorianDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            Common.CopticDate = GregorianDatePicker.Date.Date.ToCoptic();
-            CopticDateDisplay.Text = Common.CopticDate.ToString();
+            CopticDateDisplay.Text = GregorianDatePicker.Date.Date.ToCopticDate().ToString();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -64,12 +64,7 @@ namespace CopticChanter
             }
 
             // Calculate today's date on Coptic calendar
-            if (Common.CopticDate != null)
-            {
-                GregorianDatePicker.Date = Common.CopticDate.ToGregorianDate();
-            }
-            Common.CopticDate = GregorianDatePicker.Date.Date.ToCoptic();
-            CopticDateDisplay.Text = Common.CopticDate.ToString();
+            CopticDateDisplay.Text = GregorianDatePicker.Date.Date.ToCopticDate().ToString();
 
             // Set color for RemoteStatusDisplay
             RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Gray);

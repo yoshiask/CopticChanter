@@ -21,7 +21,6 @@ namespace CopticChanter
         public static bool AnyCoptic = false;
         public static bool AnyArabic = false;
         public static List<Doc> Docs = new List<Doc>();
-        public static CopticDate CopticDate = CopticDate.Today;
         #endregion
 
         #region Bluetooth Remote
@@ -437,14 +436,6 @@ namespace CopticChanter
             {
                 scrollViewer.ChangeView(position.X, null, zoomFactor, !smoothScrolling);
             }
-        }
-    }
-
-    public static class DateTimeExtensions
-    {
-        public static CopticDate ToCoptic(this DateTime date)
-        {
-            return CopticDate.ToCopticDate(date);
         }
     }
 }

@@ -4,20 +4,21 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using CoptLib.Models;
 using NLua;
+using NodaTime;
 using static CoptLib.CopticInterpreter;
 
 namespace CoptLib
 {
     public class Scripting
     {
-        public static IDictionary<string, bool> GetArgs(DateTime date)
+        public static IDictionary<string, bool> GetArgs(LocalDate date)
         {
-            if (date == new DateTime())
-                date = DateTime.Today;
+            if (date == null)
+                date = CopticDateHelper.TodayCoptic;
             var args = new Dictionary<string, bool>();
 
             // Check if today is the Feast of the Nativity, always Jan. 7th [Gregorian]
-            if (date == CopticDate.GetNextNativity(date))
+            if (date == CopticDateHelper.GetNextNativity(date))
             {
                 args.Add("Nativity", true);
             }
@@ -27,7 +28,7 @@ namespace CoptLib
             }
 
             // Check if today is the Sunday before the Feast of the Nativity
-            if (date == CopticDate.GetNextNativitySunday(date))
+            if (date == CopticDateHelper.GetNextNativitySunday(date))
             {
                 args.Add("Nativity Sunday", true);
             }
@@ -47,7 +48,7 @@ namespace CoptLib
             }*/
 
             // Check if today is during Holy Week
-            if (date >= CopticDate.GetNextHosannaSunday(date) && date < CopticDate.GetNextPascha(date))
+            if (date >= CopticDateHelper.GetNextHosannaSunday(date) && date < CopticDateHelper.GetNextPascha(date))
             {
                 args.Add("Holy Week", true);
             }
@@ -57,7 +58,7 @@ namespace CoptLib
             }
 
             // Check if today is Palm Sunday
-            if (date == CopticDate.GetNextHosannaSunday(date))
+            if (date == CopticDateHelper.GetNextHosannaSunday(date))
             {
                 args.Add("Palm Sunday", true);
             }
@@ -67,7 +68,7 @@ namespace CoptLib
             }
 
             // Check if today is Pascha
-            if (date == CopticDate.GetNextPascha(date))
+            if (date == CopticDateHelper.GetNextPascha(date))
             {
                 args.Add("Pascha", true);
                 args.Add("Easter", true);
@@ -287,10 +288,10 @@ namespace CoptLib
                 switch (op)
                 {
                     case "==":
-                        return GetArgs(DateTime.Today)[ds2];
+                        return GetArgs(CopticDateHelper.TodayCoptic)[ds2];
 
                     case "!=":
-                        return !GetArgs(DateTime.Today)[ds2];
+                        return !GetArgs(CopticDateHelper.TodayCoptic)[ds2];
 
                     default:
                         return false;
@@ -306,16 +307,16 @@ namespace CoptLib
 
             // Add the CoptLib date functions
             state["Today"] = DateTime.Today.Ticks;
-            state["NextCovenantThursday"] = (Func<long>)CopticDate.GetNextCovenantThursday;
-            state["NextFeastResurrection"] = (Func<long>)CopticDate.GetNextFeastResurrection;
-            state["NextGoodFriday"] = (Func<long>)CopticDate.GetNextGoodFriday;
-            state["NextHosannaSunday"] = (Func<long>)CopticDate.GetNextHosannaSunday;
-            state["NextLazarusSaturday"] = (Func<long>)CopticDate.GetNextLazarusSaturday;
-            state["NextNativity"] = (Func<long>)CopticDate.GetNextNativity;
-            state["NextNativityFast"] = (Func<long>)CopticDate.GetNextNativityFast;
-            state["NextNativitySunday"] = (Func<long>)CopticDate.GetNextNativitySunday;
-            state["NextPascha"] = (Func<long>)CopticDate.GetNextPascha;
-            state["NextSpringEquinox"] = (Func<long>)CopticDate.GetNextSpringEquinox;
+            //state["NextCovenantThursday"] = (Func<LocalDate>)CopticDateHelper.GetNextCovenantThursday;
+            //state["NextFeastResurrection"] = (Func<LocalDate>)CopticDateHelper.GetNextFeastResurrection;
+            //state["NextGoodFriday"] = (Func<LocalDate>)CopticDateHelper.GetNextGoodFriday;
+            //state["NextHosannaSunday"] = (Func<LocalDate>)CopticDateHelper.GetNextHosannaSunday;
+            //state["NextLazarusSaturday"] = (Func<LocalDate>)CopticDateHelper.GetNextLazarusSaturday;
+            //state["NextNativity"] = (Func<LocalDate>)CopticDateHelper.GetNextNativity;
+            //state["NextNativityFast"] = (Func<LocalDate>)CopticDateHelper.GetNextNativityFast;
+            //state["NextNativitySunday"] = (Func<LocalDate>)CopticDateHelper.GetNextNativitySunday;
+            //state["NextPascha"] = (Func<LocalDate>)CopticDateHelper.GetNextPascha;
+            //state["NextSpringEquinox"] = (Func<LocalDate>)CopticDateHelper.GetNextSpringEquinox;
 
             try
             {

@@ -43,11 +43,6 @@ namespace CoptLib
         {
             return date.AddDays((dayOfWeek < date.DayOfWeek ? 7 : 0) + dayOfWeek - date.DayOfWeek);
         }
-
-        public static CopticDate Next(this CopticDate date, DayOfWeek dayOfWeek)
-        {
-            return date.AddDays((dayOfWeek < date.DayOfWeek ? 7 : 0) + dayOfWeek - date.DayOfWeek);
-        }
     }
 
     public static class DictionaryTools
