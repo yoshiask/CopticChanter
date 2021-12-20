@@ -12,52 +12,30 @@ namespace CopticWriter.Helpers
     {
         public static TextBox CreateBlockFromStanza(Stanza stanza, Language translationLanguage)
         {
-            TextBox contentBlock = null;
-
             if (stanza.Language == Language.Default)
                 stanza.Language = translationLanguage;
 
-            switch (stanza.Language)
+            string displayText = stanza.Text;
+            if (stanza.Language == Language.Coptic)
             {
-                #region English
-                case Language.English:
-                    contentBlock = new TextBox
-                    {
-                        Text = Scripting.ParseTextCommands(stanza.Text),
-                        FontFamily = Common.Segoe,
-                        FontSize = 16,
-                        TextWrapping = TextWrapping.Wrap
-                    };
-                    break;
-                #endregion
+                // TextBox doesn't seem to know where to break Coptic (Unicode?)
+                // lines, so insert a zero-width space at every space so
+                // word wrap acutally works
+                displayText = stanza.Text.Replace(" ", " \u200B");
+            }
 
-                #region Coptic
-                case Language.Coptic:
-                    contentBlock = new TextBox
-                    {
-                        // TextBox doesn't seem to know where to break Coptic (Unicode?)
-                        // lines, so insert a zero-width space at every space so
-                        // word wrap acutally works
-                        Text = Scripting.ParseTextCommands(stanza.Text.Replace(" ", " \u200B")),
-                        FontFamily = Common.Segoe,
-                        FontSize = 16,
-                        TextWrapping = TextWrapping.Wrap
-                    };
-                    return contentBlock;
-                #endregion
+            TextBox contentBlock = new TextBox
+            {
+                Text = Scripting.ParseTextCommands(displayText),
+                FontFamily = Common.DefaultFont,
+                FontSize = Common.DefaultFontSize,
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Right
+            };
 
-                #region Arabic
-                case Language.Arabic:
-                    contentBlock = new TextBox
-                    {
-                        Text = Scripting.ParseTextCommands(stanza.Text),
-                        FontFamily = Common.Segoe,
-                        FontSize = 16,
-                        TextWrapping = TextWrapping.Wrap,
-                        TextAlignment = TextAlignment.Right
-                    };
-                    break;
-                    #endregion
+            if (stanza.Language == Language.Arabic)
+            {
+                contentBlock.TextAlignment = TextAlignment.Right;
             }
 
             return contentBlock;
@@ -100,9 +78,9 @@ namespace CopticWriter.Helpers
             var headerBlock = new TextBox
             {
                 Text = title,
-                FontFamily = Common.Segoe,
+                FontFamily = Common.DefaultFont,
                 FontWeight = FontWeights.Bold,
-                FontSize = 16 * 1.25,
+                FontSize = Common.DefaultFontSize * 1.25,
                 TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)
@@ -119,9 +97,9 @@ namespace CopticWriter.Helpers
             var headerBlock = new TextBox
             {
                 Text = title,
-                FontFamily = Common.Segoe,
+                FontFamily = Common.DefaultFont,
                 FontWeight = FontWeights.SemiBold,
-                FontSize = 16,
+                FontSize = Common.DefaultFontSize,
                 TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)

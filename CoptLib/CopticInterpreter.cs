@@ -19,7 +19,11 @@ namespace CoptLib
         Default,
         English,
         Coptic,
-        Arabic
+        Arabic,
+        Greek,
+        Spanish,
+        Amharic,
+        Armenian
     }
 
     public static class CopticInterpreter
@@ -750,11 +754,22 @@ namespace CoptLib
                 Charmap = InitAthanasuis()
             };
 
+        public static CopticFont GreekUnicode =>
+            new CopticFont()
+            {
+                Name = "Greek Unicode",
+                FontName = "Segoe UI",
+                IsCopticStandard = false,
+                IsJenkimBefore = false,
+                Charmap = InitGreekUnicode()
+            };
+
         public static List<CopticFont> Fonts = new List<CopticFont>()
         {
             CsAvvaShenouda, CsCopt, CsCopticManuscript, CsCoptoManuscript,
             CsKoptosManuscript, CsNewAthanasius, CsPishoi,
-            CopticUnicode, Coptic1, Athanasius
+            CopticUnicode, Coptic1, Athanasius,
+            GreekUnicode
         };
         private static Dictionary<string, string> InitCopticStandard()
         {
@@ -852,7 +867,7 @@ namespace CoptLib
             Dictionary<string, string> alphabet = new Dictionary<string, string>
             {
                 // Key is Coptic Standard
-                // Value is Greek unicode
+                // Value is Coptic unicode
 
                 #region Uppercase
                 { "A", "Ⲁ" },
@@ -1023,6 +1038,97 @@ namespace CoptLib
                 { "¡", "_" },
 
                 { "=", "?" }
+            };
+
+            return alphabet;
+        }
+        private static Dictionary<string, string> InitGreekUnicode()
+        {
+            Dictionary<string, string> alphabet = new Dictionary<string, string>
+            {
+                // Key is Coptic Standard
+                // Value is Greek unicode
+
+                #region Uppercase
+                { "A", "Α" },
+                { "B", "Β" },
+                { "G", "Γ" },
+                { "D", "Δ" },
+                { "E", "Ε" },
+                { "Z", "Ζ" },
+                { "Y", "Η" },
+                { ":", "Θ" },
+                { "I", "Ι" },
+                { "K", "Κ" },
+                { "L", "Λ" },
+                { "M", "Μ" },
+                { "N", "Ν" },
+                { "X", "Ξ" },
+                { "O", "Ο" },
+                { "P", "Π" },
+                { "R", "Ρ" },
+                { "C", "Σ" },
+                { "T", "Τ" },
+                { "U", "Υ" },
+                { "V", "Φ" },
+                { "<", "Χ" },
+                { "\"", "Ψ" },
+                { "W", "Ω" },
+
+                { "S", "Ϣ" },
+                { "F", "Ϥ" },
+                { "Q", "Ϧ" },
+                { "H", "Ϩ" },
+                { "J", "Ϫ" },
+                { "{", "Ϭ" },
+                { "}", "Ϯ" },
+                #endregion
+
+                #region Lowercase
+                { "a", "α" },
+                { "b", "β" },
+                { "g", "γ" },
+                { "d", "δ" },
+                { "e", "ε" },
+                { "z", "ζ" },
+                { "y", "η" },
+                { ";", "θ" },
+                { "i", "ι" },
+                { "k", "κ" },
+                { "l", "λ" },
+                { "m", "μ" },
+                { "n", "ν" },
+                { "x", "ξ" },
+                { "o", "ο" },
+                { "p", "π" },
+                { "r", "ρ" },
+                { "c", "σ" },
+                { "t", "τ" },
+                { "u", "υ" },
+                { "v", "φ" },
+                { ",", "χ" },
+                { "'", "ψ" },
+                { "w", "ω" },
+                { "s", "ς" },
+                { "f", "ϥ" },
+                { "q", "ϧ" },
+                { "h", "ϩ" },
+                { "j", "ϫ" },
+                { "[", "ϭ" },
+                { "]", "ϯ" },
+                #endregion
+
+                // u0300 is the combining grave accent
+                // u200D is the zero-width joiner
+                // NOTE: Some text renderers and fonts put the accent on the character before it
+                { "`", "\u0300\u200D" },
+                // u0305 is the combining overline
+                { "=", "\u0305\u200D" },
+
+                { "@", ":" },
+                { "&", ";" },
+                { "_", "=" },
+                { "¡", "⳪" }
             };
 
             return alphabet;

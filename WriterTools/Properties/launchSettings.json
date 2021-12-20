@@ -2,7 +2,7 @@
   "profiles": {
     "WriterTools": {
       "commandName": "Project",
-      "commandLineArgs": "--source-txt --source-file \"C:\\Users\\jjask\\Desktop\\test.txt\" --source-font \"CS Avva Shenouda\" --target-font \"Coptic Unicode\""
+      "commandLineArgs": "--source-txt --source-file \"C:\\Users\\jjask\\Desktop\\greek.txt\" --source-font \"CS Avva Shenouda\" --target-font \"Coptic Unicode\""
     }
   }
 }
