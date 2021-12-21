@@ -16,12 +16,7 @@ namespace CopticChanter
 {
     public class Common
     {
-        #region Doc Info
-        public static bool AnyEnglish = false;
-        public static bool AnyCoptic = false;
-        public static bool AnyArabic = false;
         public static List<Doc> Docs = new List<Doc>();
-        #endregion
 
         #region Bluetooth Remote
         public static bool IsConnected = false;

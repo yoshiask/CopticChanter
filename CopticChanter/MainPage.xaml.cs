@@ -90,14 +90,7 @@ namespace CopticChanter
                         {
                             Debug.WriteLine(file.Path);
                             var doc = CopticInterpreter.ReadDocXml(file.Path);
-
                             Common.Docs.Add(doc);
-                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.English))
-                                Common.AnyEnglish = true;
-                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.Coptic))
-                                Common.AnyCoptic = true;
-                            if (doc.Translations.Any(t => t.Language == CoptLib.Language.Arabic))
-                                Common.AnyArabic = true;
                             Debug.WriteLine(doc.Name);
                         }
 
@@ -133,18 +126,7 @@ namespace CopticChanter
 
         private void Present()
         {
-            var langs = new List<Language>(3);
-
-            if (Common.AnyEnglish)
-                langs.Add(CoptLib.Language.English);
-            if (Common.AnyCoptic)
-                langs.Add(CoptLib.Language.Coptic);
-            if (Common.AnyArabic)
-                langs.Add(CoptLib.Language.Arabic);
-
-            Frame.Navigate(typeof(Layouts.DocumentLayout),
-                new Layouts.DocumentLayoutArgs(langs.ToArray())
-            );
+            Frame.Navigate(typeof(Layouts.DocumentLayout), new Layouts.DocumentLayoutArgs());
         }
 
         private async void ConvertButton_Click(object sender, RoutedEventArgs e)
