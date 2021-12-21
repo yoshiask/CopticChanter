@@ -20,7 +20,6 @@ namespace CopticChanter
         public MainPage()
         {
             InitializeComponent();
-            WinVer.GetWinVer();
             LoadDocs(true);
         }
 
