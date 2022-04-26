@@ -8,6 +8,11 @@ namespace CoptLib.Models
     /// </summary>
     public abstract class ContentPart : Definition
     {
+        public ContentPart(Translation parent)
+        {
+            Parent = parent;
+        }
+
         /// <summary>
         /// A key that can be used to identify this specific content part.
         /// This value does not have to be unique between documents or translations.
@@ -25,16 +30,29 @@ namespace CoptLib.Models
 
         [XmlAttribute]
         public string Font { get; set; }
+
+        [XmlIgnore]
+        public Translation Parent { get; }
     }
 
     public class Stanza : ContentPart
     {
+        public Stanza(Translation parent) : base(parent)
+        {
+
+        }
+
         [XmlText]
         public string Text { get; set; }
     }
 
     public class Section : ContentPart, IContentCollectionContainer
     {
+        public Section(Translation parent) : base(parent)
+        {
+
+        }
+
         [XmlArray]
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 

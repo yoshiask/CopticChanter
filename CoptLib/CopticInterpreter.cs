@@ -175,7 +175,7 @@ namespace CoptLib
             {
                 if (contentElem.Name == nameof(Stanza))
                 {
-                    var stanza = new Stanza()
+                    var stanza = new Stanza(translation)
                     {
                         Language = (Language)Enum.Parse(typeof(Language),
                             contentElem.Attribute("Language")?.Value ?? translation.Language.ToString()),
@@ -197,7 +197,7 @@ namespace CoptLib
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
-                    var section = new Section
+                    var section = new Section(translation)
                     {
                         Key = contentElem.Attribute("Key")?.Value,
                         Title = ResolveReference(contentElem.Attribute("Title")?.Value, doc),
