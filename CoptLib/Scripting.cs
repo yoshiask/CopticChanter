@@ -348,8 +348,7 @@ namespace CoptLib
             MatchCollection matches = rx.Matches(input);
 
             // Report the number of matches found.
-            Debug.WriteLine("{0} matches found in:\n\t{1}",
-                             matches.Count, input);
+            Debug.WriteLine($"{matches.Count} matches found in:\n\t{input}");
             foreach (Match m in matches)
             {
                 Debug.WriteLine($"\tCommand: {m.Groups["command"]}");
@@ -357,7 +356,9 @@ namespace CoptLib
                 if (cmd == "language")
                 {
                     string[] langParts = m.Groups["param1"].Value.Split(':');
-                    Language language = (Language)Enum.Parse(typeof(Language), langParts[0]);
+                    if (!Enum.TryParse<Language>(langParts[0], out var language))
+                        continue;
+
                     switch (language)
                     {
                         case Language.Coptic:
