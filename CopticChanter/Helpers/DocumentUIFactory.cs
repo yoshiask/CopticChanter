@@ -35,22 +35,6 @@ namespace CopticChanter.Helpers
 
             switch (stanza.Language)
             {
-                #region Coptic
-                case Language.Coptic:
-                    contentBlock = new TextBlock
-                    {
-                        // TextBlock doesn't seem to know where to break Coptic (Unicode?)
-                        // lines, so insert a zero-width space at every space so
-                        // word wrap acutally works
-                        Text = Scripting.ParseTextCommands(stanza.Text.Replace(" ", " \u200B")),
-                        FontFamily = Common.Segoe,
-                        FontSize = Common.GetCopticFontSize(),
-                        TextWrapping = TextWrapping.Wrap,
-                        Foreground = new SolidColorBrush(foreground)
-                    };
-                    return contentBlock;
-                #endregion
-
                 #region Arabic
                 case Language.Arabic:
                     contentBlock = new TextBlock
