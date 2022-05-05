@@ -939,12 +939,14 @@ namespace CoptLib
                 { "]", "ϯ" },
                 #endregion
 
+                // Because we're using the "combining" versions of
+                // these diacritics, we don't need to add a ZWJ.
+                
                 // u0300 is the combining grave accent
-                // u200D is the zero-width joiner
-                // NOTE: Some text renderers and fonts put the accent on the character before it
-                { "`", "\u0300\u200D" },
+                { "`", "\u0300" },
+
                 // u0305 is the combining overline
-                { "=", "\u0305\u200D" },
+                { "=", "\u0305" },
 
                 { "@", ":" },
                 { "&", ";" },
