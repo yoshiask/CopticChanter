@@ -1206,7 +1206,14 @@ namespace CoptLib
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
             {
-                font.Charmap.Add(line.Split(',')[0], line.Split(',')[1]);
+                string[] columns = line.Split(',');
+
+                if (columns[0] == "title")
+                    font.Name = columns[1];
+                else if (columns[0] == "fontName")
+                    font.FontName = columns[1];
+                else
+                    font.Charmap.Add(columns[0], columns[1]);
             }
 
             return font;
