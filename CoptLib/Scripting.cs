@@ -341,7 +341,7 @@ namespace CoptLib
         public static string ParseTextCommands(string input)
         {
             // Define a regular expression that captures LaTeX-style commands with 0, 1, or 2 parameters
-            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<param1>[^\{\}]*)\})?(?:\{(?<param2>[^\{\}]*)\})+?",
+            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<param1>[^\{\}]*)\})+?(?:\{(?<param2>[^\{\}]*)\})?",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             // Find matches.
@@ -352,7 +352,10 @@ namespace CoptLib
             foreach (Match m in matches)
             {
                 Debug.WriteLine($"\tCommand: {m.Groups["command"]}");
+
+                bool removeMatch = false;
                 string cmd = m.Groups["command"].Value;
+
                 if (cmd == "language")
                 {
                     string[] langParts = m.Groups["param1"].Value.Split(':');
@@ -376,6 +379,19 @@ namespace CoptLib
                             }
                             break;
                     }
+                }
+                else if (cmd == "ms")
+                {
+                    string timePart = m.Groups["param1"].Value.ToString();
+                    if (!TimeSpan.TryParse(timePart, out var timeOffset))
+                        continue;
+
+                    removeMatch = true;
+                }
+
+                if (removeMatch)
+                {
+                    input = input.Remove(m.Index, m.Length);
                 }
             }
 
