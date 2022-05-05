@@ -28,26 +28,13 @@ namespace CopticChanter.Helpers
 
         public static TextBlock CreateBlockFromStanza(Stanza stanza, Language translationLanguage, Color foreground)
         {
-            TextBlock contentBlock = null;
+            TextBlock contentBlock;
 
             if (stanza.Language == Language.Default)
                 stanza.Language = translationLanguage;
 
             switch (stanza.Language)
             {
-                #region English
-                case Language.English:
-                    contentBlock = new TextBlock
-                    {
-                        Text = Scripting.ParseTextCommands(stanza.Text),
-                        FontFamily = Common.Segoe,
-                        FontSize = Common.GetEnglishFontSize(),
-                        TextWrapping = TextWrapping.Wrap,
-                        Foreground = new SolidColorBrush(foreground)
-                    };
-                    break;
-                #endregion
-
                 #region Coptic
                 case Language.Coptic:
                     contentBlock = new TextBlock
@@ -76,10 +63,21 @@ namespace CopticChanter.Helpers
                         Foreground = new SolidColorBrush(foreground)
                     };
                     break;
-                    #endregion
+                #endregion
+
+                default:
+                    contentBlock = new TextBlock
+                    {
+                        Text = Scripting.ParseTextCommands(stanza.Text),
+                        FontFamily = Common.Segoe,
+                        FontSize = Common.GetEnglishFontSize(),
+                        TextWrapping = TextWrapping.Wrap,
+                        Foreground = new SolidColorBrush(foreground)
+                    };
+                    break;
             }
 
-			return contentBlock;
+            return contentBlock;
         }
 
         public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container, Language translationLanguage, Color foreground)
