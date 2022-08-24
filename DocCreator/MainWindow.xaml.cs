@@ -1124,9 +1124,9 @@ namespace DocCreator
         // HACK: GetAllColorNames collects the available color names by brute forcing the OS function.
         //   Since there is currently no known way to retrieve all possible color names,
         //   the method below just tries all indices from 0 to 0xFFF ignoring errors.
-        public List<String> GetAllColorNames()
+        public List<string> GetAllColorNames()
         {
-            List<String> allColorNames = new List<String>();
+            List<string> allColorNames = new List<string>();
             for (UInt32 i = 0; i < 0xFFF; i++)
             {
                 IntPtr typeNamePtr = UxTheme.GetImmersiveColorNamedTypeByIndex(i);

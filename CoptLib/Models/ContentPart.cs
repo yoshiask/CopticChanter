@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CoptLib.Scripting;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -32,18 +33,46 @@ namespace CoptLib.Models
         public string Font { get; set; }
 
         [XmlIgnore]
-        public Translation Parent { get; }
+        public Translation Parent { get; set; }
     }
 
-    public class Stanza : ContentPart
+    public class Stanza : ContentPart, IContent
     {
+        private string _sourceText;
+
         public Stanza(Translation parent) : base(parent)
         {
 
         }
 
         [XmlText]
-        public string Text { get; set; }
+        public string SourceText
+        {
+            get => _sourceText;
+            set
+            {
+                if (_sourceText != value)
+                    HasBeenParsed = false;
+                _sourceText = value;
+            }
+        }
+
+        public bool HasBeenParsed { get; private set; }
+
+        public string Text { get; private set; }
+
+        public List<TextCommandBase> Commands { get; private set; }
+
+        public void ParseCommands()
+        {
+            if (HasBeenParsed)
+                return;
+
+            Commands = Scripting.Scripting.ParseTextCommands(SourceText, out var text);
+            Text = text;
+        }
+
+        public override string ToString() => SourceText;
     }
 
     public class Section : ContentPart, IContentCollectionContainer

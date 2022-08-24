@@ -117,12 +117,13 @@ namespace CoptLib
             {
                 foreach (XElement defElem in defsElem?.Elements())
                 {
+                    Definition def = null;
+
                     if (defElem.Name == nameof(Script))
                     {
                         var script = new Script()
                         {
-                            LuaScript = defElem.Value,
-                            Key = defElem.Attribute("Key")?.Value
+                            LuaScript = defElem.Value
                         };
                         doc.Definitions.Add(script);
                     }
@@ -132,8 +133,7 @@ namespace CoptLib
                         {
                             Label = defElem.Attribute("Label")?.Value,
                             DefaultValue = defElem.Attribute("DefaultValue")?.Value,
-                            Configurable = Boolean.Parse(defElem.Attribute("Configurable")?.Value),
-                            Key = defElem.Attribute("Key")?.Value
+                            Configurable = bool.Parse(defElem.Attribute("Configurable")?.Value),
                         };
                         doc.Definitions.Add(variable);
                     }
@@ -145,9 +145,14 @@ namespace CoptLib
                             Font = defElem.Attribute("Font")?.Value,
                             Language = (Language)Enum.Parse(typeof(Language),
                                 defElem.Attribute("Language")?.Value ?? "Default"),
-                            Key = defElem.Attribute("Key")?.Value
                         };
                         doc.Definitions.Add(_string);
+                    }
+
+                    if (def != null)
+                    {
+                        def.DocContext = doc;
+                        def.Key = defElem.Attribute("Key")?.Value;
                     }
                 }
             }
@@ -186,12 +191,15 @@ namespace CoptLib
                     {
                         // Coptic text needs to be interpreted before it can be displayed
                         var font = CopticFont.Fonts.Find(f => f.Name.ToLower() == translation.Font.ToLower());
-                        stanza.Text = ConvertFont(contentElem.Value, font, CopticFont.CopticUnicode);
+                        stanza.SourceText = ConvertFont(contentElem.Value, font, CopticFont.CopticUnicode);
+                        stanza.DocContext = doc;
                     }
                     else
                     {
-                        stanza.Text = contentElem.Value;
+                        stanza.SourceText = contentElem.Value;
                     }
+
+                    stanza.ParseCommands();
 
                     content.Add(stanza);
                 }
@@ -293,6 +301,10 @@ namespace CoptLib
 
         public static string ConvertFont(string input, CopticFont start, CopticFont target)
         {
+            // No need to convert
+            if (start == target)
+                return input;
+
             string output = "";
 
             // Generate a dictionary that has the start mapping as keys and the target mapping as values

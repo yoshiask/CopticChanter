@@ -39,7 +39,7 @@ namespace CopticChanter.Helpers
                 case Language.Arabic:
                     contentBlock = new TextBlock
                     {
-                        Text = Scripting.ParseTextCommands(stanza.Text),
+                        Text = stanza.Text,
                         FontFamily = Common.Segoe,
                         FontSize = Common.GetEnglishFontSize(),
                         TextWrapping = TextWrapping.Wrap,
@@ -52,7 +52,7 @@ namespace CopticChanter.Helpers
                 default:
                     contentBlock = new TextBlock
                     {
-                        Text = Scripting.ParseTextCommands(stanza.Text),
+                        Text = stanza.Text,
                         FontFamily = Common.Segoe,
                         FontSize = Common.GetEnglishFontSize(),
                         TextWrapping = TextWrapping.Wrap,

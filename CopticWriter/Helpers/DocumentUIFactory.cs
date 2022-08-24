@@ -15,18 +15,9 @@ namespace CopticWriter.Helpers
             if (stanza.Language == Language.Default)
                 stanza.Language = translationLanguage;
 
-            string displayText = stanza.Text;
-            if (stanza.Language == Language.Coptic)
-            {
-                // TextBox doesn't seem to know where to break Coptic (Unicode?)
-                // lines, so insert a zero-width space at every space so
-                // word wrap acutally works
-                displayText = stanza.Text.Replace(" ", " \u200B");
-            }
-
             TextBox contentBlock = new TextBox
             {
-                Text = Scripting.ParseTextCommands(displayText),
+                Text = stanza.Text,
                 FontFamily = Common.DefaultFont,
                 FontSize = Common.DefaultFontSize,
                 TextWrapping = TextWrapping.Wrap,

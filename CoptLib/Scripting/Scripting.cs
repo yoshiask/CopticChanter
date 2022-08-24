@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using CoptLib.Models;
+using CoptLib.Scripting.Commands;
 using NLua;
 using NodaTime;
 using static CoptLib.CopticInterpreter;
 
-namespace CoptLib
+namespace CoptLib.Scripting
 {
     public class Scripting
     {
+        private static Dictionary<string, Type> _availCmds;
+
         public static IDictionary<string, bool> GetArgs(LocalDate date)
         {
             if (date == null)
@@ -338,64 +342,60 @@ namespace CoptLib
             }
         }
 
-        public static string ParseTextCommands(string input)
+        public static List<TextCommandBase> ParseTextCommands(string input, Doc context, out string strippedText)
         {
-            // Define a regular expression that captures LaTeX-style commands with 0, 1, or 2 parameters
-            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<param1>[^\{\}]*)\})+?(?:\{(?<param2>[^\{\}]*)\})?",
+            strippedText = input;
+
+            // Create a list to store parsed commands
+            var parsedCmds = new List<TextCommandBase>();
+
+            // Define a regular expression that captures LaTeX-style commands with 0 or more parameters
+            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<params>[^\\]*)\})+?",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            // Find matches.
+            // Find matches
             MatchCollection matches = rx.Matches(input);
-
-            // Report the number of matches found.
-            Debug.WriteLine($"{matches.Count} matches found in:\n\t{input}");
             foreach (Match m in matches)
             {
-                Debug.WriteLine($"\tCommand: {m.Groups["command"]}");
-
-                bool removeMatch = false;
                 string cmd = m.Groups["command"].Value;
+                string[] parameters = m.Groups["params"].Value.Split(new[] { "}{" }, StringSplitOptions.None);
 
-                if (cmd == "language")
+                var parsedCmd = GetCommand(cmd, m.Index, parameters);
+                if (parsedCmd == null)
+                    continue;
+
+                if (parsedCmd.Text != null)
                 {
-                    string[] langParts = m.Groups["param1"].Value.Split(':');
-                    if (!Enum.TryParse<Language>(langParts[0], out var language))
-                        continue;
+                    strippedText = strippedText.Remove(m.Index, m.Length);
 
-                    switch (language)
-                    {
-                        case Language.Coptic:
-                            CopticFont font = CopticFont.CsAvvaShenouda;
-                            if (langParts.Length >= 2)
-                                font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower()) ?? font;
-                            string text = m.Groups[3].Value;
-                            if (font != null)
-                            {
-                                input = input.Remove(m.Index, m.Length);
-                                input = input.Insert(m.Index, ConvertFont(text, font, CopticFont.CopticUnicode).Replace(" ", " \u200B"));
-                                // TextBlock doesn't seem to know where to break Coptic (Unicode?)
-                                // lines, so insert a zero-width space at every space so
-                                // word wrap actually works
-                            }
-                            break;
-                    }
-                }
-                else if (cmd == "ms")
-                {
-                    string timePart = m.Groups["param1"].Value.ToString();
-                    if (!TimeSpan.TryParse(timePart, out var timeOffset))
-                        continue;
-
-                    removeMatch = true;
+                    if (parsedCmd.Text != string.Empty)
+                        strippedText = strippedText.Insert(m.Index, parsedCmd.Text);
                 }
 
-                if (removeMatch)
-                {
-                    input = input.Remove(m.Index, m.Length);
-                }
+                parsedCmds.Add(parsedCmd);
             }
 
-            return input;
+            return parsedCmds;
+        }
+
+        private static TextCommandBase GetCommand(string cmd, int startIndex, string[] parameters)
+        {
+            PopulateAvailableCommands();
+
+            var type = _availCmds[cmd];
+            return Activator.CreateInstance(type, cmd, startIndex, parameters) as TextCommandBase;
+        }
+
+        private static void PopulateAvailableCommands()
+        {
+            if (_availCmds != null && _availCmds.Count > 0)
+                return;
+
+            _availCmds = new Dictionary<string, Type>
+            {
+                { "language", typeof(LanguageCmd) },
+                { "ms", typeof(TimestampCmd) },
+            };
         }
     }
 }

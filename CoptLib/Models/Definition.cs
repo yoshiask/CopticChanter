@@ -14,6 +14,9 @@ namespace CoptLib.Models
         /// </summary>
         [XmlAttribute]
         public string Key { get; set; }
+
+        [XmlIgnore]
+        public Doc DocContext { get; set; }
     }
 
     public class Script : Definition

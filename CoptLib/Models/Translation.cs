@@ -14,6 +14,9 @@ namespace CoptLib.Models
         [XmlElement]
         public string Font { get; set; }
 
+        [XmlIgnore]
+        public Doc Parent { get; set; }
+
         /// <summary>
         /// Returns the number of rows this translation requires to display
         /// all section headers and stanzas
