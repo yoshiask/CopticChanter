@@ -10,7 +10,7 @@ namespace CoptLib.Scripting.Commands
         public DefinitionCmd(string name, Doc context, int startIndex, string[] parameters)
             : base(name, context, startIndex, parameters)
         {
-            DocContext.Definitions.
+            //DocContext.Definitions.
         }
     }
 }

@@ -68,7 +68,7 @@ namespace CoptLib.Models
             if (HasBeenParsed)
                 return;
 
-            Commands = Scripting.Scripting.ParseTextCommands(SourceText, out var text);
+            Commands = Scripting.Scripting.ParseTextCommands(SourceText, Parent.Parent, out var text);
             Text = text;
         }
 
