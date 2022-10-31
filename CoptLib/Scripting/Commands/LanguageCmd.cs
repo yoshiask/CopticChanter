@@ -1,4 +1,5 @@
 ﻿using CoptLib.Models;
+using CoptLib.Writing;
 using System;
 
 namespace CoptLib.Scripting.Commands
@@ -31,10 +32,11 @@ namespace CoptLib.Scripting.Commands
 
                     if (langParts.Length >= 2)
                     {
-                        Font = CopticFont.Fonts.Find(f => f.Name.ToLower() == langParts[1].ToLower()) ?? CopticFont.CsAvvaShenouda;
-                        Text = CopticInterpreter.ConvertFont(Text, Font, CopticFont.CopticUnicode);
+                        Font = CopticFont.FindFont(langParts[1]) ?? CopticFont.CsAvvaShenouda;
+                        Text = Font.Convert(Text);
                     }
 
+                    // FIXME: Is this correct to do here? Methinks not.
                     // TextBlock doesn't seem to know where to break Coptic (Unicode?)
                     // lines, so insert a zero-width space at every space so
                     // word wrap actually works

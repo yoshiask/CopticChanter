@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoptLib.Writing;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -36,8 +37,7 @@ namespace CoptLib.Models
             };
             foreach (string key in font.Charmap.Keys)
             {
-                string value;
-                font.Charmap.TryGetValue(key, out value);
+                font.Charmap.TryGetValue(key, out string value);
                 var pair = new MapXml()
                 {
                     BaseCharacter = key,

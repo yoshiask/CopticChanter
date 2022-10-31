@@ -1,40 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Joshua Askharoun</Authors>
-    <Company>Joshua Askharoun</Company>
-    <Product>Coptic Chanter</Product>
-    <Description>A .NET Standard 1.6 library made to handle scenarios specific to Coptic for Coptic Chanter.
-Useful features:
-   - CopticDate (w/Special Events)
-   - CopticInterpreter (convert to &amp; from Coptic1 [Coptic Chanter], CS Avva Shenouda [Tasbeha.org], and Coptic Unicode)
-   - IfXML (a very simple XML-based scripting language using only if statements and return)</Description>
-    <PackageTags>Coptic, Yoshi</PackageTags>
-    <Copyright>2017-2019</Copyright>
-    <Version>1.0.2</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>10</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Joshua Askharoun</Authors>
+        <Company>Joshua Askharoun</Company>
+        <Product>Coptic Chanter</Product>
+        <Description>
+            A .NET Standard 2.0 library made to handle scenarios specific to Coptic for Coptic Chanter.
+            Useful features:
+            - CopticDate (w/Special Events)
+            - CopticInterpreter (convert to &amp; from Coptic1 [Coptic Chanter], CS Avva Shenouda [Tasbeha.org], and Coptic Unicode)
+            - IfXML (a very simple XML-based scripting language using only if statements and return)
+        </Description>
+        <PackageTags>Coptic, Yoshi</PackageTags>
+        <Copyright>2017-2019</Copyright>
+        <Version>1.0.2</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLua" Version="1.5.2" />
-    <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
-    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
-    <PackageReference Include="NodaTime" Version="3.0.5" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NLua" Version="1.5.2" />
+        <PackageReference Include="System.Linq" Version="4.3.0" />
+        <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
+        <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
+        <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
+        <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+        <PackageReference Include="NodaTime" Version="3.0.5" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Models\IfXML.xsd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Models\IfXML.xsd">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="ViewModels\" />
+    </ItemGroup>
 
 </Project>

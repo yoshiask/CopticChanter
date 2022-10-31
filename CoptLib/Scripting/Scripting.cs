@@ -7,7 +7,7 @@ using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using NLua;
 using NodaTime;
-using static CoptLib.CopticInterpreter;
+using static CoptLib.Writing.CopticInterpreter;
 
 namespace CoptLib.Scripting
 {
