@@ -13,7 +13,7 @@ namespace CoptTest
     {
         static readonly string[] inputs = new[]
         {
-            "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
+            "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
 
             "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ ⲁϥⲧⲱⲛϥ ⲉ̀ⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ: ⲫⲏⲉ̀ⲧⲁϥⲙⲟⲩ ⲁϥϩⲱⲙⲓ ⲉ̀ϫⲉⲛ ⲫ̀ⲙⲟⲩ ⲟⲩⲟϩ ⲛⲏⲉⲧⲭⲏ ϧⲉⲛ ⲛⲓⲙ̀ϩⲁⲩ ⲁϥⲉⲣϩ̀ⲙⲟⲧ ⲛⲱⲟⲩ ⲙ̀ⲡⲓⲱⲛϧ ⲛ̀ⲉ̀ⲛⲉϩ.",
             "Ⲭⲣⲓⲥⲧⲟⲥ ⲁ̀ⲛⲉⲥⲧⲏ ⲉⲕ ⲛⲉⲕⲣⲱⲛ: ⲑⲁⲛⲁⲧⲱ ⲑⲁⲛⲁⲧⲟⲛ: ⲡⲁⲧⲏⲥⲁⲥ ⲕⲉ ⲧⲓⲥ ⲉⲛ ⲧⲓⲥ ⲙ̀ⲛⲏⲙⲁⲥⲓ ⲍⲱⲏⲛ ⲭⲁⲣⲓⲥⲁⲙⲉⲛⲟⲥ.",
@@ -170,7 +170,7 @@ namespace CoptTest
                             ipa = ".";
                         if (ch == 'ⲃ')
                             ipa = "v";
-                        else if (ch == 'ⲅ')
+                        else if (chNextEI && ch == 'ⲅ')
                             ipa = "g";
                         else if (ch == 'ⲭ' && (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ'))
                             ipa = "ç";  // NOTE: Does not attempt to decide whether a word is of Greek origin
