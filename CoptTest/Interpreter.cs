@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -203,6 +204,8 @@ namespace CoptTest
         [Fact]
         public void IpaTranscribe_CopticUnicode()
         {
+            StringBuilder sb = new();
+
             foreach (var input in inputs)
             {
                 var words = IpaTranscribe(input);
@@ -214,7 +217,12 @@ namespace CoptTest
                 );
 
                 Debug.WriteLine(result);
+                sb.AppendLine($"{input},{result}");
             }
+
+            string outPath = Path.Combine(AppContext.BaseDirectory, "TestResults", nameof(IpaTranscribe_CopticUnicode) + ".csv");
+            Directory.CreateDirectory(Path.GetDirectoryName(outPath));
+            File.WriteAllText(outPath, sb.ToString(), Encoding.Unicode);
         }
 
         [Fact]
