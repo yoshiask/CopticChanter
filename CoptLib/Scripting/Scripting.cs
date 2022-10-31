@@ -360,7 +360,7 @@ namespace CoptLib.Scripting
                 string cmd = m.Groups["command"].Value;
                 string[] parameters = m.Groups["params"].Value.Split(new[] { "}{" }, StringSplitOptions.None);
 
-                var parsedCmd = GetCommand(cmd, m.Index, parameters);
+                var parsedCmd = GetCommand(cmd, context, m.Index, parameters);
                 if (parsedCmd == null)
                     continue;
 
@@ -378,12 +378,12 @@ namespace CoptLib.Scripting
             return parsedCmds;
         }
 
-        private static TextCommandBase GetCommand(string cmd, int startIndex, string[] parameters)
+        private static TextCommandBase GetCommand(string cmd, Doc context, int startIndex, string[] parameters)
         {
             PopulateAvailableCommands();
 
             var type = _availCmds[cmd];
-            return Activator.CreateInstance(type, cmd, startIndex, parameters) as TextCommandBase;
+            return Activator.CreateInstance(type, cmd, context, startIndex, parameters) as TextCommandBase;
         }
 
         private static void PopulateAvailableCommands()

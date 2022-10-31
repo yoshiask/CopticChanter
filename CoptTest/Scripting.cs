@@ -1,6 +1,7 @@
 using CoptLib;
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
+using CoptLib.Writing;
 using System.Linq;
 using Xunit;
 
