@@ -395,6 +395,7 @@ namespace CoptLib.Scripting
             {
                 { "language", typeof(LanguageCmd) },
                 { "ms", typeof(TimestampCmd) },
+                { "def", typeof(DefinitionCmd) },
             };
         }
     }

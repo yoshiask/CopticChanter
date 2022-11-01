@@ -5,15 +5,16 @@ using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CopticWriter.Helpers
 {
     public static class DocumentUIFactory
     {
-        public static TextBox CreateBlockFromStanza(Stanza stanza, Language translationLanguage)
+        public static TextBox CreateBlockFromStanza(Stanza stanza)
         {
             if (stanza.Language == Language.Default)
-                stanza.Language = translationLanguage;
+                stanza.Language = stanza.Parent.Language;
 
             TextBox contentBlock = new TextBox
             {
@@ -21,18 +22,30 @@ namespace CopticWriter.Helpers
                 FontFamily = Common.DefaultFont,
                 FontSize = Common.DefaultFontSize,
                 TextWrapping = TextWrapping.Wrap,
-                TextAlignment = TextAlignment.Right
+                TextAlignment = TextAlignment.Left
             };
 
-            if (stanza.Language == Language.Arabic)
+            switch (stanza.Language)
             {
-                contentBlock.TextAlignment = TextAlignment.Right;
+                case Language.Arabic:
+                case Language.Aramaic:
+                case Language.Hebrew:
+                    contentBlock.TextAlignment = TextAlignment.Right;
+                    break;
+
+                case Language.Coptic:
+                    // TextBlock doesn't seem to know where to break Coptic (Unicode?)
+                    // lines, so insert a zero-width space at every space so
+                    // word wrap actually works
+                    if (!contentBlock.Text.Contains('\u200B'))
+                        contentBlock.Text = contentBlock.Text.Replace(" ", " \u200B");
+                    break;
             }
 
             return contentBlock;
         }
 
-        public static List<TextBox> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container, Language translationLanguage)
+        public static List<TextBox> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container)
         {
             var blocks = new List<TextBox>(container.Content.Count + 1);
 
@@ -48,13 +61,13 @@ namespace CopticWriter.Helpers
                 {
                     case Stanza stanza:
                     {
-                        var block = CreateBlockFromStanza(stanza, translationLanguage);
+                        var block = CreateBlockFromStanza(stanza);
                         blocks.Add(block);
                         break;
                     }
                     case Section subsection:
                     {
-                        var subblocks = CreateBlocksFromContentCollectionContainer(subsection, translationLanguage);
+                        var subblocks = CreateBlocksFromContentCollectionContainer(subsection);
                         blocks.AddRange(subblocks);
                         break;
                     }
@@ -130,17 +143,20 @@ namespace CopticWriter.Helpers
                 int i = 0;
                 foreach (ContentPart part in translation.Content)
                 {
+                    if (part is IContent content && !content.HasBeenParsed)
+                        content.ParseCommands();
+
                     switch (part)
                     {
                         case Stanza stanza:
-                            var stanzaBlock = CreateBlockFromStanza(stanza, translation.Language);
+                            var stanzaBlock = CreateBlockFromStanza(stanza);
                             MainGrid.Children.Add(stanzaBlock);
                             Grid.SetColumn(stanzaBlock, t);
                             Grid.SetRow(stanzaBlock, lastRow + i++);
                             break;
 
                         case Section section:
-                            var blocks = CreateBlocksFromContentCollectionContainer(section, translation.Language);
+                            var blocks = CreateBlocksFromContentCollectionContainer(section);
                             foreach (TextBox block in blocks)
                             {
                                 MainGrid.Children.Add(block);

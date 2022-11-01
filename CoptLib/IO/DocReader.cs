@@ -1,9 +1,11 @@
 ﻿using CoptLib.Models;
+using CoptLib.Scripting;
 using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -107,16 +109,17 @@ namespace CoptLib.IO
                 foreach (XElement defElem in defsElem?.Elements())
                 {
                     Definition def = null;
+                    string defElemName = defElem.Name.LocalName;
 
-                    if (defElem.Name == nameof(Script))
+                    if (defElemName == nameof(Script))
                     {
                         var script = new Script()
                         {
                             LuaScript = defElem.Value
                         };
-                        doc.Definitions.Add(script);
+                        def = script;
                     }
-                    else if (defElem.Name == nameof(Variable))
+                    else if (defElemName == nameof(Variable))
                     {
                         var variable = new Variable()
                         {
@@ -124,9 +127,9 @@ namespace CoptLib.IO
                             DefaultValue = defElem.Attribute("DefaultValue")?.Value,
                             Configurable = bool.Parse(defElem.Attribute("Configurable")?.Value),
                         };
-                        doc.Definitions.Add(variable);
+                        def = variable;
                     }
-                    else if (defElem.Name == nameof(Models.String))
+                    else if (defElemName == nameof(Models.String))
                     {
                         var _string = new Models.String()
                         {
@@ -135,13 +138,22 @@ namespace CoptLib.IO
                             Language = (Language)Enum.Parse(typeof(Language),
                                 defElem.Attribute("Language")?.Value ?? "Default"),
                         };
-                        doc.Definitions.Add(_string);
+
+                        if (_string.Language == Language.Coptic && _string.Font != null)
+                        {
+                            // Coptic text needs to be interpreted before it can be displayed
+                            var font = CopticFont.FindFont(_string.Font);
+                            _string.Value = font.Convert(_string.Value);
+                        }
+
+                        def = _string;
                     }
 
                     if (def != null)
                     {
                         def.DocContext = doc;
                         def.Key = defElem.Attribute("Key")?.Value;
+                        doc.Definitions.Add(def);
                     }
                 }
             }
@@ -180,7 +192,7 @@ namespace CoptLib.IO
                     {
                         // Coptic text needs to be interpreted before it can be displayed
                         var font = CopticFont.FindFont(translation.Font);
-                        stanza.SourceText = font.Convert(contentElem.Value, font);
+                        stanza.SourceText = font.Convert(contentElem.Value);
                         stanza.DocContext = doc;
                     }
                     else
@@ -194,10 +206,12 @@ namespace CoptLib.IO
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
+                    _ = Scripting.Scripting.ParseTextCommands(contentElem.Attribute("Title")?.Value, doc, out var title);
+
                     var section = new Section(translation)
                     {
                         Key = contentElem.Attribute("Key")?.Value,
-                        Title = ResolveReference(contentElem.Attribute("Title")?.Value, doc),
+                        Title = title,
                         Content = ParseContentParts(contentElem.Elements(), translation, doc)
                     };
                     content.Add(section);

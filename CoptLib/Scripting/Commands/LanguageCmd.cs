@@ -29,19 +29,11 @@ namespace CoptLib.Scripting.Commands
             switch (Language)
             {
                 case Language.Coptic:
-
                     if (langParts.Length >= 2)
                     {
                         Font = CopticFont.FindFont(langParts[1]) ?? CopticFont.CsAvvaShenouda;
                         Text = Font.Convert(Text);
                     }
-
-                    // FIXME: Is this correct to do here? Methinks not.
-                    // TextBlock doesn't seem to know where to break Coptic (Unicode?)
-                    // lines, so insert a zero-width space at every space so
-                    // word wrap actually works
-                    Text = Text.Replace(" ", " \u200B");
-
                     break;
             }
         }
