@@ -3,11 +3,16 @@
 public enum Language
 {
     Default,
-    English,
-    Coptic,
-    Arabic,
-    Greek,
-    Spanish,
+    Akkadian,
     Amharic,
-    Armenian
+    Arabic,
+    Aramaic,
+    Armenian,
+    Coptic,
+    Egyptian,
+    English,
+    Greek,
+    Hebrew,
+    Latin,
+    Spanish,
 }

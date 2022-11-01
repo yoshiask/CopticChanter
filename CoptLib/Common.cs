@@ -57,4 +57,31 @@ namespace CoptLib
             return output;
         }
     }
+
+    public static class ArrayExtensions
+    {
+        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
+        {
+            foreach (T s in source)
+                if (values.Contains(s))
+                    return true;
+            return false;
+        }
+
+        public static bool StartsWithAny(this string str, IEnumerable<string> values)
+        {
+            foreach (string val in values)
+                if (str.StartsWith(val))
+                    return true;
+            return false;
+        }
+
+        public static bool EndsWithAny(this string str, IEnumerable<string> values)
+        {
+            foreach (string val in values)
+                if (str.EndsWith(val))
+                    return true;
+            return false;
+        }
+    }
 }
