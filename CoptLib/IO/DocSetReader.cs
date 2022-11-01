@@ -41,6 +41,47 @@ namespace CoptLib.IO
             ZipStream = zipStream;
         }
 
+        /// <summary>
+        /// Unzips, serializes, and returns an Index and list of Docs
+        /// </summary>
+        /// <param name="path">Path to zip file</param>
+        /// <returns></returns>
+        public static ReadResults ReadSet(string path, string tempPath)
+        {
+            return new DocSetReader(Path.GetFileNameWithoutExtension(path), path).Read(tempPath);
+        }
+        /// <summary>
+        /// Unzips, serializes, and returns an Index and list of Docs
+        /// </summary>
+        /// <param name="File">Stream of zip file</param>
+        /// <returns></returns>
+        public static ReadResults ReadSet(Stream file, string name, string tempPath)
+        {
+            return (new DocSetReader(name, file)).Read(tempPath);
+        }
+
+        /// <summary>
+        /// Serializes and zips an Index along with the specified docs.
+        /// </summary>
+        /// <param name="fileName">Name of file to be saved</param>
+        /// <param name="setName">Name of set to be saved</param>
+        /// <param name="setUuid">Generated UUID of set</param>
+        /// <param name="incdocs">Docs to include in set</param>
+        public static void SaveSet(string fileName, string setName, string setUuid, IEnumerable<Doc> incdocs)
+        {
+            var setX = new Index()
+            {
+                Name = setName,
+                Uuid = setUuid
+            };
+            foreach (var doc in incdocs)
+            {
+                setX.IncludedDocs.Add(doc.ToIndexDocXml());
+            }
+
+            new DocSetWriter(setX).Write(fileName);
+        }
+
         /// <param name="tempPath">Path.Combine(
         /// Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         ///         "Coptic Chanter", "Doc Creator", "temp")</param>
@@ -155,7 +196,7 @@ namespace CoptLib.IO
         public class ReadResults
         {
             public Index Index;
-            public List<Doc> IncludedDocs = new List<Doc>();
+            public List<Doc> IncludedDocs = new();
         }
     }
 }

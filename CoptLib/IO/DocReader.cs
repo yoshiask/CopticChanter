@@ -244,48 +244,5 @@ namespace CoptLib.IO
                 return valueString;
             }
         }
-
-        /// <summary>
-        /// Unzips, serializes, and returns an Index and list of Docs
-        /// </summary>
-        /// <param name="path">Path to zip file</param>
-        /// <returns></returns>
-        public static DocSetReader.ReadResults ReadSet(string path, string tempPath)
-        {
-            return new DocSetReader(Path.GetFileNameWithoutExtension(path), path).Read(tempPath);
-        }
-        /// <summary>
-        /// Unzips, serializes, and returns an Index and list of Docs
-        /// </summary>
-        /// <param name="File">Stream of zip file</param>
-        /// <returns></returns>
-        public static DocSetReader.ReadResults ReadSet(Stream file, string name, string tempPath)
-        {
-            return (new DocSetReader(name, file)).Read(tempPath);
-        }
-
-        /// <summary>
-        /// Serializes and zips an Index and included docs
-        /// </summary>
-        /// <param name="filename">Name of file to be saved</param>
-        /// <param name="setname">Name of set to be saved</param>
-        /// <param name="setUuid">Generated UUID of set</param>
-        /// <param name="incdocs">Docs to include in set</param>
-        public static void SaveSet(string filename, string setname, string setUuid, IEnumerable<string> incdocs)
-        {
-            var setX = new Index()
-            {
-                Name = setname,
-                Uuid = setUuid
-            };
-            List<string> incDocs = new List<string>();
-
-            foreach (string docUuid in incdocs)
-            {
-                setX.IncludedDocs.Add(AllDocs[docUuid].ToIndexDocXml());
-            }
-
-            new DocSetWriter(setX).Write(filename);
-        }
     }
 }
