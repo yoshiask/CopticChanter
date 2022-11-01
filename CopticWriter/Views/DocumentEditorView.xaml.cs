@@ -1,10 +1,13 @@
 ﻿using CopticWriter.Helpers;
 using CoptLib;
 using CoptLib.Models;
+using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+
+using CLLanguage = CoptLib.Writing.Language;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -115,22 +118,22 @@ namespace CopticWriter.Views
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch ((Language)LanguageOption.SelectedIndex)
+                switch ((CLLanguage)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case CoptLib.Language.English:
+                    case CLLanguage.English:
                         InitEnglishSft();
                         break;
                     #endregion
 
                     #region Coptic
-                    case CoptLib.Language.Coptic:
+                    case CLLanguage.Coptic:
                         InitCopticSft();
                         break;
                     #endregion
 
                     #region Arabic
-                    case CoptLib.Language.Arabic:
+                    case CLLanguage.Arabic:
                         InitArabicSft();
                         break;
                         #endregion
@@ -145,22 +148,22 @@ namespace CopticWriter.Views
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch ((Language)LanguageOption.SelectedIndex)
+                switch ((CLLanguage)LanguageOption.SelectedIndex)
                 {
                     #region English
-                    case CoptLib.Language.English:
+                    case CLLanguage.English:
                         InitEnglish();
                         break;
                     #endregion
 
                     #region Coptic
-                    case CoptLib.Language.Coptic:
+                    case CLLanguage.Coptic:
                         InitCoptic();
                         break;
                     #endregion
 
                     #region Arabic
-                    case CoptLib.Language.Arabic:
+                    case CLLanguage.Arabic:
                         InitArabic();
                         break;
                         #endregion
@@ -410,12 +413,12 @@ namespace CopticWriter.Views
         /// <param name="btn">The key to initialize</param>
         /// <param name="keytype">Language to load: eng / copt / arabic + ":sft"</param>
         /// <param name="index"></param>
-        private void InitKey(Button btn, Language language, bool shift, int index)
+        private void InitKey(Button btn, CLLanguage language, bool shift, int index)
         {
             switch (language)
             {
                 #region English
-                case CoptLib.Language.English:
+                case CLLanguage.English:
                     if (shift)
                     {
                         if (EnglishSft[index] != null)
@@ -444,13 +447,13 @@ namespace CopticWriter.Views
                 #endregion
 
                 #region Coptic
-                case CoptLib.Language.Coptic:
+                case CLLanguage.Coptic:
                     if (shift)
                     {
                         if (CopticSft[index] != null)
                         {
                             btn.Visibility = Visibility.Visible;
-                            btn.Content = CopticInterpreter.ConvertFont(EnglishSft[index], CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                            btn.Content = CopticFont.CsAvvaShenouda.Convert(EnglishSft[index]);
                         }
                         else
                         {
@@ -463,7 +466,7 @@ namespace CopticWriter.Views
                         {
                             btn.Visibility = Visibility.Visible;
                             var vals = CopticFont.CopticUnicode.Charmap.Values.ToList();
-                            btn.Content = CopticInterpreter.ConvertFont(English[index], CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                            btn.Content = CopticFont.CsAvvaShenouda.Convert(English[index]);
                         }
                         else
                         {
@@ -474,7 +477,7 @@ namespace CopticWriter.Views
                 #endregion
 
                 #region Arabic
-                case CoptLib.Language.Arabic:
+                case CLLanguage.Arabic:
                     if (!shift)
                     {
                         if (ArabicSft[index] != null)
@@ -512,7 +515,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.English, false, i);
+                        InitKey((Button)key, CLLanguage.English, false, i);
                 }
             }
             return;
@@ -525,7 +528,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.English, true, i);
+                        InitKey((Button)key, CLLanguage.English, true, i);
                 }
             }
             return;
@@ -539,7 +542,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.Coptic, false, i);
+                        InitKey((Button)key, CLLanguage.Coptic, false, i);
                 }
             }
             return;
@@ -552,7 +555,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.Coptic, true, i);
+                        InitKey((Button)key, CLLanguage.Coptic, true, i);
                 }
             }
             return;
@@ -566,7 +569,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.Arabic, false, i);
+                        InitKey((Button)key, CLLanguage.Arabic, false, i);
                 }
             }
             return;
@@ -579,7 +582,7 @@ namespace CopticWriter.Views
                 if (key != null)
                 {
                     if (key.GetType() == typeof(Button))
-                        InitKey((Button)key, CoptLib.Language.Arabic, true, i);
+                        InitKey((Button)key, CLLanguage.Arabic, true, i);
                 }
             }
             return;
@@ -594,23 +597,23 @@ namespace CopticWriter.Views
             {
                 if (LanguageOption.SelectedIndex > -1)
                 {
-                    var language = (Language)LanguageOption.SelectedIndex;
+                    var language = (CLLanguage)LanguageOption.SelectedIndex;
                     switch (language)
                     {
                         #region English
-                        case CoptLib.Language.English:
+                        case CLLanguage.English:
                             InitEnglish();
                             break;
                         #endregion
 
                         #region Coptic
-                        case CoptLib.Language.Coptic:
+                        case CLLanguage.Coptic:
                             InitCoptic();
                             break;
                         #endregion
 
                         #region Arabic
-                        case CoptLib.Language.Arabic:
+                        case CLLanguage.Arabic:
                             InitArabic();
                             break;
                             #endregion
@@ -626,10 +629,10 @@ namespace CopticWriter.Views
         private void lastFocusedTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             int caret = lastFocusedTextBox.SelectionStart;
-            switch ((Language)LanguageOption.SelectedIndex)
+            switch ((CLLanguage)LanguageOption.SelectedIndex)
             {
-                case CoptLib.Language.Coptic:
-                    lastFocusedTextBox.Text = CopticInterpreter.ConvertFont(lastFocusedTextBox.Text, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
+                case CLLanguage.Coptic:
+                    lastFocusedTextBox.Text = CopticFont.CsAvvaShenouda.Convert(lastFocusedTextBox.Text);
                     break;
             }
             lastFocusedTextBox.SelectionStart = caret;

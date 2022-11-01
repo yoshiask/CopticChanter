@@ -1,4 +1,5 @@
 ﻿using CoptLib;
+using CoptLib.IO;
 using CoptLib.Models;
 using System;
 using System.Collections.Generic;
@@ -78,14 +79,14 @@ namespace CopticWriter
             {
                 case ".xml":
                     // Read the file
-                    var docXml = CopticInterpreter.ReadDocXml(stream);
+                    var docXml = DocReader.ReadDocXml(stream);
                     Docs.Add(docXml);
                     MainTabControl.SelectedIndex = Docs.Count - 1;
                     return;
 
                 case ".zip":
                     // Read the set
-                    var set = CopticInterpreter.ReadSet(stream, file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
+                    var set = DocSetReader.ReadSet(stream, file.Name, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
                     Docs.Clear();
                     set.IncludedDocs.ForEach(d => Docs.Add(d));
                     MainTabControl.SelectedIndex = 0;
