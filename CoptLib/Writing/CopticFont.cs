@@ -169,6 +169,21 @@ namespace CoptLib.Writing
         }
 
         /// <summary>
+        /// Attempts to find a font with the specific name in <see cref="Fonts"/>.
+        /// </summary>
+        /// <param name="fontName">The name of the font to find.</param>
+        /// <param name="font">The matching font, if found.</param>
+        /// <returns>
+        /// <see langword="true"/> if the fond was found, <see langword="false"/> if not.
+        /// </returns>
+
+        public static bool TryFindFont(string fontName, out CopticFont font)
+        {
+            font = FindFont(fontName);
+            return font != null;
+        }
+
+        /// <summary>
         /// Reads Font Pack from file. Also adds to imported list of the current instance.
         /// </summary>
         /// <param name="path">File to read</param>
