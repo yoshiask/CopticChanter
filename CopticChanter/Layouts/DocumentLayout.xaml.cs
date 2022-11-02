@@ -42,6 +42,9 @@ namespace CopticChanter.Layouts
             // Populate the columns with translations and rows with stanzas
             foreach (Doc doc in Common.Docs)
             {
+                // Apply transforms before display
+                CoptLib.IO.DocReader.ApplyDocTransforms(doc);
+
                 Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc);
                 MainPanel.Children.Add(MainGrid);
             }

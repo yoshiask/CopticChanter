@@ -219,7 +219,7 @@ partial class CopticFont
         Dictionary<string, string> alphabet = new()
         {
             // Key is Coptic Standard
-            // Value is Coptic unicode
+            // Value is Coptic Unicode
 
             #region Uppercase
             { "A", "Ⲁ" },

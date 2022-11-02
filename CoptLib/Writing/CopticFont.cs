@@ -17,7 +17,6 @@ namespace CoptLib.Writing
         public string Name;
         public string FontName;
         public Dictionary<string, string> Charmap = new();
-        public char JenkimCharacter;
         public bool IsJenkimBefore = true;
         public bool IsCopticStandard = true;
 
@@ -33,13 +32,13 @@ namespace CoptLib.Writing
             target ??= CopticUnicode;
 
             // No need to convert
-            if (this == target)
+            if (this == target || this.IsCopticStandard == target.IsCopticStandard)
                 return input;
 
             string output = "";
 
             // Generate a dictionary that has the start mapping as keys and the target mapping as values
-            Dictionary<string, string> mergedMap = new Dictionary<string, string>();
+            Dictionary<string, string> mergedMap = new();
             var sourceMap = DictionaryTools.SwitchColumns(Charmap);
             foreach (KeyValuePair<string, string> spair in sourceMap)
             {
@@ -50,84 +49,18 @@ namespace CoptLib.Writing
                 }
             }
 
-            /*foreach (KeyValuePair<string, string> tpair in target.Charmap)
+            // Apply mapping
+            foreach (char ch in input)
             {
-                if (!mergedMap.ContainsValue(tpair.Key))
-                {
-                    var targetChar = target.Charmap[tpair.Key];
-                    mergedMap.Add(tpair.Key, targetChar);
-                }
-            }*/
-
-            if (IsJenkimBefore)
-            {
-                bool accent = false;
-                foreach (char ch in input)
-                {
-                    if (mergedMap.ContainsKey(ch.ToString()))
-                    {
-                        // Find the source character in the target mapping and write it
-                        if (ch == JenkimCharacter)
-                        {
-                            // The character is an accent; save that for later
-                            accent = true;
-                        }
-                        else
-                        {
-                            output += mergedMap[ch.ToString()];
-                            if (accent)
-                            {
-                                // It's time to write the accent
-                                output += target.JenkimCharacter;
-                                accent = false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Character is not in the character map, so leave it be
-                        output += ch.ToString();
-                        if (accent)
-                        {
-                            output += target.JenkimCharacter;
-                            accent = false;
-                        }
-                    }
-                }
-                //return output;
+                if (!mergedMap.TryGetValue(ch.ToString(), out var targetCh))
+                    targetCh = ch.ToString();
+                output += targetCh;
             }
-            else
+
+            // Swap jenkim position if required
+            if (this.IsJenkimBefore != target.IsJenkimBefore)
             {
-                bool accent = false;
-                foreach (char ch in input)
-                {
-                    if (mergedMap.ContainsKey(ch.ToString()))
-                    {
-                        if (ch == JenkimCharacter)
-                        {
-                            accent = true;
-                        }
-                        else
-                        {
-                            output += mergedMap[ch.ToString()];
-                            if (accent)
-                            {
-                                output += target.JenkimCharacter;
-                                accent = false;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        output += ch.ToString();
-                        if (accent)
-                        {
-                            output += target.JenkimCharacter;
-                            accent = false;
-                        }
-                    }
-                }
-                //return output;
+                output = SwapJenkimPosition(output, target.Charmap["`"][0], this.IsJenkimBefore);
             }
 
             return output;
@@ -176,12 +109,78 @@ namespace CoptLib.Writing
         /// <returns>
         /// <see langword="true"/> if the fond was found, <see langword="false"/> if not.
         /// </returns>
-
         public static bool TryFindFont(string fontName, out CopticFont font)
         {
             font = FindFont(fontName);
             return font != null;
         }
+
+        /// <summary>
+        /// Swaps the position of all jenkims, placing them either before or after the target letter.
+        /// </summary>
+        /// <param name="jenkim">
+        /// The character that represents a jenkim.
+        /// </param>
+        /// <param name="text">
+        /// The text to modify.
+        /// </param>
+        /// <param name="isJenkimBefore">
+        /// Whether <paramref name="text"/> has jenkims before the target letter.
+        /// </param>
+        /// <returns>
+        /// Text similar to the input, but with the jenkim position reversed.
+        /// </returns>
+        public static string SwapJenkimPosition(string text, char jenkim, bool isJenkimBefore)
+        {
+            // Adjust bounds depending on look-ahead or look-behind
+            int i = isJenkimBefore ? 0 : 1;
+            int endIdx = isJenkimBefore ? text.Length - 1 : text.Length;
+            int look = isJenkimBefore ? 1 : -1;
+
+            // Save text to char array
+            var chars = text.ToCharArray();
+            string output = text;
+
+            for (; i < endIdx; i++)
+            {
+                char ch = chars[i];
+                if (jenkim != ch)
+                    continue;
+
+                // Look at the target character
+                char chLook = text[i + look];
+
+                // Swap letters
+                chars[i] = chLook;
+                chars[i += look] = ch;
+
+                output = new(chars);
+            }
+
+            return new(chars);
+        }
+
+        /// <summary>
+        /// Swaps the position of all jenkims, placing them either before or after the target letter.
+        /// </summary>
+        /// <param name="text">
+        /// The text to modify.
+        /// </param>
+        /// <param name="font">
+        /// The font to convert with.
+        /// </param>
+        /// <returns>
+        /// Text similar to the input, but with the jenkim position reversed.
+        /// </returns>
+        /// <remarks>
+        /// Note that calling this overload more than once may result in some odd results.
+        /// </remarks>
+        public static string SwapJenkimPosition(string text, CopticFont font)
+            => SwapJenkimPosition(text, font.Charmap["`"][0], font.IsJenkimBefore);
+
+        /// <inheritdoc cref="SwapJenkimPosition(string, CopticFont)"/>
+        public static string SwapJenkimPosition(string text, string fontName)
+            => SwapJenkimPosition(text, FindFont(fontName) ?? CopticUnicode);
 
         /// <summary>
         /// Reads Font Pack from file. Also adds to imported list of the current instance.

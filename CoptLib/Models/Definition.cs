@@ -38,7 +38,7 @@ namespace CoptLib.Models
         public object DefaultValue { get; set; }
     }
 
-    public class String : Definition
+    public class String : Definition, IMultilingual
     {
         [XmlText]
         public string Value { get; set; }
@@ -48,5 +48,16 @@ namespace CoptLib.Models
 
         [XmlAttribute]
         public string Font { get; set; }
+
+        public bool Handled { get; protected set; }
+
+        public void HandleFont()
+        {
+            if (!Handled && CopticFont.TryFindFont(Font, out var font))
+            {
+                Value = font.Convert(Value);
+                Handled = true;
+            }
+        }
     }
 }

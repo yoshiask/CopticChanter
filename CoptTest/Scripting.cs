@@ -1,4 +1,5 @@
 ﻿using CoptLib;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
@@ -42,7 +43,7 @@ namespace CoptTest
         {
             const Language lang = Language.Coptic;
             const string subtext = "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ";
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"This is some English, \\language{{{lang}}}{{{subtext}}}.", _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"Bless the Lord, \\language{{{lang}}}{{{subtext}}}.", _doc, out var result);
 
             Assert.Equal($"Bless the Lord, {subtext}.", result);
 
@@ -61,7 +62,7 @@ namespace CoptTest
             const string font = "CS Avva Shenouda";
             const string subtext = "Eulogon ton Kurion";
             const string convSubtext = "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ";
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"This is some English, \\language{{{lang}:{font}}}{{{subtext}}}.", _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"Bless the Lord, \\language{{{lang}:{font}}}{{{subtext}}}.", _doc, out var result);
 
             Assert.Equal($"Bless the Lord, {convSubtext}.", result);
 
@@ -83,6 +84,8 @@ namespace CoptTest
             const string preText = "Howdy! Here's some text from a definition: '";
             const string postText = "'.\r\nAlong with some text after.";
             Language lang = language ?? Language.Default;
+            parsedValue ??= value;
+
             _doc.Definitions = new()
             {
                 new String()
@@ -94,16 +97,17 @@ namespace CoptTest
                     Language = lang
                 }
             };
+            DocReader.ApplyDocTransforms(_doc);
 
             var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(preText + $"\\def{{{key}}}" + postText, _doc, out var result);
 
-            Assert.Equal($"{preText}{value}{postText}", result);
+            Assert.Equal($"{preText}{parsedValue}{postText}", result);
 
             var cmd = cmds.Single();
             var defCmd = Assert.IsType<DefinitionCmd>(cmd);
             var def = Assert.IsType<String>(defCmd.Definition);
 
-            Assert.Equal(defCmd.Text, parsedValue ?? value);
+            Assert.Equal(defCmd.Text, parsedValue);
             Assert.Equal(def.Language, lang);
             Assert.Equal(def.Font, font);
         }

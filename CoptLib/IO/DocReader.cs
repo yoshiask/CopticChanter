@@ -142,16 +142,9 @@ namespace CoptLib.IO
                     }
 
                     if (def != null)
-                        def.DocContext = doc;
-
-                    if (def is IContent defContent)
-                        defContent.ParseCommands();
-                    if (def is IMultilingual multilingual)
-                        multilingual.HandleFont();
-
-                    if (def != null)
                     {
                         def.Key = defElem.Attribute("Key")?.Value;
+                        def.DocContext = doc;
                         doc.Definitions.Add(def);
                     }
                 }
@@ -164,16 +157,39 @@ namespace CoptLib.IO
                     Font = transElem.Attribute("Font")?.Value,
                     Language = (Language)Enum.Parse(typeof(Language),
                         transElem.Attribute("Language")?.Value),
+                    Parent = doc
                 };
-                translation.Content = ParseContentParts(transElem.Elements(), translation, doc);
+
+                translation.Content = ParseContentParts(transElem.Elements(), translation);
                 doc.Translations.Add(translation);
             }
 
             return doc;
         }
 
-        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation, Doc doc)
+        /// <summary>
+        /// Parses text commands and applies font conversions in the given document.
+        /// </summary>
+        /// <param name="doc">The document to apply all transforms on.</param>
+        public static void ApplyDocTransforms(Doc doc)
         {
+            foreach (Definition def in doc.Definitions)
+            {
+                if (def is IContent defContent)
+                    defContent.ParseCommands();
+                if (def is IMultilingual multilingual)
+                    multilingual.HandleFont();
+            }
+
+            foreach (Translation translation in doc.Translations)
+            {
+                TransformContentParts(translation.Content, translation);
+            }
+        }
+
+        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation)
+        {
+            var doc = translation.Parent;
             var content = new List<ContentPart>(elements.Count());
 
             foreach (XElement contentElem in elements)
@@ -194,29 +210,41 @@ namespace CoptLib.IO
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
-                    _ = Scripting.Scripting.ParseTextCommands(contentElem.Attribute("Title")?.Value, doc, out var title);
-
                     part = new Section(translation)
                     {
                         Key = contentElem.Attribute("Key")?.Value,
-                        Title = title,
-                        Content = ParseContentParts(contentElem.Elements(), translation, doc)
+                        Title = contentElem.Attribute("Title")?.Value,
+                        Content = ParseContentParts(contentElem.Elements(), translation)
                     };
                 }
 
                 if (part != null)
-                    part.DocContext = doc;
+                {
+                    part.DocContext = translation.Parent;
+                    content.Add(part);
+                }
+            }
+
+            return content;
+        }
+
+        private static void TransformContentParts(IEnumerable<ContentPart> parts, Translation translation)
+        {
+            var doc = translation.Parent;
+
+            foreach (ContentPart part in parts)
+            {
+                if (part is Section section && section.Title != null)
+                {
+                    _ = Scripting.Scripting.ParseTextCommands(section.Title, doc, out var title);
+                    section.Title = title;
+                }
 
                 if (part is IContent partContent)
                     partContent.ParseCommands();
                 if (part is IMultilingual multilingual)
                     multilingual.HandleFont();
-                
-                if (part != null)
-                    content.Add(part);
             }
-
-            return content;
         }
     }
 }

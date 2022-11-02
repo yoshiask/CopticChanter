@@ -76,7 +76,10 @@ namespace CoptLib.Models
         public override void HandleFont()
         {
             if (!Handled && CopticFont.TryFindFont(Font, out var font))
+            {
                 Text = font.Convert(Text);
+                Handled = true;
+            }
         }
 
         public void ParseCommands()
@@ -86,6 +89,7 @@ namespace CoptLib.Models
 
             Commands = Scripting.Scripting.ParseTextCommands(SourceText, Parent.Parent, out var text);
             Text = text;
+            HasBeenParsed = true;
         }
 
         public override string ToString() => SourceText;
