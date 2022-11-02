@@ -33,7 +33,8 @@ namespace CopticChanter.Helpers
                     break;
 
                 case Language.Coptic:
-                    // TextBlock doesn't seem to know where to break Coptic (Unicode?)
+                case Language.Greek:
+                    // TextBlock doesn't seem to know where to break Greek or Coptic Unicode
                     // lines, so insert a zero-width space at every space so
                     // word wrap actually works
                     if (!contentBlock.Text.Contains('\u200B'))
@@ -142,9 +143,6 @@ namespace CopticChanter.Helpers
                 int i = 0;
                 foreach (ContentPart part in translation.Content)
                 {
-                    if (part is IContent content && !content.HasBeenParsed)
-                        content.ParseCommands();
-
                     switch (part)
                     {
                         case Stanza stanza:
@@ -169,5 +167,4 @@ namespace CopticChanter.Helpers
             return MainGrid;
         }
     }
-
 }

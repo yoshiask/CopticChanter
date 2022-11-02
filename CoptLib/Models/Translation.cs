@@ -18,11 +18,6 @@ namespace CoptLib.Models
         [XmlIgnore]
         public Doc Parent { get; set; }
 
-        /// <summary>
-        /// Returns the number of rows this translation requires to display
-        /// all section headers and stanzas
-        /// </summary>
-        /// <returns></returns>
         public int CountRows()
         {
             int count = 0;

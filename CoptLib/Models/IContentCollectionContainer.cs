@@ -9,6 +9,10 @@ namespace CoptLib.Models
     {
         List<ContentPart> Content { get; set; }
 
+        /// <summary>
+        /// Returns the number of rows this section requires to display
+        /// all section headers and stanzas
+        /// </summary>
         int CountRows();
     }
 }

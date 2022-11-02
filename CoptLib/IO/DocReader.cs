@@ -95,9 +95,9 @@ namespace CoptLib.IO
         {
             var xml = XDocument.Parse(xmlText);
 
-            // The actual content can't be deserialized, so it needs to be manually parsed
+            // The actual content can't be directly deserialized, so it needs to be manually parsed
 
-            Doc doc = new Doc()
+            Doc doc = new()
             {
                 Name = xml.Root.Element("Name")?.Value,
                 Uuid = xml.Root.Element("Uuid")?.Value,
@@ -113,7 +113,7 @@ namespace CoptLib.IO
 
                     if (defElemName == nameof(Script))
                     {
-                        var script = new Script()
+                        Script script = new()
                         {
                             LuaScript = defElem.Value
                         };
@@ -121,7 +121,7 @@ namespace CoptLib.IO
                     }
                     else if (defElemName == nameof(Variable))
                     {
-                        var variable = new Variable()
+                        Variable variable = new()
                         {
                             Label = defElem.Attribute("Label")?.Value,
                             DefaultValue = defElem.Attribute("DefaultValue")?.Value,
@@ -131,27 +131,26 @@ namespace CoptLib.IO
                     }
                     else if (defElemName == nameof(Models.String))
                     {
-                        var _string = new Models.String()
+                        Models.String _string = new()
                         {
                             Value = defElem.Value,
                             Font = defElem.Attribute("Font")?.Value,
                             Language = (Language)Enum.Parse(typeof(Language),
                                 defElem.Attribute("Language")?.Value ?? "Default"),
                         };
-
-                        if (_string.Language == Language.Coptic && _string.Font != null)
-                        {
-                            // Coptic text needs to be interpreted before it can be displayed
-                            var font = CopticFont.FindFont(_string.Font);
-                            _string.Value = font.Convert(_string.Value);
-                        }
-
                         def = _string;
                     }
 
                     if (def != null)
-                    {
                         def.DocContext = doc;
+
+                    if (def is IContent defContent)
+                        defContent.ParseCommands();
+                    if (def is IMultilingual multilingual)
+                        multilingual.HandleFont();
+
+                    if (def != null)
+                    {
                         def.Key = defElem.Attribute("Key")?.Value;
                         doc.Definitions.Add(def);
                     }
@@ -160,7 +159,7 @@ namespace CoptLib.IO
 
             foreach (XElement transElem in xml.Root.Element("Translations").Elements())
             {
-                Translation translation = new Translation()
+                Translation translation = new()
                 {
                     Font = transElem.Attribute("Font")?.Value,
                     Language = (Language)Enum.Parse(typeof(Language),
@@ -179,84 +178,45 @@ namespace CoptLib.IO
 
             foreach (XElement contentElem in elements)
             {
+                ContentPart part = null;
+
+                // TODO: Use reflection and interfaces to reduce code duplication?
                 if (contentElem.Name == nameof(Stanza))
                 {
-                    var stanza = new Stanza(translation)
+                    part = new Stanza(translation)
                     {
                         Language = (Language)Enum.Parse(typeof(Language),
                             contentElem.Attribute("Language")?.Value ?? translation.Language.ToString()),
-                        Key = contentElem.Attribute("Key")?.Value
+                        Font = contentElem.Attribute("Font")?.Value ?? translation.Font,
+                        Key = contentElem.Attribute("Key")?.Value,
+                        SourceText = contentElem.Value
                     };
-
-                    if (stanza.Language == Language.Coptic && translation.Font != null)
-                    {
-                        // Coptic text needs to be interpreted before it can be displayed
-                        var font = CopticFont.FindFont(translation.Font);
-                        stanza.SourceText = font.Convert(contentElem.Value);
-                        stanza.DocContext = doc;
-                    }
-                    else
-                    {
-                        stanza.SourceText = contentElem.Value;
-                    }
-
-                    stanza.ParseCommands();
-
-                    content.Add(stanza);
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
                     _ = Scripting.Scripting.ParseTextCommands(contentElem.Attribute("Title")?.Value, doc, out var title);
 
-                    var section = new Section(translation)
+                    part = new Section(translation)
                     {
                         Key = contentElem.Attribute("Key")?.Value,
                         Title = title,
                         Content = ParseContentParts(contentElem.Elements(), translation, doc)
                     };
-                    content.Add(section);
                 }
+
+                if (part != null)
+                    part.DocContext = doc;
+
+                if (part is IContent partContent)
+                    partContent.ParseCommands();
+                if (part is IMultilingual multilingual)
+                    multilingual.HandleFont();
+                
+                if (part != null)
+                    content.Add(part);
             }
 
             return content;
-        }
-
-        public static string ResolveReference(string valueString, Doc doc)
-        {
-            if (valueString.StartsWith("{") && valueString.EndsWith("}"))
-            {
-                string[] parts = valueString.Substring(1, valueString.Length - 2).Split(' ');
-                if (parts.Length < 2)
-                {
-                    return valueString;
-                }
-                else
-                {
-                    // Find the element with the given key in the doc's definitions
-                    Models.String refValue = doc.Definitions.Find(def => def.Key == parts[1] && def is Models.String) as Models.String;
-                    if (refValue != null)
-                    {
-                        if (refValue.Language == Language.Coptic && refValue.Font != null)
-                        {
-                            // Coptic text needs to be interpreted before it can be displayed
-                            var font = CopticFont.FindFont(refValue.Font);
-                            return font.Convert(refValue.Value);
-                        }
-                        else
-                        {
-                            return refValue.Value;
-                        }
-                    }
-                    else
-                    {
-                        return valueString;
-                    }
-                }
-            }
-            else
-            {
-                return valueString;
-            }
         }
     }
 }

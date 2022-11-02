@@ -1,5 +1,6 @@
 ﻿using CoptLib.Scripting;
 using CoptLib.Writing;
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -8,7 +9,7 @@ namespace CoptLib.Models
     /// <summary>
     /// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
     /// </summary>
-    public abstract class ContentPart : Definition
+    public abstract class ContentPart : Definition, IMultilingual
     {
         public ContentPart(Translation parent)
         {
@@ -35,6 +36,11 @@ namespace CoptLib.Models
 
         [XmlIgnore]
         public Translation Parent { get; set; }
+
+        [XmlIgnore]
+        public bool Handled { get; protected set; }
+
+        public abstract void HandleFont();
     }
 
     public class Stanza : ContentPart, IContent
@@ -53,7 +59,10 @@ namespace CoptLib.Models
             set
             {
                 if (_sourceText != value)
+                {
                     HasBeenParsed = false;
+                    Handled = false;
+                }
                 _sourceText = value;
             }
         }
@@ -63,6 +72,12 @@ namespace CoptLib.Models
         public string Text { get; private set; }
 
         public List<TextCommandBase> Commands { get; private set; }
+
+        public override void HandleFont()
+        {
+            if (!Handled && CopticFont.TryFindFont(Font, out var font))
+                Text = font.Convert(Text);
+        }
 
         public void ParseCommands()
         {
@@ -89,11 +104,6 @@ namespace CoptLib.Models
         [XmlAttribute]
         public string Title { get; set; }
 
-        /// <summary>
-        /// Returns the number of rows this section requires to display
-        /// all section headers and stanzas
-        /// </summary>
-        /// <returns></returns>
         public int CountRows()
         {
             int count = 0;
@@ -105,6 +115,15 @@ namespace CoptLib.Models
                     count += section.CountRows() + 1;
             }
             return count;
+        }
+
+        public override void HandleFont()
+        {
+            if (Handled)
+                return;
+
+            foreach (ContentPart part in Content)
+                part.HandleFont();
         }
     }
 }
