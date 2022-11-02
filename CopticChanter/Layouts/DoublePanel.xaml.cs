@@ -45,76 +45,16 @@ namespace CopticChanter.Layouts
                 {
                     if (translation.Language == args.Language1)
                     {
-                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromContentCollectionContainer(translation))
                             ContentPanelLeft.Children.Add(element);
                     }
                     else if (translation.Language == args.Language2)
                     {
-                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromContentCollectionContainer(translation))
                             ContentPanelRight.Children.Add(element);
                     }
                 }
             }
-
-            #region Right
-            //switch (args.Language2)
-            //{
-            //    #region English
-            //    case Language.English:
-            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == Language.English))
-            //        {
-            //            foreach (string content in doc.Content)
-            //            {
-            //                var contentBlockE = new TextBlock
-            //                {
-            //                    Text = content,
-            //                    FontFamily = Common.Segoe,
-            //                    FontSize = Common.GetEnglishFontSize(),
-            //                    TextWrapping = TextWrapping.Wrap,
-            //                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-            //                };
-            //                ContentPanelRight.Children.Add(contentBlockE);
-            //            }
-            //        }
-            //        break;
-            //    #endregion
-
-            //    #region Coptic
-            //    case Language.Coptic:
-            //        foreach (CoptLib.XML.Doc doc in Common.Docs.Where(d => d.Language == Language.Coptic))
-            //        {
-            //            foreach (string content in doc.Content)
-            //            {
-            //                string cont = CopticInterpreter.ConvertFont(content, CopticFont.CsAvvaShenouda, CopticFont.CopticUnicode);
-            //                var contentBlockC = new TextBlock
-            //                {
-            //                    Text = cont.Replace(" ", " \u200B"),
-            //                    FontFamily = Common.Segoe,
-            //                    FontSize = Common.GetCopticFontSize(),
-            //                    TextWrapping = TextWrapping.Wrap,
-            //                    Foreground = new SolidColorBrush(args.ForeColor.ToUiColor())
-            //                };
-            //                ContentPanelRight.Children.Add(contentBlockC);
-            //            }
-            //        }
-            //        break;
-            //    #endregion
-
-            //    #region Arabic
-            //    // TODO: Support Arabic text
-            //    case Language.Arabic:
-            //        var contentBlockA = new TextBlock
-            //        {
-            //            Text = "\n",
-            //            FontFamily = Common.Segoe,
-            //            FontSize = 40,
-            //            TextWrapping = TextWrapping.WrapWholeWords
-            //        };
-            //        ContentPanelRight.Children.Add(contentBlockA);
-            //        break;
-            //        #endregion
-            //}
-            #endregion
 
             base.OnNavigatedTo(e);
         }

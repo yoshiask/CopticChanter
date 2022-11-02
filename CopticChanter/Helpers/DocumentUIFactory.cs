@@ -1,76 +1,56 @@
-﻿using CoptLib;
-using CoptLib.Models;
+﻿using CoptLib.Models;
+using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 
 namespace CopticChanter.Helpers
 {
     public static class DocumentUIFactory
     {
-        [System.Obsolete]
-        public static List<TextBlock> CreateBlocksFromTranslation(Translation translation, Color foreground)
+        public static TextBlock CreateBlockFromStanza(Stanza stanza)
         {
-            var blocks = new List<TextBlock>();
-            foreach (ContentPart part in translation.Content)
-            {
-                if (part is Stanza stanza)
-                {
-                    blocks.Add(CreateBlockFromStanza(stanza, translation.Language, foreground));
-                }
-            }
-            return blocks;
-        }
-
-        public static TextBlock CreateBlockFromStanza(Stanza stanza, Language translationLanguage, Color foreground)
-        {
-            TextBlock contentBlock;
-
             if (stanza.Language == Language.Default)
-                stanza.Language = translationLanguage;
+                stanza.Language = stanza.Parent.Language;
+
+            var contentBlock = new TextBlock
+            {
+                Text = stanza.Text,
+                FontFamily = Common.GetFontFamily(stanza.Language),
+                FontSize = Common.GetFontSize(stanza.Language),
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Left
+            };
 
             switch (stanza.Language)
             {
-                #region Arabic
                 case Language.Arabic:
-                    contentBlock = new TextBlock
-                    {
-                        Text = stanza.Text,
-                        FontFamily = Common.Segoe,
-                        FontSize = Common.GetEnglishFontSize(),
-                        TextWrapping = TextWrapping.Wrap,
-                        TextAlignment = TextAlignment.Right,
-                        Foreground = new SolidColorBrush(foreground)
-                    };
+                case Language.Aramaic:
+                case Language.Hebrew:
+                    contentBlock.TextAlignment = TextAlignment.Right;
                     break;
-                #endregion
 
-                default:
-                    contentBlock = new TextBlock
-                    {
-                        Text = stanza.Text,
-                        FontFamily = Common.Segoe,
-                        FontSize = Common.GetEnglishFontSize(),
-                        TextWrapping = TextWrapping.Wrap,
-                        Foreground = new SolidColorBrush(foreground)
-                    };
+                case Language.Coptic:
+                    // TextBlock doesn't seem to know where to break Coptic (Unicode?)
+                    // lines, so insert a zero-width space at every space so
+                    // word wrap actually works
+                    if (!contentBlock.Text.Contains('\u200B'))
+                        contentBlock.Text = contentBlock.Text.Replace(" ", " \u200B");
                     break;
             }
 
             return contentBlock;
         }
 
-        public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container, Language translationLanguage, Color foreground)
-		{
+        public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container)
+        {
             var blocks = new List<TextBlock>(container.Content.Count + 1);
 
             if (container is Section section)
-			{
-                var headerBlock = CreateSubheader(section.Title, foreground);
+            {
+                var headerBlock = CreateSubheader(section.Title);
                 blocks.Add(headerBlock);
             }
 
@@ -79,33 +59,32 @@ namespace CopticChanter.Helpers
                 switch (part)
                 {
                     case Stanza stanza:
-                    {
-                        var block = CreateBlockFromStanza(stanza, translationLanguage, foreground);
-                        blocks.Add(block);
-                        break;
-                    }
+                        {
+                            var block = CreateBlockFromStanza(stanza);
+                            blocks.Add(block);
+                            break;
+                        }
                     case Section subsection:
-                    {
-                        var subblocks = CreateBlocksFromContentCollectionContainer(subsection, translationLanguage, foreground);
-                        blocks.AddRange(subblocks);
-                        break;
-                    }
+                        {
+                            var subblocks = CreateBlocksFromContentCollectionContainer(subsection);
+                            blocks.AddRange(subblocks);
+                            break;
+                        }
                 }
             }
 
             return blocks;
         }
 
-        public static TextBlock CreateHeader(string title, Color foreground, bool addPadding = true)
+        public static TextBlock CreateHeader(string title, bool addPadding = true)
         {
             var headerBlock = new TextBlock
             {
                 Text = title,
-                FontFamily = Common.Segoe,
+                FontFamily = Common.GetFontFamily(Language.Default),
+                FontSize = Common.GetFontSize(Language.Default),
                 FontWeight = FontWeights.Bold,
-                FontSize = Common.GetEnglishFontSize() * 1.25,
-                TextWrapping = TextWrapping.Wrap,
-                Foreground = new SolidColorBrush(foreground)
+                TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)
             {
@@ -116,16 +95,15 @@ namespace CopticChanter.Helpers
             return headerBlock;
         }
 
-        public static TextBlock CreateSubheader(string title, Color foreground, bool addPadding = true)
+        public static TextBlock CreateSubheader(string title, bool addPadding = true)
         {
             var headerBlock = new TextBlock
             {
                 Text = title,
-                FontFamily = Common.Segoe,
+                FontFamily = Common.GetFontFamily(Language.Default),
+                FontSize = Common.GetFontSize(Language.Default),
                 FontWeight = FontWeights.SemiBold,
-                FontSize = Common.GetEnglishFontSize(),
-                TextWrapping = TextWrapping.Wrap,
-                Foreground = new SolidColorBrush(foreground)
+                TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)
             {
@@ -136,9 +114,10 @@ namespace CopticChanter.Helpers
             return headerBlock;
         }
 
-        public static Grid CreateGridFromDoc(Doc doc, Color foreground)
-		{
+        public static Grid CreateGridFromDoc(Doc doc)
+        {
             Grid MainGrid = new Grid();
+            MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
             int lastRow = 0;
 
             // Create a column for each language requested
@@ -147,33 +126,36 @@ namespace CopticChanter.Helpers
 
             // Create rows for each stanza
             // Don't forget one for each header too
-            int numRows = doc.Translations.Max(t => t.CountRows());
+            int numRows = doc.Translations?.Max(t => t.CountRows()) ?? 0;
             for (int i = 0; i <= numRows; i++)
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
-            var headerBlock = CreateHeader(doc.Name, foreground, lastRow != 0);
+            var headerBlock = CreateHeader(doc.Name, lastRow != 0);
             MainGrid.Children.Add(headerBlock);
             Grid.SetColumnSpan(headerBlock, doc.Translations.Count);
             Grid.SetRow(headerBlock, lastRow++);
 
             for (int t = 0; t < doc.Translations.Count; t++)
-			{
+            {
                 Translation translation = doc.Translations[t];
 
                 int i = 0;
                 foreach (ContentPart part in translation.Content)
                 {
+                    if (part is IContent content && !content.HasBeenParsed)
+                        content.ParseCommands();
+
                     switch (part)
-					{
+                    {
                         case Stanza stanza:
-                            var stanzaBlock = CreateBlockFromStanza(stanza, translation.Language, foreground);
+                            var stanzaBlock = CreateBlockFromStanza(stanza);
                             MainGrid.Children.Add(stanzaBlock);
                             Grid.SetColumn(stanzaBlock, t);
                             Grid.SetRow(stanzaBlock, lastRow + i++);
                             break;
 
                         case Section section:
-                            var blocks = CreateBlocksFromContentCollectionContainer(section, translation.Language, foreground);
+                            var blocks = CreateBlocksFromContentCollectionContainer(section);
                             foreach (TextBlock block in blocks)
                             {
                                 MainGrid.Children.Add(block);
@@ -187,4 +169,5 @@ namespace CopticChanter.Helpers
             return MainGrid;
         }
     }
+
 }

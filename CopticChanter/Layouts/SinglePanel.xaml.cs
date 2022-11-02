@@ -46,7 +46,7 @@ namespace CopticChanter.Layouts
                 {
                     if (translation.Language == args.Language)
                     {
-                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromTranslation(translation, args.ForeColor))
+                        foreach (UIElement element in DocumentUIFactory.CreateBlocksFromContentCollectionContainer(translation))
                             ContentPanel.Children.Add(element);
                     }
                 }

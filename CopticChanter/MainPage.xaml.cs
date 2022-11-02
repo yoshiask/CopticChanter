@@ -1,4 +1,5 @@
 ﻿using CoptLib;
+using CoptLib.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace CopticChanter
                     foreach (StorageFile file in files)
                     {
                         Debug.WriteLine(file.Path);
-                        var doc = CopticInterpreter.ReadDocXml(file.Path);
+                        var doc = DocReader.ReadDocXml(file.Path);
                         Common.Docs.Add(doc);
                         Debug.WriteLine(doc.Name);
                     }
@@ -81,7 +82,7 @@ namespace CopticChanter
 
             StorageFile file = await picker.PickSingleFileAsync();
 
-            var doc = CopticInterpreter.ReadDocXml(file.Path);
+            var doc = DocReader.ReadDocXml(file.Path);
             if (string.IsNullOrWhiteSpace(OutputBox.Text))
                 InputBox.Text += doc.Translations[0];
         }

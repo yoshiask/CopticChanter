@@ -37,11 +37,12 @@ namespace CopticChanter.Layouts
             ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             Background = new SolidColorBrush(args.BackColor);
+            Foreground = new SolidColorBrush(args.ForeColor);
 
             // Populate the columns with translations and rows with stanzas
             foreach (Doc doc in Common.Docs)
             {
-                Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc, args.ForeColor);
+                Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc);
                 MainPanel.Children.Add(MainGrid);
             }
 

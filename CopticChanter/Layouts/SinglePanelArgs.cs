@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.UI;
-using CoptLib;
+using CoptLib.Writing;
 
 namespace CopticChanter.Layouts
 {
@@ -20,7 +20,7 @@ namespace CopticChanter.Layouts
         public SinglePanelArgs(Language[] langs, Color bcolor, Color fcolor)
         {
             if (langs.Length < 2)
-                throw new ArgumentException("One languages must be specified for DoublePanel");
+                throw new ArgumentException("One language must be specified for SinglePanel");
 
             Language = langs[0];
             BackColor = bcolor;
@@ -30,7 +30,7 @@ namespace CopticChanter.Layouts
         public SinglePanelArgs(Color bcolor, Color fcolor, params Language[] langs)
         {
             if (langs.Length < 2)
-                throw new ArgumentException("Two languages must be specified for DoublePanel");
+                throw new ArgumentException("One language must be specified for SinglePanel");
 
             Language = langs[0];
             BackColor = bcolor;

@@ -6,6 +6,8 @@ using Windows.UI;
 using System.Diagnostics;
 using CoptLib;
 
+using CLLanguage = CoptLib.Writing.Language;
+
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace CopticChanter
@@ -19,14 +21,14 @@ namespace CopticChanter
         {
             this.InitializeComponent();
 
-            EFontSizeBox.Text = Common.GetEnglishFontSize().ToString();
-            CFontSizeBox.Text = Common.GetCopticFontSize().ToString();
+            EFontSizeBox.Text = Common.GetFontSize(CLLanguage.English).ToString();
+            CFontSizeBox.Text = Common.GetFontSize(CLLanguage.Coptic).ToString();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Common.SetEnglishFontSize(Convert.ToInt32(EFontSizeBox.Text));
-            Common.SetCopticFontSize(Convert.ToInt32(CFontSizeBox.Text));
+            Common.SetFontSize(CLLanguage.English, Convert.ToInt32(EFontSizeBox.Text));
+            Common.SetFontSize(CLLanguage.Coptic, Convert.ToInt32(CFontSizeBox.Text));
 
             Frame.Navigate(typeof(MainPage));
         }

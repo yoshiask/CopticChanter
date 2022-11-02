@@ -8,6 +8,7 @@ using Windows.Storage;
 using System.Diagnostics;
 using CoptLib;
 using Windows.UI;
+using CoptLib.IO;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -121,42 +122,6 @@ namespace CopticChanter
 
                 Frame.Navigate(typeof(FilesPage));
             }
-
-            // Check version for Fluent Design
-            try
-            {
-                if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
-                {
-					AcrylicBrush backBrush = new AcrylicBrush
-					{
-						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-						TintColor = Color.FromArgb(255, 246, 246, 246),
-						FallbackColor = Color.FromArgb(255, 246, 246, 246),
-						TintOpacity = 0.6
-					};
-					MainGrid.Background = backBrush;
-
-					AcrylicBrush barBrush = new AcrylicBrush
-					{
-						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-						TintColor = Common.GetAccentBrush().Color,
-						FallbackColor = Common.GetAccentBrush().Color,
-						TintOpacity = 0.6
-					};
-					BottomBar.Background = barBrush;
-                }
-                else
-                {
-                    SolidColorBrush backBrush = new SolidColorBrush(Color.FromArgb(255, 246, 246, 246));
-                    MainGrid.Background = backBrush;
-
-                    BottomBar.Background = Common.GetAccentBrush();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
         }
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -185,7 +150,7 @@ namespace CopticChanter
         private void ImportDoc(StorageFile file)
 		{
             Debug.WriteLine(file.Path);
-            var doc = CopticInterpreter.ReadDocXml(file.Path);
+            var doc = DocReader.ReadDocXml(file.Path);
 
             FileView.Items.Add(new ListViewItem()
             {

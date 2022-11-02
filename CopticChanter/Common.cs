@@ -150,112 +150,39 @@ namespace CopticChanter
 
         public static int GetFontSize(Language lang)
         {
-            switch (lang) {
-                case Language.English:
-                    if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-e"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-e", 40);
-                    }
-                    return (int)ApplicationData.Current.LocalSettings.Values["font-size-e"];
+            string key = $"font-size-{lang}";
+            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
+                ApplicationData.Current.LocalSettings.Values.Add(key, 40);
 
-                case Language.Coptic:
-                    if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-c"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-c", 40);
-                    }
-                    return (int)ApplicationData.Current.LocalSettings.Values["font-size-c"];
-
-                case Language.Arabic:
-                    if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-a"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-a", 40);
-                    }
-                    return (int)ApplicationData.Current.LocalSettings.Values["font-size-a"];
-
-                default:
-                    return 40;
-            }
+            return (int)ApplicationData.Current.LocalSettings.Values[key];
         }
 
         public static void SetFontSize(Language lang, int size)
         {
-            switch (lang)
-            {
-                case Language.English:
-                    if (ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-e"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values["font-size-e"] = size;
-                    }
-                    else
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-e", size);
-                    }
-                    break;
-
-                case Language.Coptic:
-                    if (ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-c"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values["font-size-c"] = size;
-                    }
-                    else
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-c", size);
-                    }
-                    break;
-
-                case Language.Arabic:
-                    if (ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-a"))
-                    {
-                        ApplicationData.Current.LocalSettings.Values["font-size-a"] = size;
-                    }
-                    else
-                    {
-                        ApplicationData.Current.LocalSettings.Values.Add("font-size-a", size);
-                    }
-                    break;
-            }
-        }
-
-        public static void SetEnglishFontSize(int size)
-        {
-            if (ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-e"))
-            {
-                ApplicationData.Current.LocalSettings.Values["font-size-e"] = size;
-            }
+            string key = $"font-size-{lang}";
+            if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
+                ApplicationData.Current.LocalSettings.Values[key] = size;
             else
-            {
-                ApplicationData.Current.LocalSettings.Values.Add("font-size-e", size);
-            }
+                ApplicationData.Current.LocalSettings.Values.Add(key, size);
         }
 
-        public static int GetEnglishFontSize()
+        public static FontFamily GetFontFamily(Language lang)
         {
-            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-e"))
-            {
-                ApplicationData.Current.LocalSettings.Values.Add("font-size-e", 40);
-            }
-            return (int)ApplicationData.Current.LocalSettings.Values["font-size-e"];
+            string key = $"font-family-{lang}";
+            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
+                ApplicationData.Current.LocalSettings.Values.Add(key, Segoe.Source);
+
+            string familyName = (string)ApplicationData.Current.LocalSettings.Values[key];
+            return new FontFamily(familyName);
         }
 
-        public static void SetCopticFontSize(int size)
+        public static void SetFontFamily(Language lang, string familyName)
         {
-            if (ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-c"))
-            {
-                ApplicationData.Current.LocalSettings.Values["font-size-c"] = size;
-            }
+            string key = $"font-family-{lang}";
+            if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
+                ApplicationData.Current.LocalSettings.Values[key] = familyName;
             else
-            {
-                ApplicationData.Current.LocalSettings.Values.Add("font-size-c", size);
-            }
-        }
-
-        public static int GetCopticFontSize()
-        {
-            if (!ApplicationData.Current.LocalSettings.Values.ContainsKey("font-size-c"))
-            {
-                ApplicationData.Current.LocalSettings.Values.Add("font-size-c", 40);
-            }
-            return (int)ApplicationData.Current.LocalSettings.Values["font-size-c"];
+                ApplicationData.Current.LocalSettings.Values.Add(key, familyName);
         }
     }
 
