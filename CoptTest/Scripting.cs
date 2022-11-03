@@ -1,5 +1,4 @@
-﻿using CoptLib;
-using CoptLib.IO;
+﻿using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
@@ -12,57 +11,31 @@ namespace CoptTest
     {
         Doc _doc = new Doc();
 
-        [Fact]
-        public void ParseTextCommands_EnglishSingleParameter()
+        [Theory]
+        [InlineData("This is some English, {0}with a millisecond offset.")]
+        public void ParseTextCommands_TimestampCommand(string text)
         {
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(@"This is some English, \ms{0:5:0}with a millisecond offset.", _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(string.Format(text, @"\ms{0:5:0}"), _doc, out var result);
 
-            Assert.Equal("This is some English, with a millisecond offset.", result);
+            Assert.Equal(string.Format(text, string.Empty), result);
             Assert.True(cmds.Any());
         }
 
-        [Fact]
-        public void ParseTextCommands_LanguageCommand_English()
+        [Theory]
+        [InlineData("this is also some English", null, null, Language.English)]
+        [InlineData("Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", null, null, Language.Coptic)]
+        [InlineData("Eulogon ton Kurion", "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", "CS Avva Shenouda", Language.Coptic)]
+        public void ParseTextCommands_LanguageCommand(string subtext, string? convSubtext = null, string? font = null, Language lang = default)
         {
-            const Language lang = Language.English;
-            const string subtext = "this is also some English";
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"This is some English, \\language{{{lang}}}{{{subtext}}}.", _doc, out var result);
+            convSubtext ??= subtext;
 
-            Assert.Equal($"This is some English, {subtext}.", result);
+            // Construct command source
+            string cmdText = @"\language{" + lang;
+            if (font != null)
+                cmdText += ":" + font;
+            cmdText += "}{" + subtext + "}";
 
-            var cmd = cmds.Single();
-            var langCmd = Assert.IsType<LanguageCmd>(cmd);
-
-            Assert.Equal(langCmd.Language, lang);
-            Assert.Equal(langCmd.Text, subtext);
-            Assert.Null(langCmd.Font);
-        }
-
-        [Fact]
-        public void ParseTextCommands_LanguageCommand_CopticUnicode()
-        {
-            const Language lang = Language.Coptic;
-            const string subtext = "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ";
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"Bless the Lord, \\language{{{lang}}}{{{subtext}}}.", _doc, out var result);
-
-            Assert.Equal($"Bless the Lord, {subtext}.", result);
-
-            var cmd = cmds.Single();
-            var langCmd = Assert.IsType<LanguageCmd>(cmd);
-
-            Assert.Equal(langCmd.Language, lang);
-            Assert.Equal(langCmd.Text, subtext);
-            Assert.Null(langCmd.Font);
-        }
-
-        [Fact]
-        public void ParseTextCommands_LanguageCommand_CopticStandard()
-        {
-            const Language lang = Language.Coptic;
-            const string font = "CS Avva Shenouda";
-            const string subtext = "Eulogon ton Kurion";
-            const string convSubtext = "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ";
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"Bless the Lord, \\language{{{lang}:{font}}}{{{subtext}}}.", _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands($"Bless the Lord, {cmdText}.", _doc, out var result);
 
             Assert.Equal($"Bless the Lord, {convSubtext}.", result);
 
@@ -71,6 +44,8 @@ namespace CoptTest
 
             Assert.Equal(langCmd.Language, lang);
             Assert.Equal(langCmd.Text, convSubtext);
+            if (font == null)
+                Assert.Null(langCmd.Font);
             Assert.Equal(langCmd.Font?.Name, font);
         }
 
@@ -79,11 +54,10 @@ namespace CoptTest
         [InlineData("coptCSTest", "Nenio] `n`apoctoloc", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", "CS Copt", Language.Coptic)]
         [InlineData("coptUniTest", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", null, null, Language.Coptic)]
         [InlineData("coptUniTest", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", null, "Coptic Unicode", Language.Coptic)]
-        public void ParseTextCommands_DefinitionCommand_String(string key, string value, string? parsedValue = null, string? font = null, Language? language = null)
+        public void ParseTextCommands_DefinitionCommand_String(string key, string value, string? parsedValue = null, string? font = null, Language lang = default)
         {
             const string preText = "Howdy! Here's some text from a definition: '";
             const string postText = "'.\r\nAlong with some text after.";
-            Language lang = language ?? Language.Default;
             parsedValue ??= value;
 
             _doc.Definitions = new()
