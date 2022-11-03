@@ -18,6 +18,9 @@ namespace CoptLib.Models
 
         [XmlIgnore]
         public Doc DocContext { get; set; }
+
+        [XmlIgnore]
+        public Definition Parent { get; set; }
     }
 
     public class Script : Definition

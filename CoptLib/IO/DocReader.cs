@@ -134,17 +134,13 @@ namespace CoptLib.IO
                         Models.String _string = new()
                         {
                             Value = defElem.Value,
-                            Font = defElem.Attribute("Font")?.Value,
-                            Language = (Language)Enum.Parse(typeof(Language),
-                                defElem.Attribute("Language")?.Value ?? "Default"),
                         };
                         def = _string;
                     }
 
                     if (def != null)
                     {
-                        def.Key = defElem.Attribute("Key")?.Value;
-                        def.DocContext = doc;
+                        ParseCommonXml(def, defElem, doc, null);
                         doc.Definitions.Add(def);
                     }
                 }
@@ -155,16 +151,10 @@ namespace CoptLib.IO
             {
                 foreach (XElement transElem in transsElem.Elements())
                 {
-                    Translation translation = new()
-                    {
-                        Font = transElem.Attribute("Font")?.Value,
-                        Language = (Language)Enum.Parse(typeof(Language),
-                            transElem.Attribute("Language")?.Value),
-                        Parent = doc,
-                        DocContext = doc
-                    };
+                    Translation translation = new();
+                    ParseCommonXml(translation, transElem, doc, null);
 
-                    translation.Content = ParseContentParts(transElem.Elements(), translation);
+                    translation.Content = ParseContentParts(transElem.Elements(), doc, translation);
                     doc.Translations.Add(translation);
                 } 
             }
@@ -188,14 +178,13 @@ namespace CoptLib.IO
 
             foreach (Translation translation in doc.Translations)
             {
-                TransformContentParts(translation.Content, translation);
+                TransformContentParts(translation.Content, doc);
             }
         }
 
-        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation)
+        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Doc doc, Definition parent)
         {
-            var doc = translation.DocContext;
-            var content = new List<ContentPart>(elements.Count());
+            List<ContentPart> content = new();
 
             foreach (XElement contentElem in elements)
             {
@@ -204,28 +193,19 @@ namespace CoptLib.IO
                 // TODO: Use reflection and interfaces to reduce code duplication?
                 if (contentElem.Name == nameof(Stanza))
                 {
-                    part = new Stanza(translation)
-                    {
-                        Language = (Language)Enum.Parse(typeof(Language),
-                            contentElem.Attribute("Language")?.Value ?? translation.Language.ToString()),
-                        Font = contentElem.Attribute("Font")?.Value ?? translation.Font,
-                        Key = contentElem.Attribute("Key")?.Value,
-                        SourceText = contentElem.Value
-                    };
+                    part = new Stanza(parent);
                 }
                 else if (contentElem.Name == nameof(Section))
                 {
-                    part = new Section(translation)
+                    part = new Section(parent)
                     {
-                        Key = contentElem.Attribute("Key")?.Value,
                         Title = contentElem.Attribute("Title")?.Value,
-                        Content = ParseContentParts(contentElem.Elements(), translation)
                     };
                 }
 
                 if (part != null)
                 {
-                    part.DocContext = doc;
+                    ParseCommonXml(part, contentElem, doc, parent);
                     content.Add(part);
                 }
             }
@@ -233,10 +213,8 @@ namespace CoptLib.IO
             return content;
         }
 
-        private static void TransformContentParts(IEnumerable<ContentPart> parts, Translation translation)
+        private static void TransformContentParts(IEnumerable<ContentPart> parts, Doc doc)
         {
-            var doc = translation.Parent;
-
             foreach (ContentPart part in parts)
             {
                 if (part is Section section)
@@ -251,6 +229,44 @@ namespace CoptLib.IO
                 RecursiveParseCommands(part);
                 if (part is IMultilingual multilingual)
                     multilingual.HandleFont();
+            }
+        }
+
+        private static void ParseCommonXml(object obj, XElement elem, Doc doc, Definition parent)
+        {
+            if (obj is Definition def)
+            {
+                def.DocContext = doc;
+                def.Parent = parent;
+                def.Key = elem.Attribute("Key")?.Value;
+            }
+            if (obj is IContent content)
+            {
+                content.SourceText = elem.Value;
+            }
+            if (obj is IMultilingual multilingual)
+            {
+                multilingual.Font = elem.Attribute("Font")?.Value;
+                if (Enum.TryParse<Language>(elem.Attribute("Language")?.Value, out var lang))
+                    multilingual.Language = lang;
+
+                if (parent is IMultilingual parentMultilingual)
+                {
+                    multilingual.Font ??= parentMultilingual.Font;
+                    if (multilingual.Language == Language.Default)
+                        multilingual.Language = parentMultilingual.Language;
+                }
+            }
+            if (obj is IContentCollectionContainer contentCollection && obj is Definition defCC)
+            {
+                contentCollection.Content = ParseContentParts(elem.Elements(), doc, defCC);
+                contentCollection.Source = elem.Attribute("Source")?.Value;
+
+                // Handle Source definition
+                if (contentCollection.Source != null)
+                {
+
+                }
             }
         }
 

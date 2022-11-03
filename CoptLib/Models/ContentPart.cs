@@ -16,26 +16,11 @@ namespace CoptLib.Models
             Parent = parent;
         }
 
-        /// <summary>
-        /// A key that can be used to identify this specific content part.
-        /// This value does not have to be unique between documents or translations.
-        /// </summary>
-        /// <remarks>
-        /// If the same key is used on content parts from two different translations
-        /// in the same document, any scripts that use that key will reference
-        /// both parts.
-        /// </remarks>
-        [XmlAttribute]
-        public string Key { get; set; }
-
         [XmlAttribute]
         public Language Language { get; set; }
 
         [XmlAttribute]
         public string Font { get; set; }
-
-        [XmlIgnore]
-        public Definition Parent { get; set; }
 
         [XmlIgnore]
         public bool Handled { get; protected set; }
@@ -47,7 +32,7 @@ namespace CoptLib.Models
     {
         private string _sourceText;
 
-        public Stanza(Translation parent) : base(parent)
+        public Stanza(Definition parent) : base(parent)
         {
 
         }
@@ -97,7 +82,7 @@ namespace CoptLib.Models
 
     public class Section : ContentPart, IContentCollectionContainer
     {
-        public Section(Translation parent) : base(parent)
+        public Section(Definition parent) : base(parent)
         {
 
         }
@@ -107,6 +92,7 @@ namespace CoptLib.Models
 
         [XmlAttribute]
         public string Title { get; set; }
+        public string Source { get; set; }
 
         public int CountRows()
         {

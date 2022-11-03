@@ -10,6 +10,11 @@ namespace CoptLib.Models
         List<ContentPart> Content { get; set; }
 
         /// <summary>
+        /// The ID of a <see cref="Definition"/> to use to populate <see cref="Content"/>.
+        /// </summary>
+        string Source { get; set; }
+
+        /// <summary>
         /// Returns the number of rows this section requires to display
         /// all section headers and stanzas
         /// </summary>

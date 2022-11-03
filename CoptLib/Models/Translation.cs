@@ -11,13 +11,13 @@ namespace CoptLib.Models
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
 
         [XmlElement]
+        public string Source { get; set; }
+
+        [XmlElement]
         public Language Language { get; set; }
 
         [XmlElement]
         public string Font { get; set; }
-
-        [XmlIgnore]
-        public Doc Parent { get; set; }
 
         public bool Handled { get; private set; }
 
