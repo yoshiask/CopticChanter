@@ -234,17 +234,33 @@ namespace CoptLib.IO
 
             foreach (ContentPart part in parts)
             {
-                if (part is Section section && section.Title != null)
+                if (part is Section section)
                 {
-                    _ = Scripting.Scripting.ParseTextCommands(section.Title, doc, out var title);
-                    section.Title = title;
+                    if (section.Title != null)
+                    {
+                        _ = Scripting.Scripting.ParseTextCommands(section.Title, doc, out var title);
+                        section.Title = title;
+                    }
                 }
 
-                if (part is IContent partContent)
-                    partContent.ParseCommands();
+                RecursiveParseCommands(part);
                 if (part is IMultilingual multilingual)
                     multilingual.HandleFont();
             }
+        }
+
+        internal static void RecursiveParseCommands(IEnumerable<ContentPart> parts)
+        {
+            foreach (ContentPart part in parts)
+                RecursiveParseCommands(part);
+        }
+
+        internal static void RecursiveParseCommands(ContentPart part)
+        {
+            if (part is IContent partContent)
+                partContent.ParseCommands();
+            else if (part is IContentCollectionContainer partCollection)
+                partCollection.ParseCommands();
         }
     }
 }

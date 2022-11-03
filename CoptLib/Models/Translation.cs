@@ -1,4 +1,5 @@
-﻿using CoptLib.Writing;
+﻿using CoptLib.IO;
+using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -30,5 +31,7 @@ namespace CoptLib.Models
             }
             return count;
         }
+
+        public void ParseCommands() => DocReader.RecursiveParseCommands(Content);
     }
 }

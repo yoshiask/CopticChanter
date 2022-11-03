@@ -1,6 +1,6 @@
-﻿using CoptLib.Scripting;
+﻿using CoptLib.IO;
+using CoptLib.Scripting;
 using CoptLib.Writing;
-using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -120,6 +120,8 @@ namespace CoptLib.Models
             }
             return count;
         }
+
+        public void ParseCommands() => DocReader.RecursiveParseCommands(Content);
 
         public override void HandleFont()
         {

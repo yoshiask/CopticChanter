@@ -14,5 +14,8 @@ namespace CoptLib.Models
         /// all section headers and stanzas
         /// </summary>
         int CountRows();
+
+        /// <inheritdoc cref="IContent.ParseCommands"/>
+        void ParseCommands();
     }
 }
