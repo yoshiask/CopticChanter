@@ -150,18 +150,22 @@ namespace CoptLib.IO
                 }
             }
 
-            foreach (XElement transElem in xml.Root.Element("Translations").Elements())
+            var transsElem = xml.Root.Element("Translations");
+            if (transsElem != null)
             {
-                Translation translation = new()
+                foreach (XElement transElem in transsElem.Elements())
                 {
-                    Font = transElem.Attribute("Font")?.Value,
-                    Language = (Language)Enum.Parse(typeof(Language),
-                        transElem.Attribute("Language")?.Value),
-                    Parent = doc
-                };
+                    Translation translation = new()
+                    {
+                        Font = transElem.Attribute("Font")?.Value,
+                        Language = (Language)Enum.Parse(typeof(Language),
+                            transElem.Attribute("Language")?.Value),
+                        Parent = doc
+                    };
 
-                translation.Content = ParseContentParts(transElem.Elements(), translation);
-                doc.Translations.Add(translation);
+                    translation.Content = ParseContentParts(transElem.Elements(), translation);
+                    doc.Translations.Add(translation);
+                } 
             }
 
             return doc;
