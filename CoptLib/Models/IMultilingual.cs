@@ -2,7 +2,7 @@
 
 namespace CoptLib.Models
 {
-    internal interface IMultilingual
+    public interface IMultilingual
     {
         public Language Language { get; set; }
 

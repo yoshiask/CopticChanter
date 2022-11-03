@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace CoptLib.Models
 {
-    public class Translation : IContentCollectionContainer
+    public class Translation : Definition, IContentCollectionContainer, IMultilingual
     {
         [XmlArray]
         public List<ContentPart> Content { get; set; } = new List<ContentPart>();
@@ -19,6 +19,8 @@ namespace CoptLib.Models
         [XmlIgnore]
         public Doc Parent { get; set; }
 
+        public bool Handled { get; private set; }
+
         public int CountRows()
         {
             int count = 0;
@@ -30,6 +32,12 @@ namespace CoptLib.Models
                     count += section.CountRows() + 1;
             }
             return count;
+        }
+
+        public void HandleFont()
+        {
+            foreach (ContentPart part in Content)
+                part.HandleFont();
         }
 
         public void ParseCommands() => DocReader.RecursiveParseCommands(Content);

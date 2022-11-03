@@ -160,7 +160,8 @@ namespace CoptLib.IO
                         Font = transElem.Attribute("Font")?.Value,
                         Language = (Language)Enum.Parse(typeof(Language),
                             transElem.Attribute("Language")?.Value),
-                        Parent = doc
+                        Parent = doc,
+                        DocContext = doc
                     };
 
                     translation.Content = ParseContentParts(transElem.Elements(), translation);
@@ -193,7 +194,7 @@ namespace CoptLib.IO
 
         private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Translation translation)
         {
-            var doc = translation.Parent;
+            var doc = translation.DocContext;
             var content = new List<ContentPart>(elements.Count());
 
             foreach (XElement contentElem in elements)
@@ -224,7 +225,7 @@ namespace CoptLib.IO
 
                 if (part != null)
                 {
-                    part.DocContext = translation.Parent;
+                    part.DocContext = doc;
                     content.Add(part);
                 }
             }

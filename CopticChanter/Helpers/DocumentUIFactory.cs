@@ -12,8 +12,8 @@ namespace CopticChanter.Helpers
     {
         public static TextBlock CreateBlockFromStanza(Stanza stanza)
         {
-            if (stanza.Language == Language.Default)
-                stanza.Language = stanza.Parent.Language;
+            if (stanza.Language == Language.Default && stanza.Parent is IMultilingual multilingual)
+                stanza.Language = multilingual.Language;
 
             var contentBlock = new TextBlock
             {

@@ -11,7 +11,7 @@ namespace CoptLib.Models
     /// </summary>
     public abstract class ContentPart : Definition, IMultilingual
     {
-        public ContentPart(Translation parent)
+        public ContentPart(Definition parent)
         {
             Parent = parent;
         }
@@ -35,7 +35,7 @@ namespace CoptLib.Models
         public string Font { get; set; }
 
         [XmlIgnore]
-        public Translation Parent { get; set; }
+        public Definition Parent { get; set; }
 
         [XmlIgnore]
         public bool Handled { get; protected set; }
@@ -87,7 +87,7 @@ namespace CoptLib.Models
             if (HasBeenParsed)
                 return;
 
-            Commands = Scripting.Scripting.ParseTextCommands(SourceText, Parent.Parent, out var text);
+            Commands = Scripting.Scripting.ParseTextCommands(SourceText, DocContext, out var text);
             Text = text;
             HasBeenParsed = true;
         }
