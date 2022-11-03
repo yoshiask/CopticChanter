@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace CoptLib.Writing
@@ -54,7 +56,7 @@ namespace CoptLib.Writing
         /// <summary>
         /// A dictionary of Coptic words loaned from other languages.
         /// </summary>
-        public static Dictionary<string, Language> LoanWords => _loanWords ?? InitLoanWords();
+        public static Dictionary<string, Language> LoanWords => _loanWords ?? GetLoanWords();
 
         /// <summary>
         /// Analyzes Coptic text using the Greco-Bohairic pronounciation.
@@ -292,11 +294,36 @@ namespace CoptLib.Writing
             return stringBuilder.ToString();
         }
 
-        private static Dictionary<string, Language> InitLoanWords()
+        /// <summary>
+        /// Gets a lexicon of Sahidic Coptic loan words.
+        /// </summary>
+        /// <param name="ver">
+        /// The specific version of Coptic Scriptorium's lexicon to use.
+        /// Defaults to v1.4.1.
+        /// </param>
+        /// <returns>
+        /// A dictionary of loan words, where the key is the word (in Unicode)
+        /// and the value is the language it is borrowed from.
+        /// </returns>
+        private static Dictionary<string, Language> GetLoanWords(Version? ver = null)
         {
-            const string url = "https://raw.githubusercontent.com/CopticScriptorium/lexical-taggers/v1.4.1/language-tagger/lexicon.txt";
-            System.Net.Http.HttpClient client = new();
-            string tsv = client.GetStringAsync(url).Result;
+            string tsv;
+            if (ver == null || (ver.Major == 1 && ver.Minor == 4 && ver.Build == 1))
+            {
+                // v1.4.1 is the default and is included in CoptLib's embedded resources
+                var assembly = typeof(CopticInterpreter).GetTypeInfo().Assembly;
+                using Stream resource = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.lexicon.tsv");
+                using StreamReader sr = new(resource);
+                tsv = sr.ReadToEnd();
+            }
+            else
+            {
+                // Different version was specified, fetch from GitHub
+                string url = $"https://raw.githubusercontent.com/CopticScriptorium/lexical-taggers/v{ver}/language-tagger/lexicon.txt";
+                System.Net.Http.HttpClient client = new();
+                tsv = client.GetStringAsync(url).Result;
+            }
+
             var lines = tsv.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             _loanWords = new(lines.Length);
