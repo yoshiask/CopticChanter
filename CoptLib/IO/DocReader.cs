@@ -62,9 +62,7 @@ namespace CoptLib.IO
         {
             try
             {
-                // A FileStream is needed to read the XML document.
-                var sr = new StreamReader(path);
-                return ParseDocXml(sr.ReadToEnd());
+                return ParseDocXml(XDocument.Load(path));
             }
             catch (Exception ex)
             {
@@ -72,6 +70,7 @@ namespace CoptLib.IO
                 return null;
             }
         }
+
         /// <summary>
         /// Deserializes and returns a DocXML file. For use in UWP
         /// </summary>
@@ -81,8 +80,7 @@ namespace CoptLib.IO
         {
             try
             {
-                var sr = new StreamReader(file);
-                return ParseDocXml(sr.ReadToEnd());
+                return ParseDocXml(XDocument.Load(file, LoadOptions.None));
             }
             catch (Exception ex)
             {
@@ -91,12 +89,9 @@ namespace CoptLib.IO
             }
         }
 
-        public static Doc ParseDocXml(string xmlText)
+        public static Doc ParseDocXml(XDocument xml)
         {
-            var xml = XDocument.Parse(xmlText);
-
             // The actual content can't be directly deserialized, so it needs to be manually parsed
-
             Doc doc = new()
             {
                 Name = xml.Root.Element("Name")?.Value,
@@ -153,8 +148,6 @@ namespace CoptLib.IO
                 {
                     Translation translation = new();
                     ParseCommonXml(translation, transElem, doc, null);
-
-                    translation.Content = ParseContentParts(transElem.Elements(), doc, translation);
                     doc.Translations.Add(translation);
                 } 
             }
