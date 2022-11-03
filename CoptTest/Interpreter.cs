@@ -1,8 +1,6 @@
 ﻿using CoptLib.Writing;
-using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using Xunit;
 
 namespace CoptTest
@@ -39,32 +37,32 @@ namespace CoptTest
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
         };
 
-        [Fact]
-        public void IpaTranscribe_CopticUnicode()
+        [Theory]
+        [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
+        public void IpaTranscribe_CopticUnicode(string sample)
         {
-            StringBuilder sb = new();
-
-            foreach (var input in IpaTranscribe_CopticUnicode_Samples)
-            {
-                var result = CopticInterpreter.IpaTranscribe(input);
-
-                Debug.WriteLine(result);
-                sb.AppendLine($"{input},{result}");
-            }
-
-            string outPath = Path.Combine(AppContext.BaseDirectory, "TestResults", nameof(IpaTranscribe_CopticUnicode) + ".csv");
-            Directory.CreateDirectory(Path.GetDirectoryName(outPath));
-            File.WriteAllText(outPath, sb.ToString(), Encoding.Unicode);
+            var result = CopticInterpreter.IpaTranscribe(sample);
+            Debug.WriteLine(result);
         }
 
-        [Fact]
-        public void IpaTranscribe_CopticStandard()
+        [Theory]
+        [MemberData(nameof(GetIpaTranscribe_CopticStandard_Samples))]
+        public void IpaTranscribe_CopticStandard(string sample)
         {
-            foreach (var input in IpaTranscribe_CopticStandard_Samples)
-            {
-                string output = CopticInterpreter.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(input));
-                Debug.WriteLine(output);
-            }
+            string result = CopticInterpreter.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
+            Debug.WriteLine(result);
+        }
+
+        private static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
+        {
+            foreach (string sample in IpaTranscribe_CopticUnicode_Samples)
+                yield return new object[] { sample };
+        }
+
+        private static IEnumerable<object[]> GetIpaTranscribe_CopticStandard_Samples()
+        {
+            foreach (string sample in IpaTranscribe_CopticStandard_Samples)
+                yield return new object[] { sample };
         }
     }
 }
