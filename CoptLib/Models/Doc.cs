@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace CoptLib.Models
 {
-    [XmlRoot(ElementName = "Document")]
+    [XmlRoot("Document")]
     public class Doc
     {
         [XmlElement]
@@ -16,17 +16,16 @@ namespace CoptLib.Models
         public string Parent { get; set; }
 
         [XmlArray("Translations")]
-        [XmlArrayItem("Translation", typeof(Translation))]
-        public List<Translation> Translations { get; set; } = new List<Translation>();
+        public TranslationCollection Translations { get; set; } = new(null);
 
-        [XmlArray]
-        public List<Definition> Definitions { get; set; } = new List<Definition>();
+        [XmlArray("Definitions")]
+        public List<IDefinition> DirectDefinitions { get; set; } = new();
 
         [XmlElement]
         public string NextScript { get; set; }
 
-        //[XmlElement(ElementName = "DefaultNext", IsNullable = false)]
-        //public string DefaultNextGuid = "ccc91ccc-77ba-45b2-9555-e9f0fe8c10c3";
+        [XmlIgnore]
+        public Dictionary<string, IDefinition> Definitions { get; } = new();
 
         public IndexDoc ToIndexDocXml()
         {

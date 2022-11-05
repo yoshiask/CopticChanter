@@ -1,26 +1,26 @@
 ﻿using CoptLib.Models;
-using System;
-using System.Linq;
 
 namespace CoptLib.Scripting.Commands
 {
     public class DefinitionCmd : TextCommandBase
     {
-        public DefinitionCmd(string name, Doc context, int startIndex, string[] parameters)
-            : base(name, context, startIndex, parameters)
+        public DefinitionCmd(string name, IContent content, Doc context, int startIndex, string[] parameters)
+            : base(name, content, context, startIndex, parameters)
         {
-            Parse(name, context, parameters);
+            Parse(name, content, context, parameters);
         }
 
-        public Definition Definition { get; private set; }
+        public IDefinition Definition { get; private set; }
 
-        private void Parse(string cmd, Doc context, params string[] parameters)
+        private void Parse(string cmd, IContent content, Doc context, params string[] parameters)
         {
             string defId = parameters[0];
-            Definition = context.Definitions.FirstOrDefault(d => d.Key.Equals(defId, StringComparison.OrdinalIgnoreCase));
+            Definition = context.Definitions[defId];
 
-            if (Definition is Models.String strDef)
-                Text = strDef.Value;
+            if (Definition is TranslationCollection defCol && content is IMultilingual multi)
+                Definition = defCol[multi.Language];
+            if (Definition is IContent defContent)
+                Text = defContent.Text;
         }
     }
 }

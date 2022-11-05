@@ -1,7 +1,9 @@
 ﻿using CoptLib.IO;
 using CoptLib.Scripting;
 using CoptLib.Writing;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -11,9 +13,16 @@ namespace CoptLib.Models
     /// </summary>
     public abstract class ContentPart : Definition, IMultilingual
     {
-        public ContentPart(Definition parent)
+        public ContentPart(IDefinition parent)
         {
             Parent = parent;
+            DocContext = parent?.DocContext;
+
+            if (parent is IMultilingual multiParent)
+            {
+                Language = multiParent.Language;
+                Font = multiParent.Font;
+            }
         }
 
         [XmlAttribute]
@@ -26,13 +35,19 @@ namespace CoptLib.Models
         public bool Handled { get; protected set; }
 
         public abstract void HandleFont();
+
+        /// <summary>
+        /// Returns the number of rows this part requires to display
+        /// all its content, including section headers and stanzas
+        /// </summary>
+        public virtual int CountRows() => 1;
     }
 
     public class Stanza : ContentPart, IContent
     {
         private string _sourceText;
 
-        public Stanza(Definition parent) : base(parent)
+        public Stanza(IDefinition parent) : base(parent)
         {
 
         }
@@ -72,7 +87,7 @@ namespace CoptLib.Models
             if (HasBeenParsed)
                 return;
 
-            Commands = Scripting.Scripting.ParseTextCommands(SourceText, DocContext, out var text);
+            Commands = Scripting.Scripting.ParseTextCommands(this, DocContext, out var text);
             Text = text;
             HasBeenParsed = true;
         }
@@ -82,40 +97,66 @@ namespace CoptLib.Models
 
     public class Section : ContentPart, IContentCollectionContainer
     {
-        public Section(Definition parent) : base(parent)
+        protected List<ContentPart> _content = new();
+
+        public Section(IDefinition parent) : base(parent)
         {
 
         }
 
-        [XmlArray]
-        public List<ContentPart> Content { get; set; } = new List<ContentPart>();
+        public IContent Title { get; set; }
 
-        [XmlAttribute]
-        public string Title { get; set; }
         public string Source { get; set; }
 
-        public int CountRows()
+        public int Count => _content.Count;
+
+        public bool IsReadOnly => false;
+
+        public override int CountRows()
         {
-            int count = 0;
-            foreach (ContentPart part in Content)
+            int count = _content.Sum(p => p.CountRows());
+
+            if (Title != null)
             {
-                if (part is Stanza)
+                if (Title is ContentPart partTitle)
+                    count += partTitle.CountRows();
+                else
                     count++;
-                else if (part is Section section)
-                    count += section.CountRows() + 1;
             }
+
             return count;
         }
 
-        public void ParseCommands() => DocReader.RecursiveParseCommands(Content);
+        public void ParseCommands()
+        {
+            DocReader.RecursiveParseCommands(_content);
+            Title?.ParseCommands();
+        }
 
         public override void HandleFont()
         {
             if (Handled)
                 return;
 
-            foreach (ContentPart part in Content)
+            foreach (ContentPart part in _content)
                 part.HandleFont();
+
+            if (Title != null && Title is IMultilingual multiTitle)
+                multiTitle.HandleFont();
         }
+
+        public IEnumerator<ContentPart> GetEnumerator() => _content.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public void Add(ContentPart item) => _content.Add(item);
+
+        public void Clear() => _content.Clear();
+
+        public bool Contains(ContentPart item) => _content.Contains(item);
+
+        public void CopyTo(ContentPart[] array, int arrayIndex) => _content.CopyTo(array, arrayIndex);
+
+        public bool Remove(ContentPart item) => _content.Remove(item);
     }
 }

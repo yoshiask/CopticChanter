@@ -7,9 +7,10 @@ namespace CoptLib.Scripting
     /// </summary>
     public abstract class TextCommandBase
     {
-        public TextCommandBase(string name, Doc context, int startIndex, string[] parameters)
+        public TextCommandBase(string name, IContent content, Doc context, int startIndex, string[] parameters)
         {
             Name = name;
+            SourceContent = content;
             DocContext = context;
             StartIndex = startIndex;
             Parameters = parameters;
@@ -34,6 +35,11 @@ namespace CoptLib.Scripting
         /// it.
         /// </remarks>
         public string Text { get; protected set; }
+
+        /// <summary>
+        /// The content that contained the command.
+        /// </summary>
+        public IContent SourceContent { get; }
 
         /// <summary>
         /// The document context.

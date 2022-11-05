@@ -83,5 +83,11 @@ namespace CoptLib
                     return true;
             return false;
         }
+
+        public static void AddRange<T>(this ICollection<T> dst, IEnumerable<T> src)
+        {
+            foreach (T t in src)
+                dst.Add(t);
+        }
     }
 }
