@@ -114,15 +114,6 @@
       <DependentUpon>DocumentLayout.xaml</DependentUpon>
     </Compile>
     <Compile Include="Layouts\DocumentLayoutArgs.cs" />
-    <Compile Include="Layouts\DoublePanel.xaml.cs">
-      <DependentUpon>DoublePanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Layouts\SinglePanel.xaml.cs">
-      <DependentUpon>SinglePanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Layouts\DoublePanelArgs.cs" />
-    <Compile Include="Layouts\SinglePanelArgs.cs" />
-    <Compile Include="Layouts\TriplePanelArgs.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -209,14 +200,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Layouts\DocumentLayout.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Layouts\DoublePanel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Layouts\SinglePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
