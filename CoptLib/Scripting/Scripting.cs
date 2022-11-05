@@ -343,33 +343,62 @@ namespace CoptLib.Scripting
             strippedText = content.SourceText;
 
             // Create a list to store parsed commands
-            var parsedCmds = new List<TextCommandBase>();
-
-            // Define a regular expression that captures LaTeX-style commands with 0 or more parameters
-            Regex rx = new Regex(@"(?:\\)(?<command>\w+)(?:\{(?<params>[^\\]*)\})+?",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-            // Find matches
-            MatchCollection matches = rx.Matches(strippedText);
-            foreach (Match m in matches)
+            List<TextCommandBase> parsedCmds = new();
+            Stack<int> paramStartPositions = new();
+            Stack<int> cmdStartPositions = new();
+            for (int index = 0; index < strippedText.Length; index++)
             {
-                string cmd = m.Groups["command"].Value;
-                string[] parameters = m.Groups["params"].Value.Split(new[] { "}{" }, StringSplitOptions.None);
-
-                var parsedCmd = GetCommand(cmd, content, context, m.Index, parameters);
-                if (parsedCmd == null)
-                    continue;
-
-                if (parsedCmd.Text != null)
+                char ch = strippedText[index];
+                if (ch == '\\')
                 {
-                    strippedText = strippedText.Remove(m.Index, m.Length);
-
-                    if (parsedCmd.Text != string.Empty)
-                        strippedText = strippedText.Insert(m.Index, parsedCmd.Text);
+                    cmdStartPositions.Push(index);
                 }
+                else if (ch == ' ' && cmdStartPositions.Count > paramStartPositions.Count)
+                {
+                    cmdStartPositions.Pop();
+                }
+                else if (ch == '{')
+                {
+                    paramStartPositions.Push(index);
+                }
+                else if (ch == '}')
+                {
+                    if (paramStartPositions.Count == 0)
+                        throw new ArgumentException($"Mismatched end bracket at index {index}");
 
-                parsedCmds.Add(parsedCmd);
+                    var depth = paramStartPositions.Count - 1;
+                    var start = paramStartPositions.Pop();
+
+                    // Ignore only opening and closing brackets
+                    if (cmdStartPositions.Count == 0)
+                        continue;
+                    var cmdStart = cmdStartPositions.Pop();
+
+                    string name = strippedText.Substring(cmdStart + 1, start - cmdStart - 1);
+                    string[] parameters = strippedText.Substring(start + 1, index - start - 1).Split('|');
+
+                    var parsedCmd = GetCommand(name, content, context, start, parameters);
+                    if (parsedCmd == null)
+                        continue;
+
+                    if (parsedCmd.Text != null)
+                    {
+                        int cmdLength = index - cmdStart + 1;
+                        strippedText = strippedText.Remove(cmdStart, cmdLength);
+
+                        if (parsedCmd.Text != string.Empty)
+                            strippedText = strippedText.Insert(cmdStart, parsedCmd.Text);
+
+                        // Make sure to update the current index
+                        index += parsedCmd.Text.Length - cmdLength;
+                    }
+
+                    parsedCmds.Add(parsedCmd);
+                }
             }
+
+            if (paramStartPositions.Count > 0)
+                throw new ArgumentException($"Mismatched start brackets, {paramStartPositions.Count} total");
 
             return parsedCmds;
         }
@@ -379,7 +408,7 @@ namespace CoptLib.Scripting
             PopulateAvailableCommands();
 
             if (_availCmds.TryGetValue(cmd, out var type))
-            return Activator.CreateInstance(type, cmd, content, context, startIndex, parameters) as TextCommandBase;
+                return Activator.CreateInstance(type, cmd, content, context, startIndex, parameters) as TextCommandBase;
             return null;
         }
 
@@ -390,10 +419,11 @@ namespace CoptLib.Scripting
 
             _availCmds = new Dictionary<string, Type>
             {
+                { "def", typeof(DefinitionCmd) },
+                { "ipa", typeof(IpaTranscribeCmd) },
                 { "language", typeof(LanguageCmd) },
                 { "lang", typeof(LanguageCmd) },
                 { "ms", typeof(TimestampCmd) },
-                { "def", typeof(DefinitionCmd) },
             };
         }
     }

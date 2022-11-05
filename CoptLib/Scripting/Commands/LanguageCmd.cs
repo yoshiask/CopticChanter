@@ -18,10 +18,9 @@ namespace CoptLib.Scripting.Commands
 
         private void Parse(string cmd, params string[] parameters)
         {
-            Text = parameters[1];
+            Text = parameters[parameters.Length - 1];
 
-            string[] langParts = parameters[0].Split(':');
-            if (!Enum.TryParse<Language>(langParts[0], out var language))
+            if (!Enum.TryParse<Language>(parameters[0], out var language))
                 return;
 
             Language = language;
@@ -29,9 +28,9 @@ namespace CoptLib.Scripting.Commands
             switch (Language)
             {
                 case Language.Coptic:
-                    if (langParts.Length >= 2)
+                    if (parameters.Length >= 3)
                     {
-                        Font = CopticFont.FindFont(langParts[1]) ?? CopticFont.CsAvvaShenouda;
+                        Font = CopticFont.FindFont(parameters[1]) ?? CopticFont.CsAvvaShenouda;
                         Text = Font.Convert(Text);
                     }
                     break;

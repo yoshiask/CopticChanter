@@ -44,8 +44,8 @@ namespace CoptTest
             // Construct command source
             string cmdText = @"\language{" + lang;
             if (font != null)
-                cmdText += ":" + font;
-            cmdText += "}{" + subtext + "}";
+                cmdText += "|" + font;
+            cmdText += "|" + subtext + "}";
 
             Stanza stanza = new(null)
             {
@@ -104,6 +104,23 @@ namespace CoptTest
             Assert.Equal(defCmd.Text, parsedValue);
             Assert.Equal(def.Language, lang);
             Assert.Equal(def.Font, font);
+        }
+
+        [Theory]
+        [InlineData("A Coptic word, \\lang{Coptic|CS Avva Shenouda|Wcanna}, and its IPA transcription, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
+                    "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, o\u031Esännä.")]
+        public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
+        {
+            expectedResult ??= text;
+
+            Doc doc = new();
+            Stanza stanza = new(null)
+            {
+                SourceText = text
+            };
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, doc, out var result);
+
+            Assert.Equal(expectedResult, result);
         }
     }
 }
