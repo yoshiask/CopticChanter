@@ -199,12 +199,12 @@ namespace CoptLib.IO
                         defCol.Add(subdef);
 
                         if (subdef.Key != null)
-                            doc.Definitions.Add(subdef.Key, subdef);
+                            doc.AddDefinition(subdef);
                     }
                 }
 
                 if (def.Key != null)
-                    doc.Definitions.Add(def.Key, def);
+                    doc.AddDefinition(def);
                 defs.Add(def);
             }
 
@@ -258,11 +258,25 @@ namespace CoptLib.IO
         {
             if (part is IContent partContent)
                 partContent.ParseCommands();
+
             if (part is IContentCollectionContainer partCollection)
+            {
+                if (partCollection.Source != null)
+                {
+                    // Populate the collection with items from the source.
+                    // This is done before commands are parsed, just in
+                    // case the generated content contains commands.
+
+                }
+
                 partCollection.ParseCommands();
+            }
 
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();
+
+            if (part is IDefinition def && def.Key != null && !def.DocContext.Definitions.ContainsKey(def.Key))
+                def.DocContext.AddDefinition(def);
         }
     }
 }

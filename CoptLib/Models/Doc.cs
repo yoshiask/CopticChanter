@@ -27,6 +27,8 @@ namespace CoptLib.Models
         [XmlIgnore]
         public Dictionary<string, IDefinition> Definitions { get; } = new();
 
+        public void AddDefinition(IDefinition def) => Definitions.Add(def.Key, def);
+
         public IndexDoc ToIndexDocXml()
         {
             return new IndexDoc()

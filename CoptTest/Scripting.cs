@@ -4,7 +4,6 @@ using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
 using System.Linq;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CoptTest
 {
