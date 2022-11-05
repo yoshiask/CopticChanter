@@ -8,9 +8,9 @@ namespace CoptLib.Models
     public interface IContentCollectionContainer : ICollection<ContentPart>
     {
         /// <summary>
-        /// The ID of a <see cref="Definition"/> to use to populate <see cref="Content"/>.
+        /// A command used to populate the collection. May contain nested text commands.
         /// </summary>
-        string Source { get; set; }
+        SimpleContent Source { get; set; }
 
         /// <inheritdoc cref="IContent.ParseCommands"/>
         void ParseCommands();

@@ -338,7 +338,7 @@ namespace CoptLib.Scripting
             }
         }
 
-        public static List<TextCommandBase> ParseTextCommands(IContent content, Doc context, out string strippedText)
+        public static List<TextCommandBase> ParseTextCommands(IContent content, out string strippedText)
         {
             strippedText = content.SourceText;
 
@@ -377,7 +377,7 @@ namespace CoptLib.Scripting
                     string name = strippedText.Substring(cmdStart + 1, start - cmdStart - 1);
                     string[] parameters = strippedText.Substring(start + 1, index - start - 1).Split('|');
 
-                    var parsedCmd = GetCommand(name, content, context, start, parameters);
+                    var parsedCmd = GetCommand(name, content, start, parameters);
                     if (parsedCmd == null)
                         continue;
 
@@ -403,12 +403,12 @@ namespace CoptLib.Scripting
             return parsedCmds;
         }
 
-        private static TextCommandBase GetCommand(string cmd, IContent content, Doc context, int startIndex, string[] parameters)
+        private static TextCommandBase GetCommand(string cmd, IContent content, int startIndex, string[] parameters)
         {
             PopulateAvailableCommands();
 
             if (_availCmds.TryGetValue(cmd, out var type))
-                return Activator.CreateInstance(type, cmd, content, context, startIndex, parameters) as TextCommandBase;
+                return Activator.CreateInstance(type, cmd, content, startIndex, parameters) as TextCommandBase;
             return null;
         }
 

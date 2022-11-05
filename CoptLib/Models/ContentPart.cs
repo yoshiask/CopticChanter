@@ -87,7 +87,7 @@ namespace CoptLib.Models
             if (HasBeenParsed)
                 return;
 
-            Commands = Scripting.Scripting.ParseTextCommands(this, DocContext, out var text);
+            Commands = Scripting.Scripting.ParseTextCommands(this, out var text);
             Text = text;
             HasBeenParsed = true;
         }
@@ -104,9 +104,9 @@ namespace CoptLib.Models
 
         }
 
-        public IContent Title { get; set; }
+        public SimpleContent Title { get; set; }
 
-        public string Source { get; set; }
+        public SimpleContent Source { get; set; }
 
         public int Count => _content.Count;
 
@@ -117,12 +117,7 @@ namespace CoptLib.Models
             int count = _content.Sum(p => p.CountRows());
 
             if (Title != null)
-            {
-                if (Title is ContentPart partTitle)
-                    count += partTitle.CountRows();
-                else
-                    count++;
-            }
+                count++;
 
             return count;
         }

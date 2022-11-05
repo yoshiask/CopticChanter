@@ -5,8 +5,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class TimestampCmd : TextCommandBase
     {
-        public TimestampCmd(string cmd, IContent content, Doc context, int startIndex, string[] parameters)
-            : base(cmd, content, context, startIndex, parameters)
+        public TimestampCmd(string cmd, IContent content, int startIndex, string[] parameters)
+            : base(cmd, content, startIndex, parameters)
         {
             Parse(cmd, parameters);
         }

@@ -25,9 +25,10 @@ namespace CoptTest
         {
             Stanza stanza = new(null)
             {
-                SourceText = string.Format(text, @"\ms{0:5:0}")
+                SourceText = string.Format(text, @"\ms{0:5:0}"),
+                DocContext = _doc 
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 
             Assert.Equal(string.Format(text, string.Empty), result);
             Assert.True(cmds.Any());
@@ -49,9 +50,10 @@ namespace CoptTest
 
             Stanza stanza = new(null)
             {
-                SourceText = $"Bless the Lord, {cmdText}."
+                SourceText = $"Bless the Lord, {cmdText}.",
+                DocContext = _doc
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 
             Assert.Equal($"Bless the Lord, {convSubtext}.", result);
 
@@ -91,15 +93,16 @@ namespace CoptTest
 
             Stanza stanza = new(null)
             {
-                SourceText = preText + $"\\def{{{key}}}" + postText
+                SourceText = preText + $"\\def{{{key}}}" + postText,
+                DocContext = _doc
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, _doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 
             Assert.Equal($"{preText}{parsedValue}{postText}", result);
 
             var cmd = cmds.Single();
             var defCmd = Assert.IsType<DefinitionCmd>(cmd);
-            var def = Assert.IsType<Stanza>(defCmd.Definition);
+            var def = Assert.IsType<Stanza>(defCmd.Output);
 
             Assert.Equal(defCmd.Text, parsedValue);
             Assert.Equal(def.Language, lang);
@@ -116,9 +119,10 @@ namespace CoptTest
             Doc doc = new();
             Stanza stanza = new(null)
             {
-                SourceText = text
+                SourceText = text,
+                DocContext = doc
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, doc, out var result);
+            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 
             Assert.Equal(expectedResult, result);
         }

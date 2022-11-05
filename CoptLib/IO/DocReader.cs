@@ -149,18 +149,17 @@ namespace CoptLib.IO
                 {
                     def = new Stanza(parent);
                 }
+                else if (defElemName == "String")
+                {
+                    def = new SimpleContent(null, parent);
+                }
                 else if (defElemName == nameof(Section))
                 {
                     Section section = new(parent);
 
                     string title = defElem.Attribute("Title")?.Value;
                     if (title != null)
-                    {
-                        section.Title = new Stanza(section)
-                        {
-                            SourceText = title
-                        };
-                    }
+                        section.Title = new SimpleContent(title, section);
 
                     def = section;
                 }
@@ -236,7 +235,7 @@ namespace CoptLib.IO
                         multilingual.Language = parentMultilingual.Language;
                 }
             }
-            if (obj is IContentCollectionContainer contentCollection && obj is Definition defCC)
+            if (obj is IContentCollectionContainer contentCollection && obj is IDefinition defCC)
             {
                 // Parse elements, remove anything not a ContentPart
                 var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
@@ -244,7 +243,9 @@ namespace CoptLib.IO
                     .Where(d => d is not null);
                 contentCollection.AddRange(defColl);
 
-                contentCollection.Source = elem.Attribute("Source")?.Value;
+                string sourceText = elem.Attribute("Source")?.Value;
+                if (sourceText != null)
+                    contentCollection.Source = new(sourceText, defCC);
             }
         }
 
@@ -266,7 +267,16 @@ namespace CoptLib.IO
                     // Populate the collection with items from the source.
                     // This is done before commands are parsed, just in
                     // case the generated content contains commands.
+                    var cmd = Scripting.Scripting.ParseTextCommands(partCollection.Source, out _)
+                        .LastOrDefault() as ITextCommandDefOut;
 
+                    if (cmd.Output != null)
+                    {
+                        if (cmd.Output is IContentCollectionContainer cmdOutCollection)
+                            partCollection.AddRange(cmdOutCollection);
+                        else if (cmd.Output is ContentPart cmdOutPart)
+                            partCollection.Add(cmdOutPart);
+                    }
                 }
 
                 partCollection.ParseCommands();
