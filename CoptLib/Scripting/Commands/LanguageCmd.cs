@@ -6,8 +6,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class LanguageCmd : TextCommandBase
     {
-        public LanguageCmd(string cmd, Doc context, int startIndex, string[] parameters)
-            : base(cmd, context, startIndex, parameters)
+        public LanguageCmd(string cmd, IContent content, Doc context, int startIndex, string[] parameters)
+            : base(cmd, content, context, startIndex, parameters)
         {
             Parse(cmd, parameters);
         }

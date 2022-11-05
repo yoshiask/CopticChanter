@@ -6,7 +6,7 @@ namespace CoptLib.Models
     /// <summary>
     /// An object with content that may contain text commands.
     /// </summary>
-    public interface IContent
+    public interface IContent : IDefinition
     {
         /// <summary>
         /// The original text, containing any commands or format specifiers.
@@ -33,11 +33,6 @@ namespace CoptLib.Models
         /// This property is populated by calling <see cref="ParseCommands"/>.
         /// </remarks>
         List<TextCommandBase> Commands { get; }
-
-        /// <summary>
-        /// The document this content belongs to.
-        /// </summary>
-        Doc DocContext { get; }
 
         /// <summary>
         /// Parses the <see cref="SourceText"/> for commands, storing the results in

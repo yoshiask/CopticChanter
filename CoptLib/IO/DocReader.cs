@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Transactions;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -29,7 +30,7 @@ namespace CoptLib.IO
         /// <param name="coptic">If the input language is Coptic</param>
         /// <param name="name">Name of the reading or hymn</param>
         /// <returns></returns>
-        public static bool SaveDocXml(string filename, IEnumerable<Translation> content, string name)
+        public static bool SaveDocXml(string filename, IEnumerable<ContentPart> content, string name)
         {
             try
             {
@@ -37,10 +38,13 @@ namespace CoptLib.IO
                 // specify the type of object to serialize.
                 XmlSerializer serializer = new XmlSerializer(typeof(Doc));
                 TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
-                Doc saveX = new Doc();
+                Doc saveX = new()
+                {
+                    Name = name,
+                    Translations = new(null)
+                };
 
-                saveX.Translations = new List<Translation>(content);
-                saveX.Name = name;
+                saveX.Translations.AddRange(content);
 
                 // Serialize the save file, and close the TextWriter.
                 serializer.Serialize(writer, saveX);
@@ -89,6 +93,9 @@ namespace CoptLib.IO
             }
         }
 
+        /// <summary>
+        /// Parses the XML document tree into a <see cref="Doc"/>.
+        /// </summary>
         public static Doc ParseDocXml(XDocument xml)
         {
             // The actual content can't be directly deserialized, so it needs to be manually parsed
@@ -101,44 +108,8 @@ namespace CoptLib.IO
             var defsElem = xml.Root.Element("Definitions");
             if (defsElem != null)
             {
-                foreach (XElement defElem in defsElem?.Elements())
-                {
-                    Definition def = null;
-                    string defElemName = defElem.Name.LocalName;
-
-                    if (defElemName == nameof(Script))
-                    {
-                        Script script = new()
-                        {
-                            LuaScript = defElem.Value
-                        };
-                        def = script;
-                    }
-                    else if (defElemName == nameof(Variable))
-                    {
-                        Variable variable = new()
-                        {
-                            Label = defElem.Attribute("Label")?.Value,
-                            DefaultValue = defElem.Attribute("DefaultValue")?.Value,
-                            Configurable = bool.Parse(defElem.Attribute("Configurable")?.Value),
-                        };
-                        def = variable;
-                    }
-                    else if (defElemName == nameof(Models.String))
-                    {
-                        Models.String _string = new()
-                        {
-                            Value = defElem.Value,
-                        };
-                        def = _string;
-                    }
-
-                    if (def != null)
-                    {
-                        ParseCommonXml(def, defElem, doc, null);
-                        doc.Definitions.Add(def);
-                    }
-                }
+                var defs = ParseDefinitionCollection(defsElem?.Elements(), doc, null);
+                doc.DirectDefinitions = defs;
             }
 
             var transsElem = xml.Root.Element("Translations");
@@ -146,7 +117,7 @@ namespace CoptLib.IO
             {
                 foreach (XElement transElem in transsElem.Elements())
                 {
-                    Translation translation = new();
+                    Section translation = new(doc.Translations);
                     ParseCommonXml(translation, transElem, doc, null);
                     doc.Translations.Add(translation);
                 } 
@@ -161,73 +132,109 @@ namespace CoptLib.IO
         /// <param name="doc">The document to apply all transforms on.</param>
         public static void ApplyDocTransforms(Doc doc)
         {
-            foreach (Definition def in doc.Definitions)
+            foreach (IDefinition def in doc.DirectDefinitions)
             {
                 if (def is IContent defContent)
                     defContent.ParseCommands();
+                if (def is IContentCollectionContainer defContentCollection)
+                    defContentCollection.ParseCommands();
+
                 if (def is IMultilingual multilingual)
                     multilingual.HandleFont();
             }
 
-            foreach (Translation translation in doc.Translations)
-            {
-                TransformContentParts(translation.Content, doc);
-            }
+            TransformContentParts(doc.Translations);
         }
 
-        private static List<ContentPart> ParseContentParts(IEnumerable<XElement> elements, Doc doc, Definition parent)
+        private static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, Doc doc, IDefinition parent)
         {
-            List<ContentPart> content = new();
+            List<IDefinition> defs = new();
 
-            foreach (XElement contentElem in elements)
+            foreach (XElement defElem in elements)
             {
-                ContentPart part = null;
+                IDefinition def = null;
+                string defElemName = defElem.Name.LocalName;
 
-                // TODO: Use reflection and interfaces to reduce code duplication?
-                if (contentElem.Name == nameof(Stanza))
+                if (defElemName == nameof(Stanza))
                 {
-                    part = new Stanza(parent);
+                    def = new Stanza(parent);
                 }
-                else if (contentElem.Name == nameof(Section))
+                else if (defElemName == nameof(Section))
                 {
-                    part = new Section(parent)
+                    Section section = new(parent);
+
+                    string title = defElem.Attribute("Title")?.Value;
+                    if (title != null)
                     {
-                        Title = contentElem.Attribute("Title")?.Value,
+                        section.Title = new Stanza(section)
+                        {
+                            SourceText = title
+                        };
+                    }
+
+                    def = section;
+                }
+                else if (defElemName == nameof(Script))
+                {
+                    Script script = new()
+                    {
+                        LuaScript = defElem.Value
                     };
+                    def = script;
                 }
-
-                if (part != null)
+                else if (defElemName == nameof(Variable))
                 {
-                    ParseCommonXml(part, contentElem, doc, parent);
-                    content.Add(part);
-                }
-            }
-
-            return content;
-        }
-
-        private static void TransformContentParts(IEnumerable<ContentPart> parts, Doc doc)
-        {
-            foreach (ContentPart part in parts)
-            {
-                if (part is Section section)
-                {
-                    if (section.Title != null)
+                    Variable variable = new()
                     {
-                        _ = Scripting.Scripting.ParseTextCommands(section.Title, doc, out var title);
-                        section.Title = title;
+                        Label = defElem.Attribute("Label")?.Value,
+                        DefaultValue = defElem.Attribute("DefaultValue")?.Value,
+                        Configurable = bool.Parse(defElem.Attribute("Configurable")?.Value),
+                    };
+                    def = variable;
+                }
+                else if (defElemName == "Translations")
+                {
+                    def = new TranslationCollection(parent);
+                }
+
+                if (def == null)
+                    continue;
+
+                ParseCommonXml(def, defElem, doc, def.Parent);
+
+                if (def is ICollection<IDefinition> defCol)
+                {
+                    //var defCol = (IDefinitionCollection<IDefinition>)def;
+                    foreach (var subdef in ParseDefinitionCollection(defElem.Elements(), doc, def))
+                    {
+                        defCol.Add(subdef);
+
+                        if (subdef.Key != null)
+                            doc.Definitions.Add(subdef.Key, subdef);
                     }
                 }
 
+                if (def.Key != null)
+                    doc.Definitions.Add(def.Key, def);
+                defs.Add(def);
+            }
+
+            return defs;
+        }
+
+        private static void TransformContentParts(IEnumerable<ContentPart> parts)
+        {
+            foreach (ContentPart part in parts)
+            {
                 RecursiveParseCommands(part);
                 if (part is IMultilingual multilingual)
                     multilingual.HandleFont();
             }
         }
 
-        private static void ParseCommonXml(object obj, XElement elem, Doc doc, Definition parent)
+        private static void ParseCommonXml(object obj, XElement elem, Doc doc, IDefinition parent)
         {
-            if (obj is Definition def)
+            if (obj is IDefinition def)
             {
                 def.DocContext = doc;
                 def.Parent = parent;
@@ -252,10 +259,14 @@ namespace CoptLib.IO
             }
             if (obj is IContentCollectionContainer contentCollection && obj is Definition defCC)
             {
-                contentCollection.Content = ParseContentParts(elem.Elements(), doc, defCC);
-                contentCollection.Source = elem.Attribute("Source")?.Value;
+                // Parse elements, remove anything not a ContentPart
+                var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
+                    .Select(d => d as ContentPart)
+                    .Where(d => d is not null);
+                contentCollection.AddRange(defColl);
 
                 // Handle Source definition
+                contentCollection.Source = elem.Attribute("Source")?.Value;
                 if (contentCollection.Source != null)
                 {
 
