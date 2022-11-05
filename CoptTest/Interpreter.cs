@@ -1,16 +1,23 @@
 ﻿using CoptLib.Writing;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace CoptTest
 {
     public class Interpreter
     {
+        private readonly ITestOutputHelper _output;
+
+        public Interpreter(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
         {
             // Difficult words
-            "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
+            "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
 
             // Ressurrection hymns
             "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ ⲁϥⲧⲱⲛϥ ⲉ̀ⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ: ⲫⲏⲉ̀ⲧⲁϥⲙⲟⲩ ⲁϥϩⲱⲙⲓ ⲉ̀ϫⲉⲛ ⲫ̀ⲙⲟⲩ ⲟⲩⲟϩ ⲛⲏⲉⲧⲭⲏ ϧⲉⲛ ⲛⲓⲙ̀ϩⲁⲩ ⲁϥⲉⲣϩ̀ⲙⲟⲧ ⲛⲱⲟⲩ ⲙ̀ⲡⲓⲱⲛϧ ⲛ̀ⲉ̀ⲛⲉϩ.",
@@ -42,7 +49,7 @@ namespace CoptTest
         public void IpaTranscribe_CopticUnicode(string sample)
         {
             var result = CopticInterpreter.IpaTranscribe(sample);
-            Debug.WriteLine(result);
+            _output.WriteLine(result);
         }
 
         [Theory]
@@ -50,7 +57,7 @@ namespace CoptTest
         public void IpaTranscribe_CopticStandard(string sample)
         {
             string result = CopticInterpreter.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
-            Debug.WriteLine(result);
+            _output.WriteLine(result);
         }
 
         private static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()

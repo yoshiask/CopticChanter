@@ -4,12 +4,20 @@ using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
 using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace CoptTest
 {
     public class Scripting
     {
         Doc _doc = new Doc();
+
+        private readonly ITestOutputHelper _output;
+
+        public Scripting(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Theory]
         [InlineData("This is some English, {0}with a millisecond offset.")]
