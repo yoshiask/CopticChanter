@@ -129,7 +129,7 @@ namespace CoptLib.Models
 
         public void ParseCommands()
         {
-            DocReader.RecursiveParseCommands(_content);
+            DocReader.RecursiveTransform(_content);
             Title?.ParseCommands();
         }
 

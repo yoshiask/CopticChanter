@@ -132,18 +132,8 @@ namespace CoptLib.IO
         /// <param name="doc">The document to apply all transforms on.</param>
         public static void ApplyDocTransforms(Doc doc)
         {
-            foreach (IDefinition def in doc.DirectDefinitions)
-            {
-                if (def is IContent defContent)
-                    defContent.ParseCommands();
-                if (def is IContentCollectionContainer defContentCollection)
-                    defContentCollection.ParseCommands();
-
-                if (def is IMultilingual multilingual)
-                    multilingual.HandleFont();
-            }
-
-            TransformContentParts(doc.Translations);
+            RecursiveTransform(doc.DirectDefinitions);
+            RecursiveTransform(doc.Translations);
         }
 
         private static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, Doc doc, IDefinition parent)
@@ -221,16 +211,6 @@ namespace CoptLib.IO
             return defs;
         }
 
-        private static void TransformContentParts(IEnumerable<ContentPart> parts)
-        {
-            foreach (ContentPart part in parts)
-            {
-                RecursiveParseCommands(part);
-                if (part is IMultilingual multilingual)
-                    multilingual.HandleFont();
-            }
-        }
-
         private static void ParseCommonXml(object obj, XElement elem, Doc doc, IDefinition parent)
         {
             if (obj is IDefinition def)
@@ -264,27 +244,25 @@ namespace CoptLib.IO
                     .Where(d => d is not null);
                 contentCollection.AddRange(defColl);
 
-                // Handle Source definition
                 contentCollection.Source = elem.Attribute("Source")?.Value;
-                if (contentCollection.Source != null)
-                {
-
-                }
             }
         }
 
-        internal static void RecursiveParseCommands(IEnumerable<ContentPart> parts)
+        internal static void RecursiveTransform(System.Collections.IEnumerable parts)
         {
-            foreach (ContentPart part in parts)
-                RecursiveParseCommands(part);
+            foreach (var part in parts)
+                Transform(part);
         }
 
-        internal static void RecursiveParseCommands(ContentPart part)
+        internal static void Transform(object part)
         {
             if (part is IContent partContent)
                 partContent.ParseCommands();
-            else if (part is IContentCollectionContainer partCollection)
+            if (part is IContentCollectionContainer partCollection)
                 partCollection.ParseCommands();
+
+            if (part is IMultilingual multilingual)
+                multilingual.HandleFont();
         }
     }
 }
