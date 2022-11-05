@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using NLua;
 using NodaTime;
-using static CoptLib.Writing.CopticInterpreter;
 
 namespace CoptLib.Scripting
 {
@@ -382,8 +378,9 @@ namespace CoptLib.Scripting
         {
             PopulateAvailableCommands();
 
-            var type = _availCmds[cmd];
+            if (_availCmds.TryGetValue(cmd, out var type))
             return Activator.CreateInstance(type, cmd, content, context, startIndex, parameters) as TextCommandBase;
+            return null;
         }
 
         private static void PopulateAvailableCommands()
@@ -394,6 +391,7 @@ namespace CoptLib.Scripting
             _availCmds = new Dictionary<string, Type>
             {
                 { "language", typeof(LanguageCmd) },
+                { "lang", typeof(LanguageCmd) },
                 { "ms", typeof(TimestampCmd) },
                 { "def", typeof(DefinitionCmd) },
             };
