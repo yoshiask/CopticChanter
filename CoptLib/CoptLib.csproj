@@ -10,13 +10,16 @@
         <Description>
             A .NET Standard 2.0 library made to handle scenarios specific to Coptic for Coptic Chanter.
             Useful features:
-            - CopticDate (w/Special Events)
-            - CopticInterpreter (convert to &amp; from Coptic1 [Coptic Chanter], CS Avva Shenouda [Tasbeha.org], and Coptic Unicode)
-            - IfXML (a very simple XML-based scripting language using only if statements and return)
+            - CopticDate (w/ Special Events)
+            - CopticInterpreter
+                - Convert between Coptic fonts, including Coptic1, CS Avva Shenouda [Tasbeha.org], and Coptic Unicode
+                - Perform phonetic analysis on Coptic and Greek text, which includes guessing word origin and pronunciation
+            - Scripting
+                - Powerful inline text commands for reducing duplicated text and transforming content at runtime
         </Description>
         <PackageTags>Coptic, Yoshi</PackageTags>
-        <Copyright>2017-2019</Copyright>
-        <Version>1.0.2</Version>
+        <Copyright>2017-2022</Copyright>
+        <Version>2.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
