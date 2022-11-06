@@ -92,7 +92,7 @@ namespace CoptLib.Models
             HasBeenParsed = true;
         }
 
-        public override string ToString() => SourceText;
+        public override string ToString() => Text ?? SourceText;
     }
 
     public class Section : ContentPart, IContentCollectionContainer

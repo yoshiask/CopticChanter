@@ -37,5 +37,7 @@ namespace CoptLib.Models
             Text = text;
             HasBeenParsed = true;
         }
+
+        public override string ToString() => Text ?? SourceText;
     }
 }
