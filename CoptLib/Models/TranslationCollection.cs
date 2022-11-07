@@ -48,7 +48,9 @@ namespace CoptLib.Models
             // Unlike Sections, the content of a TranslationCollection
             // is meant to be shown in parallel (side-by-side) rather
             // than in series (one after the other).
-            return Children.Max(cp => cp.CountRows());
+            return Children.Count > 0
+                ? Children.Max(cp => cp.CountRows())
+                : 0;
         }
     }
 }
