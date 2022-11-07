@@ -90,7 +90,6 @@ namespace CopticWriter
                     Docs.Clear();
                     set.IncludedDocs.ForEach(d => Docs.Add(d));
                     MainTabControl.SelectedIndex = 0;
-                    CurrentStanza = (set.IncludedDocs[0].Translations[0].Content[0] as Stanza)?.Text;
                     return;
             }
         }

@@ -1,76 +1,76 @@
 ﻿using CoptLib.Models;
 using CoptLib.Writing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CopticWriter.Helpers
 {
     public static class DocumentUIFactory
     {
-        public static TextBox CreateBlockFromStanza(Stanza stanza)
+        public static void CreateFromContentPart(ContentPart part, Action<TextBox> action)
         {
-            if (stanza.Language == Language.Default)
-                stanza.Language = stanza.Parent.Language;
+            if (action == null)
+                action = _ => { };
 
-            TextBox contentBlock = new TextBox
+            switch (part)
             {
-                Text = stanza.Text,
-                FontFamily = Common.DefaultFont,
-                FontSize = Common.DefaultFontSize,
+                case IContent content:
+                    var contentBlock = CreateBlockFromContent(content);
+                    action(contentBlock);
+                    break;
+
+                case IContentCollectionContainer contentCollection:
+                    var blocks = CreateBlocksFromContentCollectionContainer(contentCollection);
+                    foreach (TextBox block in blocks)
+                        action(block);
+                    break;
+            }
+        }
+
+        public static TextBox CreateBlockFromContent(IContent contentPart)
+        {
+            var contentBlock = new TextBox
+            {
+                Text = contentPart.Text,
                 TextWrapping = TextWrapping.Wrap,
                 TextAlignment = TextAlignment.Left
             };
 
-            switch (stanza.Language)
-            {
-                case Language.Arabic:
-                case Language.Aramaic:
-                case Language.Hebrew:
-                    contentBlock.TextAlignment = TextAlignment.Right;
-                    break;
-
-                case Language.Coptic:
-                    // TextBlock doesn't seem to know where to break Coptic (Unicode?)
-                    // lines, so insert a zero-width space at every space so
-                    // word wrap actually works
-                    if (!contentBlock.Text.Contains('\u200B'))
-                        contentBlock.Text = contentBlock.Text.Replace(" ", " \u200B");
-                    break;
-            }
+            HandleLanguage(contentBlock, contentPart);
 
             return contentBlock;
         }
 
         public static List<TextBox> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container)
         {
-            var blocks = new List<TextBox>(container.Content.Count + 1);
+            var blocks = new List<TextBox>(container.Children.Count + 1);
 
-            if (container is Section section)
+            if (container is Section section && section.Title != null)
             {
                 var headerBlock = CreateSubheader(section.Title);
                 blocks.Add(headerBlock);
             }
 
-            foreach (ContentPart part in container.Content)
+            foreach (ContentPart part in container.Children)
             {
                 switch (part)
                 {
                     case Stanza stanza:
-                    {
-                        var block = CreateBlockFromStanza(stanza);
-                        blocks.Add(block);
-                        break;
-                    }
+                        {
+                            var block = CreateBlockFromContent(stanza);
+                            blocks.Add(block);
+                            break;
+                        }
                     case Section subsection:
-                    {
-                        var subblocks = CreateBlocksFromContentCollectionContainer(subsection);
-                        blocks.AddRange(subblocks);
-                        break;
-                    }
+                        {
+                            var subblocks = CreateBlocksFromContentCollectionContainer(subsection);
+                            blocks.AddRange(subblocks);
+                            break;
+                        }
                 }
             }
 
@@ -82,9 +82,7 @@ namespace CopticWriter.Helpers
             var headerBlock = new TextBox
             {
                 Text = title,
-                FontFamily = Common.DefaultFont,
                 FontWeight = FontWeights.Bold,
-                FontSize = Common.DefaultFontSize * 1.25,
                 TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)
@@ -93,17 +91,18 @@ namespace CopticWriter.Helpers
                 // to distinguish it from the previous document
                 headerBlock.Margin = new Thickness(0, 20, 0, 0);
             }
+
+            HandleLanguage(headerBlock, title);
+
             return headerBlock;
         }
 
-        public static TextBox CreateSubheader(string title, bool addPadding = true)
+        public static TextBox CreateSubheader(IContent title, bool addPadding = true)
         {
             var headerBlock = new TextBox
             {
-                Text = title,
-                FontFamily = Common.DefaultFont,
+                Text = title.Text,
                 FontWeight = FontWeights.SemiBold,
-                FontSize = Common.DefaultFontSize,
                 TextWrapping = TextWrapping.Wrap
             };
             if (addPadding)
@@ -112,6 +111,9 @@ namespace CopticWriter.Helpers
                 // to distinguish it from the previous document
                 headerBlock.Margin = new Thickness(0, 10, 0, 0);
             }
+
+            HandleLanguage(headerBlock, title);
+
             return headerBlock;
         }
 
@@ -120,54 +122,66 @@ namespace CopticWriter.Helpers
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
             int lastRow = 0;
+            int translationCount = doc.Translations.Children.Count;
 
             // Create a column for each language requested
-            for (int i = 0; i < doc.Translations.Count; i++)
+            for (int i = 0; i < translationCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             // Create rows for each stanza
             // Don't forget one for each header too
-            int numRows = doc.Translations?.Max(t => t.CountRows()) ?? 0;
+            int numRows = doc.Translations?.CountRows() ?? 0;
             for (int i = 0; i <= numRows; i++)
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
             var headerBlock = CreateHeader(doc.Name, lastRow != 0);
             MainGrid.Children.Add(headerBlock);
-            Grid.SetColumnSpan(headerBlock, doc.Translations.Count);
+            Grid.SetColumnSpan(headerBlock, translationCount);
             Grid.SetRow(headerBlock, lastRow++);
 
-            for (int t = 0; t < doc.Translations.Count; t++)
+            for (int t = 0; t < translationCount; t++)
             {
-                Translation translation = doc.Translations[t];
+                ContentPart translation = doc.Translations[t];
 
                 int i = 0;
-                foreach (ContentPart part in translation.Content)
+                CreateFromContentPart(translation, block =>
                 {
-                    if (part is IContent content && !content.HasBeenParsed)
-                        content.ParseCommands();
-
-                    switch (part)
-                    {
-                        case Stanza stanza:
-                            var stanzaBlock = CreateBlockFromStanza(stanza);
-                            MainGrid.Children.Add(stanzaBlock);
-                            Grid.SetColumn(stanzaBlock, t);
-                            Grid.SetRow(stanzaBlock, lastRow + i++);
-                            break;
-
-                        case Section section:
-                            var blocks = CreateBlocksFromContentCollectionContainer(section);
-                            foreach (TextBox block in blocks)
-                            {
-                                MainGrid.Children.Add(block);
-                                Grid.SetColumn(block, t);
-                                Grid.SetRow(block, lastRow + i++);
-                            }
-                            break;
-                    }
-                }
+                    MainGrid.Children.Add(block);
+                    Grid.SetColumn(block, t);
+                    Grid.SetRow(block, lastRow + i++);
+                });
             }
             return MainGrid;
+        }
+
+        private static void HandleLanguage(TextBox contentBlock, object content)
+        {
+            Language lang = content is IMultilingual multi ? multi.Language : Language.Default;
+
+            contentBlock.FontFamily = Common.DefaultFont;
+            contentBlock.FontSize = Common.DefaultFontSize;
+            switch (lang)
+            {
+                case Language.Arabic:
+                case Language.Aramaic:
+                case Language.Hebrew:
+                    contentBlock.TextAlignment = TextAlignment.Right;
+                    break;
+
+                case Language.Coptic:
+                case Language.Greek:
+                    // Font rendering is hard. UWP wants the combining character before,
+                    // while certain HTML renderers can't make up their minds.
+                    contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);
+
+                    // TextBox doesn't seem to know where to break Greek or Coptic Unicode
+                    // lines, so insert a zero-width space at every space so
+                    // word wrap actually works
+                    if (!contentBlock.Text.Contains('\u200B'))
+                        contentBlock.Text = contentBlock.Text.Replace(" ", " \u200B");
+
+                    break;
+            }
         }
     }
 }

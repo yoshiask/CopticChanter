@@ -27,6 +27,9 @@ namespace CopticWriter.Views
         private void DocumentEditorView_Loaded(object sender, RoutedEventArgs e)
         {
             InitEnglish();
+            // Apply transforms before display
+            CoptLib.IO.DocReader.ApplyDocTransforms(Document);
+
             Grid docGrid = DocumentUIFactory.CreateGridFromDoc(Document);
             DocPresenter.Children.Clear();
             DocPresenter.Children.Add(docGrid);
