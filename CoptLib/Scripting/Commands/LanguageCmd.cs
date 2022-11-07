@@ -22,23 +22,23 @@ namespace CoptLib.Scripting.Commands
             var langParam = ((IContent)parameters[0]).SourceText;
             var sourceParam = parameters[parameters.Length - 1];
 
-            if (!Enum.TryParse<Language>(langParam, out var language)
-                || !(language == Language.Coptic || language == Language.Greek))
+            if (!Enum.TryParse<Language>(langParam, out var language))
                 return;
 
             Language = language;
 
-            if (parameters.Length >= 3)
+            if (parameters.Length >= 3 && (language == Language.Coptic || language == Language.Greek))
             {
                 var fontParam = ((IContent)parameters[1]).SourceText;
 
                 Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
-                Output = sourceParam.Select(def =>
-                {
-                    if (def is IContent content)
-                        content.Text = Font.Convert(content.SourceText);
-                });
             }
+
+            Output = sourceParam.Select(def =>
+            {
+                if (def is IContent content)
+                    content.Text = Font != null ? Font.Convert(content.SourceText) : content.SourceText;
+            });
         }
     }
 }

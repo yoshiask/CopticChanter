@@ -19,7 +19,7 @@ namespace CoptLib.Scripting.Commands
                 if (def is not IContent content)
                     return;
 
-                content.Text = CopticInterpreter.IpaTranscribe(content.Text);
+                content.Text = CopticInterpreter.IpaTranscribe(content.Text ?? content.SourceText);
             });
         }
     }

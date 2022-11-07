@@ -59,9 +59,10 @@ namespace CoptTest
 
             var cmd = cmds.Single();
             var langCmd = Assert.IsType<LanguageCmd>(cmd);
+            var langDef = Assert.IsAssignableFrom<IContent>(cmd.Output);
 
             Assert.Equal(langCmd.Language, lang);
-            Assert.Equal(langCmd.Text, convSubtext);
+            Assert.Equal(langDef.Text, convSubtext);
             if (font == null)
                 Assert.Null(langCmd.Font);
             Assert.Equal(langCmd.Font?.Name, font);
@@ -102,11 +103,12 @@ namespace CoptTest
 
             var cmd = cmds.Single();
             var defCmd = Assert.IsType<DefinitionCmd>(cmd);
-            var def = Assert.IsType<Stanza>(defCmd.Output);
+            var defContent = Assert.IsAssignableFrom<IContent>(defCmd.Output);
+            var defMulti = Assert.IsAssignableFrom<IMultilingual>(defCmd.Output);
 
-            Assert.Equal(defCmd.Text, parsedValue);
-            Assert.Equal(def.Language, lang);
-            Assert.Equal(def.Font, font);
+            Assert.Equal(defContent.Text, parsedValue);
+            Assert.Equal(defMulti.Language, lang);
+            Assert.Equal(defMulti.Font, font);
         }
 
         [Theory]
