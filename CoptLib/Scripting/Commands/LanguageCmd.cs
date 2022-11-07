@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Writing;
 using System;
 
@@ -6,7 +7,7 @@ namespace CoptLib.Scripting.Commands
 {
     public class LanguageCmd : TextCommandBase
     {
-        public LanguageCmd(string cmd, IContent content, int startIndex, string[] parameters)
+        public LanguageCmd(string cmd, IContent content, int startIndex, IDefinition[] parameters)
             : base(cmd, content, startIndex, parameters)
         {
             Parse(cmd, parameters);
@@ -16,24 +17,27 @@ namespace CoptLib.Scripting.Commands
 
         public CopticFont Font { get; private set; }
 
-        private void Parse(string cmd, params string[] parameters)
+        private void Parse(string cmd, params IDefinition[] parameters)
         {
-            Text = parameters[parameters.Length - 1];
+            var langParam = ((IContent)parameters[0]).SourceText;
+            var sourceParam = parameters[parameters.Length - 1];
 
-            if (!Enum.TryParse<Language>(parameters[0], out var language))
+            if (!Enum.TryParse<Language>(langParam, out var language)
+                || !(language == Language.Coptic || language == Language.Greek))
                 return;
 
             Language = language;
 
-            switch (Language)
+            if (parameters.Length >= 3)
             {
-                case Language.Coptic:
-                    if (parameters.Length >= 3)
-                    {
-                        Font = CopticFont.FindFont(parameters[1]) ?? CopticFont.CsAvvaShenouda;
-                        Text = Font.Convert(Text);
-                    }
-                    break;
+                var fontParam = ((IContent)parameters[1]).SourceText;
+
+                Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
+                Output = sourceParam.Select(def =>
+                {
+                    if (def is IContent content)
+                        content.Text = Font.Convert(content.SourceText);
+                });
             }
         }
     }

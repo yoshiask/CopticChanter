@@ -1,6 +1,7 @@
 ﻿using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
+using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,7 +45,7 @@ namespace CoptLib.IO
                     Translations = new(null)
                 };
 
-                saveX.Translations.AddRange(content);
+                saveX.Translations.Children.AddRange(content);
 
                 // Serialize the save file, and close the TextWriter.
                 serializer.Serialize(writer, saveX);
@@ -119,7 +120,7 @@ namespace CoptLib.IO
                 {
                     Section translation = new(doc.Translations);
                     ParseCommonXml(translation, transElem, doc, null);
-                    doc.Translations.Add(translation);
+                    doc.Translations.Children.Add(translation);
                 } 
             }
 
@@ -133,7 +134,7 @@ namespace CoptLib.IO
         public static void ApplyDocTransforms(Doc doc)
         {
             RecursiveTransform(doc.DirectDefinitions);
-            RecursiveTransform(doc.Translations);
+            RecursiveTransform(doc.Translations.Children);
         }
 
         private static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, Doc doc, IDefinition parent)
@@ -191,17 +192,6 @@ namespace CoptLib.IO
 
                 ParseCommonXml(def, defElem, doc, def.Parent);
 
-                if (def is ICollection<IDefinition> defCol)
-                {
-                    foreach (var subdef in ParseDefinitionCollection(defElem.Elements(), doc, def))
-                    {
-                        defCol.Add(subdef);
-
-                        if (subdef.Key != null)
-                            doc.AddDefinition(subdef);
-                    }
-                }
-
                 if (def.Key != null)
                     doc.AddDefinition(def);
                 defs.Add(def);
@@ -240,8 +230,8 @@ namespace CoptLib.IO
                 // Parse elements, remove anything not a ContentPart
                 var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
                     .Select(d => d as ContentPart)
-                    .Where(d => d is not null);
-                contentCollection.AddRange(defColl);
+                    .PruneNull();
+                contentCollection.Children.AddRange(defColl);
 
                 string sourceText = elem.Attribute("Source")?.Value;
                 if (sourceText != null)
@@ -268,14 +258,14 @@ namespace CoptLib.IO
                     // This is done before commands are parsed, just in
                     // case the generated content contains commands.
                     var cmd = Scripting.Scripting.ParseTextCommands(partCollection.Source, out _)
-                        .LastOrDefault() as ITextCommandDefOut;
+                        .LastOrDefault();
 
                     if (cmd.Output != null)
                     {
                         if (cmd.Output is IContentCollectionContainer cmdOutCollection)
-                            partCollection.AddRange(cmdOutCollection);
+                            partCollection.Children.AddRange(cmdOutCollection.Children);
                         else if (cmd.Output is ContentPart cmdOutPart)
-                            partCollection.Add(cmdOutPart);
+                            partCollection.Children.Add(cmdOutPart);
                     }
                 }
 

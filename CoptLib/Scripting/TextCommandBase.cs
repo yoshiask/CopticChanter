@@ -1,4 +1,5 @@
 ﻿using CoptLib.Models;
+using CoptLib.Writing;
 
 namespace CoptLib.Scripting
 {
@@ -7,7 +8,7 @@ namespace CoptLib.Scripting
     /// </summary>
     public abstract class TextCommandBase
     {
-        public TextCommandBase(string name, IContent content, int startIndex, string[] parameters)
+        public TextCommandBase(string name, IContent content, int startIndex, IDefinition[] parameters)
         {
             Name = name;
             SourceContent = content;
@@ -23,17 +24,7 @@ namespace CoptLib.Scripting
         /// <summary>
         /// The parameters used to call the command.
         /// </summary>
-        public string[] Parameters { get; }
-
-        /// <summary>
-        /// The plain text content of the command, if any.
-        /// </summary>
-        /// <remarks>
-        /// Set to <see langword="null"/> to leave the command in
-        /// the source text, or <see cref="string.Empty"/> to remove
-        /// it.
-        /// </remarks>
-        public string Text { get; protected set; }
+        public IDefinition[] Parameters { get; }
 
         /// <summary>
         /// The content that contained the command.
@@ -54,5 +45,28 @@ namespace CoptLib.Scripting
         /// where the <c>length</c> parameter is <c>Text.Length</c>.
         /// </remarks>
         public int StartIndex { get; }
+
+        /// <summary>
+        /// The output definition of the command.
+        /// </summary>
+        /// <remarks>
+        /// Set to <see langword="null"/> to remove the command
+        /// from the source text.
+        /// </remarks>
+        public IDefinition Output { get; protected set; }
+
+        protected void HandleOutput()
+        {
+            if (Output is TranslationCollection defCol)
+            {
+                Language lang = Language.Default;
+                if (SourceContent is IMultilingual multi)
+                    lang = multi.Language;
+                else if (SourceContent.Parent is IMultilingual parentMulti)
+                    lang = parentMulti.Language;
+
+                Output = defCol[lang];
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace CopticChanter.Helpers
 
         public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container)
         {
-            var blocks = new List<TextBlock>(container.Count + 1);
+            var blocks = new List<TextBlock>(container.Children.Count + 1);
 
             if (container is Section section && section.Title != null)
             {
@@ -55,7 +55,7 @@ namespace CopticChanter.Helpers
                 blocks.Add(headerBlock);
             }
 
-            foreach (ContentPart part in container)
+            foreach (ContentPart part in container.Children)
             {
                 switch (part)
                 {
@@ -122,9 +122,10 @@ namespace CopticChanter.Helpers
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
             int lastRow = 0;
+            int translationCount = doc.Translations.Children.Count;
 
             // Create a column for each language requested
-            for (int i = 0; i < doc.Translations.Count; i++)
+            for (int i = 0; i < translationCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             // Create rows for each stanza
@@ -135,10 +136,10 @@ namespace CopticChanter.Helpers
 
             var headerBlock = CreateHeader(doc.Name, lastRow != 0);
             MainGrid.Children.Add(headerBlock);
-            Grid.SetColumnSpan(headerBlock, doc.Translations.Count);
+            Grid.SetColumnSpan(headerBlock, translationCount);
             Grid.SetRow(headerBlock, lastRow++);
 
-            for (int t = 0; t < doc.Translations.Count; t++)
+            for (int t = 0; t < translationCount; t++)
             {
                 ContentPart translation = doc.Translations[t];
 

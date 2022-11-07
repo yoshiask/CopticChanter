@@ -24,7 +24,7 @@ namespace CoptLib.Models
         /// <remarks>
         /// This property is populated by calling <see cref="ParseCommands"/>.
         /// </remarks>
-        string Text { get; }
+        string Text { get; set; }
 
         /// <summary>
         /// A list of commands parsed from <see cref="SourceText"/>.

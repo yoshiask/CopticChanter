@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using NLua;
@@ -385,22 +387,54 @@ namespace CoptLib.Scripting
                     var cmdStart = cmdStartPositions.Pop();
 
                     string name = strippedText.Substring(cmdStart + 1, start - cmdStart - 1);
-                    string[] parameters = strippedText.Substring(start + 1, index - start - 1).Split('|');
 
-                    var parsedCmd = GetCommand(name, content, start, parameters);
+                    // Make sure all inputs are IDefinitions
+                    List<IDefinition> parameters = new();
+                    string paramText = strippedText.Substring(start + 1, index - start - 1);
+                    int pStartIdx = -1;
+                    int pNextStartIdx = paramText.IndexOf('|');
+                    do
+                    {
+                        IDefinition par;
+
+                        int pActStartIdx = cmdStart + start + ++pStartIdx + 1;
+                        var cmd = parsedCmds.FirstOrDefault(c => c.StartIndex == pActStartIdx);
+                        if (cmd != null)
+                        {
+                            par = cmd.Output;
+                        }
+                        else
+                        {
+                            int pEndIdx = pNextStartIdx >= 0 ? pNextStartIdx : paramText.Length;
+                            string text = paramText.Substring(pStartIdx, pEndIdx - pStartIdx);
+                            par = new SimpleContent(text, content);
+                        }
+
+                        parameters.Add(par);
+                        pStartIdx = pNextStartIdx;
+                        if (pStartIdx < 0)
+                            break;
+                        pNextStartIdx = paramText.IndexOf('|', pStartIdx + 1);
+                    } while (pStartIdx >= 0);
+
+                    var parsedCmd = GetCommand(name, content, cmdStart, parameters.ToArray());
                     if (parsedCmd == null)
                         continue;
 
-                    if (parsedCmd.Text != null)
+                    int cmdLength = index - cmdStart + 1;
+                    strippedText = strippedText.Remove(cmdStart, cmdLength);
+                    if (parsedCmd.Output is IContent outputContent)
                     {
-                        int cmdLength = index - cmdStart + 1;
-                        strippedText = strippedText.Remove(cmdStart, cmdLength);
-
-                        if (parsedCmd.Text != string.Empty)
-                            strippedText = strippedText.Insert(cmdStart, parsedCmd.Text);
+                        if (outputContent.Text != string.Empty)
+                            strippedText = strippedText.Insert(cmdStart, outputContent.Text);
 
                         // Make sure to update the current index
-                        index += parsedCmd.Text.Length - cmdLength;
+                        index += outputContent.Text.Length - cmdLength;
+                    }
+                    else
+                    {
+                        // Strip out the command text
+                        index = cmdStart - 1;
                     }
 
                     parsedCmds.Add(parsedCmd);
@@ -413,7 +447,7 @@ namespace CoptLib.Scripting
             return parsedCmds;
         }
 
-        private static TextCommandBase GetCommand(string cmd, IContent content, int startIndex, string[] parameters)
+        private static TextCommandBase GetCommand(string cmd, IContent content, int startIndex, IDefinition[] parameters)
         {
             PopulateAvailableCommands();
 

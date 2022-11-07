@@ -1,22 +1,26 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Writing;
 
 namespace CoptLib.Scripting.Commands
 {
-    public class IpaTranscribeCmd : TextCommandBase, ITextCommandDefOut
+    public class IpaTranscribeCmd : TextCommandBase
     {
-        public IpaTranscribeCmd(string name, IContent content, int startIndex, string[] parameters)
+        public IpaTranscribeCmd(string name, IContent content, int startIndex, IDefinition[] parameters)
             : base(name, content, startIndex, parameters)
         {
             Parse(name, content, parameters);
         }
 
-        public IDefinition Output { get; private set; }
-
-        private void Parse(string cmd, IContent content, params string[] parameters)
+        private void Parse(string cmd, IContent content, params IDefinition[] parameters)
         {
-            string sourceText = parameters[0];
-            Text = CopticInterpreter.IpaTranscribe(sourceText);
+            Output = parameters[0].Select(def =>
+            {
+                if (def is not IContent content)
+                    return;
+
+                content.Text = CopticInterpreter.IpaTranscribe(content.Text);
+            });
         }
     }
 }

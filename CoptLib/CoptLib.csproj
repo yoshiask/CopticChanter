@@ -23,6 +23,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="OwlCore" Version="0.1.0" />
         <PackageReference Include="NLua" Version="1.5.2" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
         <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />

@@ -5,12 +5,14 @@ namespace CoptLib.Models
     /// <summary>
     /// Interface for any model that contains a collection of <see cref="ContentPart"/>s.
     /// </summary>
-    public interface IContentCollectionContainer : ICollection<ContentPart>, IDefinition
+    public interface IContentCollectionContainer : IDefinition
     {
         /// <summary>
         /// A command used to populate the collection. May contain nested text commands.
         /// </summary>
         SimpleContent Source { get; set; }
+
+        List<ContentPart> Children { get; }
 
         /// <inheritdoc cref="IContent.ParseCommands"/>
         void ParseCommands();

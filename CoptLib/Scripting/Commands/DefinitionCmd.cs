@@ -2,22 +2,19 @@
 
 namespace CoptLib.Scripting.Commands
 {
-    public class DefinitionCmd : TextCommandBase, ITextCommandDefOut
+    public class DefinitionCmd : TextCommandBase
     {
-        public DefinitionCmd(string name, IContent content, int startIndex, string[] parameters)
+        public DefinitionCmd(string name, IContent content, int startIndex, IDefinition[] parameters)
             : base(name, content, startIndex, parameters)
         {
             Parse(name, content, parameters);
         }
 
-        public IDefinition Output { get; internal set; }
-
-        private void Parse(string cmd, IContent content, params string[] parameters)
+        private void Parse(string cmd, IContent content, params IDefinition[] parameters)
         {
-            string defId = parameters[0];
+            string defId = ((IContent)parameters[0]).SourceText;
             Output = content.DocContext.Definitions[defId];
-
-            (Output, Text) = this.HandleOutput();
+            HandleOutput();
         }
     }
 }

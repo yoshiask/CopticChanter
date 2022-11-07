@@ -69,7 +69,7 @@ namespace CoptLib.Models
 
         public bool HasBeenParsed { get; private set; }
 
-        public string Text { get; private set; }
+        public string Text { get; set; }
 
         public List<TextCommandBase> Commands { get; private set; }
 
@@ -97,8 +97,6 @@ namespace CoptLib.Models
 
     public class Section : ContentPart, IContentCollectionContainer
     {
-        protected List<ContentPart> _content = new();
-
         public Section(IDefinition parent) : base(parent)
         {
 
@@ -108,13 +106,11 @@ namespace CoptLib.Models
 
         public SimpleContent Source { get; set; }
 
-        public int Count => _content.Count;
-
-        public bool IsReadOnly => false;
+        public List<ContentPart> Children { get; } = new();
 
         public override int CountRows()
         {
-            int count = _content.Sum(p => p.CountRows());
+            int count = Children.Sum(p => p.CountRows());
 
             if (Title != null)
                 count++;
@@ -124,7 +120,7 @@ namespace CoptLib.Models
 
         public void ParseCommands()
         {
-            DocReader.RecursiveTransform(_content);
+            DocReader.RecursiveTransform(Children);
             Title?.ParseCommands();
         }
 
@@ -133,25 +129,11 @@ namespace CoptLib.Models
             if (Handled)
                 return;
 
-            foreach (ContentPart part in _content)
+            foreach (ContentPart part in Children)
                 part.HandleFont();
 
             if (Title != null && Title is IMultilingual multiTitle)
                 multiTitle.HandleFont();
         }
-
-        public IEnumerator<ContentPart> GetEnumerator() => _content.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public void Add(ContentPart item) => _content.Add(item);
-
-        public void Clear() => _content.Clear();
-
-        public bool Contains(ContentPart item) => _content.Contains(item);
-
-        public void CopyTo(ContentPart[] array, int arrayIndex) => _content.CopyTo(array, arrayIndex);
-
-        public bool Remove(ContentPart item) => _content.Remove(item);
     }
 }

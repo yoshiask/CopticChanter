@@ -44,7 +44,7 @@ namespace CopticChanter.Layouts
             {
                 // Apply transforms before display
                 CoptLib.IO.DocReader.ApplyDocTransforms(doc);
-                if (doc.Translations.Count == 0)
+                if (doc.Translations.Children.Count == 0)
                     continue;
 
                 Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc);

@@ -24,7 +24,7 @@ namespace CoptLib.Models
         /// The content does not contain a translation with the given key.
         /// </exception>
         public ContentPart this[string key]
-            => this.First(t => t.Key.Equals(key, StringComparison.Ordinal));
+            => Children.First(t => t.Key.Equals(key, StringComparison.Ordinal));
 
         /// <summary>
         /// Gets the first <see cref="ContentPart"/> in the given <see cref="Language"/>.
@@ -32,7 +32,7 @@ namespace CoptLib.Models
         /// <exception cref="InvalidOperationException">
         /// The content does not contain a translation for the given language.
         /// </exception>
-        public ContentPart this[Language lang] => this.First(t => t.Language == lang);
+        public ContentPart this[Language lang] => Children.First(t => t.Language == lang);
 
         /// <summary>
         /// Gets the <see cref="ContentPart"/> at the given index.
@@ -41,14 +41,14 @@ namespace CoptLib.Models
         /// <paramref name="idx"/> is less than 0 or greater than or equal to the
         /// number of elements.
         /// </exception>
-        public ContentPart this[int idx] => this.ElementAt(idx);
+        public ContentPart this[int idx] => Children[idx];
 
         public override int CountRows()
         {
             // Unlike Sections, the content of a TranslationCollection
             // is meant to be shown in parallel (side-by-side) rather
             // than in series (one after the other).
-            return this.Max(cp => cp.CountRows());
+            return Children.Max(cp => cp.CountRows());
         }
     }
 }
