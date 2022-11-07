@@ -349,8 +349,18 @@ namespace CoptLib.Scripting
             for (int index = 0; index < strippedText.Length; index++)
             {
                 char ch = strippedText[index];
-                if (ch == '\\')
+                if (ch == '\\' && index + 1 < strippedText.Length)
                 {
+                    // Check if this is an escape sequence
+                    char nextCh = strippedText[index + 1];
+                    if (nextCh == '\\' || nextCh == '{' || nextCh == '}')
+                    {
+                        // Remove escape signal '\\'
+                        strippedText = strippedText.Remove(index, 1);
+                        continue;
+                    }
+
+                    // else, this is the start of a command
                     cmdStartPositions.Push(index);
                 }
                 else if (ch == ' ' && cmdStartPositions.Count > paramStartPositions.Count)
