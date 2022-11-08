@@ -1,4 +1,5 @@
-﻿using CoptLib.Writing;
+﻿using CoptLib.Scripting;
+using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -35,10 +36,22 @@ namespace CoptLib.Models
         public IDefinition Parent { get; set; }
     }
 
-    public class Script : Definition
+    public class Script : Definition, ICommandOutput
     {
         [XmlText]
         public string LuaScript { get; set; }
+
+        public IDefinition Output { get; protected set; }
+
+        public void Run()
+        {
+            Output = Scripting.Scripting.RunLuaScript(LuaScript);
+            if (Output != null)
+            {
+                Output.DocContext = DocContext;
+                Output.Parent = this;
+            }
+        }
     }
 
     public class Variable : Definition

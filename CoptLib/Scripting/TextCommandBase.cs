@@ -6,7 +6,7 @@ namespace CoptLib.Scripting
     /// <summary>
     /// Represents a command that was embedded in an <see cref="IContent"/> 
     /// </summary>
-    public abstract class TextCommandBase
+    public abstract class TextCommandBase : ICommandOutput
     {
         public TextCommandBase(string name, IContent content, int startIndex, IDefinition[] parameters)
         {
@@ -31,9 +31,6 @@ namespace CoptLib.Scripting
         /// </summary>
         public IContent SourceContent { get; }
 
-        /// <summary>
-        /// The document context.
-        /// </summary>
         public Doc DocContext { get; }
 
         /// <summary>
@@ -46,13 +43,6 @@ namespace CoptLib.Scripting
         /// </remarks>
         public int StartIndex { get; }
 
-        /// <summary>
-        /// The output definition of the command.
-        /// </summary>
-        /// <remarks>
-        /// Set to <see langword="null"/> to remove the command
-        /// from the source text.
-        /// </remarks>
         public IDefinition Output { get; protected set; }
 
         protected void HandleOutput()

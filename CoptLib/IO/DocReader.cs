@@ -247,6 +247,12 @@ namespace CoptLib.IO
 
         internal static void Transform(object part)
         {
+            if (part is Script partScript)
+                partScript.Run();
+
+            if (part is ICommandOutput partCmdOut && partCmdOut.Output != null)
+                part = partCmdOut.Output;
+
             if (part is IContent partContent)
                 partContent.ParseCommands();
 

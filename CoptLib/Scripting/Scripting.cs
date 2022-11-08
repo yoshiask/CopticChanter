@@ -17,69 +17,32 @@ namespace CoptLib.Scripting
         {
             if (date == null)
                 date = CopticDateHelper.TodayCoptic;
-            var args = new Dictionary<string, bool>();
 
-            // Check if today is the Feast of the Nativity, always Jan. 7th [Gregorian]
-            if (date == CopticDateHelper.GetNextNativity(date))
+            bool isPascha = date == CopticDateHelper.GetNextPascha(date);
+            var args = new Dictionary<string, bool>
             {
-                args.Add("Nativity", true);
-            }
-            else
-            {
-                args.Add("Nativity", false);
-            }
+                // Check if today is the Feast of the Nativity, always Jan. 7th [Gregorian]
+                { "Nativity", date == CopticDateHelper.GetNextNativity(date) },
 
-            // Check if today is the Sunday before the Feast of the Nativity
-            if (date == CopticDateHelper.GetNextNativitySunday(date))
-            {
-                args.Add("Nativity Sunday", true);
-            }
-            else
-            {
-                args.Add("Nativity Sunday", false);
-            }
+                // Check if today is the Sunday before the Feast of the Nativity
+                { "NativitySunday", date == CopticDateHelper.GetNextNativitySunday(date) },
 
-            // Check if today is during Great Lent
-            /*if (date >= CopticDate.GreatLentStart && date < CopticDate.PalmSunday)
-            {
-                args.Add("Great Lent", true);
-            }
-            else
-            {
-                args.Add("Great Lent", false);
-            }*/
+                // Check if today is during Great Lent
+                //{ "GreatLent", date >= CopticDateHelper.GreatLentStart && date < CopticDateHelper.PalmSunday },
 
-            // Check if today is during Holy Week
-            if (date >= CopticDateHelper.GetNextHosannaSunday(date) && date < CopticDateHelper.GetNextPascha(date))
-            {
-                args.Add("Holy Week", true);
-            }
-            else
-            {
-                args.Add("Holy Week", false);
-            }
+                // Check if today is during Holy Week
+                { "HolyWeek", date >= CopticDateHelper.GetNextHosannaSunday(date) && date < CopticDateHelper.GetNextPascha(date) },
 
-            // Check if today is Palm Sunday
-            if (date == CopticDateHelper.GetNextHosannaSunday(date))
-            {
-                args.Add("Palm Sunday", true);
-            }
-            else
-            {
-                args.Add("Palm Sunday", false);
-            }
+                // Check if today is Palm Sunday
+                { "PalmSunday", date == CopticDateHelper.GetNextHosannaSunday(date) },
 
-            // Check if today is Pascha
-            if (date == CopticDateHelper.GetNextPascha(date))
-            {
-                args.Add("Pascha", true);
-                args.Add("Easter", true);
-            }
-            else
-            {
-                args.Add("Pascha", false);
-                args.Add("Easter", false);
-            }
+                // Check if today is Pascha
+                { "Pascha", isPascha },
+                { "Easter", isPascha },
+
+                // Check if today is the Feast of the Ressurection
+                { "Ressurection", date == CopticDateHelper.GetNextFeastResurrection(date) }
+            };
 
             return args;
         }
@@ -302,42 +265,33 @@ namespace CoptLib.Scripting
         }
         #endregion
 
-        public static string RunLuaScript(string scriptBody)
+        public static IDefinition RunLuaScript(string scriptBody)
         {
-            string scriptCode = "function GetNext()\n" + scriptBody + "\nend";
-            Lua state = new Lua();
+            Lua state = new();
+            state.LoadCLRPackage();
+            state.DoString("import ('CoptLib', 'CoptLib.Models')");
+            state.DoString("import ('NodaTime', 'NodaTime')");
 
             // Add the CoptLib date functions
-            state["Today"] = DateTime.Today.Ticks;
+            state["Today"] = CopticDateHelper.TodayCoptic;
             //state["NextCovenantThursday"] = (Func<LocalDate>)CopticDateHelper.GetNextCovenantThursday;
-            //state["NextFeastResurrection"] = (Func<LocalDate>)CopticDateHelper.GetNextFeastResurrection;
+            state["NextFeastResurrection"] = (Func<LocalDate>)CopticDateHelper.GetNextFeastResurrection;
             //state["NextGoodFriday"] = (Func<LocalDate>)CopticDateHelper.GetNextGoodFriday;
             //state["NextHosannaSunday"] = (Func<LocalDate>)CopticDateHelper.GetNextHosannaSunday;
-            //state["NextLazarusSaturday"] = (Func<LocalDate>)CopticDateHelper.GetNextLazarusSaturday;
+            state["NextLazarusSaturday"] = (Func<LocalDate>)CopticDateHelper.GetNextLazarusSaturday;
             //state["NextNativity"] = (Func<LocalDate>)CopticDateHelper.GetNextNativity;
             //state["NextNativityFast"] = (Func<LocalDate>)CopticDateHelper.GetNextNativityFast;
             //state["NextNativitySunday"] = (Func<LocalDate>)CopticDateHelper.GetNextNativitySunday;
             //state["NextPascha"] = (Func<LocalDate>)CopticDateHelper.GetNextPascha;
-            //state["NextSpringEquinox"] = (Func<LocalDate>)CopticDateHelper.GetNextSpringEquinox;
+    
+            var scriptResult = state.DoString(scriptBody)?.FirstOrDefault();
+            state.Close();
+            return scriptResult as IDefinition;
 
-            try
-            {
-                state.DoString(scriptCode);
-                var script = state["GetNext"] as LuaFunction;
-
-                if (script?.Call()[0] is string res)
-                {
-                    return res;
-                }
-                else
-                {
-                    throw new InvalidCastException("Invalid return type");
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            if (scriptResult is IDefinition defResult)
+                return defResult;
+            else
+                throw new InvalidCastException($"Expected an IDefinition, but script returned {scriptResult.GetType().Name}");
         }
 
         public static List<TextCommandBase> ParseTextCommands(IContent content, out string strippedText)

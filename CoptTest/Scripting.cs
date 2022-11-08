@@ -2,6 +2,7 @@
 using CoptLib.Models;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -127,6 +128,33 @@ namespace CoptTest
             var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 
             Assert.Equal(expectedResult, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRunScript_Samples))]
+        public void RunScript(string script, IDefinition expectedOutput)
+        {
+            var result = CoptLib.Scripting.Scripting.RunLuaScript(script);
+
+            Assert.IsType(expectedOutput.GetType(), result);
+
+            // Memberwise comparison
+            var expectedProps = expectedOutput.GetType().GetProperties();
+            var actualProps = result.GetType().GetProperties();
+            foreach ((var ex, var ac) in expectedProps.Zip(actualProps))
+            {
+                Assert.Equal(ex.GetValue(expectedOutput), ac.GetValue(result));
+            }
+        }
+
+        private static IEnumerable<object[]> GetRunScript_Samples()
+        {
+            return new object[][]
+            {
+                new object[] { "if Today == NextFeastResurrection() then return SimpleContent('aktonk', nil) else return SimpleContent('aki', nil) end", new SimpleContent("aki", null) },
+                new object[] { "return SimpleContent('Test content', nil)", new SimpleContent("Test content", null) },
+                new object[] { "if true then\r\nreturn SimpleContent('Test content', nil)\r\nend", new SimpleContent("Test content", null) },
+            };
         }
     }
 }
