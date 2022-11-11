@@ -28,6 +28,8 @@ namespace CoptLib.Models
 
         public IDefinition Parent { get; set; }
 
+        public bool IsExplicitlyDefined { get; set; }
+
         public void ParseCommands()
         {
             if (HasBeenParsed)

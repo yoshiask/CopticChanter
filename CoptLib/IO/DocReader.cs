@@ -24,41 +24,6 @@ namespace CoptLib.IO
         public static IDictionary<string, Doc> AllDocs = new Dictionary<string, Doc>();
 
         /// <summary>
-        /// Serializes and save a DocXML file
-        /// </summary>
-        /// <param name="filename">Path to save to, including filename</param>
-        /// <param name="content">List of stanzas to save</param>
-        /// <param name="coptic">If the input language is Coptic</param>
-        /// <param name="name">Name of the reading or hymn</param>
-        /// <returns></returns>
-        public static bool SaveDocXml(string filename, IEnumerable<ContentPart> content, string name)
-        {
-            try
-            {
-                // Create an instance of the XmlSerializer class;
-                // specify the type of object to serialize.
-                XmlSerializer serializer = new XmlSerializer(typeof(Doc));
-                TextWriter writer = new StreamWriter(new FileStream(filename, FileMode.Create));
-                Doc saveX = new()
-                {
-                    Name = name,
-                    Translations = new(null)
-                };
-
-                saveX.Translations.Children.AddRange(content);
-
-                // Serialize the save file, and close the TextWriter.
-                serializer.Serialize(writer, saveX);
-                writer.Dispose();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Deserializes and returns a DocXML file. Only use in full .NET Framework
         /// </summary>
         /// <param name="path">The path to the XML file</param>
@@ -116,10 +81,10 @@ namespace CoptLib.IO
             var transsElem = xml.Root.Element("Translations");
             if (transsElem != null)
             {
-                foreach (XElement transElem in transsElem.Elements())
+                foreach (var def in ParseDefinitionCollection(transsElem.Elements(), doc, null))
                 {
-                    Section translation = new(doc.Translations);
-                    ParseCommonXml(translation, transElem, doc, null);
+                    if (def is not ContentPart translation)
+                        continue;
                     doc.Translations.Children.Add(translation);
                 } 
             }
@@ -154,7 +119,7 @@ namespace CoptLib.IO
                 {
                     def = new SimpleContent(null, parent);
                 }
-                else if (defElemName == nameof(Section))
+                else if (defElemName == nameof(Section) || defElemName == "Translation")
                 {
                     Section section = new(parent);
 
@@ -207,6 +172,11 @@ namespace CoptLib.IO
                 def.DocContext = doc;
                 def.Parent = parent;
                 def.Key = elem.Attribute("Key")?.Value;
+
+                // Not every IDefinition is explicitly defined,
+                // but since this branch only runs when we already
+                // have an XML element, this is a safe assumption.
+                def.IsExplicitlyDefined = true;
             }
             if (obj is IContent content)
             {
