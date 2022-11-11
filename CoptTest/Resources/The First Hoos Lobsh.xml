@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Name>The First Hoos Lobsh</Name>
+    <Uuid>28c70071-ce5e-4add-aa5c-d093acfb2784</Uuid>
+    <Translations>
+        <Translation Language="English">
+            <Stanza>With the split, the waters of the sea split, and the very deep, became a walkway.</Stanza>
+            <Stanza>A hidden earth, was shone upon by the sun, and an untrodden road, was walked upon.</Stanza>
+            <Stanza>The flowing water, stood still, by a miraculous, act of wonder.</Stanza>
+            <Stanza>Pharaoh and his chariots, were drowned, and the children of Israel, crossed the sea.</Stanza>
+            <Stanza>And in front of them was, Moses the prophet praising, until he brought them, to the wilderness of Sinai.</Stanza>
+            <Stanza>And they were praising God, with this new psalmody, saying "Let us sing to the Lord, for He has triumphed gloriously."</Stanza>
+            <Stanza>Through the prayers, of Moses the archprophet, O Lord grant us, the forgiveness of our sins.</Stanza>
+            <Stanza>Through the intercessions, of the Mother of God Saint Mary, O Lord grant us, the forgiveness of our sins.</Stanza>
+            <Stanza>We worship You O Christ, with Your good Father, and the Holy Spirit, for You have (risen/come) and saved us.</Stanza>
+        </Translation>
+        <Translation Key="CopticTranslation" Language="Coptic" Font="CS Avva Shenouda">
+            <Stanza>Qen ouswt afswt@ `nje pimwou `nte `viom@ ouoh `vnoun etsyk@ afswpi `nouma `mmosi.</Stanza>
+            <Stanza>Oukahi `na;ouwnh@ `a`vry sai hijwf@ oumwit `natcini@ aumosi hiwtf.</Stanza>
+            <Stanza>Oumwou efbyl `ebol@ af`ohi `eratf@ qen ouhwb `n`svyri@ `mparadoxon.</Stanza>
+            <Stanza>Vara`w nem nefharma@ auwmc `epecyt@ nensyri `mPicrayl@ auerjinior `m`viom.</Stanza>
+            <Stanza>`Enafhwc qajwou pe@ `nje Mw`ucyc pi`provytyc@ sa `ntef[itou `eqoun@ hi `psafe `nCina.</Stanza>
+            <Stanza>`Enafhwc `e`Vnou]@ qen taihwdy `mberi@ je marenhwc `e`P[oic@ je qen ou`wou gar af[i`wou.</Stanza>
+            <Stanza>Hiten nieu,y@ `nte Mw`ucyc piar,y`provytyc@ `P[oic `ari`hmot nan@ `mpi,w `ebol `nte nennobi.</Stanza>
+            <Stanza>Hiten ni`precbia@ `nte \};e`otokoc e;ouab Maria@ `P[oic `ari`hmot nan@ `mpi,w `ebol `nte nennobi.</Stanza>
+            <Stanza>Tenouwst `mmok `w Pi`,rictoc@ nem Pekiwt `n`aga;oc@ nem Pi`pneuma e;ouab@ je (aktwnk/ak`i) akcw] `mmon.</Stanza>
+        </Translation>
+        <Translation Source="\ipa{\def{CopticTranslation}}"/>
+        <Translation Language="Arabic">
+            <Stanza>قطعاً إنقطع، ماء البحر، والعمق العميق، صار مَسلكاً.</Stanza>
+            <Stanza>أرض غير ظاهرة، أشرقت الشمس عليها، وطريق غير مسلوكة، مشوا عليها</Stanza>
+            <Stanza>ماء مُنحل، وقف، بفِعل عجيب، مُعِجز.</Stanza>
+            <Stanza>غرق فرعون، ومركباته، وعبر بنو إسرائيل، البحر</Stanza>
+            <Stanza>وكان موسى النبي، يسبح قدامهم، حتى أدخلهم، برية سيناء.</Stanza>
+            <Stanza>وكانوا يسبحون الله، بهذه التسبحة الجديدة قائلين، "فلنسبح الرب، لأنه بالمجد قد تمجد".</Stanza>
+            <Stanza>بصلوات، موسى رئيس الأنبياء، يا رب إنعم لنا، بمغفرة خطايانا.</Stanza>
+            <Stanza>بشفاعات، والدة الإله القديسة مريم، يا رب إنعم لنا، بمغفرة خطايانا.</Stanza>
+            <Stanza>نسجد لك أيها المسيح، مع أبيك الصالح، والروح القدس، لأنك (قُمتأتيت) وخلصتنا.</Stanza>
+        </Translation>
+    </Translations>
+</Document>

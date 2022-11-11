@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Name>Watos Hymn for the Three Saintly Children</Name>
+    <Uuid>28c70071-ce5e-4add-aa5c-d093acfb2784</Uuid>
+    <Translations>
+        <Translation Language="English">
+            <Stanza>\language{Coptic|CS Avva Shenouda|Wcanna} We follow You with all our hearts, and fear You, and we seek Your face, O God do not forsake us.</Stanza>
+            <Stanza>But rather deal with us, according to Your meekness, and according to Your great mercy, O Lord help us.</Stanza>
+            <Stanza>May our prayers ascend unto You, O our Master, like burnt offerings of lambs, and fatted calves.</Stanza>
+            <Section Title="\def{sectionFriday}">
+                <Stanza>Do not forget the covenant, which You have made with our fathers, Abraham, Isaac, and Jacob, Israel Your holy one.</Stanza>
+                <Section Title="A Subsection">
+                    <Stanza>Bless the Lord all you nations, the tribes and all kinds of tongues, praise Him and glorify Him, above all forever.</Stanza>
+                    <Stanza>Pray to the Lord on our behalf, O three saintly children, Sedrach, Misach, and Abednego, that He may forgive us our sins.</Stanza>
+                </Section>
+            </Section>
+        </Translation>
+        <Translation Language="Coptic" Font="CS Avva Shenouda">
+            <Stanza>Tenoueh `ncwk qen penhyt tyrf@ tenerho] qatekhy@ ouoh tenkw] `nca pekho@ `Vnou] `mper]sipi nan.</Stanza>
+            <Stanza>Alla `ariou`i neman@ kata tekmet`epikyc@ nem kata `p`asai `nte peknai@ `P[oic `aribo`y;in `eron.</Stanza>
+            <Stanza>Mare ten`proceu,y Pennyb@ `i `e`pswi `mpek`m;o@ `m`vry] `nhan[lil `nte hanwili@ nem hanmaci eukeni`wout.</Stanza>
+            <Section Title="\def{sectionFriday}">
+                <Stanza>Mpererpwbs `n]dia;yky@ ;y`etakcemnytc nem nenio]@ Abraam `Icaak Iakwb@ Picrayl pee;ouab `ntak.</Stanza>
+                <Section Title="Ⲭⲟⲓⲁⲕ">
+                    <Stanza>`Cmou `e`P[oic nilaoc tyrou@ nivuly niacpi `nlac@ hwc `erof ma`wou naf@ `arihou`o [acf sa ni`eneh.</Stanza>
+                    <Stanza>Twbh `m`P[oic `e`hryi `ejwn@ `w pisomt `n`alou `n`agioc@ Cedrak Micak Abdenagw@ `ntef,a nennobi nan `ebol.</Stanza>
+                </Section>
+                <Section Source="\def{TestStanza}"/>
+            </Section>
+        </Translation>
+    </Translations>
+    <Definitions>
+        <Translations Key="sectionFriday">
+            <Stanza Language="English">Watos Hymn for the Three Saintly Children</Stanza>
+            <Stanza Language="Coptic" Font="CS Avva Shenouda">"ali Batoc E;be Pisomt `n`Alou `n`Agioc</Stanza>
+        </Translations>
+        <Stanza Key="TestStanza" Language="English">This is a test stanza.</Stanza>
+        <Variable Key="useAvenMajor" Configurable="True" Label="Use Major version of Aven" DefaultValue="bool:False"/>
+        <Script>
+<![CDATA[
+    if true then
+        return SimpleContent("Howdy from Lua!", nil)
+    else return nil
+    end
+]]>
+        </Script>
+    </Definitions>
+</Document>
