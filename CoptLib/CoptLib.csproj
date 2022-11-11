@@ -16,8 +16,11 @@
                 - Perform phonetic analysis on Coptic and Greek text, which includes guessing word origin and pronunciation
             - Scripting
                 - Powerful inline text commands for reducing duplicated text and transforming content at runtime
+                - Run Lua scripts embedded in Documents for complex logic
+            - IO
+                - Read/write/transform Document XML files 
         </Description>
-        <PackageTags>Coptic, Yoshi</PackageTags>
+        <PackageTags>Coptic, Bohairic</PackageTags>
         <Copyright>2017-2022</Copyright>
         <Version>2.0.0</Version>
     </PropertyGroup>
