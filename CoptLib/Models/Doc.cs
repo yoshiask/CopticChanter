@@ -6,6 +6,14 @@ namespace CoptLib.Models
     [XmlRoot("Document")]
     public class Doc
     {
+        public Doc()
+        {
+            Translations = new(null)
+            {
+                DocContext = this
+            };
+        }
+
         [XmlElement]
         public string Name { get; set; }
 
@@ -16,7 +24,7 @@ namespace CoptLib.Models
         public string Parent { get; set; }
 
         [XmlArray("Translations")]
-        public TranslationCollection Translations { get; set; } = new(null);
+        public TranslationCollection Translations { get; set; }
 
         [XmlArray("Definitions")]
         public List<IDefinition> DirectDefinitions { get; set; } = new();
