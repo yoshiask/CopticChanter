@@ -224,7 +224,11 @@ namespace CoptLib.IO
                 part = partCmdOut.Output;
 
             if (part is IContent partContent)
+            {
+                if (part is IMultilingual partMulti && partMulti.Language == Language.Coptic)
+                    partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
                 partContent.ParseCommands();
+            }
 
             if (part is IContentCollectionContainer partCollection)
             {

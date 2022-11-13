@@ -51,6 +51,12 @@ namespace CoptLib.Writing
             ['ϯ'] = "ti",
             ['\u0300'] = "ɛ"  // Jenkim splits syllable
         };
+        public static readonly IReadOnlyDictionary<string, string> CopticAbbreviations = new Dictionary<string, string>
+        {
+            ["=o=c"] = "[oic",
+            ["P=,=c"] = "Pi`,rictoc",
+            ["=e=;=u"] = "e;ouab",
+        };
 
         private static Dictionary<string, Language> _loanWords;
         /// <summary>
@@ -292,6 +298,17 @@ namespace CoptLib.Writing
 
             // Remove duplicate underscores
             return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Replaces all abbreviations with the full word in Coptic Standard.
+        /// </summary>
+        /// <param name="srcText">The source text in Coptic Standard.</param>
+        public static string ExpandAbbreviations(string srcText)
+        {
+            foreach (string abbr in CopticAbbreviations.Keys)
+                srcText = srcText.Replace(abbr, CopticAbbreviations[abbr]);
+            return srcText;
         }
 
         /// <summary>
