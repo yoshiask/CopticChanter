@@ -21,7 +21,7 @@ namespace CoptLib.Models
         public string Uuid { get; set; }
 
         [XmlElement]
-        public string Parent { get; set; }
+        public Author Author { get; set; }
 
         [XmlArray("Translations")]
         public TranslationCollection Translations { get; set; }
