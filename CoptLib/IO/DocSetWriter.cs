@@ -1,126 +1,63 @@
 ﻿using CoptLib.Models;
-using CoptLib.Writing;
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
-using System.Xml.Serialization;
-
-#if DEBUG
-using Output = System.Diagnostics.Debug;
-#else
-using Output = System.Console;
-#endif
 
 namespace CoptLib.IO
 {
     public class DocSetWriter
     {
-        /// <summary>
-        /// An Index XML object that contains data to write to set
-        /// </summary>
-        public Index Index
+        internal static string DOC_ENTRY_PREFIX = $"docs{Path.DirectorySeparatorChar}";
+        internal static string INDEX_ENTRY = "index";
+
+        public DocSet Set { get; }
+
+        public DocSetWriter(DocSet set)
         {
-            get;
-            private set;
+            Set = set;
         }
 
-        public DocSetWriter(Index index = null)
+        public DocSetWriter(string uuid, string name, IEnumerable<Doc> docs = null)
         {
-            Index = index;
+            Set = new(uuid, name, docs);
         }
 
-        /// <summary>
-        /// Writes the data written to Index and Docs variable
-        /// </summary>
-        /// <returns></returns>
-        public bool Write(string path)
+        public void Write(Stream stream)
         {
-            if (Index != null)
+            using ZipArchive archive = new(stream, ZipArchiveMode.Create);
+
+            // Begin building index
+            StringBuilder sb = new();
+            sb.AppendLine(Set.Uuid);
+            sb.AppendLine(Set.Name);
+            sb.AppendLine(Set.Author.ToXmlString());
+
+            foreach (var doc in Set.IncludedDocs)
             {
-                string rootPath = path.Replace(".zip", "");
-                Directory.CreateDirectory(rootPath);
+                // Write each Document to its own entry
+                var docEntry = archive.CreateEntry(DOC_ENTRY_PREFIX + doc.Uuid);
+                using var docEntryStream = docEntry.Open();
+                DocWriter.WriteDocXml(doc, docEntryStream);
 
-                // Let's sort out the documents first
-                foreach (IndexDoc indexDoc in Index.IncludedDocs)
-                {
-                    XmlSerializer docSerializer = new XmlSerializer(typeof(Doc));
-                    TextWriter docWriter = new StreamWriter(new FileStream(Path.Combine(rootPath, indexDoc.Name + ".xml"), FileMode.Create));
-                    docSerializer.Serialize(docWriter, DocReader.AllDocs[indexDoc.Uuid]);
-                    docWriter.Dispose();
-                }
-
-                // Now save the index
-                XmlSerializer serializer = new XmlSerializer(typeof(Index));
-                TextWriter writer = new StreamWriter(new FileStream(Path.Combine(rootPath, "index.xml"), FileMode.Create));
-                serializer.Serialize(writer, Index);
-                writer.Dispose();
-
-                // Files are saved, now compess to zip
-                ZipFile(rootPath, Path.Combine(Path.GetDirectoryName(rootPath), Index.Name + ".zip"));
-
-                // Delete temp. directory
-                foreach (string filepath in Directory.GetFiles(rootPath))
-                {
-                    File.Delete(filepath);
-                }
-                Directory.Delete(rootPath);
-
-                return true;
+                // Write the Document ID and name to index
+                sb.AppendLine(doc.Uuid + "\t" + doc.Name);
             }
-            else
-            {
-                Output.WriteLine("Index or Content is null");
-                return false;
-            }
-        }
 
-        public void AddContent(Doc xml)
-        {
-            Index.IncludedDocs.Add(new IndexDoc()
-            {
-                Name = xml.Name,
-                Uuid = xml.Uuid,
-            });
-        }
-
-        public void AddContent(IEnumerable<Doc> docs)
-        {
-            foreach (Doc xml in docs)
-            {
-                Index.IncludedDocs.Add(new IndexDoc()
-                {
-                    Name = xml.Name,
-                    Uuid = xml.Uuid
-                });
-            }
-        }
-
-        public void ClearContent()
-        {
-            Index.IncludedDocs.Clear();
-        }
-
-        public void SetIndex(Index index)
-        {
-            Index = index;
-        }
-
-        public void ClearIndex()
-        {
-            Index = null;
+            // Write the index to an entry
+            var indexEntry = archive.CreateEntry(INDEX_ENTRY);
+            using var indexEntryStream = indexEntry.Open();
+            using StreamWriter sw = new(indexEntryStream);
+            sw.Write(sb.ToString());
         }
 
         /// <summary>
-        /// Creates a zip file in the specified directory
+        /// Saves the set to a file.
         /// </summary>
-        /// <param name="path">Folder to compress</param>
-        /// <param name="zipPath">File to write to</param>
-        private void ZipFile(string path, string zipPath)
+        public void Write(string path)
         {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-            System.IO.Compression.ZipFile.CreateFromDirectory(path, zipPath);
+            using var fileStream = File.Open(path, FileMode.OpenOrCreate);
+            Write(fileStream);
         }
     }
 }
