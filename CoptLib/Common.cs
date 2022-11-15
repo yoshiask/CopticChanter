@@ -15,11 +15,9 @@ namespace CoptLib
     {
         public static string ToXmlString<T>(this T input)
         {
-            using (var writer = new StringWriter())
-            {
-                input.ToXml(writer);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            input.ToXml(writer);
+            return writer.ToString();
         }
 
         public static void ToXml<T>(this T objectToSerialize, Stream stream)
