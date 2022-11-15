@@ -1,6 +1,7 @@
 ﻿using CoptLib.Models;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -8,6 +9,12 @@ namespace CoptLib.IO
 {
     public static class DocWriter
     {
+        /// <summary>
+        /// Serializes <paramref name="doc"/> as an XML string.
+        /// </summary>
+        /// <param name="doc">
+        /// The document to serialize.
+        /// </param>
         public static string WriteDocXml(Doc doc)
         {
             XDocument xdoc = SerializeDocXml(doc);
@@ -20,6 +27,28 @@ namespace CoptLib.IO
 
             xdoc.Save(xmlWriter);
             return writer.ToString();
+        }
+
+        /// <summary>
+        /// Serializes <paramref name="doc"/> to the provided stream.
+        /// </summary>
+        /// <param name="doc">
+        /// The document to serialize.
+        /// </param>
+        /// <param name="stream">
+        /// The stream to write to.
+        /// </param>
+        public static void WriteDocXml(Doc doc, Stream stream)
+        {
+            XDocument xdoc = SerializeDocXml(doc);
+
+            using StringWriter writer = new();
+            using XmlTextWriter xmlWriter = new(stream, Encoding.Unicode);
+            xmlWriter.Formatting = Formatting.Indented;
+            xmlWriter.Indentation = 4;
+            xmlWriter.IndentChar = ' ';
+
+            xdoc.Save(xmlWriter);
         }
 
         /// <summary>
