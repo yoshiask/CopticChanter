@@ -29,7 +29,7 @@ namespace CoptLib.IO
         /// with more technical experience to copy the full HTML of a lyrics page
         /// after first loading it manually in a full web browser.
         /// </remarks>
-        public static Doc CreateDocAsync(string html, int lyricId)
+        public static Doc ConvertLyricsPage(string html, int lyricId)
         {
             // Parse the HTML from Tasbeha.org
             var feed = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(html);
