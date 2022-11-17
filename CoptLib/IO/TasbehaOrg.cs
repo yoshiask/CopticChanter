@@ -1,9 +1,7 @@
-﻿using AngleSharp;
-using AngleSharp.Dom;
+﻿using AngleSharp.Dom;
 using CoptLib.Models;
 using CoptLib.Writing;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CoptLib.IO
 {
@@ -13,22 +11,32 @@ namespace CoptLib.IO
     /// </summary>
     public static class TasbehaOrg
     {
-        private const string TASBEHAORG_HYMNLIBRARY_VIEW = "https://tasbeha.org/hymn_library/view/";
-
-        public static async Task<Doc> CreateDocAsync(int lyricId)
+        /// <summary>
+        /// Creates a <see cref="Doc"/> from a fully loaded Tasbeha.org lyric page.
+        /// </summary>
+        /// <param name="html">
+        /// The HTML text of the lyric page.
+        /// </param>
+        /// <param name="lyricId">
+        /// The lyric ID of the hymn. For example, <c>https://tasbeha.org/hymn_library/view/103</c>
+        /// has and ID of 103.</param>
+        /// <returns>
+        /// A <see cref="Doc"/> with the content and title of the Tasbeha.org lyrics.
+        /// </returns>
+        /// <remarks>
+        /// This feature is not for scraping the Tasbeha.org website,
+        /// and will not work for such purposes.<br/> The intended use is for users
+        /// with more technical experience to copy the full HTML of a lyrics page
+        /// after first loading it manually in a full web browser.
+        /// </remarks>
+        public static Doc CreateDocAsync(string html, int lyricId)
         {
-            // Create a new configuration with the default loader
-            var config = Configuration.Default.WithDefaultLoader();
-            var url = TASBEHAORG_HYMNLIBRARY_VIEW + lyricId.ToString();
-
-            // Create a new context
-            var context = BrowsingContext.New(config);
-            var address = Url.Create(url);
-            var feed = await context.OpenAsync(address);
+            // Parse the HTML from Tasbeha.org
+            var feed = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(html);
 
             Doc doc = new()
             {
-                Uuid = url,
+                Uuid = $"urn:tasbehaorg:{lyricId}",
             };
 
             // Set document name
@@ -72,16 +80,6 @@ namespace CoptLib.IO
         {
             var htmlStanzas = feed.QuerySelectorAll($"div.{translation.Language.ToString().ToLower()}text");
 
-            if (translation.Language == Language.Coptic)
-            {
-                // Tasbeha.org obfuscates segments of Coptic text
-                EmailDecoder(feed);
-            }
-            else
-            {
-
-            }
-
             foreach (var stanzaText in htmlStanzas.Select(m => m.FirstChild?.TextContent))
             {
                 translation.Children.Add(new Stanza(translation)
@@ -90,40 +88,6 @@ namespace CoptLib.IO
                     IsExplicitlyDefined = true
                 });
             }
-        }
-
-        private static void EmailDecoder(IDocument document)
-        {
-            var anchorElems = document.QuerySelectorAll(".__cf_email__");
-            foreach (var o in anchorElems)
-            {
-                var a = o.Parent;
-                var i = o.GetAttribute("data-cfemail");
-                if (i != null)
-                {
-                    var decryptedText = decrypt(i, 0);
-                    var d = document.CreateTextNode(decryptedText);
-                    a.ReplaceChild(d, o);
-                }
-            }
-        }
-
-        private static int parseHex(string e, int t)
-        {
-            string r = e.Substring(t, 2);
-            return int.Parse(r, System.Globalization.NumberStyles.HexNumber);
-        }
-
-        private static string decrypt(string n, int c)
-        {
-            var o = "";
-            var a = parseHex(n, c);
-            for (var i = c + 2; i < n.Length; i += 2)
-            {
-                var l = parseHex(n, i) ^ a;
-                o += char.ConvertFromUtf32(l);
-            }
-            return o;
         }
     }
 }
