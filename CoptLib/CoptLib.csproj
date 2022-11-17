@@ -18,7 +18,8 @@
                 - Powerful inline text commands for reducing duplicated text and transforming content at runtime
                 - Run Lua scripts embedded in Documents for complex logic
             - IO
-                - Read/write/transform Document XML files 
+                - Read/write/transform Document XML files
+                - Read and create Document Sets
         </Description>
         <PackageTags>Coptic, Bohairic</PackageTags>
         <Copyright>2017-2022</Copyright>
@@ -36,17 +37,6 @@
         <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
         <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
         <PackageReference Include="NodaTime" Version="3.0.5" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="Resources\lexicon.tsv" />
-        <EmbeddedResource Include="Resources\lexicon.tsv" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="Models\IfXML.xsd">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
