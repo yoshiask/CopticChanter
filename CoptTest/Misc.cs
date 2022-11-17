@@ -6,10 +6,11 @@ namespace CoptTest
     public class Misc
     {
         [Theory]
-        [InlineData(210)]
-        public async void TasbehaOrg_CreateDocAsync(int lyricId)
+        [InlineData(25)]
+        public void TasbehaOrg_ConvertLyricsPage(int lyricId)
         {
-            var doc = await TasbehaOrg.CreateDocAsync(lyricId);
+            string html = Resource.ReadAllText($"TasbehaOrg_{lyricId}.html");
+            var doc = TasbehaOrg.ConvertLyricsPage(html, lyricId);
             string xml = DocWriter.WriteDocXml(doc);
         }
     }
