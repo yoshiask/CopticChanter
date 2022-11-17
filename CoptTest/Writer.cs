@@ -12,23 +12,13 @@ namespace CoptTest
 {
     public class Writer
     {
-        readonly string _resPrefix;
-
-        public Writer()
-        {
-            var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().Location);
-            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var dirPath = Path.GetDirectoryName(codeBasePath);
-            _resPrefix = Path.Combine(dirPath, @"Resources\");
-        }
-
         [Theory]
         [InlineData("Let Us Praise the Lord.xml")]
         [InlineData("The First Hoos Lobsh.xml")]
         [InlineData("Watos Hymn for the Three Saintly Children.xml")]
         public void DocWriter_OpenAndWriteNoChanges(string file)
         {
-            string xmlEx = File.ReadAllText(_resPrefix + file);
+            string xmlEx = Resource.ReadAllText(file);
             Doc docEx = DocReader.ParseDocXml(XDocument.Parse(xmlEx));
 
             string xmlAc = DocWriter.WriteDocXml(docEx);
@@ -45,8 +35,7 @@ namespace CoptTest
         [Fact]
         public void DocSetWriter_CreateFromDocList()
         {
-            string pathActual = _resPrefix + "..\\Output\\test_set.zip";
-            string pathExpected = _resPrefix + "test_set.zip";
+            string resourceName = "test_set.zip";
             string[] fileNames = new[]
             {
                 "Let Us Praise the Lord.xml",
@@ -54,25 +43,33 @@ namespace CoptTest
                 "Watos Hymn for the Three Saintly Children.xml"
             };
 
-            List<Doc> docs = new(fileNames.Select(f => DocReader.ReadDocXml(_resPrefix + f)));
-            DocSetWriter setWriter = new("test-set", "Test Set", docs);
-            setWriter.Set.Author = new()
+            using (var setStreamActual = Resource.OpenTestResult(resourceName))
             {
-                FullName = "Yoshi Askharoun",
-                Email = "jjask7@gmail.com",
-                Website = "https://github.com/yoshiask"
-            };
-            setWriter.Write(pathActual);
+                List<Doc> docs = new(fileNames
+                    .Select(f => Resource.ReadAllText(f))
+                    .Select(x => DocReader.ParseDocXml(x)));
+
+                DocSetWriter setWriter = new("test-set", "Test Set", docs);
+                setWriter.Set.Author = new()
+                {
+                    FullName = "Yoshi Askharoun",
+                    Email = "jjask7@gmail.com",
+                    Website = "https://github.com/yoshiask"
+                };
+                setWriter.Write(setStreamActual);
+            }
 
             DocSet setActual;
-            using (DocSetReader readerActual = new(pathActual))
+            using (var setStreamActual = Resource.OpenTestResult(resourceName, FileMode.Open))
+            using (DocSetReader readerActual = new(setStreamActual))
             {
                 readerActual.ReadAll();
                 setActual = readerActual.Set;
             }
 
             DocSet setExpected;
-            using (DocSetReader readerExpected = new(pathExpected))
+            using (var setStreamExpected = Resource.Open(resourceName))
+            using (DocSetReader readerExpected = new(setStreamExpected))
             {
                 readerExpected.ReadAll();
                 setExpected = readerExpected.Set;
