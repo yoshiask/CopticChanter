@@ -60,6 +60,11 @@ namespace CoptLib.IO
         }
 
         /// <summary>
+        /// Parses the XML string into a <see cref="Doc"/>.
+        /// </summary>
+        public static Doc ParseDocXml(string xml) => ParseDocXml(XDocument.Parse(xml));
+
+        /// <summary>
         /// Parses the XML document tree into a <see cref="Doc"/>.
         /// </summary>
         public static Doc ParseDocXml(XDocument xml)
