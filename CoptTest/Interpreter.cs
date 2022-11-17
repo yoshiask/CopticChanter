@@ -44,6 +44,17 @@ namespace CoptTest
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
         };
 
+        public static readonly IEnumerable<object[]> Transliterate_CopticUnicode_Samples = new List<object[]>
+        {
+            new object[] { "Ⲱⲥⲁⲛⲛⲁ", "osanna" },
+            new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "pi.ekhristos" },
+            new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "khristos" },
+            new object[] { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni.anggelos" },
+            new object[] { "ⲓⲣⲏⲛⲏ", "irini" },
+            new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
+                           "tenuosht .emmok .o pi.ekhristos nem pekjot .en.agathos nem pi.epnevma ethowab je ak.i aksotee .emmon" },
+        };
+
         [Theory]
         [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
         public void IpaTranscribe_CopticUnicode(string sample)
@@ -58,6 +69,15 @@ namespace CoptTest
         {
             string result = CopticInterpreter.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
             _output.WriteLine(result);
+        }
+
+        [Theory]
+        [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
+        public void Transliterate_CopticUnicode(string sample, string expected)
+        {
+            var result = CopticInterpreter.Transliterate(sample, Language.English);
+            _output.WriteLine(result);
+            Assert.Equal(expected, result);
         }
 
         private static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()

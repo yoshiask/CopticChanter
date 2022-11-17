@@ -215,6 +215,48 @@ namespace CoptLib.Writing
         }
 
         /// <summary>
+        /// Transliterates Coptic text to the specified language using
+        /// the Greco-Bohairic pronunciation.
+        /// </summary>
+        /// <param name="srcText">The Coptic text to transcribe.</param>
+        /// <param name="lang">The language to transliterate to.</param>
+        /// <param name="srcTxtLength">The number of characters in the original string. Used for optimization.</param>
+        public static string Transliterate(PhoneticEquivalent[][] srcText, Language lang, int srcTextLength = 0)
+        {
+            if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var table))
+                throw new ArgumentException($"{lang} is not a supported transliteration target.");
+
+            StringBuilder sb = new(srcTextLength);
+            foreach (var word in srcText)
+            {
+                foreach (var pe in word)
+                {
+                    // Look up IPA letter in table, if it doesn't
+                    // exist, leave it as is
+                    if (table.TryGetValue(pe.Ipa, out var transliteration))
+                        sb.Append(transliteration);
+                    else
+                        sb.Append(pe.Ipa);
+                }
+
+                sb.Append(" ");
+            }
+
+            // Remove extra space after last word
+            sb.Remove(sb.Length - 1, 1);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Transliterates Coptic text to the specified language using
+        /// the Greco-Bohairic pronunciation.
+        /// </summary>
+        /// <param name="srcText">The Coptic text to transcribe.</param>
+        /// <param name="lang">The language to transliterate to.</param>
+        public static string Transliterate(string srcText, Language lang)
+            => Transliterate(PhoneticAnalysis(srcText), lang);
+
+        /// <summary>
         /// Uses clues to make an educated guess about which language
         /// a specific word is written in.
         /// </summary>
