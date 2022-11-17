@@ -40,6 +40,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Resources\lexicon.tsv" />
+        <EmbeddedResource Include="Resources\lexicon.tsv" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Folder Include="ViewModels\" />
     </ItemGroup>
 
