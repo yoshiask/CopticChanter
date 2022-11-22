@@ -14,13 +14,15 @@ namespace CoptLib.Scripting.Commands
 
         private void Parse(string cmd, IContent content, params IDefinition[] parameters)
         {
-            Output = parameters[0].Select(def =>
-            {
-                if (def is not IContent content)
-                    return;
+            Output = parameters[0].Select(Transcribe);
+        }
 
+        private void Transcribe(IDefinition def)
+        {
+            if (def is IContent content)
+            {
                 content.Text = CopticInterpreter.IpaTranscribe(content.Text ?? content.SourceText);
-            });
+            }
         }
     }
 }
