@@ -10,7 +10,14 @@ namespace CoptLib.Scripting
 {
     public class Scripting
     {
-        private static Dictionary<string, Type> _availCmds;
+        private static readonly Dictionary<string, Type> _availCmds = new()
+        {
+            { "def", typeof(DefinitionCmd) },
+            { "ipa", typeof(IpaTranscribeCmd) },
+            { "language", typeof(LanguageCmd) },
+            { "lang", typeof(LanguageCmd) },
+            { "ms", typeof(TimestampCmd) },
+        };
 
         public static IDictionary<string, bool> GetArgs(LocalDate date)
         {
@@ -64,7 +71,7 @@ namespace CoptLib.Scripting
             //state["NextNativityFast"] = (Func<LocalDate>)CopticDateHelper.GetNextNativityFast;
             //state["NextNativitySunday"] = (Func<LocalDate>)CopticDateHelper.GetNextNativitySunday;
             //state["NextPascha"] = (Func<LocalDate>)CopticDateHelper.GetNextPascha;
-    
+
             var scriptResult = state.DoString(scriptBody)?.FirstOrDefault();
             state.Close();
             return scriptResult as IDefinition;
@@ -184,26 +191,9 @@ namespace CoptLib.Scripting
 
         private static TextCommandBase GetCommand(string cmd, IContent content, int startIndex, IDefinition[] parameters)
         {
-            PopulateAvailableCommands();
-
             if (_availCmds.TryGetValue(cmd, out var type))
                 return Activator.CreateInstance(type, cmd, content, startIndex, parameters) as TextCommandBase;
             return null;
-        }
-
-        private static void PopulateAvailableCommands()
-        {
-            if (_availCmds != null && _availCmds.Count > 0)
-                return;
-
-            _availCmds = new Dictionary<string, Type>
-            {
-                { "def", typeof(DefinitionCmd) },
-                { "ipa", typeof(IpaTranscribeCmd) },
-                { "language", typeof(LanguageCmd) },
-                { "lang", typeof(LanguageCmd) },
-                { "ms", typeof(TimestampCmd) },
-            };
         }
     }
 }
