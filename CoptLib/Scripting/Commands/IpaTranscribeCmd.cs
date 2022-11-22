@@ -19,14 +19,7 @@ namespace CoptLib.Scripting.Commands
 
         private void Transcribe(IDefinition def)
         {
-            if (def is IContentCollectionContainer contentCollection)
-            {
-                var newCollection = contentCollection.Select(Transcribe) as IContentCollectionContainer;
-
-                contentCollection.Children.Clear();
-                contentCollection.Children.AddRange(newCollection.Children);
-            }
-            else if (def is IContent content)
+            if (def is IContent content)
             {
                 content.Text = CopticInterpreter.IpaTranscribe(content.Text ?? content.SourceText);
             }
