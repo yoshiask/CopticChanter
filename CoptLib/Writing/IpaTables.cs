@@ -6,13 +6,14 @@ namespace CoptLib.Writing
     {
         public static IReadOnlyDictionary<Language, IReadOnlyDictionary<string, string>> IpaToLanguage = new Dictionary<Language, IReadOnlyDictionary<string, string>>
         {
+            [Language.Arabic] = IpaToArabic(),
             [Language.English] = IpaToEnglish(),
         };
 
         public static IReadOnlyDictionary<string, string> IpaToEnglish() => new Dictionary<string, string>
         {
             ["ä"] = "a",
-            ["ɣ"] = "g",
+            ["ɣ"] = "gh",
             ["ð"] = "dh",
             ["\u0065\u031E"] = "e",
             ["θ"] = "th",
@@ -24,12 +25,52 @@ namespace CoptLib.Writing
             ["ʃ"] = "sh",
             ["x"] = "kh",
             ["dʒ"] = "j",
-            ["tʃ"] = "tch",
+            ["tʃ"] = "ch",
             ["ti"] = "tee",
             ["\u0300"] = "e",
             ["ɛ"] = ".e",
-            ["ç"] = "ch",
+            ["ç"] = "sh",
             ["ŋ"] = "ng",
+            ["j"] = "y",
+        };
+
+        public static IReadOnlyDictionary<string, string> IpaToArabic() => new Dictionary<string, string>
+        {
+            ["ä"] = "ا",
+            ["b"] = "ب",
+            ["ɣ"] = "غ",
+            ["ð"] = "ذ",
+            ["e\u031E"] = "ي",
+            ["z"] = "ز",
+            ["iː"] = "ي",
+            ["θ"] = "ث",
+            ["i"] = "ي",
+            ["k"] = "ك",
+            ["l"] = "ل",
+            ["m"] = "م",
+            ["n"] = "ن",
+            ["ks"] = "كس",
+            ["o\u031E"] = "و",
+            ["p"] = "پ",
+            ["ɾ"] = "ر",
+            ["s"] = "س",
+            ["t"] = "ت",
+            ["f"] = "ف",
+            ["k"] = "ك",
+            ["ps"] = "پس",
+            ["ʃ"] = "ش",
+            ["f"] = "ف",
+            ["x"] = "خ",
+            ["h"] = "ه",
+            ["g"] = "ج",
+            ["tʃ"] = "تش",
+            ["ti"] = "تي",
+            ["\u0300"] = "أ",    // jenkim
+            ["w"] = "وو",
+            ["u"] = "و",
+            ["v"] = "ڤ",
+            ["j"] = "ي",
+            ["ç"] = "ش",
         };
     }
 }
