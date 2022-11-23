@@ -17,6 +17,7 @@ namespace CoptLib.Scripting
             { "language", typeof(LanguageCmd) },
             { "lang", typeof(LanguageCmd) },
             { "ms", typeof(TimestampCmd) },
+            { "trslit", typeof(TransliterateCmd) },
         };
 
         public static IDictionary<string, bool> GetArgs(LocalDate date)
