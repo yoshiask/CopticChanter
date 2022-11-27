@@ -49,7 +49,7 @@ namespace CoptLib.Scripting
         {
             if (Output is TranslationCollection defCol)
             {
-                Language lang = Language.Default;
+                KnownLanguage lang = KnownLanguage.Default;
                 if (SourceContent is IMultilingual multi)
                     lang = multi.Language;
                 else if (SourceContent.Parent is IMultilingual parentMulti)

@@ -58,11 +58,11 @@ namespace CoptLib.Writing
             ["=e=;=u"] = "e;ouab",
         };
 
-        private static Dictionary<string, Language> _loanWords;
+        private static Dictionary<string, KnownLanguage> _loanWords;
         /// <summary>
         /// A dictionary of Coptic words loaned from other languages.
         /// </summary>
-        public static Dictionary<string, Language> LoanWords => _loanWords ?? GetLoanWords();
+        public static Dictionary<string, KnownLanguage> LoanWords => _loanWords ?? GetLoanWords();
 
         /// <summary>
         /// Analyzes Coptic text using the Greco-Bohairic pronounciation.
@@ -145,9 +145,9 @@ namespace CoptLib.Writing
                     else if (ch == 'ⲭ')
                     {
                         // Pronunciation changes depending on the origin of the word
-                        (Language? lang, double conf) = GuessWordLanguage(srcWord);
+                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
 
-                        if (lang == Language.Coptic && conf >= 0.7)
+                        if (lang == KnownLanguage.Coptic && conf >= 0.7)
                         {
                             // If Coptic: /k/
                             ipa = "k";
@@ -221,7 +221,7 @@ namespace CoptLib.Writing
         /// <param name="srcText">The Coptic text to transcribe.</param>
         /// <param name="lang">The language to transliterate to.</param>
         /// <param name="srcTxtLength">The number of characters in the original string. Used for optimization.</param>
-        public static string Transliterate(PhoneticEquivalent[][] srcText, Language lang, int srcTextLength = 0)
+        public static string Transliterate(PhoneticEquivalent[][] srcText, KnownLanguage lang, int srcTextLength = 0)
         {
             if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var table))
                 throw new ArgumentException($"{lang} is not a supported transliteration target.");
@@ -253,7 +253,7 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="srcText">The Coptic text to transcribe.</param>
         /// <param name="lang">The language to transliterate to.</param>
-        public static string Transliterate(string srcText, Language lang)
+        public static string Transliterate(string srcText, KnownLanguage lang)
             => Transliterate(PhoneticAnalysis(srcText), lang);
 
         /// <summary>
@@ -262,26 +262,26 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="word">The word to identify.</param>
         /// <returns>
-        /// A <see cref="Language"/> and confidence percentage.
+        /// A <see cref="KnownLanguage"/> and confidence percentage.
         /// <c>lang</c> is <see langword="null"/> if no language could be picked.
         /// </returns>
-        public static (Language? lang, double confidence) GuessWordLanguage(string word)
+        public static (KnownLanguage? lang, double confidence) GuessWordLanguage(string word)
         {
             var normWord = NormalizeString(word.ToLower());
             char[] chars = normWord.ToCharArray();
 
             // Some Coptic letters are straight from Demotic and aren't in Greek
             if (normWord.ContainsAny(CopticSpecificLetters))
-                return (Language.Coptic, 1.0);
+                return (KnownLanguage.Coptic, 1.0);
 
             // With only one exception, words that contain "ⲅ ⲇ ⲍ ⲝ ⲯ" are Greek
             if (normWord.Equals("ⲁⲛⲍⲏⲃ", StringComparison.OrdinalIgnoreCase))
-                return (Language.Coptic, 0.9);
+                return (KnownLanguage.Coptic, 0.9);
             else if (chars.ContainsAny(GreekSpecificLetters))
-                return (Language.Greek, 0.9);
+                return (KnownLanguage.Greek, 0.9);
 
             // Check if word is known by Coptic Scriptorium
-            if (LoanWords.TryGetValue(normWord, out Language lang))
+            if (LoanWords.TryGetValue(normWord, out KnownLanguage lang))
                 return (lang, 1.0);
 
             // TODO: Accept PhoneticEquivalent[] as input to allow this test case
@@ -289,11 +289,11 @@ namespace CoptLib.Writing
 
             // Some prefixes are specific to Greek
             if (normWord.StartsWithAny(GreekSpecificPrefixes))
-                return (Language.Greek, 0.8);
+                return (KnownLanguage.Greek, 0.8);
 
             // Some suffixes are much more common in Greek than Coptic
             if (normWord.EndsWithAny(GreekCommonSuffixes))
-                return (Language.Greek, 0.7);
+                return (KnownLanguage.Greek, 0.7);
 
             // Default to nothing
             // NOTE: Maybe we can make an educated guess depending on
@@ -364,7 +364,7 @@ namespace CoptLib.Writing
         /// A dictionary of loan words, where the key is the word (in Unicode)
         /// and the value is the language it is borrowed from.
         /// </returns>
-        private static Dictionary<string, Language> GetLoanWords(Version? ver = null)
+        private static Dictionary<string, KnownLanguage> GetLoanWords(Version? ver = null)
         {
             string tsv;
             if (ver == null || (ver.Major == 1 && ver.Minor == 4 && ver.Build == 1))
@@ -389,14 +389,14 @@ namespace CoptLib.Writing
             foreach (var line in lines)
             {
                 var idx = line.IndexOf('\t');
-                Language value = Language.Default;
+                KnownLanguage value = KnownLanguage.Default;
                 string key;
 
                 if (idx >= 0)
                 {
                     string valueStr = line.Substring(idx + 1);
                     if (!Enum.TryParse(valueStr, out value))
-                        value = Language.Default;
+                        value = KnownLanguage.Default;
                     key = line.Substring(0, idx);
                 }
                 else

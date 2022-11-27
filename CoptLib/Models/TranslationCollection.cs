@@ -27,12 +27,12 @@ namespace CoptLib.Models
             => Children.First(t => t.Key.Equals(key, StringComparison.Ordinal));
 
         /// <summary>
-        /// Gets the first <see cref="ContentPart"/> in the given <see cref="Language"/>.
+        /// Gets the first <see cref="ContentPart"/> in the given <see cref="KnownLanguage"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException">
         /// The content does not contain a translation for the given language.
         /// </exception>
-        public ContentPart this[Language lang] => Children.First(t => t.Language == lang);
+        public ContentPart this[KnownLanguage lang] => Children.First(t => t.Language == lang);
 
         /// <summary>
         /// Gets the <see cref="ContentPart"/> at the given index.

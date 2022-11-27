@@ -13,7 +13,7 @@ namespace CoptLib.Scripting.Commands
             Parse(cmd, parameters);
         }
 
-        public Language Language { get; private set; }
+        public KnownLanguage Language { get; private set; }
 
         public CopticFont Font { get; private set; }
 
@@ -22,12 +22,12 @@ namespace CoptLib.Scripting.Commands
             var langParam = ((IContent)parameters[0]).SourceText;
             var sourceParam = parameters[parameters.Length - 1];
 
-            if (!Enum.TryParse<Language>(langParam, out var language))
+            if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
                 return;
 
             Language = language;
 
-            if (parameters.Length >= 3 && (language == Language.Coptic || language == Language.Greek))
+            if (parameters.Length >= 3 && (language == KnownLanguage.Coptic || language == KnownLanguage.Greek))
             {
                 var fontParam = ((IContent)parameters[1]).SourceText;
 

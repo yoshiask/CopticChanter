@@ -15,14 +15,14 @@ namespace CoptLib.Scripting.Commands
             Parse(cmd, parameters);
         }
 
-        public Language Language { get; private set; }
+        public KnownLanguage Language { get; private set; }
 
         private void Parse(string cmd, params IDefinition[] parameters)
         {
             var langParam = ((IContent)parameters[0]).SourceText;
             var sourceParam = parameters[parameters.Length - 1];
 
-            if (!Enum.TryParse<Language>(langParam, out var language))
+            if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
                 throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
             Language = language;

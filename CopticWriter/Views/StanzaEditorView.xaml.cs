@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 
-using CLLanguage = CoptLib.Writing.Language;
+using CLLanguage = CoptLib.Writing.KnownLanguage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -103,7 +103,7 @@ namespace CopticWriter.Views
 
             if (LanguageOption.SelectedIndex > -1)
             {
-                switch ((Language)LanguageOption.SelectedIndex)
+                switch ((KnownLanguage)LanguageOption.SelectedIndex)
                 {
                     #region English
                     case CLLanguage.English:

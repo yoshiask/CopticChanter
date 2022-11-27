@@ -76,7 +76,7 @@ namespace CoptTest
         [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
         public void Transliterate_CopticUnicode(string sample, string expected)
         {
-            var result = CopticInterpreter.Transliterate(sample, Language.English);
+            var result = CopticInterpreter.Transliterate(sample, KnownLanguage.English);
             _output.WriteLine(result);
             Assert.Equal(expected, result);
         }

@@ -1,6 +1,6 @@
 ﻿namespace CoptLib.Writing;
 
-public enum Language
+public enum KnownLanguage
 {
     Default,
     Akkadian,

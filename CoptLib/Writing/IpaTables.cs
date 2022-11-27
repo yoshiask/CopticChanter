@@ -4,10 +4,10 @@ namespace CoptLib.Writing
 {
     internal static class IpaTables
     {
-        public static IReadOnlyDictionary<Language, IReadOnlyDictionary<string, string>> IpaToLanguage = new Dictionary<Language, IReadOnlyDictionary<string, string>>
+        public static IReadOnlyDictionary<KnownLanguage, IReadOnlyDictionary<string, string>> IpaToLanguage = new Dictionary<KnownLanguage, IReadOnlyDictionary<string, string>>
         {
-            [Language.Arabic] = IpaToArabic(),
-            [Language.English] = IpaToEnglish(),
+            [KnownLanguage.Arabic] = IpaToArabic(),
+            [KnownLanguage.English] = IpaToEnglish(),
         };
 
         public static IReadOnlyDictionary<string, string> IpaToEnglish() => new Dictionary<string, string>

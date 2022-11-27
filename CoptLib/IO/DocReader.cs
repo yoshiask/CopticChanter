@@ -190,13 +190,13 @@ namespace CoptLib.IO
             if (obj is IMultilingual multilingual)
             {
                 multilingual.Font = elem.Attribute("Font")?.Value;
-                if (Enum.TryParse<Language>(elem.Attribute("Language")?.Value, out var lang))
+                if (Enum.TryParse<KnownLanguage>(elem.Attribute("Language")?.Value, out var lang))
                     multilingual.Language = lang;
 
                 if (parent is IMultilingual parentMultilingual)
                 {
                     multilingual.Font ??= parentMultilingual.Font;
-                    if (multilingual.Language == Language.Default)
+                    if (multilingual.Language == KnownLanguage.Default)
                         multilingual.Language = parentMultilingual.Language;
                 }
             }
@@ -230,7 +230,7 @@ namespace CoptLib.IO
 
             if (part is IContent partContent)
             {
-                if (part is IMultilingual partMulti && partMulti.Language == Language.Coptic)
+                if (part is IMultilingual partMulti && partMulti.Language == KnownLanguage.Coptic)
                     partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
                 partContent.ParseCommands();
             }

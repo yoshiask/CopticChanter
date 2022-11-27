@@ -156,20 +156,20 @@ namespace CopticWriter.Helpers
 
         private static void HandleLanguage(TextBox contentBlock, object content)
         {
-            Language lang = content is IMultilingual multi ? multi.Language : Language.Default;
+            KnownLanguage lang = content is IMultilingual multi ? multi.Language : KnownLanguage.Default;
 
             contentBlock.FontFamily = Common.DefaultFont;
             contentBlock.FontSize = Common.DefaultFontSize;
             switch (lang)
             {
-                case Language.Arabic:
-                case Language.Aramaic:
-                case Language.Hebrew:
+                case KnownLanguage.Arabic:
+                case KnownLanguage.Aramaic:
+                case KnownLanguage.Hebrew:
                     contentBlock.TextAlignment = TextAlignment.Right;
                     break;
 
-                case Language.Coptic:
-                case Language.Greek:
+                case KnownLanguage.Coptic:
+                case KnownLanguage.Greek:
                     // Font rendering is hard. UWP wants the combining character before,
                     // while certain HTML renderers can't make up their minds.
                     contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);

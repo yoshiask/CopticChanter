@@ -148,7 +148,7 @@ namespace CopticChanter
             _accentColor = accent;
         }
 
-        public static int GetFontSize(Language lang)
+        public static int GetFontSize(KnownLanguage lang)
         {
             string key = $"font-size-{lang}";
             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
@@ -157,7 +157,7 @@ namespace CopticChanter
             return (int)ApplicationData.Current.LocalSettings.Values[key];
         }
 
-        public static void SetFontSize(Language lang, int size)
+        public static void SetFontSize(KnownLanguage lang, int size)
         {
             string key = $"font-size-{lang}";
             if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
@@ -166,7 +166,7 @@ namespace CopticChanter
                 ApplicationData.Current.LocalSettings.Values.Add(key, size);
         }
 
-        public static FontFamily GetFontFamily(Language lang)
+        public static FontFamily GetFontFamily(KnownLanguage lang)
         {
             string key = $"font-family-{lang}";
             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
@@ -176,7 +176,7 @@ namespace CopticChanter
             return new FontFamily(familyName);
         }
 
-        public static void SetFontFamily(Language lang, string familyName)
+        public static void SetFontFamily(KnownLanguage lang, string familyName)
         {
             string key = $"font-family-{lang}";
             if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))

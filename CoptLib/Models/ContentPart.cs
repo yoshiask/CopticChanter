@@ -26,7 +26,7 @@ namespace CoptLib.Models
         }
 
         [XmlAttribute]
-        public Language Language { get; set; }
+        public KnownLanguage Language { get; set; }
 
         [XmlAttribute]
         public string Font { get; set; }

@@ -7,7 +7,7 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-using CLLanguage = CoptLib.Writing.Language;
+using CLLanguage = CoptLib.Writing.KnownLanguage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
