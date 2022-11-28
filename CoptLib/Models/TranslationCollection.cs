@@ -32,7 +32,7 @@ namespace CoptLib.Models
         /// <exception cref="InvalidOperationException">
         /// The content does not contain a translation for the given language.
         /// </exception>
-        public ContentPart this[KnownLanguage lang] => Children.First(t => t.Language == lang);
+        public ContentPart this[KnownLanguage lang] => Children.First(t => t.Language?.Known == lang);
 
         /// <summary>
         /// Gets the <see cref="ContentPart"/> at the given index.

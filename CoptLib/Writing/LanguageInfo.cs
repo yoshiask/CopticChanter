@@ -33,11 +33,19 @@ public class LanguageInfo
     }
 
     /// <summary>
+    /// Creates a new instance of <see cref="LanguageInfo"/> using the known language name.
+    /// </summary>
+    public LanguageInfo(KnownLanguage known) : this(KnownLanguages[known])
+    {
+        Known = known;
+    }
+
+    /// <summary>
     /// The RFC 5646 language tag.
     /// </summary>
     public string Tag { get; }
 
-    public KnownLanguage? Known { get; private set; }
+    public KnownLanguage Known { get; private set; }
 
     public string Language { get; }
 
@@ -68,6 +76,8 @@ public class LanguageInfo
 
         return new(value);
     }
+
+    public override string ToString() => Known != KnownLanguage.Default ? Known.ToString() : Tag;
 
     private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
     {

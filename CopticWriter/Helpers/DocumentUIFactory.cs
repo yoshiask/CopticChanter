@@ -156,7 +156,7 @@ namespace CopticWriter.Helpers
 
         private static void HandleLanguage(TextBox contentBlock, object content)
         {
-            KnownLanguage lang = content is IMultilingual multi ? multi.Language : KnownLanguage.Default;
+            KnownLanguage lang = (content as IMultilingual)?.Language?.Known ?? KnownLanguage.Default;
 
             contentBlock.FontFamily = Common.DefaultFont;
             contentBlock.FontSize = Common.DefaultFontSize;

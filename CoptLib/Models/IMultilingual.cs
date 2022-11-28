@@ -4,7 +4,7 @@ namespace CoptLib.Models
 {
     public interface IMultilingual
     {
-        public KnownLanguage Language { get; set; }
+        public LanguageInfo Language { get; set; }
 
         public string Font { get; set; }
 

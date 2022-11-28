@@ -116,8 +116,8 @@ namespace CoptLib.IO
             if (obj is IMultilingual multilingual)
             {
                 var parentMultilingual = parent as IMultilingual;
-                if (parentMultilingual?.Language != multilingual.Language &&
-                    !(parentMultilingual == null && multilingual.Language == Writing.KnownLanguage.Default))
+                if (parentMultilingual != null && parentMultilingual?.Language != multilingual.Language
+                    && multilingual.Language?.Known != Writing.KnownLanguage.Default)
                     elem.SetAttributeValue("Language", multilingual.Language);
 
                 if (parentMultilingual?.Font != multilingual.Font)

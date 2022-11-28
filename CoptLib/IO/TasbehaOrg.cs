@@ -45,7 +45,7 @@ namespace CoptLib.IO
             // Set English stanzas
             Section englishTranslation = new(doc.Translations)
             {
-                Language = KnownLanguage.English,
+                Language = new(KnownLanguage.English),
                 IsExplicitlyDefined = true
             };
             AddStanzasToTranslation(feed, englishTranslation);
@@ -55,7 +55,7 @@ namespace CoptLib.IO
             // Set Coptic stanzas
             Section copticTranslation = new(doc.Translations)
             {
-                Language = KnownLanguage.Coptic,
+                Language = new(KnownLanguage.Coptic),
                 Font = CopticFont.CsAvvaShenouda.Name,
                 IsExplicitlyDefined = true
             };
@@ -66,7 +66,7 @@ namespace CoptLib.IO
             // Set Arabic stanzas
             Section arabicTranslation = new(doc.Translations)
             {
-                Language = KnownLanguage.Arabic,
+                Language = new(KnownLanguage.Arabic),
                 IsExplicitlyDefined = true
             };
             AddStanzasToTranslation(feed, arabicTranslation);

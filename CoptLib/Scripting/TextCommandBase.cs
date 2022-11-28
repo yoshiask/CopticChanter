@@ -50,10 +50,10 @@ namespace CoptLib.Scripting
             if (Output is TranslationCollection defCol)
             {
                 KnownLanguage lang = KnownLanguage.Default;
-                if (SourceContent is IMultilingual multi)
-                    lang = multi.Language;
+                if (SourceContent is IMultilingual multi && multi.Language != null)
+                    lang = multi.Language.Known;
                 else if (SourceContent.Parent is IMultilingual parentMulti)
-                    lang = parentMulti.Language;
+                    lang = parentMulti.Language.Known;
 
                 Output = defCol[lang];
             }

@@ -156,7 +156,7 @@ namespace CopticChanter.Helpers
 
         private static void HandleLanguage(TextBlock contentBlock, object content)
         {
-            KnownLanguage lang = content is IMultilingual multi ? multi.Language : KnownLanguage.Default;
+            KnownLanguage lang = (content as IMultilingual)?.Language?.Known ?? KnownLanguage.Default;
 
             contentBlock.FontFamily = Common.GetFontFamily(lang);
             contentBlock.FontSize = Common.GetFontSize(lang);
