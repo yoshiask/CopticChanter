@@ -156,18 +156,22 @@ namespace CopticChanter.Helpers
 
         private static void HandleLanguage(TextBlock contentBlock, object content)
         {
-            KnownLanguage lang = (content as IMultilingual)?.Language?.Known ?? KnownLanguage.Default;
+            LanguageInfo langInfo = (content as IMultilingual)?.Language
+                ?? LanguageInfo.Default;
+            KnownLanguage lang = langInfo.Known;
 
             contentBlock.FontFamily = Common.GetFontFamily(lang);
             contentBlock.FontSize = Common.GetFontSize(lang);
+
+            var culture = langInfo.Secondary?.Culture ?? langInfo.Culture;
+            if (culture != null)
+            {
+                contentBlock.TextAlignment = culture.TextInfo.IsRightToLeft
+                    ? TextAlignment.Right : TextAlignment.Left;
+            }
+
             switch (lang)
             {
-                case KnownLanguage.Arabic:
-                case KnownLanguage.Aramaic:
-                case KnownLanguage.Hebrew:
-                    contentBlock.TextAlignment = TextAlignment.Right;
-                    break;
-
                 case KnownLanguage.Coptic:
                 case KnownLanguage.Greek:
                     // Font rendering is hard. UWP wants the combining character before,
