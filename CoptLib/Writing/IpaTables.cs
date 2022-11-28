@@ -32,6 +32,7 @@ namespace CoptLib.Writing
             ["ç"] = "sʰ",
             ["ŋ"] = "n",
             ["j"] = "y",
+            ["ij"] = "iy",
         };
 
         public static IReadOnlyDictionary<string, string> IpaToArabic() => new Dictionary<string, string>
@@ -73,6 +74,7 @@ namespace CoptLib.Writing
             ["u"] = "و",
             ["v"] = "ڤ",
             ["j"] = "ي",
+            ["ij"] = "ي",
             ["ç"] = "ش",
             ["ʤ"] = "ج",
         };

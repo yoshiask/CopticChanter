@@ -138,9 +138,22 @@ namespace CoptLib.Writing
                     {
                         // Becomes a "yuh" sound before a vowel, dipthong after
                         if (chNextVow)
+                        {
                             ipa = "j";
+
+                            if (chPrev != null && !Vowels.Contains(chPrev.Value))
+                            {
+                                // Add /i/ back if following a consonant
+                                ipa = "i" + ipa;
+                            }
+                        }
                         else if (chPrevVow)
                             ipa = "ɪ";
+                    }
+                    else if (ch == 'ⲑ' && (chPrev == 'ⲥ' || chPrev == 'ϣ'))
+                    {
+                        // Becomes /t/ when following ⲥ or ϣ
+                        ipa = "t";
                     }
                     else if (ch == 'ⲭ')
                     {
@@ -149,7 +162,7 @@ namespace CoptLib.Writing
 
                         if (lang == KnownLanguage.Greek)
                         {
-                            // If Greek: /ç/ before before /e/ or /i/, else /x/
+                            // If Greek: /ç/ before /e/ or /i/, else /x/
                             ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ç" : "x";
                         }
                         else
@@ -157,6 +170,22 @@ namespace CoptLib.Writing
                             // If Coptic: /k/
                             ipa = "k";
                         }
+                    }
+                    else if (ch == 'ⲥ' && chNext == 'ⲙ')
+                    {
+                        // Pronunciation changes depending on the origin of the word
+                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
+
+                        if (lang == KnownLanguage.Greek)
+                            ipa = "z";
+                    }
+                    else if (ch == 'ⲥ' && chPrev == 'ⲛ')
+                    {
+                        // Pronunciation changes depending on the origin of the word
+                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
+
+                        if (lang == KnownLanguage.Greek)
+                            ipa = "z";
                     }
                     else if (chNextVow)
                     {
@@ -178,8 +207,6 @@ namespace CoptLib.Writing
                             ipa = "ŋ";
                         else if (ch == 'ⲝ' || (chNext != null && (ch == 'ⲯ' || ch == 'ϭ')))
                             ipa = "e\u031E" + ipa;
-                        else if (ch == 'ⲭ' && chPrev != null && chPrev == '\u0300')
-                            ipa = "x";   // Hack for Piekhristos vs. Christos
                         else if (ch == '\u0300')
                             ipa = "ɛ";
                     }
