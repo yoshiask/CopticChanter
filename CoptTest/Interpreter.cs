@@ -47,14 +47,14 @@ namespace CoptTest
         public static readonly IEnumerable<object[]> Transliterate_CopticUnicode_Samples = new List<object[]>
         {
             new object[] { "ⲁⲣⲭⲱⲛ", "arkʰon" },
-            new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "sʰere ne maria" },
+            new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "sʰere ne mariya" },
             new object[] { "Ⲱⲥⲁⲛⲛⲁ", "osanna" },
             new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "pi.ekʰristos" },
             new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "kʰristos" },
             new object[] { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni.angelos" },
             new object[] { "ⲓⲣⲏⲛⲏ", "irini" },
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
-                           "tenuosʰt .emmok .o pi.ekʰristos nem pekyot .en.agʰatʰos nem pi.epnevma etʰowab je ak.i aksoti .emmon" },
+                           "tenuosʰt .emmok .o pi.ekʰristos nem pekiyot .en.agʰatʰos nem pi.epnevma etʰowab je ak.i aksoti .emmon" },
         };
 
         [Theory]

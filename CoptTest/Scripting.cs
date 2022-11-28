@@ -88,7 +88,7 @@ namespace CoptTest
                     Key = key,
                     SourceText = value,
                     Font = font,
-                    Language = lang
+                    Language = new(lang)
                 }
             };
             DocReader.ApplyDocTransforms(_doc);
@@ -108,7 +108,7 @@ namespace CoptTest
             var defMulti = Assert.IsAssignableFrom<IMultilingual>(defCmd.Output);
 
             Assert.Equal(defContent.Text, parsedValue);
-            Assert.Equal(defMulti.Language, lang);
+            Assert.Equal(defMulti.Language?.Known, lang);
             Assert.Equal(defMulti.Font, font);
         }
 
