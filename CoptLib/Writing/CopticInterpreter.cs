@@ -147,15 +147,15 @@ namespace CoptLib.Writing
                         // Pronunciation changes depending on the origin of the word
                         (Language? lang, double conf) = GuessWordLanguage(srcWord);
 
-                        if (lang == Language.Coptic && conf >= 0.7)
-                        {
-                            // If Coptic: /k/
-                            ipa = "k";
-                        }
-                        else
+                        if (lang == Language.Greek)
                         {
                             // If Greek: /ç/ before before /e/ or /i/, else /x/
                             ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ç" : "x";
+                        }
+                        else
+                        {
+                            // If Coptic: /k/
+                            ipa = "k";
                         }
                     }
                     else if (chNextVow)
@@ -167,10 +167,8 @@ namespace CoptLib.Writing
                             ipa = "v";
                         else if (chNextEI && ch == 'ⲅ')
                             ipa = "g";
-                        else if (ch == 'ⲭ' && (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ'))
-                            ipa = "ç";  // NOTE: Does not attempt to decide whether a word is of Greek origin
                         else if (chNextEI && ch == 'ϫ')
-                            ipa = "dʒ";
+                            ipa = "ʤ";
                     }
                     else
                     {
