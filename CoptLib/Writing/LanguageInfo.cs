@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace CoptLib.Writing;
 
@@ -27,7 +28,7 @@ public class LanguageInfo
 
         try
         {
-            RegionInfo = new(tag);
+            Culture = CultureInfo.GetCultureInfo(tag);
         }
         catch { }
     }
@@ -53,7 +54,13 @@ public class LanguageInfo
 
     public string Variant { get; }
 
-    public System.Globalization.RegionInfo RegionInfo { get; }
+    public CultureInfo Culture { get; }
+
+    /// <summary>
+    /// A secondary content language, typically used for
+    /// identifying transliterations or changes in script.
+    /// </summary>
+    public LanguageInfo Secondary { get; set; }
 
     /// <summary>
     /// Parses the given string as a <see cref="KnownLanguage"/> or RFC 5646
@@ -99,4 +106,6 @@ public class LanguageInfo
         [KnownLanguage.Latin]	    = "la",
         [KnownLanguage.Spanish]	    = "es",
     };
+
+    public static readonly LanguageInfo Default = new(KnownLanguage.Default);
 }
