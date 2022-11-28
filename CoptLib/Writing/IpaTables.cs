@@ -13,24 +13,24 @@ namespace CoptLib.Writing
         public static IReadOnlyDictionary<string, string> IpaToEnglish() => new Dictionary<string, string>
         {
             ["ä"] = "a",
-            ["ɣ"] = "gh",
-            ["ð"] = "dh",
+            ["ɣ"] = "gʰ",
+            ["ð"] = "dʰ",
             ["\u0065\u031E"] = "e",
-            ["θ"] = "th",
+            ["θ"] = "tʰ",
             ["iː"] = "i",
             ["ɪ"] = "i",
             ["ks"] = "x",
             ["\u006F\u031E"] = "o",
             ["ɾ"] = "r",
-            ["ʃ"] = "sh",
-            ["x"] = "kh",
-            ["dʒ"] = "j",
-            ["tʃ"] = "ch",
+            ["ʃ"] = "sʰ",
+            ["x"] = "kʰ",
+            ["ʤ"] = "j",
+            ["tʃ"] = "cʰ",
             ["ti"] = "ti",
             ["\u0300"] = "e",
             ["ɛ"] = ".e",
-            ["ç"] = "sh",
-            ["ŋ"] = "ng",
+            ["ç"] = "sʰ",
+            ["ŋ"] = "n",
             ["j"] = "y",
         };
 
@@ -74,6 +74,7 @@ namespace CoptLib.Writing
             ["v"] = "ڤ",
             ["j"] = "ي",
             ["ç"] = "ش",
+            ["ʤ"] = "ج",
         };
     }
 }
