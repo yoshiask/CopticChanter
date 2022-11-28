@@ -2,6 +2,7 @@
 using CoptLib.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -42,13 +43,22 @@ namespace CopticChanter.Layouts
             // Populate the columns with translations and rows with stanzas
             foreach (Doc doc in Common.Docs)
             {
-                // Apply transforms before display
-                CoptLib.IO.DocReader.ApplyDocTransforms(doc);
-                if (doc.Translations.Children.Count == 0)
-                    continue;
+                try
+                {
+                    // Apply transforms before display
+                    CoptLib.IO.DocReader.ApplyDocTransforms(doc);
+                    if (doc.Translations.Children.Count == 0)
+                        continue;
 
-                Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc);
-                MainPanel.Children.Add(MainGrid);
+                    Grid MainGrid = DocumentUIFactory.CreateGridFromDoc(doc);
+                    MainPanel.Children.Add(MainGrid);
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error in {doc.Name}");
+                    Debug.WriteLine(ex);
+                }
             }
 
             base.OnNavigatedTo(e);
