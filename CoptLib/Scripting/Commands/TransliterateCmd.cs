@@ -2,8 +2,6 @@
 using CoptLib.Models;
 using CoptLib.Writing;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CoptLib.Scripting.Commands
 {
@@ -15,22 +13,33 @@ namespace CoptLib.Scripting.Commands
             Parse(cmd, parameters);
         }
 
-        public KnownLanguage Language { get; private set; }
+        public LanguageInfo Language { get; private set; }
 
         private void Parse(string cmd, params IDefinition[] parameters)
         {
             var langParam = ((IContent)parameters[0]).SourceText;
             var sourceParam = parameters[parameters.Length - 1];
 
-            if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
-                throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
-
-            Language = language;
+            Language = LanguageInfo.Parse(langParam)
+                ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
             Output = sourceParam.Select(def =>
             {
                 if (def is IContent content)
-                    content.Text = CopticInterpreter.Transliterate(content.Text ?? content.SourceText, language);
+                    content.Text = CopticInterpreter.Transliterate(content.Text ?? content.SourceText, Language.Known);
+
+                if (def is IMultilingual multi)
+                {
+                    if (multi.Language != null)
+                    {
+                        // Set secondary language to indicate transliteration
+                        multi.Language.Secondary = Language;
+                    }
+                    else
+                    {
+                        multi.Language = Language;
+                    }
+                }
             });
         }
     }
