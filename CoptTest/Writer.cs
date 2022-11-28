@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using Xunit;
 
-namespace CoptTest.Tests
+namespace CoptTest
 {
     public class Writer
     {

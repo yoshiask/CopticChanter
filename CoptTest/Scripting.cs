@@ -7,7 +7,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CoptTest.Tests
+namespace CoptTest
 {
     public class Scripting
     {
@@ -27,7 +27,7 @@ namespace CoptTest.Tests
             Stanza stanza = new(null)
             {
                 SourceText = string.Format(text, @"\ms{0:5:0}"),
-                DocContext = _doc
+                DocContext = _doc 
             };
             var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
 

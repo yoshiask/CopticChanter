@@ -3,7 +3,7 @@ using CoptLib.Writing;
 using System.Collections.Generic;
 using Xunit;
 
-namespace CoptTest.Tests
+namespace CoptTest
 {
     public class Misc
     {

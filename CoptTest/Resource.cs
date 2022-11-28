@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace CoptTest.Tests
+namespace CoptTest
 {
     internal static class Resource
     {

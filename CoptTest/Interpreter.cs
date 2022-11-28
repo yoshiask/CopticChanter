@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CoptTest.Tests
+namespace CoptTest
 {
     public class Interpreter
     {
@@ -14,7 +14,7 @@ namespace CoptTest.Tests
             _output = output;
         }
 
-        public static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
+        static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
         {
             // Difficult words
             "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
@@ -38,7 +38,7 @@ namespace CoptTest.Tests
             "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
         };
 
-        public static readonly string[] IpaTranscribe_CopticStandard_Samples = new[]
+        static readonly string[] IpaTranscribe_CopticStandard_Samples = new[]
         {
             "}polic `m'u,on",
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
