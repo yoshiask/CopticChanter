@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using CommandLine.Text;
 using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
@@ -20,14 +19,27 @@ public class Interpreter
 
     [Benchmark]
     [ArgumentsSource(nameof(IpaTranscribe_CopticUnicode_Samples))]
-    public string IpaTranscribe_CopticUnicode_Single(string sample)
+    public string IpaTranscribe_CopticUnicode_SingleCached(string sample)
         => CopticInterpreter.IpaTranscribe(sample);
 
     [Benchmark]
-    public void IpaTranscribe_CopticUnicode_Many()
+    [ArgumentsSource(nameof(IpaTranscribe_CopticUnicode_Samples))]
+    public string IpaTranscribe_CopticUnicode_SingleNoCache(string sample)
+        => CopticInterpreter.IpaTranscribe(sample, false);
+
+    [Benchmark]
+    public void IpaTranscribe_CopticUnicode_ManyCached()
     {
         Span<string> samples = CoptTest.Interpreter.IpaTranscribe_CopticUnicode_Samples;
         for (int i = 0; i < samples.Length; i++)
             CopticInterpreter.IpaTranscribe(samples[i]);
+    }
+
+    [Benchmark]
+    public void IpaTranscribe_CopticUnicode_ManyNoCache()
+    {
+        Span<string> samples = CoptTest.Interpreter.IpaTranscribe_CopticUnicode_Samples;
+        for (int i = 0; i < samples.Length; i++)
+            CopticInterpreter.IpaTranscribe(samples[i], false);
     }
 }
