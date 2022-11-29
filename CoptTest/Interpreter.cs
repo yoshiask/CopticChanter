@@ -14,7 +14,7 @@ namespace CoptTest
             _output = output;
         }
 
-        static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
+        public static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
         {
             // Difficult words
             "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
@@ -38,7 +38,7 @@ namespace CoptTest
             "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
         };
 
-        static readonly string[] IpaTranscribe_CopticStandard_Samples = new[]
+        public static readonly string[] IpaTranscribe_CopticStandard_Samples = new[]
         {
             "}polic `m'u,on",
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
