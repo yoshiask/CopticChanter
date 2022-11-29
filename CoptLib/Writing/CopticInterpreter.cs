@@ -202,7 +202,7 @@ namespace CoptLib.Writing
                         // Current letter preceeds a vowel
                         if (ch == '\u0300')
                             ipa = ".";
-                        if (ch == 'ⲃ')
+                        else if (ch == 'ⲃ')
                             ipa = "v";
                         else if (chNextEI && ch == 'ⲅ')
                             ipa = "g";
@@ -215,7 +215,9 @@ namespace CoptLib.Writing
                         if (ch == 'ⲅ' && i < ipaWord.Length - 1 &&
                                 (ipaWord[i + 1].Source == ch || ipaWord[i + 1].Ipa == "g" || ipaWord[i + 1].Ipa == "k"))
                             ipa = "ŋ";
-                        else if (ch == 'ⲝ' || (chNext != null && (ch == 'ⲯ' || ch == 'ϭ')))
+                        if (ch == 'ⲃ' && chNext == 'ⲩ')
+                            ipa = "v";
+                        else if (ch == 'ⲝ')// || (chNext != null && (ch == 'ⲯ' || ch == 'ϭ')))
                             ipa = "e\u031E" + ipa;
                         else if (ch == '\u0300')
                             ipa = "ɛ";
@@ -442,7 +444,7 @@ namespace CoptLib.Writing
                 {
                     key = line;
                 }
-                
+
                 if (!_loanWords.ContainsKey(key))
                     _loanWords.Add(key, value);
             }
