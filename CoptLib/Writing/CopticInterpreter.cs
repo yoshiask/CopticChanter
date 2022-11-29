@@ -64,22 +64,32 @@ namespace CoptLib.Writing
         /// </summary>
         public static Dictionary<string, KnownLanguage> LoanWords => _loanWords ?? GetLoanWords();
 
+        private static readonly Dictionary<int, PhoneticEquivalent[]> _wordCache = new();
+
         /// <summary>
         /// Analyzes Coptic text using the Greco-Bohairic pronounciation.
         /// </summary>
         /// <param name="srcText">The text to analyze.</param>
         /// <returns>An array of transcribed words using IPA.</returns>
-        public static PhoneticEquivalent[][] PhoneticAnalysis(string srcText)
+        public static PhoneticEquivalent[][] PhoneticAnalysis(string srcText, bool useCache = true)
         {
             string[] srcWords = srcText.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             var ipaWords = new PhoneticEquivalent[srcWords.Length][];
 
             for (int w = 0; w < srcWords.Length; w++)
             {
-                string srcWord = srcWords[w];
+                string srcWordInit = srcWords[w];
+
+                // Check if word is in cache
+                if (useCache && _wordCache.TryGetValue(srcWordInit.GetHashCode(), out var ipaWordCached))
+                {
+                    ipaWords[w] = ipaWordCached;
+                    continue;
+                }
 
                 // Initial pass assumes default cases
-                var ipaWord = new PhoneticEquivalent[srcWord.Length];
+                string srcWord = srcWordInit;
+                var ipaWord = new PhoneticEquivalent[srcWordInit.Length];
                 for (int c = 0; c < srcWord.Length; c++)
                 {
                     char ch = char.ToLower(srcWord[c]);
@@ -215,6 +225,10 @@ namespace CoptLib.Writing
                 }
 
                 ipaWords[w] = ipaWord;
+
+                // Add word to cache
+                if (useCache)
+                    _wordCache.Add(srcWordInit.GetHashCode(), ipaWord);
             }
 
             return ipaWords;
@@ -228,9 +242,9 @@ namespace CoptLib.Writing
         /// <remarks>
         /// Use <seealso cref="PhoneticAnalysis(string)"/> for more granular results.
         /// </remarks>
-        public static string IpaTranscribe(string srcText)
+        public static string IpaTranscribe(string srcText, bool useCache = true)
         {
-            var words = PhoneticAnalysis(srcText);
+            var words = PhoneticAnalysis(srcText, useCache);
 
             return string.Join(" ", words.Select(
                 word => string.Join(null, word.Select(
