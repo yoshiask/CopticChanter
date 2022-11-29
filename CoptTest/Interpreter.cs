@@ -17,7 +17,7 @@ namespace CoptTest
         public static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
         {
             // Difficult words
-            "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
+            "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
 
             // Ressurrection hymns
             "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ ⲁϥⲧⲱⲛϥ ⲉ̀ⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ: ⲫⲏⲉ̀ⲧⲁϥⲙⲟⲩ ⲁϥϩⲱⲙⲓ ⲉ̀ϫⲉⲛ ⲫ̀ⲙⲟⲩ ⲟⲩⲟϩ ⲛⲏⲉⲧⲭⲏ ϧⲉⲛ ⲛⲓⲙ̀ϩⲁⲩ ⲁϥⲉⲣϩ̀ⲙⲟⲧ ⲛⲱⲟⲩ ⲙ̀ⲡⲓⲱⲛϧ ⲛ̀ⲉ̀ⲛⲉϩ.",
@@ -47,6 +47,17 @@ namespace CoptTest
         public static readonly IEnumerable<object[]> Transliterate_CopticUnicode_Samples = new List<object[]>
         {
             new object[] { "ⲁⲣⲭⲱⲛ", "arkʰon" },
+            new object[] { "ⲡ̀ⲁⲣⲭⲱⲛ", ".eparkʰon" },
+            new object[] { "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", ".em.epresviteros" },
+            new object[] { "ⲛ̀ⲁ̀ⲣⲭⲏⲁⲅⲅⲉⲗⲟⲥ", ".en.arsʰiangelos"},
+            new object[] { "ⲛ̀ⲁ̀ⲣⲭⲏⲉ̀ⲣⲉⲩⲥ", ".en.arsʰi.erevs"},
+            new object[] { "ⲛⲓⲉⲩⲭⲏ", "nievki"},
+            new object[] { "ⲉⲩⲭⲏ", "evki"},
+            new object[] { "ⲡ̀ⲯⲩⲭⲏ", ".epsisʰi"},
+            new object[] { "ⲯⲩⲭⲏ", "psisʰi"},
+            new object[] { "ⲭⲱ", "ko"},
+            new object[] { "ⲙ̀ⲡⲓⲭⲱ", ".empiko"},
+            new object[] { "ⲭⲱⲣⲓⲥ", "koris"},
             new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "sʰere ne mariya" },
             new object[] { "Ⲱⲥⲁⲛⲛⲁ", "osanna" },
             new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "pi.ekʰristos" },
