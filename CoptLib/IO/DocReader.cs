@@ -222,10 +222,7 @@ namespace CoptLib.IO
 
                 string sourceText = elem.Attribute("Source")?.Value;
                 if (sourceText != null)
-                    contentCollection.Source = new Stanza(defCC)
-                    {
-                        SourceText = sourceText,
-                    };
+                    contentCollection.Source = new SimpleContent(sourceText, defCC);
             }
         }
 
