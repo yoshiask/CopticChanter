@@ -20,9 +20,10 @@ namespace CoptLib.Scripting.Commands
         private void Transcribe(IDefinition def)
         {
             if (def is IContent content)
-            {
                 content.Text = CopticInterpreter.IpaTranscribe(content.Text ?? content.SourceText);
-            }
+
+            if (def is Section section && section.Title != null)
+                Transcribe(section.Title);
         }
     }
 }
