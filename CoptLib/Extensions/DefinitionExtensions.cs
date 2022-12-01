@@ -15,10 +15,9 @@ namespace CoptLib.Extensions
                     defs.Children[i] = defs.Children[i].Select(func) as ContentPart;
                 }
             }
-            else
-            {
-                func(newDef);
-            }
+
+            func(newDef);
+
             return newDef;
         }
     }
