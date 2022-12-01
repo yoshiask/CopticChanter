@@ -53,7 +53,7 @@ namespace CoptTest
             new object[] { "ⲛ̀ⲁ̀ⲣⲭⲏⲉ̀ⲣⲉⲩⲥ", ".en.arsʰi.erevs"},
             new object[] { "ⲛⲓⲉⲩⲭⲏ", "nievki"},
             new object[] { "ⲉⲩⲭⲏ", "evki"},
-            new object[] { "ⲡ̀ⲯⲩⲭⲏ", ".epsisʰi"},
+            new object[] { "ⲡ̀ⲯⲩⲭⲏ", ".eppsisʰi"},
             new object[] { "ⲯⲩⲭⲏ", "psisʰi"},
             new object[] { "ⲭⲱ", "ko"},
             new object[] { "ⲙ̀ⲡⲓⲭⲱ", ".empiko"},
