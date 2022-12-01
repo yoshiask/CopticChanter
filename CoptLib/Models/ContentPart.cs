@@ -102,7 +102,7 @@ namespace CoptLib.Models
 
         }
 
-        public SimpleContent Title { get; set; }
+        public IContent Title { get; set; }
 
         public SimpleContent Source { get; set; }
 

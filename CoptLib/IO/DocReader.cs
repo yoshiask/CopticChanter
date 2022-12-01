@@ -130,7 +130,10 @@ namespace CoptLib.IO
 
                     string title = defElem.Attribute("Title")?.Value;
                     if (title != null)
-                        section.Title = new SimpleContent(title, section);
+                        section.Title = new Stanza(section)
+                        {
+                            SourceText = title,
+                        };
 
                     def = section;
                 }
@@ -202,6 +205,12 @@ namespace CoptLib.IO
                     multilingual.Font ??= parentMultilingual.Font;
                     multilingual.Language ??= parentMultilingual.Language;
                 }
+
+                if (obj is Section sectionMulti && sectionMulti.Title is IMultilingual sectionTitleMulti)
+                {
+                    sectionTitleMulti.Font ??= sectionMulti.Font;
+                    sectionTitleMulti.Language ??= sectionMulti.Language;
+                }
             }
             if (obj is IContentCollectionContainer contentCollection && obj is IDefinition defCC)
             {
@@ -213,7 +222,10 @@ namespace CoptLib.IO
 
                 string sourceText = elem.Attribute("Source")?.Value;
                 if (sourceText != null)
-                    contentCollection.Source = new(sourceText, defCC);
+                    contentCollection.Source = new Stanza(defCC)
+                    {
+                        SourceText = sourceText,
+                    };
             }
         }
 
