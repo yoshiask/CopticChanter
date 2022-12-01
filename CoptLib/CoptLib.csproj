@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>2.1.0</Version>
         <Authors>Joshua Askharoun</Authors>
         <Company>Joshua Askharoun</Company>
         <Product>Coptic Chanter</Product>
@@ -14,7 +15,7 @@
             - CopticInterpreter
                 - Convert between Coptic fonts, including Coptic1, CS Avva Shenouda [Tasbeha.org], and Coptic Unicode
                 - Perform phonetic analysis on Coptic and Greek text, which includes guessing word origin and pronunciation
-                - Transliterate Coptic text to English letters using the Greco-Bohairic pronunciation rules
+                - Transliterate Coptic text to English or Arabic letters using the Greco-Bohairic pronunciation rules
             - Scripting
                 - Powerful inline text commands for reducing duplicated text and transforming content at runtime
                 - Run Lua scripts embedded in Documents for complex logic
@@ -22,9 +23,9 @@
                 - Read/write/transform Document XML files
                 - Read and create Document Sets
         </Description>
+        <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
         <PackageTags>Coptic, Bohairic</PackageTags>
         <Copyright>2017-2022</Copyright>
-        <Version>2.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
