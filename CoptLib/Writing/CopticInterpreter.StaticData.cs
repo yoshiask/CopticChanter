@@ -59,6 +59,8 @@ namespace CoptLib.Writing
             ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,i;ⲁ,ä"),
             ["ⲛⲓⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲓ,i;ⲭ,;ⲉ,e\u031E;ⲣ,ɾ;ⲟ,;ⲩ,u;ⲃ,b;ⲓ,i;ⲙ,m"),
             ["ⲛⲁⲣⲭⲏⲉⲣⲉⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("\u0300,ɛ;ⲛ,n;\u0300,.;ⲁ,ä;ⲣ,ɾ;ⲭ,ʃ;ⲏ,i;\u0300,.;ⲉ,e\u031E;ⲣ,ɾ;ⲉ,e\u031E;ⲩ,v;ⲥ,s"),
+            ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ä;ⲕ,k"),
+            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ä;ⲅ,g;ⲱ,o\u031E"),
             ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
             ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ä;ⲩ,v;ⲓ,i;ⲇ,d"),
             ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲇ,d;ⲁ,ä;ⲙ,m"),
@@ -67,6 +69,10 @@ namespace CoptLib.Writing
             ["ⲡⲓⲁⲭⲱⲣⲓⲧⲟⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲡ,p;ⲓ,i;ⲁ,ä;ⲭ,k;ⲱ,o\u031E;ⲣ,ɾ;ⲓ,i;ⲧ,t;ⲟ,o;ⲥ,s"),
             ["ⲛⲓⲉⲩⲭⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲓ,i;ⲉ,e;ⲩ,v;ⲭ,ʃ;ⲏ,i"),
             ["ⲛⲟⲩⲉⲩⲭⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲟ,;ⲩ,u;\u0300,.;ⲉ,e;ⲩ,v;ⲭ,ʃ;ⲏ,i"),
+            ["ⲅⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲅ,g;ⲏ,e"),
+            ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,k;ⲟ,;ⲓ,i;ⲁ,ä;ⲕ,k"),
+            ["ⲛⲛⲓⲡⲁⲭⲛⲏ".GetHashCode()] = PhoneticEquivalent.Parse("\u0300,ɛ;ⲛ,n;ⲛ,n;ⲓ,i;ⲡ,p;ⲁ,ä;ⲭ,ʃ;ⲛ,n;ⲏ,i"),
+            ["ⲟⲛⲧⲟⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲟ,o\u031E;ⲛ,n;ⲧ,d;ⲟ,o\u031E;ⲥ,s"),
         };
     }
 }
