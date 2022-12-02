@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>2.1.1</Version>
+        <Version>2.2.0</Version>
         <Authors>Joshua Askharoun</Authors>
         <Company>Joshua Askharoun</Company>
         <Product>Coptic Chanter</Product>
