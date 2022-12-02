@@ -32,6 +32,13 @@ namespace CoptLib.Writing
             {
                 string srcWordInit = srcWords[w];
 
+                // Check if word has known special pronunciation
+                if (KnownPronunciations.TryGetValue(NormalizeString(srcWordInit).GetHashCode(), out var ipaWordKnown))
+                {
+                    ipaWords[w] = ipaWordKnown;
+                    continue;
+                }
+
                 // Check if word is in cache
                 if (useCache && _wordCache.TryGetValue(srcWordInit.GetHashCode(), out var ipaWordCached))
                 {
@@ -310,10 +317,10 @@ namespace CoptLib.Writing
             {
                 switch (CharUnicodeInfo.GetUnicodeCategory(c))
                 {
-                    case UnicodeCategory.LowercaseLetter:
                     case UnicodeCategory.UppercaseLetter:
+                    case UnicodeCategory.LowercaseLetter:
                     case UnicodeCategory.DecimalDigitNumber:
-                        stringBuilder.Append(c);
+                        stringBuilder.Append(char.ToLower(c));
                         break;
                     case UnicodeCategory.SpaceSeparator:
                     case UnicodeCategory.ConnectorPunctuation:

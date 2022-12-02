@@ -10,6 +10,7 @@ namespace CoptLib.Writing
         public static readonly char[] GreekSpecificLetters = new[] { 'ⲅ', 'ⲇ', 'ⲍ', 'ⲝ', 'ⲯ' };
         public static readonly string[] GreekSpecificPrefixes = new[] { "ⲡⲣⲟ", "ⲡⲁⲣⲁ", "ⲁⲣⲭ", "ⲟⲙⲟ", "ⲕⲁⲧⲁ", "ⲥⲩⲛ" };
         public static readonly string[] GreekCommonSuffixes = new[] { "ⲁⲥ", "ⲟⲥ", "ⲏⲥ", "ⲁⲛ", "ⲟⲛ", "ⲏⲛ" };
+
         public static readonly IReadOnlyDictionary<char, string> SimpleIpaTranscriptions = new Dictionary<char, string>
         {
             ['ⲁ'] = "ä",
@@ -52,5 +53,20 @@ namespace CoptLib.Writing
             ["=e=;=u"] = "e;ouab",
         };
 
+        public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciations = new Dictionary<int, PhoneticEquivalent[]>
+        {
+            ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
+            ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,i;ⲁ,ä"),
+            ["ⲛⲓⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲓ,i;ⲭ,;ⲉ,e\u031E;ⲣ,ɾ;ⲟ,;ⲩ,u;ⲃ,b;ⲓ,i;ⲙ,m"),
+            ["ⲛⲁⲣⲭⲏⲉⲣⲉⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("\u0300,ɛ;ⲛ,n;\u0300,.;ⲁ,ä;ⲣ,ɾ;ⲭ,ʃ;ⲏ,i;\u0300,.;ⲉ,e\u031E;ⲣ,ɾ;ⲉ,e\u031E;ⲩ,v;ⲥ,s"),
+            ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
+            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ä;ⲩ,v;ⲓ,i;ⲇ,d"),
+            ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲇ,d;ⲁ,ä;ⲙ,m"),
+            ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,;ⲃ,v;ⲁ,ä"),
+            ["ⲡⲁⲣⲭⲱⲛ".GetHashCode()] = PhoneticEquivalent.Parse("\u0300,ɛ;ⲡ,p;ⲁ,ä;ⲣ,ɾ;ⲭ,x;ⲱ,o\u031E;ⲛ,n"),
+            ["ⲡⲓⲁⲭⲱⲣⲓⲧⲟⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲡ,p;ⲓ,i;ⲁ,ä;ⲭ,k;ⲱ,o\u031E;ⲣ,ɾ;ⲓ,i;ⲧ,t;ⲟ,o;ⲥ,s"),
+            ["ⲛⲓⲉⲩⲭⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲓ,i;ⲉ,e;ⲩ,v;ⲭ,ʃ;ⲏ,i"),
+            ["ⲛⲟⲩⲉⲩⲭⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲟ,;ⲩ,u;\u0300,.;ⲉ,e;ⲩ,v;ⲭ,ʃ;ⲏ,i"),
+        };
     }
 }
