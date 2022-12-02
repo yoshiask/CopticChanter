@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using OwlCore.Extensions;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -62,18 +63,17 @@ namespace CoptLib.Models
             int translationCount = Translations.Children.Count;
 
             // Create rows for each stanza
-            int numRows = (Translations.CountRows()) + 1;
+            int numRows = Translations.CountRows() + 1;
             List<List<object>> layout = new(numRows);
             for (int i = 1; i <= numRows; i++)
                 layout.Add(new(translationCount));
 
-            // Add Doc title
-            //layout.Insert(0, new List<object> { doc });
+            // Add Doc to row so consumer can decide whether to show
+            // the document name
+            layout.Insert(0, this.IntoList<object>());
 
             for (int t = 0; t < translationCount; t++)
-            {
                 FlattenContentPart(Translations[t], layout, t, 1);
-            }
 
             return layout;
         }
