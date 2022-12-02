@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -44,6 +46,44 @@ namespace CoptLib.Models
                 Name = this.Name,
                 Uuid = this.Uuid
             };
+        }
+
+        /// <summary>
+        /// Flattens the document to a list of lists (2D array), where
+        /// each list is a single row in the document.
+        /// </summary>
+        /// <remarks>
+        /// Typically used for generating a layout for display purposes.
+        /// </remarks>
+        public List<List<object>> Flatten()
+        {
+            Guard.IsNotNull(Translations);
+
+            int translationCount = Translations.Children.Count;
+
+            // Create rows for each stanza
+            int numRows = (Translations.CountRows()) + 1;
+            List<List<object>> layout = new(numRows);
+            for (int i = 1; i <= numRows; i++)
+                layout.Add(new(translationCount));
+
+            // Add Doc title
+            //layout.Insert(0, new List<object> { doc });
+
+            for (int t = 0; t < translationCount; t++)
+            {
+                FlattenContentPart(Translations[t], layout, t, 1);
+            }
+
+            return layout;
+        }
+
+        private void FlattenContentPart(ContentPart part, List<List<object>> layout, int column, int row)
+        {
+            layout[row].Add(part);
+            if (part is IContentCollectionContainer contentCollection)
+                foreach (var content in contentCollection.Children)
+                    FlattenContentPart(content, layout, column, ++row);
         }
     }
 }
