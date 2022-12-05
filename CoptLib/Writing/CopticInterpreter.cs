@@ -8,56 +8,8 @@ using System.Text;
 
 namespace CoptLib.Writing
 {
-    public static class CopticInterpreter
+    public static partial class CopticInterpreter
     {
-        public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.' };
-        public static readonly char[] Vowels = new[] { 'ⲁ', 'ⲉ', 'ⲓ', 'ⲏ', 'ⲟ', 'ⲱ' };
-        public static readonly char[] CopticSpecificLetters = new[] { 'ϣ', 'ϥ', 'ϧ', 'ϫ', 'ϯ', 'ϭ' };
-        public static readonly char[] GreekSpecificLetters = new[] { 'ⲅ', 'ⲇ', 'ⲍ', 'ⲝ', 'ⲯ' };
-        public static readonly string[] GreekSpecificPrefixes = new[] { "ⲡⲣⲟ", "ⲡⲁⲣⲁ", "ⲁⲣⲭ", "ⲟⲙⲟ", "ⲕⲁⲧⲁ", "ⲥⲩⲛ" };
-        public static readonly string[] GreekCommonSuffixes = new[] { "ⲁⲥ", "ⲟⲥ", "ⲏⲥ", "ⲁⲛ", "ⲟⲛ", "ⲏⲛ" };
-        public static readonly IReadOnlyDictionary<char, string> SimpleIpaTranscriptions = new Dictionary<char, string>
-        {
-            ['ⲁ'] = "ä",
-            ['ⲃ'] = "b",    // Always pronounced "v" in names
-            ['ⲅ'] = "ɣ",
-            ['ⲇ'] = "ð",    // Pronouned "d" in names
-            ['ⲉ'] = "\u0065\u031E",
-            ['ⲍ'] = "z",
-            ['ⲏ'] = "iː",
-            ['ⲑ'] = "θ",
-            ['ⲓ'] = "i",
-            ['ⲕ'] = "k",
-            ['ⲗ'] = "l",
-            ['ⲙ'] = "m",
-            ['ⲛ'] = "n",
-            ['ⲝ'] = "ks",   // Pronounced "eks" when at the start of a word
-            ['ⲟ'] = "\u006F\u031E", // "ⲟⲩ" handled by VowelCombinations
-            ['ⲡ'] = "p",
-            ['ⲣ'] = "ɾ",
-            ['ⲥ'] = "s",
-            ['ⲧ'] = "t",
-            ['ⲩ'] = "i",
-            ['ⲫ'] = "f",
-            ['ⲭ'] = "k",
-            ['ⲯ'] = "ps",   // Pronounced "eps" when following a consonant
-            ['ⲱ'] = "\u006F\u031E",
-            ['ϣ'] = "ʃ",
-            ['ϥ'] = "f",
-            ['ϧ'] = "x",
-            ['ϩ'] = "h",
-            ['ϫ'] = "g",
-            ['ϭ'] = "tʃ",   // Pronounced "etʃ" when following a consonant
-            ['ϯ'] = "ti",
-            ['\u0300'] = "ɛ"  // Jenkim splits syllable
-        };
-        public static readonly IReadOnlyDictionary<string, string> CopticAbbreviations = new Dictionary<string, string>
-        {
-            ["=o=c"] = "[oic",
-            ["P=,=c"] = "Pi`,rictoc",
-            ["=e=;=u"] = "e;ouab",
-        };
-
         private static Dictionary<string, KnownLanguage> _loanWords;
         /// <summary>
         /// A dictionary of Coptic words loaned from other languages.
@@ -79,6 +31,13 @@ namespace CoptLib.Writing
             for (int w = 0; w < srcWords.Length; w++)
             {
                 string srcWordInit = srcWords[w];
+
+                // Check if word has known special pronunciation
+                if (KnownPronunciations.TryGetValue(NormalizeString(srcWordInit).GetHashCode(), out var ipaWordKnown))
+                {
+                    ipaWords[w] = ipaWordKnown;
+                    continue;
+                }
 
                 // Check if word is in cache
                 if (useCache && _wordCache.TryGetValue(srcWordInit.GetHashCode(), out var ipaWordCached))
@@ -358,10 +317,10 @@ namespace CoptLib.Writing
             {
                 switch (CharUnicodeInfo.GetUnicodeCategory(c))
                 {
-                    case UnicodeCategory.LowercaseLetter:
                     case UnicodeCategory.UppercaseLetter:
+                    case UnicodeCategory.LowercaseLetter:
                     case UnicodeCategory.DecimalDigitNumber:
-                        stringBuilder.Append(c);
+                        stringBuilder.Append(char.ToLower(c));
                         break;
                     case UnicodeCategory.SpaceSeparator:
                     case UnicodeCategory.ConnectorPunctuation:

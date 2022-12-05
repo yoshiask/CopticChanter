@@ -25,5 +25,25 @@
         public string Ipa { get; set; }
 
         public override string ToString() => $"('{Source}', \"{Ipa}\")";
+
+        /// <summary>
+        /// Parses a special format string into a set of <see cref="PhoneticEquivalent"/>s.
+        /// Pairs are split by semicolors, and the Source and IPA string by commas.
+        /// <para>Example:<br/><c>"ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,ⲓ;ⲁ,ä"</c></para>
+        /// </summary>
+        /// <param name="value">The string to parse.</param>
+        public static PhoneticEquivalent[] Parse(string value)
+        {
+            var pairs = value.Split(';');
+            var word = new PhoneticEquivalent[pairs.Length];
+
+            for (int i = 0; i < word.Length; i++)
+            {
+                var data = pairs[i].Split(',');
+                word[i] = new(data[0][0], data[1]);
+            }
+
+            return word;
+        }
     }
 }
