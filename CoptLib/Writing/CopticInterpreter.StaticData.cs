@@ -53,6 +53,15 @@ namespace CoptLib.Writing
             ["=e=;=u"] = "e;ouab",
         };
 
+        public static readonly IReadOnlyList<string> CopticPrefixes = new string[]
+        {
+            "ⲛ̀", "ⲙ̀", "ⲡ̀", "ⲧ̀",
+            "ⲛⲓ", "ⲡⲓ", "ⲧⲓ", "ϯ",
+            "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
+            "ⲡⲉϥ", "ⲧⲉϥ", "ⲛⲉϥ",
+            "ⲡⲉ", "ⲧⲉ", "ⲛⲉ"
+        };
+
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciations = new Dictionary<int, PhoneticEquivalent[]>
         {
             ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
