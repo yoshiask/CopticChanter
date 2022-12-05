@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CoptLib.Extensions;
 using OwlCore.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -68,12 +70,17 @@ namespace CoptLib.Models
             for (int i = 1; i <= numRows; i++)
                 layout.Add(new(translationCount));
 
+            List<List<object>> columns = new(translationCount);
+            for (int t = 0; t < translationCount; t++)
+            {
+                var flattenedTranslation = Translations[t].Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null).ToList<object>();
+                foreach (var (elem, i) in flattenedTranslation.WithIndex())
+                    layout[i].Add(elem);
+            }
+
             // Add Doc to row so consumer can decide whether to show
             // the document name
             layout.Insert(0, this.IntoList<object>());
-
-            for (int t = 0; t < translationCount; t++)
-                FlattenContentPart(Translations[t], layout, t, 1);
 
             return layout;
         }

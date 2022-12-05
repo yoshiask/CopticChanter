@@ -121,36 +121,60 @@ namespace CopticChanter.Helpers
         {
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
-            int lastRow = 0;
-            int translationCount = doc.Translations.Children.Count;
 
-            // Create a column for each language requested
-            for (int i = 0; i < translationCount; i++)
+            var rows = doc.Flatten();
+
+            // Create a column for each language
+            int columnCount = rows.Max(r => r.Count);
+            for (int i = 0; i < columnCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-            // Create rows for each stanza
-            // Don't forget one for each header too
-            int numRows = doc.Translations?.CountRows() ?? 0;
-            for (int i = 0; i <= numRows; i++)
+            bool isNewDoc = false;
+            for (int r = 0; r < rows.Count; r++)
+            {
+                var row = rows[r];
+
+                // Create new row definition
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
-            var headerBlock = CreateHeader(doc.Name, lastRow != 0);
-            MainGrid.Children.Add(headerBlock);
-            Grid.SetColumnSpan(headerBlock, translationCount);
-            Grid.SetRow(headerBlock, lastRow++);
-
-            for (int t = 0; t < translationCount; t++)
-            {
-                ContentPart translation = doc.Translations[t];
-
-                int i = 0;
-                CreateFromContentPart(translation, block =>
+                if (row.Count == 1 && row[0] is Doc)
                 {
+                    // Set flag so the title of the translations
+                    // can be displayed in bold font
+                    isNewDoc = true;
+                    continue;
+                }
+
+                for (int c = 0; c < row.Count; c++)
+                {
+                    var item = row[c];
+                    var block = new TextBlock()
+                    {
+                        TextWrapping = TextWrapping.Wrap,
+                    };
+
+                    if (item is Section section)
+                    {
+                        item = section.Title;
+
+                        if (isNewDoc)
+                            block.FontWeight = FontWeights.Bold;
+                        else
+                            block.FontWeight = FontWeights.SemiBold;
+                    }
+
+                    if (item is IContent content)
+                        block.Text = content.Text;
+
+                    HandleLanguage(block, item);
                     MainGrid.Children.Add(block);
-                    Grid.SetColumn(block, t);
-                    Grid.SetRow(block, lastRow + i++);
-                });
+                    Grid.SetRow(block, r);
+                    Grid.SetColumn(block, c);
+                }
+
+                isNewDoc = false;
             }
+
             return MainGrid;
         }
 
