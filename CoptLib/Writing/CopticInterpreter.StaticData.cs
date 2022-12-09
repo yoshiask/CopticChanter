@@ -55,8 +55,16 @@ namespace CoptLib.Writing
 
         public static readonly IReadOnlyList<string> CopticPrefixes = new string[]
         {
-            "ⲛ̀", "ⲙ̀", "ⲡ̀", "ⲧ̀",
-            "ⲛⲓ", "ⲡⲓ", "ⲧⲓ", "ϯ",
+            /// Articles
+            // Singular masculine
+            "ⲡ̀", "ⲫ̀", "ⲡⲓ",
+            // Singular feminine
+            "ϯ", "ⲑ̀", "ⲧ̀",
+            // Plural
+            "ⲛⲓ", "ⲛⲉⲛ",
+
+            "ⲛ̀", "ⲙ̀",
+            "ⲧⲓ",
             "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
             "ⲡⲉϥ", "ⲧⲉϥ", "ⲛⲉϥ",
             "ⲡⲉ", "ⲧⲉ", "ⲛⲉ"
