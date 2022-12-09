@@ -30,7 +30,7 @@ namespace CoptTest
             "cop", "cop-GR", "cop-EG-AST", "de", "it-IT", "en-US"
         };
 
-        private static IEnumerable<object[]> GetLanguageInfo_Parse_Samples()
+        public static IEnumerable<object[]> GetLanguageInfo_Parse_Samples()
         {
             foreach (string sample in LanguageInfo_Parse_Samples)
                 yield return new object[] { sample };

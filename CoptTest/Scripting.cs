@@ -147,7 +147,7 @@ namespace CoptTest
             }
         }
 
-        private static IEnumerable<object[]> GetRunScript_Samples()
+        public static IEnumerable<object[]> GetRunScript_Samples()
         {
             return new object[][]
             {

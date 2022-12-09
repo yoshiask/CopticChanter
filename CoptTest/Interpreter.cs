@@ -94,13 +94,13 @@ namespace CoptTest
             Assert.Equal(expected, result);
         }
 
-        private static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
+        public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
         {
             foreach (string sample in IpaTranscribe_CopticUnicode_Samples)
                 yield return new object[] { sample };
         }
 
-        private static IEnumerable<object[]> GetIpaTranscribe_CopticStandard_Samples()
+        public static IEnumerable<object[]> GetIpaTranscribe_CopticStandard_Samples()
         {
             foreach (string sample in IpaTranscribe_CopticStandard_Samples)
                 yield return new object[] { sample };
