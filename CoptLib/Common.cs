@@ -82,6 +82,21 @@ namespace CoptLib
             return false;
         }
 
+        public static string StripAnyFromStart(this string str, IEnumerable<string> values, out string? start)
+        {
+            foreach (string val in values)
+            {
+                if (str.StartsWith(val))
+                {
+                    start = val;
+                    return str.Remove(0, val.Length);
+                }
+            }
+
+            start = null;
+            return str;
+        }
+
         public static void AddRange<T>(this ICollection<T> dst, IEnumerable<T> src)
         {
             foreach (T t in src)

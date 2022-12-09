@@ -23,7 +23,7 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="srcText">The text to analyze.</param>
         /// <returns>An array of transcribed words using IPA.</returns>
-        public static PhoneticEquivalent[][] PhoneticAnalysis(string srcText, bool useCache = true)
+        public static PhoneticEquivalent[][] PhoneticAnalysis(string srcText, bool useCache = true, bool checkPrefixes = true)
         {
             string[] srcWords = srcText.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             var ipaWords = new PhoneticEquivalent[srcWords.Length][];
@@ -31,6 +31,7 @@ namespace CoptLib.Writing
             for (int w = 0; w < srcWords.Length; w++)
             {
                 string srcWordInit = srcWords[w];
+                int hash = srcWordInit.GetHashCode();
 
                 // Check if word has known special pronunciation
                 if (KnownPronunciations.TryGetValue(NormalizeString(srcWordInit).GetHashCode(), out var ipaWordKnown))
@@ -40,15 +41,31 @@ namespace CoptLib.Writing
                 }
 
                 // Check if word is in cache
-                if (useCache && _wordCache.TryGetValue(srcWordInit.GetHashCode(), out var ipaWordCached))
+                if (useCache && _wordCache.TryGetValue(hash, out var ipaWordCached))
                 {
                     ipaWords[w] = ipaWordCached;
                     continue;
                 }
 
-                // Initial pass assumes default cases
                 string srcWord = srcWordInit;
+                string? prefix = null;
+                int srcWordStartIdx = 0;
+                if (checkPrefixes)
+                {
+                    // Separate prefixes
+                    srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefix);
+                    srcWordStartIdx = prefix?.Length ?? 0;
+                }
+
+                // Initialize phonetic equivalent list and handle prefix
                 var ipaWord = new PhoneticEquivalent[srcWordInit.Length];
+                if (prefix != null)
+                {
+                    var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
+                    ipaPrefix.CopyTo(ipaWord, 0);
+                }
+
+                // Initial pass assumes default cases
                 for (int c = 0; c < srcWord.Length; c++)
                 {
                     char ch = char.ToLower(srcWord[c]);
@@ -66,10 +83,10 @@ namespace CoptLib.Writing
                         srcWord = new(srcChars);
                     }
 
-                    ipaWord[c] = new(ch, ipa!);
+                    ipaWord[c + srcWordStartIdx] = new(ch, ipa!);
                 }
 
-                for (int i = 0; i < ipaWord.Length; i++)
+                for (int i = srcWordStartIdx; i < ipaWord.Length; i++)
                 {
                     var ph = ipaWord[i];
                     char ch = ph.Source;
@@ -188,8 +205,8 @@ namespace CoptLib.Writing
                 ipaWords[w] = ipaWord;
 
                 // Add word to cache
-                if (useCache)
-                    _wordCache.Add(srcWordInit.GetHashCode(), ipaWord);
+                if (useCache && !_wordCache.ContainsKey(hash))
+                    _wordCache.Add(hash, ipaWord);
             }
 
             return ipaWords;
