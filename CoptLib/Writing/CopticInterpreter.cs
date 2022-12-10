@@ -53,7 +53,7 @@ namespace CoptLib.Writing
                 if (checkPrefixes)
                 {
                     // Separate prefixes
-                    srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefix);
+                    srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefix, StringComparison.OrdinalIgnoreCase);
                     srcWordStartIdx = prefix?.Length ?? 0;
                 }
 
@@ -92,7 +92,7 @@ namespace CoptLib.Writing
                     char ch = ph.Source;
                     string ipa = ph.Ipa;
 
-                    char? chPrev = (i - 1) >= 0 ? ipaWord[i - 1].Source : null;
+                    char? chPrev = (i - 1) >= srcWordStartIdx ? ipaWord[i - 1].Source : null;
                     char? chNext = (i + 1) < ipaWord.Length ? ipaWord[i + 1].Source : null;
                     bool chPrevVow = chPrev.HasValue && Vowels.Contains(chPrev.Value);
                     bool chNextVow = chNext.HasValue && Vowels.Contains(chNext.Value);
@@ -157,7 +157,7 @@ namespace CoptLib.Writing
                             ipa = "k";
                         }
                     }
-                    else if (ch == 'ⲥ' && chNext == 'ⲙ')
+                    else if (ch == 'ⲥ' && (chNext == 'ⲙ' || chPrev == 'ⲛ'))
                     {
                         // Pronunciation changes depending on the origin of the word
                         (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
@@ -165,13 +165,19 @@ namespace CoptLib.Writing
                         if (lang == KnownLanguage.Greek)
                             ipa = "z";
                     }
-                    else if (ch == 'ⲥ' && chPrev == 'ⲛ')
+                    else if (ch == 'ⲅ')
                     {
-                        // Pronunciation changes depending on the origin of the word
-                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
+                        var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
 
-                        if (lang == KnownLanguage.Greek)
-                            ipa = "z";
+                        // /g/ if followed by /i/ or /e/
+                        if (chNextIpa.StartsWith("i") || chNextIpa.StartsWith("e"))
+                            ipa = "g";
+
+                        // /ŋ/ if followed by /g/ or /k/
+                        else if (chNextIpa == "g" || chNextIpa == "k")
+                            ipa = "ŋ";
+
+                        // Otherwise, default to /ɣ/ (see SimpleIpaTranscriptions)
                     }
                     else if (chNextVow)
                     {
@@ -180,17 +186,12 @@ namespace CoptLib.Writing
                             ipa = ".";
                         else if (ch == 'ⲃ')
                             ipa = "v";
-                        else if (chNextEI && ch == 'ⲅ')
-                            ipa = "g";
                         else if (chNextEI && ch == 'ϫ')
                             ipa = "ʤ";
                     }
                     else
                     {
                         // Current letter preceeds a consonant
-                        if (ch == 'ⲅ' && i < ipaWord.Length - 1 &&
-                                (ipaWord[i + 1].Source == ch || ipaWord[i + 1].Ipa == "g" || ipaWord[i + 1].Ipa == "k"))
-                            ipa = "ŋ";
                         if (ch == 'ⲃ' && chNext == 'ⲩ')
                             ipa = "v";
                         else if (ch == 'ⲝ')// || (chNext != null && (ch == 'ⲯ' || ch == 'ϭ')))

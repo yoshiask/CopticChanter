@@ -82,11 +82,11 @@ namespace CoptLib
             return false;
         }
 
-        public static string StripAnyFromStart(this string str, IEnumerable<string> values, out string? start)
+        public static string StripAnyFromStart(this string str, IEnumerable<string> values, out string? start, StringComparison comparisonType = default)
         {
             foreach (string val in values)
             {
-                if (str.StartsWith(val))
+                if (str.StartsWith(val, comparisonType))
                 {
                     start = val;
                     return str.Remove(0, val.Length);
