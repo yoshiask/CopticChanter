@@ -63,6 +63,7 @@ namespace CoptTest
             new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "pi.ekʰristos" },
             new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "kʰristos" },
             new object[] { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni.angelos" },
+            new object[] { "ⲛⲓⲁⲅⲅⲉⲗⲟⲥ", "niangelos" },
             new object[] { "ⲓⲣⲏⲛⲏ", "irini" },
             new object[] { "Ⲓⲥⲭⲩⲣⲟⲛ", "iskiron" },
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
