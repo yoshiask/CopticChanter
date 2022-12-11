@@ -97,6 +97,23 @@ namespace CoptLib
             return str;
         }
 
+        public static IEnumerable<string> SplitAndKeep(this string s, char[] separator)
+        {
+            // Coutesy of https://stackoverflow.com/a/3143036
+            int start = 0, index;
+
+            while ((index = s.IndexOfAny(separator, start)) >= 0)
+            {
+                if (index - start > 0)
+                    yield return s.Substring(start, index - start);
+                yield return s.Substring(index, 1);
+                start = index + 1;
+            }
+
+            if (start < s.Length)
+                yield return s.Substring(start);
+        }
+
         public static void AddRange<T>(this ICollection<T> dst, IEnumerable<T> src)
         {
             foreach (T t in src)

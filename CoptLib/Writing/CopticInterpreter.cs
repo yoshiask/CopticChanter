@@ -25,7 +25,7 @@ namespace CoptLib.Writing
         /// <returns>An array of transcribed words using IPA.</returns>
         public static PhoneticEquivalent[][] PhoneticAnalysis(string srcText, bool useCache = true, bool checkPrefixes = true)
         {
-            string[] srcWords = srcText.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+            string[] srcWords = srcText.SplitAndKeep(Separators).ToArray();
             var ipaWords = new PhoneticEquivalent[srcWords.Length][];
 
             for (int w = 0; w < srcWords.Length; w++)
@@ -247,7 +247,7 @@ namespace CoptLib.Writing
         {
             var words = PhoneticAnalysis(srcText, useCache);
 
-            return string.Join(" ", words.Select(
+            return string.Join(null, words.Select(
                 word => string.Join(null, word.Select(
                     ph => ph.Ipa
                 )))
@@ -278,8 +278,6 @@ namespace CoptLib.Writing
                     else
                         sb.Append(pe.Ipa);
                 }
-
-                sb.Append(" ");
             }
 
             // Remove extra space after last word
