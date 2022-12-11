@@ -31,17 +31,17 @@ namespace CoptLib.Writing
             for (int w = 0; w < srcWords.Length; w++)
             {
                 string srcWordInit = srcWords[w];
-                int hash = srcWordInit.GetHashCode();
+                int srcWordInitHash = srcWordInit.GetHashCode();
 
-                // Check if word has known special pronunciation
-                if (KnownPronunciations.TryGetValue(NormalizeString(srcWordInit).GetHashCode(), out var ipaWordKnown))
+                // Check if entire word has known special pronunciation
+                if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out var ipaWordKnown))
                 {
                     ipaWords[w] = ipaWordKnown;
                     continue;
                 }
 
                 // Check if word is in cache
-                if (useCache && _wordCache.TryGetValue(hash, out var ipaWordCached))
+                if (useCache && _wordCache.TryGetValue(srcWordInitHash, out var ipaWordCached))
                 {
                     ipaWords[w] = ipaWordCached;
                     continue;
@@ -50,6 +50,7 @@ namespace CoptLib.Writing
                 string srcWord = srcWordInit;
                 string? prefix = null;
                 int srcWordStartIdx = 0;
+                KnownLanguage? origin = null;
                 if (checkPrefixes)
                 {
                     // Separate prefixes
@@ -63,6 +64,15 @@ namespace CoptLib.Writing
                 {
                     var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
                     ipaPrefix.CopyTo(ipaWord, 0);
+                }
+
+                // Check if base word has known special pronunciation
+                int srcWordHash = srcWord.GetHashCode();
+                if (KnownPronunciations.TryGetValue(srcWordHash, out var ipaBaseWordKnown))
+                {
+                    ipaBaseWordKnown.CopyTo(ipaWord, srcWordStartIdx);
+                    ipaWords[w] = ipaWord;
+                    continue;
                 }
 
                 // Initial pass assumes default cases
@@ -144,9 +154,9 @@ namespace CoptLib.Writing
                     else if (ch == 'ⲭ')
                     {
                         // Pronunciation changes depending on the origin of the word
-                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
+                        origin ??= GuessWordLanguage(srcWord).lang;
 
-                        if (lang == KnownLanguage.Greek)
+                        if (origin == KnownLanguage.Greek)
                         {
                             // If Greek: /ç/ before /e/ or /i/, else /x/
                             ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ç" : "x";
@@ -160,9 +170,9 @@ namespace CoptLib.Writing
                     else if (ch == 'ⲥ' && (chNext == 'ⲙ' || chPrev == 'ⲛ'))
                     {
                         // Pronunciation changes depending on the origin of the word
-                        (KnownLanguage? lang, double conf) = GuessWordLanguage(srcWord);
+                        origin ??= GuessWordLanguage(srcWord).lang;
 
-                        if (lang == KnownLanguage.Greek)
+                        if (origin == KnownLanguage.Greek)
                             ipa = "z";
                     }
                     else if (ch == 'ⲅ')
@@ -170,7 +180,7 @@ namespace CoptLib.Writing
                         var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
 
                         // /g/ if followed by /i/ or /e/
-                        if (chNextIpa.StartsWith("i") || chNextIpa.StartsWith("e"))
+                        if (chNextIpa.StartsWith("i", StringComparison.Ordinal) || chNextIpa.StartsWith("e", StringComparison.Ordinal))
                             ipa = "g";
 
                         // /ŋ/ if followed by /g/ or /k/
@@ -178,6 +188,18 @@ namespace CoptLib.Writing
                             ipa = "ŋ";
 
                         // Otherwise, default to /ɣ/ (see SimpleIpaTranscriptions)
+                        else
+                            ipa = "ɣ";
+                    }
+                    else if (ch == 'ⲧ' && chPrev == 'ⲛ')
+                    {
+                        origin ??= GuessWordLanguage(srcWord).lang;
+
+                        if (origin == KnownLanguage.Greek)
+                        {
+                            // If Greek: /d/ if preceeded by ⲛ in Greek words
+                            ipa = "d";
+                        }
                     }
                     else if (chNextVow)
                     {
@@ -206,8 +228,8 @@ namespace CoptLib.Writing
                 ipaWords[w] = ipaWord;
 
                 // Add word to cache
-                if (useCache && !_wordCache.ContainsKey(hash))
-                    _wordCache.Add(hash, ipaWord);
+                if (useCache && !_wordCache.ContainsKey(srcWordInitHash))
+                    _wordCache.Add(srcWordInitHash, ipaWord);
             }
 
             return ipaWords;
