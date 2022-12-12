@@ -102,10 +102,12 @@ namespace CoptLib.Writing
                     char ch = ph.Source;
                     string ipa = ph.Ipa;
 
-                    char? chPrev = (i - 1) >= srcWordStartIdx ? ipaWord[i - 1].Source : null;
-                    char? chNext = (i + 1) < ipaWord.Length ? ipaWord[i + 1].Source : null;
-                    bool chPrevVow = chPrev.HasValue && Vowels.Contains(chPrev.Value);
-                    bool chNextVow = chNext.HasValue && Vowels.Contains(chNext.Value);
+                    bool isFirstChar = (i - 1) < srcWordStartIdx;
+                    bool isLastChar = (i + 1) >= ipaWord.Length;
+                    char chPrev = !isFirstChar ? ipaWord[i - 1].Source : '\0';
+                    char chNext = !isLastChar ? ipaWord[i + 1].Source : '\0';
+                    bool chPrevVow = !isFirstChar && Vowels.Contains(chPrev);
+                    bool chNextVow = !isLastChar && Vowels.Contains(chNext);
                     bool chNextEI = chNext == 'ⲉ' || chNext == 'ⲓ';
 
                     // Handle special rules
@@ -122,7 +124,7 @@ namespace CoptLib.Writing
                             else
                             {
                                 ipa = "u";
-                                ipaWord[i - 1] = new(chPrev.Value, string.Empty);
+                                ipaWord[i - 1] = new(chPrev, string.Empty);
                             }
                         }
                         else if (chPrev == 'ⲁ' || chPrev == 'ⲉ')
@@ -137,7 +139,7 @@ namespace CoptLib.Writing
                         {
                             ipa = "j";
 
-                            if (chPrev != null && !Vowels.Contains(chPrev.Value))
+                            if (!isFirstChar && !Vowels.Contains(chPrev))
                             {
                                 // Add /i/ back if following a consonant
                                 ipa = "i" + ipa;
@@ -280,8 +282,6 @@ namespace CoptLib.Writing
                 }
             }
 
-            // Remove extra space after last word
-            sb.Remove(sb.Length - 1, 1);
             return sb.ToString();
         }
 
