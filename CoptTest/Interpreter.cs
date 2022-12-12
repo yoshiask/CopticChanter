@@ -46,7 +46,7 @@ namespace CoptTest
 
         public static readonly IEnumerable<object[]> Transliterate_CopticUnicode_Samples = new List<object[]>
         {
-            new object[] { "ⲛ̀Ⲇⲁⲩⲓⲇ", ".endavid" },
+            new object[] { "ⲛ̀Ⲇⲁⲩⲓⲇ", ".enDavid" },
             new object[] { "ⲁⲣⲭⲱⲛ", "arkʰon" },
             new object[] { "ⲡ̀ⲁⲣⲭⲱⲛ", ".eparkʰon" },
             new object[] { "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", ".em.epresviteros" },
@@ -59,16 +59,17 @@ namespace CoptTest
             new object[] { "ⲭⲱ", "ko"},
             new object[] { "ⲙ̀ⲡⲓⲭⲱ", ".empiko"},
             new object[] { "ⲭⲱⲣⲓⲥ", "kʰoris"},
-            new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "sʰere ne maria" },
-            new object[] { "Ⲱⲥⲁⲛⲛⲁ", "osanna" },
-            new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "pi.ekʰristos" },
-            new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "kʰristos" },
+            new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "Sʰere ne Maria" },
+            new object[] { "Ⲱⲥⲁⲛⲛⲁ", "Osanna" },
+            new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Pi.ekʰristos" },
+            new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "Kʰristos" },
             new object[] { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni.angelos" },
             new object[] { "ⲛⲓⲁⲅⲅⲉⲗⲟⲥ", "niangelos" },
             new object[] { "ⲓⲣⲏⲛⲏ", "irini" },
-            new object[] { "Ⲓⲥⲭⲩⲣⲟⲛ", "iskiron" },
+            new object[] { "Ⲓⲥⲭⲩⲣⲟⲛ", "Iskiron" },
+            new object[] { "Ⲟⲩⲟϩ", "Owoh" },
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
-                           "tenuosʰt .emmok .o pi.ekʰristos: nem pekyot .en.agʰatʰos: nem pi.epnevma etʰowab: je ak.i aksoti .emmon." },
+                           "Tenuosʰt .emmok .o Pi.ekʰristos: nem Pekyot .en.agʰatʰos: nem Pi.epnevma etʰowab: je ak.i aksoti .emmon." },
         };
 
         [Theory]

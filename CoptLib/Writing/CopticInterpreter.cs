@@ -36,6 +36,8 @@ namespace CoptLib.Writing
                 // Check if entire word has known special pronunciation
                 if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out var ipaWordKnown))
                 {
+                    // Preserve casing
+                    CopyCasing(srcWordInit, ipaWordKnown);
                     ipaWords[w] = ipaWordKnown;
                     continue;
                 }
@@ -62,7 +64,13 @@ namespace CoptLib.Writing
                 var ipaWord = new PhoneticEquivalent[srcWordInit.Length];
                 if (prefix != null)
                 {
+                    // Run analysis on only the prefix
                     var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
+
+                    // Preserve casing
+                    CopyCasing(prefix, ipaPrefix);
+
+                    // Copy pronunciation to full word pronunciation
                     ipaPrefix.CopyTo(ipaWord, 0);
                 }
 
@@ -70,7 +78,12 @@ namespace CoptLib.Writing
                 int srcWordHash = srcWord.GetHashCode();
                 if (KnownPronunciations.TryGetValue(srcWordHash, out var ipaBaseWordKnown))
                 {
+                    // Preserve casing
+                    CopyCasing(srcWord, ipaBaseWordKnown);
+
+                    // Copy pronunciation to full word pronunciation
                     ipaBaseWordKnown.CopyTo(ipaWord, srcWordStartIdx);
+
                     ipaWords[w] = ipaWord;
                     continue;
                 }
@@ -78,9 +91,9 @@ namespace CoptLib.Writing
                 // Initial pass assumes default cases
                 for (int c = 0; c < srcWord.Length; c++)
                 {
-                    char ch = char.ToLower(srcWord[c]);
+                    char ch = srcWord[c];
                     char? chPrev = (c - 1) >= 0 ? srcWord[c - 1] : null;
-                    SimpleIpaTranscriptions.TryGetValue(ch, out var ipa);
+                    SimpleIpaTranscriptions.TryGetValue(char.ToLower(ch), out var ipa);
 
                     // Handle jenkim
                     if (ch == '\u0300' && chPrev != null)
@@ -99,7 +112,7 @@ namespace CoptLib.Writing
                 for (int i = srcWordStartIdx; i < ipaWord.Length; i++)
                 {
                     var ph = ipaWord[i];
-                    char ch = ph.Source;
+                    char ch = char.ToLower(ph.Source);
                     string ipa = ph.Ipa;
 
                     bool isFirstChar = (i - 1) < srcWordStartIdx;
@@ -224,7 +237,9 @@ namespace CoptLib.Writing
                             ipa = "ɛ";
                     }
 
-                    ipaWord[i].Ipa = ipa ?? ch.ToString();
+                    // Use original character if no IPA equivalent is found
+                    ipa ??= ch.ToString();
+                    ipaWord[i].Ipa = ipa;
                 }
 
                 ipaWords[w] = ipaWord;
@@ -251,7 +266,7 @@ namespace CoptLib.Writing
 
             return string.Join(null, words.Select(
                 word => string.Join(null, word.Select(
-                    ph => ph.Ipa
+                    ph => char.IsUpper(ph.Source) ? ph.Ipa.ToUpper() : ph.Ipa
                 )))
             );
         }
@@ -275,10 +290,11 @@ namespace CoptLib.Writing
                 {
                     // Look up IPA letter in table, if it doesn't
                     // exist, leave it as is
-                    if (table.TryGetValue(pe.Ipa, out var transliteration))
-                        sb.Append(transliteration);
-                    else
-                        sb.Append(pe.Ipa);
+                    if (!table.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
+                        tl = pe.Ipa;
+
+                    tl = char.IsUpper(pe.Source) ? tl.ToUpper() : tl;
+                    sb.Append(tl);
                 }
             }
 
@@ -389,6 +405,24 @@ namespace CoptLib.Writing
             foreach (string abbr in CopticAbbreviations.Keys)
                 srcText = srcText.Replace(abbr, CopticAbbreviations[abbr]);
             return srcText;
+        }
+
+        /// <summary>
+        /// Copies the letter casing of a source word to a pronunciation.
+        /// </summary>
+        /// <param name="srcWord">The string to copy casing from.</param>
+        /// <param name="ipaWord">The pronunciation to copy casing to.</param>
+        private static void CopyCasing(string srcWord, PhoneticEquivalent[] ipaWord)
+        {
+            for (int c = 0; c < srcWord.Length; c++)
+            {
+                if (char.IsUpper(srcWord[c]))
+                {
+                    var pe = ipaWord[c];
+                    pe.Source = char.ToUpper(pe.Source);
+                    pe.Ipa = pe.Ipa.ToUpper();
+                }
+            }
         }
 
         /// <summary>

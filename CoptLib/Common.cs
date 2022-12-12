@@ -88,8 +88,8 @@ namespace CoptLib
             {
                 if (str.StartsWith(val, comparisonType))
                 {
-                    start = val;
-                    return str.Remove(0, val.Length);
+                    start = str.Substring(0, val.Length);
+                    return str.Substring(val.Length);
                 }
             }
 
