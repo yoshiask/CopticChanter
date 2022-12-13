@@ -84,13 +84,5 @@ namespace CoptLib.Models
 
             return layout;
         }
-
-        private void FlattenContentPart(ContentPart part, List<List<object>> layout, int column, int row)
-        {
-            layout[row].Add(part);
-            if (part is IContentCollectionContainer contentCollection)
-                foreach (var content in contentCollection.Children)
-                    FlattenContentPart(content, layout, column, ++row);
-        }
     }
 }
