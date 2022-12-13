@@ -103,6 +103,73 @@ public class LanguageInfo
         return tag;
     }
 
+    /// <summary>
+    /// Determines whether the specified tag is strictly equal to the current tag.
+    /// </summary>
+    /// <param name="obj">The <see cref="LanguageInfo"/> to compare with the current object.</param>
+    /// <returns>
+    /// <see langword="true"/> if the specified tag is equal to the current object;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public override bool Equals(object obj)
+    {
+        if (obj is null)
+            return false;
+
+        return this.ToString().Equals(obj.ToString());
+    }
+
+    /// <summary>
+    /// Determines whether the specified language info is equivalent to the
+    /// current language info using the given rules.
+    /// </summary>
+    /// <param name="otherInfo">The language info to compare against.</param>
+    /// <param name="options">The rules to compare using.</param>
+    /// <returns>
+    /// <see langword="true"/> if the specified language is equivalent to the current info;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool IsEquivalentTo(LanguageInfo otherInfo, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    {
+        bool isEqual = true;
+        bool useWild = options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
+
+        if (useWild && otherInfo == null)
+            return true;
+
+        if (!useWild && options.HasFlag(LanguageEquivalencyOptions.Strict))
+            return Equals(otherInfo);
+
+        if (options.HasFlag(LanguageEquivalencyOptions.Language) && isEqual)
+            isEqual &= (useWild && (Language == null || otherInfo.Language == null))
+                || this.Language.Equals(otherInfo.Language);
+
+        if (options.HasFlag(LanguageEquivalencyOptions.Region) && isEqual)
+            isEqual &= (useWild && (Region == null || otherInfo.Region == null))
+                || this.Region.Equals(otherInfo.Region);
+
+        if (options.HasFlag(LanguageEquivalencyOptions.Variant) && isEqual)
+            isEqual &= (useWild && (Variant == null || otherInfo.Variant == null))
+                || this.Variant.Equals(otherInfo.Variant);
+
+        if (options.HasFlag(LanguageEquivalencyOptions.Secondary) && isEqual)
+        {
+            // Convert secondary options to primary
+            var pri = (int)(options & LanguageEquivalencyOptions.Secondary) >> 3;
+
+            // Replace all primary and secondary options
+            options &= ~(LanguageEquivalencyOptions.Primary | LanguageEquivalencyOptions.Secondary);
+
+            // Set secondary options as primary
+            options |= (LanguageEquivalencyOptions)pri;
+
+            // Compare secondary values
+            isEqual &= Secondary == null ? useWild : Secondary.IsEquivalentTo(otherInfo.Secondary, options);
+        }
+
+        return isEqual;
+    }
+
     private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
     {
         [KnownLanguage.Default]	    = "und",
