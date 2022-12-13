@@ -259,10 +259,20 @@ namespace CoptLib.IO
 
                     if (cmd.Output != null)
                     {
+                        bool hasExplicitChildren = partCollection.Children.Count > 0;
+
                         if (cmd.Output is IContentCollectionContainer cmdOutCollection)
                             partCollection.Children.AddRange(cmdOutCollection.Children);
                         else if (cmd.Output is ContentPart cmdOutPart)
                             partCollection.Children.Add(cmdOutPart);
+
+                        // If the collection doesn't have any explicit elements (in other words,
+                        // it's only children came from the source), inherit the language of the children
+                        if (!hasExplicitChildren && part is IMultilingual partMulti)
+                        {
+                            partMulti.Language = (cmd.Output as IMultilingual)?.Language;
+                            partMulti.Font = (cmd.Output as IMultilingual)?.Font;
+                        }
                     }
                 }
 
