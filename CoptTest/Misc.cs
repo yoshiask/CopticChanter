@@ -1,6 +1,7 @@
 ﻿using CoptLib.IO;
 using CoptLib.Writing;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;
@@ -27,20 +28,23 @@ namespace CoptTest
 
         [Theory]
         [InlineData("en-US", "en-US", true)]
-        [InlineData("en-US", "en", true, LEO.Strict | LEO.TreatNullAsWild)]
-        [InlineData("cop-GR", "cop", true, LEO.Strict | LEO.TreatNullAsWild)]
-        [InlineData("cop-EG-ALX", "cop", true, LEO.Strict | LEO.TreatNullAsWild)]
-        [InlineData("cop-EG-ALX/en-US", "cop", true, LEO.Strict | LEO.TreatNullAsWild)]
+        [InlineData("en-US", "en", true, LEO.StrictWithWild)]
+        [InlineData("cop-GR", "cop", true, LEO.StrictWithWild)]
+        [InlineData("cop-EG-ALX", "cop", true, LEO.StrictWithWild)]
+        [InlineData("cop-EG-ALX/en-US", "cop", true, LEO.StrictWithWild)]
         [InlineData("cop-EG-ALX", "cop", false, LEO.Strict)]
         [InlineData("cop-EG-ALX", "cop-EG", false, LEO.Strict)]
         [InlineData("cop-EG-ALX", "cop-EG-ALX", true, LEO.Strict)]
         [InlineData("cop-EG-ALX/en-US", "cop-EG-ALX/en-US", true, LEO.Strict)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-ALX", true, LEO.Strict | LEO.TreatNullAsWild)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", false, LEO.Strict | LEO.TreatNullAsWild)]
+        [InlineData("cop-EG-ALX/en-US", "cop-EG-ALX", true, LEO.StrictWithWild)]
+        [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", false, LEO.StrictWithWild)]//
         [InlineData("cop-EG-ALX", "cop-EG-AST", true, LEO.LanguageRegion)]
         [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", true, LEO.LanguageRegion | LEO.TreatNullAsWild)]
         [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", true, LEO.LanguageRegion)]
         [InlineData("pt-BR", "en-BR", true, LEO.Region)]
+        [InlineData("cop-GR/en-US", "ar-EG/en-US", true, LEO.Secondary)]
+        [InlineData("cop-GR/en-US", "ar-EG/en", true, LEO.Secondary | LEO.TreatNullAsWild)]
+        [InlineData("cop-GR/en-US", "ar-EG/en", false, LEO.Secondary)]
         public void LanguageInfo_IsEquivalentTo(string tagA, string tagB, bool expected, LEO options = LEO.Strict)
         {
             var liA = LanguageInfo.Parse(tagA);
@@ -51,6 +55,35 @@ namespace CoptTest
 
             Assert.Equal(expected, actualAB);
             Assert.Equal(expected, actualBA);
+        }
+
+        [Fact]
+        public void LanguageInfoEqualityComparer()
+        {
+            HashSet<LanguageInfo> universe = new()
+            {
+                new LanguageInfo(KnownLanguage.English),
+                new LanguageInfo(KnownLanguage.Coptic),
+                new LanguageInfo("cop-GR/en-US"),
+                new LanguageInfo("cop-GR/ar-EG"),
+                new LanguageInfo(KnownLanguage.Hebrew),
+                new LanguageInfo(KnownLanguage.Arabic),
+                new LanguageInfo("syr"),
+            };
+
+            HashSet<LanguageInfo> include = new()
+            {
+                new LanguageInfo(KnownLanguage.English),
+                new LanguageInfo("cop-GR/en-US"),
+                new LanguageInfo("el"),
+                new LanguageInfo(KnownLanguage.Coptic),
+                new LanguageInfo("is"),
+                new LanguageInfo(KnownLanguage.Arabic),
+            };
+
+            var result = universe.Intersect(include, new LanguageInfoEqualityComparer(LEO.StrictWithWild));
+
+            Assert.Equal(4, result.Count());
         }
 
         public static readonly string[] LanguageInfo_Parse_Samples = new string[]
