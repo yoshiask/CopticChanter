@@ -6,7 +6,7 @@
     /// <remarks>
     /// Consumers determine whether the pronunciation is accurate.
     /// </remarks>
-    public sealed class PhoneticEquivalent
+    public struct PhoneticEquivalent
     {
         public PhoneticEquivalent(char source, string ipa)
         {
@@ -45,7 +45,20 @@
         /// <summary>
         /// Gets the <see cref="Ipa"/> transcription with correct casing.
         /// </summary>
-        public string GetIpa() => !IsUpper ? Ipa : char.ToUpper(Ipa[0]) + Ipa.Substring(1);
+        public string GetIpa()
+        {
+            if (!IsUpper || Ipa.Length == 0)
+            {
+                return Ipa;
+            }
+            else
+            {
+                if (Ipa.Length == 1)
+                    return Ipa.ToUpper();
+                else
+                    return char.ToUpper(Ipa[0]) + Ipa.Substring(1);
+            }
+        }
 
         public override string ToString() => $"('{GetSource()}', \"{GetIpa()}\")";
 
@@ -68,5 +81,15 @@
 
             return word;
         }
+
+        /// <summary>
+        /// Creates a copy of the current object.
+        /// </summary>
+        /// <remarks>
+        /// Since <see cref="IPA"/> is a reference type, its reference
+        /// is copied rather than its value. Changes made to that property
+        /// will affect all copies of this object.
+        /// </remarks>
+        public PhoneticEquivalent Clone() => new(Source, Ipa, IsUpper);
     }
 }
