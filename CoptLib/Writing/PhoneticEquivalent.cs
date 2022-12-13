@@ -10,8 +10,16 @@
     {
         public PhoneticEquivalent(char source, string ipa)
         {
+            Source = char.ToLower(source);
+            IsUpper = char.IsUpper(source);
+            Ipa = ipa;
+        }
+
+        public PhoneticEquivalent(char source, string ipa, bool isUpper)
+        {
             Source = source;
             Ipa = ipa;
+            IsUpper = isUpper;
         }
 
         /// <summary>
@@ -23,6 +31,11 @@
         /// The pronunciation represented with IPA.
         /// </summary>
         public string Ipa { get; set; }
+
+        /// <summary>
+        /// Whether the source letter should be uppercase.
+        /// </summary>
+        public bool IsUpper { get; set; }
 
         public override string ToString() => $"('{Source}', \"{Ipa}\")";
 

@@ -99,13 +99,17 @@ namespace CoptLib.Writing
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciations = new Dictionary<int, PhoneticEquivalent[]>
         {
-            ["Ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
-            ["Ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,i;ⲁ,ä"),
-            ["Ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ä;ⲕ,k"),
-            ["Ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲁ,ä;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ä;ⲅ,g;ⲱ,o\u031E"),
-            ["Ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
-            ["Ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲇ,d;ⲁ,ä;ⲩ,v;ⲓ,i;ⲇ,d"),
-            ["Ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("Ⲁ,ä;ⲇ,d;ⲁ,ä;ⲙ,m"),
+            // Yes, most of these are names and should be capitalized;
+            // however, the CopyCasing step in the phonetic analysis will make
+            // sure the end result is capitalized.
+
+            ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
+            ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,i;ⲁ,ä"),
+            ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ä;ⲕ,k"),
+            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ä;ⲅ,g;ⲱ,o\u031E"),
+            ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
+            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ä;ⲩ,v;ⲓ,i;ⲇ,d"),
+            ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲇ,d;ⲁ,ä;ⲙ,m"),
             ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,;ⲃ,v;ⲁ,ä"),
             ["ⲅⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲅ,g;ⲏ,e"),
             ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,k;ⲟ,;ⲓ,i;ⲁ,ä;ⲕ,k"),

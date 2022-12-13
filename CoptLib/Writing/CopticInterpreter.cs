@@ -31,7 +31,7 @@ namespace CoptLib.Writing
             for (int w = 0; w < srcWords.Length; w++)
             {
                 string srcWordInit = srcWords[w];
-                int srcWordInitHash = srcWordInit.GetHashCode();
+                int srcWordInitHash = srcWordInit.ToLower().GetHashCode();
 
                 // Check if entire word has known special pronunciation
                 if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out var ipaWordKnown))
@@ -75,7 +75,7 @@ namespace CoptLib.Writing
                 }
 
                 // Check if base word has known special pronunciation
-                int srcWordHash = srcWord.GetHashCode();
+                int srcWordHash = srcWord.ToLower().GetHashCode();
                 if (KnownPronunciations.TryGetValue(srcWordHash, out var ipaBaseWordKnown))
                 {
                     // Preserve casing
@@ -266,7 +266,7 @@ namespace CoptLib.Writing
 
             return string.Join(null, words.Select(
                 word => string.Join(null, word.Select(
-                    ph => char.IsUpper(ph.Source) ? ph.Ipa.ToUpper() : ph.Ipa
+                    ph => ph.IsUpper ? ph.Ipa.ToUpper() : ph.Ipa
                 )))
             );
         }
@@ -293,7 +293,7 @@ namespace CoptLib.Writing
                     if (!table.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
                         tl = pe.Ipa;
 
-                    tl = char.IsUpper(pe.Source) ? tl.ToUpper() : tl;
+                    tl = pe.IsUpper ? tl.ToUpper() : tl;
                     sb.Append(tl);
                 }
             }
@@ -415,14 +415,7 @@ namespace CoptLib.Writing
         private static void CopyCasing(string srcWord, PhoneticEquivalent[] ipaWord)
         {
             for (int c = 0; c < srcWord.Length; c++)
-            {
-                if (char.IsUpper(srcWord[c]))
-                {
-                    var pe = ipaWord[c];
-                    pe.Source = char.ToUpper(pe.Source);
-                    pe.Ipa = pe.Ipa.ToUpper();
-                }
-            }
+                ipaWord[c].IsUpper = char.IsUpper(srcWord[c]);
         }
 
         /// <summary>
