@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace CoptLib.Writing;
 
-public class LanguageInfo
+public class LanguageInfo : IEquatable<LanguageInfo>
 {
     /// <summary>
     /// Creates a new instance of <see cref="LanguageInfo"/> using the
@@ -104,53 +104,37 @@ public class LanguageInfo
     }
 
     /// <summary>
-    /// Determines whether the specified tag is strictly equal to the current tag.
-    /// </summary>
-    /// <param name="obj">The <see cref="LanguageInfo"/> to compare with the current object.</param>
-    /// <returns>
-    /// <see langword="true"/> if the specified tag is equal to the current object;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public override bool Equals(object obj)
-    {
-        if (obj is null)
-            return false;
-
-        return this.ToString().Equals(obj.ToString());
-    }
-
-    /// <summary>
     /// Determines whether the specified language info is equivalent to the
     /// current language info using the given rules.
     /// </summary>
-    /// <param name="otherInfo">The language info to compare against.</param>
+    /// <param name="other">The language info to compare against.</param>
     /// <param name="options">The rules to compare using.</param>
     /// <returns>
     /// <see langword="true"/> if the specified language is equivalent to the current info;
     /// otherwise, <see langword="false"/>.
     /// </returns>
-    public bool IsEquivalentTo(LanguageInfo otherInfo, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    public bool IsEquivalentTo(LanguageInfo other, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
     {
         bool isEqual = true;
         bool useWild = options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
 
-        if (useWild && otherInfo == null)
-            return true;
+        if (other == null)
+            return useWild;
 
         if (!useWild && options.HasFlag(LanguageEquivalencyOptions.Strict))
-            return Equals(otherInfo);
+            return ToString().Equals(other?.ToString());
 
         if (options.HasFlag(LanguageEquivalencyOptions.Language) && isEqual)
-            isEqual &= (useWild && (Language == null || otherInfo.Language == null))
-                || this.Language.Equals(otherInfo.Language);
+            isEqual &= (useWild && (Language == null || other.Language == null))
+                || this.Language == other.Language;
 
         if (options.HasFlag(LanguageEquivalencyOptions.Region) && isEqual)
-            isEqual &= (useWild && (Region == null || otherInfo.Region == null))
-                || this.Region.Equals(otherInfo.Region);
+            isEqual &= (useWild && (Region == null || other.Region == null))
+                || this.Region == other.Region;
 
         if (options.HasFlag(LanguageEquivalencyOptions.Variant) && isEqual)
-            isEqual &= (useWild && (Variant == null || otherInfo.Variant == null))
-                || this.Variant.Equals(otherInfo.Variant);
+            isEqual &= (useWild && (Variant == null || other.Variant == null))
+                || this.Variant == other.Variant;
 
         if (options.HasFlag(LanguageEquivalencyOptions.Secondary) && isEqual)
         {
@@ -164,11 +148,26 @@ public class LanguageInfo
             options |= (LanguageEquivalencyOptions)pri;
 
             // Compare secondary values
-            isEqual &= Secondary == null ? useWild : Secondary.IsEquivalentTo(otherInfo.Secondary, options);
+            isEqual &= Secondary == null ? useWild : Secondary.IsEquivalentTo(other.Secondary, options);
         }
 
         return isEqual;
     }
+
+    public bool Equals(LanguageInfo other) => IsEquivalentTo(other);
+
+    public static bool operator ==(LanguageInfo a, LanguageInfo b)
+    {
+        if (a is null)
+            return b is null;
+        return a.Equals(b);
+    }
+
+    public static bool operator !=(LanguageInfo a, LanguageInfo b) => !(a == b);
+
+    public override bool Equals(object obj) => Equals(obj as LanguageInfo);
+
+    public override int GetHashCode() => ToString().GetHashCode();
 
     private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
     {
