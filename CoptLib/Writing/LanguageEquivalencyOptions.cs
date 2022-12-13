@@ -11,6 +11,11 @@ public enum LanguageEquivalencyOptions
     Strict = ~TreatNullAsWild,
 
     /// <summary>
+    /// The tags must either match exactly or have null values.
+    /// </summary>
+    StrictWithWild = ~0,
+
+    /// <summary>
     /// The language must match.
     /// </summary>
     Language = 1 << 0,
