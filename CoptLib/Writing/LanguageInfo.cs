@@ -15,7 +15,14 @@ public class LanguageInfo
     {
         Tag = tag;
 
-        string[] subtags = tag.Split('-');
+        int idxSecondary = tag.IndexOf('/');
+        if (idxSecondary > 0)
+        {
+            Tag = tag.Substring(0, idxSecondary);
+            Secondary = new(tag.Substring(idxSecondary + 1));
+        }
+
+        string[] subtags = Tag.Split('-');
         Language = subtags[0];
 
         if (subtags.Length >= 2)
@@ -28,7 +35,7 @@ public class LanguageInfo
 
         try
         {
-            Culture = CultureInfo.GetCultureInfo(tag);
+            Culture = CultureInfo.GetCultureInfo(Tag);
         }
         catch { }
     }
@@ -84,7 +91,17 @@ public class LanguageInfo
         return new(value);
     }
 
-    public override string ToString() => Known != KnownLanguage.Default ? Known.ToString() : Tag;
+    public override string ToString()
+    {
+        if (Known != KnownLanguage.Default)
+            return Known.ToString();
+
+        string tag = Tag;
+        if (Secondary != null)
+            tag += $"/{Secondary}";
+
+        return tag;
+    }
 
     private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
     {

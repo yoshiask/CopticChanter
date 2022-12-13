@@ -27,7 +27,8 @@ namespace CoptTest
         {
             KnownLanguage.English.ToString(), KnownLanguage.Coptic.ToString(),
             KnownLanguage.Arabic.ToString(), KnownLanguage.Default.ToString(),
-            "cop", "cop-GR", "cop-EG-AST", "de", "it-IT", "en-US"
+            "cop", "cop-GR", "cop-EG-AST", "de", "it-IT", "en-US",
+            "cop-GR/en-US"
         };
 
         public static IEnumerable<object[]> GetLanguageInfo_Parse_Samples()
