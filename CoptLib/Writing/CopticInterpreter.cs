@@ -122,8 +122,11 @@ namespace CoptLib.Writing
                             }
                             else
                             {
-                                ipa = "u";
-                                ipaWord[i - 1] = new(chPrev, string.Empty);
+                                // Technically this is a digraph, but this code
+                                // acts like the upsilon is silent and it's
+                                // actually O making all the sound
+                                ipa = string.Empty;
+                                ipaWord[i - 1] = new(chPrev, "u");
                             }
                         }
                         else if (chPrev == 'ⲁ' || chPrev == 'ⲉ')
