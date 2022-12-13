@@ -37,7 +37,17 @@
         /// </summary>
         public bool IsUpper { get; set; }
 
-        public override string ToString() => $"('{Source}', \"{Ipa}\")";
+        /// <summary>
+        /// Gets the <see cref="Source"/> with correct casing.
+        /// </summary>
+        public char GetSource() => !IsUpper ? Source : char.ToUpper(Source);
+
+        /// <summary>
+        /// Gets the <see cref="Ipa"/> transcription with correct casing.
+        /// </summary>
+        public string GetIpa() => !IsUpper ? Ipa : char.ToUpper(Ipa[0]) + Ipa.Substring(1);
+
+        public override string ToString() => $"('{GetSource()}', \"{GetIpa()}\")";
 
         /// <summary>
         /// Parses a special format string into a set of <see cref="PhoneticEquivalent"/>s.

@@ -45,6 +45,8 @@ namespace CoptLib.Writing
                 // Check if word is in cache
                 if (useCache && _wordCache.TryGetValue(srcWordInitHash, out var ipaWordCached))
                 {
+                    // Preserve casing
+                    CopyCasing(srcWordInit, ipaWordCached);
                     ipaWords[w] = ipaWordCached;
                     continue;
                 }
@@ -266,7 +268,7 @@ namespace CoptLib.Writing
 
             return string.Join(null, words.Select(
                 word => string.Join(null, word.Select(
-                    ph => ph.IsUpper ? ph.Ipa.ToUpper() : ph.Ipa
+                    ph => ph.GetIpa()
                 )))
             );
         }
