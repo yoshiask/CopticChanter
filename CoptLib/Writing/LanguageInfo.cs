@@ -118,7 +118,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         bool isEqual = true;
         bool useWild = options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
 
-        if (other == null)
+        if (other is null)
             return useWild;
 
         if (!useWild && options.HasFlag(LanguageEquivalencyOptions.Strict))
@@ -148,7 +148,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
             options |= (LanguageEquivalencyOptions)pri;
 
             // Compare secondary values
-            isEqual &= Secondary == null ? useWild : Secondary.IsEquivalentTo(other.Secondary, options);
+            isEqual &= IsEquivalentTo(this.Secondary, other.Secondary, options);
         }
 
         return isEqual;
@@ -156,18 +156,21 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public bool Equals(LanguageInfo other) => IsEquivalentTo(other);
 
-    public static bool operator ==(LanguageInfo a, LanguageInfo b)
-    {
-        if (a is null)
-            return b is null;
-        return a.Equals(b);
-    }
+    public static bool operator ==(LanguageInfo a, LanguageInfo b) => IsEquivalentTo(a, b);
 
     public static bool operator !=(LanguageInfo a, LanguageInfo b) => !(a == b);
 
     public override bool Equals(object obj) => Equals(obj as LanguageInfo);
 
     public override int GetHashCode() => ToString().GetHashCode();
+
+    /// <inheritdoc cref="IsEquivalentTo(LanguageInfo, LanguageEquivalencyOptions)"/>
+    public static bool IsEquivalentTo(LanguageInfo a, LanguageInfo b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    {
+        if (a is null)
+            return b is null;
+        return a.IsEquivalentTo(b, options);
+    }
 
     private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
     {

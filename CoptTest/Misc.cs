@@ -45,6 +45,7 @@ namespace CoptTest
         [InlineData("cop-GR/en-US", "ar-EG/en-US", true, LEO.Secondary)]
         [InlineData("cop-GR/en-US", "ar-EG/en", true, LEO.Secondary | LEO.TreatNullAsWild)]
         [InlineData("cop-GR/en-US", "ar-EG/en", false, LEO.Secondary)]
+        [InlineData("cop-GR/ar-EG", "cop/ar", true, LEO.StrictWithWild)]
         public void LanguageInfo_IsEquivalentTo(string tagA, string tagB, bool expected, LEO options = LEO.Strict)
         {
             var liA = LanguageInfo.Parse(tagA);
