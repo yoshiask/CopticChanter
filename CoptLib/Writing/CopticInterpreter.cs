@@ -32,24 +32,15 @@ namespace CoptLib.Writing
             {
                 string srcWordInit = srcWords[w];
                 int srcWordInitHash = srcWordInit.ToLower().GetHashCode();
+                PhoneticEquivalent[] ipaWord;
 
                 // Check if entire word has known special pronunciation
-                if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out var ipaWordKnown))
-                {
-                    // Preserve casing
-                    CopyCasing(srcWordInit, ipaWordKnown);
-                    ipaWords[w] = ipaWordKnown;
-                    continue;
-                }
+                if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out ipaWord))
+                    goto finished;
 
                 // Check if word is in cache
-                if (useCache && _wordCache.TryGetValue(srcWordInitHash, out var ipaWordCached))
-                {
-                    // Preserve casing
-                    CopyCasing(srcWordInit, ipaWordCached);
-                    ipaWords[w] = ipaWordCached;
-                    continue;
-                }
+                if (useCache && _wordCache.TryGetValue(srcWordInitHash, out ipaWord))
+                    goto finished;
 
                 string srcWord = srcWordInit;
                 string? prefix = null;
@@ -63,14 +54,11 @@ namespace CoptLib.Writing
                 }
 
                 // Initialize phonetic equivalent list and handle prefix
-                var ipaWord = new PhoneticEquivalent[srcWordInit.Length];
+                ipaWord = new PhoneticEquivalent[srcWordInit.Length];
                 if (prefix != null)
                 {
                     // Run analysis on only the prefix
                     var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
-
-                    // Preserve casing
-                    CopyCasing(prefix, ipaPrefix);
 
                     // Copy pronunciation to full word pronunciation
                     ipaPrefix.CopyTo(ipaWord, 0);
@@ -80,14 +68,10 @@ namespace CoptLib.Writing
                 int srcWordHash = srcWord.ToLower().GetHashCode();
                 if (KnownPronunciations.TryGetValue(srcWordHash, out var ipaBaseWordKnown))
                 {
-                    // Preserve casing
-                    CopyCasing(srcWord, ipaBaseWordKnown);
-
                     // Copy pronunciation to full word pronunciation
                     ipaBaseWordKnown.CopyTo(ipaWord, srcWordStartIdx);
 
-                    ipaWords[w] = ipaWord;
-                    continue;
+                    goto finished;
                 }
 
                 // Initial pass assumes default cases
@@ -244,7 +228,10 @@ namespace CoptLib.Writing
                     ipaWord[i].Ipa = ipa;
                 }
 
-                ipaWords[w] = ipaWord;
+                finished:
+
+                // Preserve casing
+                ipaWords[w] = CopyCasing(srcWordInit, ipaWord);
 
                 // Add word to cache
                 if (useCache && !_wordCache.ContainsKey(srcWordInitHash))
@@ -295,7 +282,7 @@ namespace CoptLib.Writing
                     if (!table.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
                         tl = pe.Ipa;
 
-                    tl = pe.IsUpper ? tl.ToUpper() : tl;
+                    tl = pe.IsUpper ? char.ToUpper(tl[0]) + tl.Substring(1) : tl;
                     sb.Append(tl);
                 }
             }
@@ -410,14 +397,20 @@ namespace CoptLib.Writing
         }
 
         /// <summary>
-        /// Copies the letter casing of a source word to a pronunciation.
+        /// Returns a new IPA word with the same casing as the source word.
         /// </summary>
         /// <param name="srcWord">The string to copy casing from.</param>
         /// <param name="ipaWord">The pronunciation to copy casing to.</param>
-        private static void CopyCasing(string srcWord, PhoneticEquivalent[] ipaWord)
+        private static PhoneticEquivalent[] CopyCasing(string srcWord, PhoneticEquivalent[] ipaWord)
         {
+            // A clone of the array needs to made, otherwise changing the source
+            // array will affect all references to it. This is particularly a problem
+            // when a word appears more than once in a sentence in different cases.
+            var ipaWordNew = (PhoneticEquivalent[])ipaWord.Clone();
+
             for (int c = 0; c < srcWord.Length; c++)
-                ipaWord[c].IsUpper = char.IsUpper(srcWord[c]);
+                ipaWordNew[c].IsUpper = char.IsUpper(srcWord[c]);
+            return ipaWordNew;
         }
 
         /// <summary>
