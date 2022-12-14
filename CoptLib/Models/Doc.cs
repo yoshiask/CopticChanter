@@ -58,6 +58,10 @@ namespace CoptLib.Models
         /// <param name="excludedTranslations">
         /// A list of translations to exclude from the layout.
         /// </param>
+        /// <param name="includedTranslations">
+        /// A list of translations to explicitly include in the layout.
+        /// Overrides entries in <paramref name="excludedTranslations"/>.
+        /// </param>
         /// <remarks>
         /// Typically used for generating a layout for display purposes.
         /// </remarks>
@@ -81,7 +85,13 @@ namespace CoptLib.Models
 
             // Create rows for each stanza
             int numRows = Translations.CountRows() + 1;
-            List<List<object>> layout = new(numRows);
+            List<List<object>> layout = new(numRows)
+            {
+                // Add Doc to row so consumer can decide whether to show
+                // the document name
+                this.IntoList<object>()
+            };
+
             for (int i = 0; i < numRows; i++)
                 layout.Add(new(translationCount));
 
@@ -97,12 +107,8 @@ namespace CoptLib.Models
 
                 var flattenedTranslation = translation.Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null).ToList<object>();
                 foreach (var (elem, i) in flattenedTranslation.WithIndex())
-                    layout[i].Add(elem);
+                    layout[i + 1].Add(elem);
             }
-
-            // Add Doc to row so consumer can decide whether to show
-            // the document name
-            layout.Insert(0, this.IntoList<object>());
 
             return layout;
         }
