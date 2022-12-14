@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CoptLib.Extensions;
+using CoptLib.Writing;
 using OwlCore.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,25 +55,47 @@ namespace CoptLib.Models
         /// Flattens the document to a list of lists (2D array), where
         /// each list is a single row in the document.
         /// </summary>
+        /// <param name="excludedTranslations">
+        /// A list of translations to exclude from the layout.
+        /// </param>
         /// <remarks>
         /// Typically used for generating a layout for display purposes.
         /// </remarks>
-        public List<List<object>> Flatten()
+        public List<List<object>> Flatten(IEnumerable<LanguageInfo> excludedTranslations = null, IEnumerable<LanguageInfo> includedTranslations = null)
         {
             Guard.IsNotNull(Translations);
 
-            int translationCount = Translations.Children.Count;
+            // Remove any entries in the excluded translations list
+            // to prevent unnecessary equality checks later
+            excludedTranslations ??= System.Array.Empty<LanguageInfo>();
+            includedTranslations ??= System.Array.Empty<LanguageInfo>();
+
+            var allTranslations = Translations.Children.Select(t => t.Language).ToList();
+            includedTranslations = includedTranslations.Intersect(allTranslations, LanguageInfoEqualityComparer.StrictWithWild).ToList();
+            var finalTranslations = allTranslations
+                .Except(excludedTranslations, LanguageInfoEqualityComparer.StrictWithWild)
+                .Union(includedTranslations);
+
+            // Get the number of translations to display
+            int translationCount = finalTranslations.Count();
 
             // Create rows for each stanza
             int numRows = Translations.CountRows() + 1;
             List<List<object>> layout = new(numRows);
-            for (int i = 1; i <= numRows; i++)
+            for (int i = 0; i < numRows; i++)
                 layout.Add(new(translationCount));
 
             List<List<object>> columns = new(translationCount);
-            for (int t = 0; t < translationCount; t++)
+            for (int t = 0; t < Translations.Children.Count; t++)
             {
-                var flattenedTranslation = Translations[t].Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null).ToList<object>();
+                var translation = Translations[t];
+
+                // Ignore translation if it's in the exclusion list but not the inclusion list
+                if (excludedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild)
+                    && !includedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
+                    continue;
+
+                var flattenedTranslation = translation.Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null).ToList<object>();
                 foreach (var (elem, i) in flattenedTranslation.WithIndex())
                     layout[i].Add(elem);
             }
