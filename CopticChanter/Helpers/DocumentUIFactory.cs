@@ -117,22 +117,22 @@ namespace CopticChanter.Helpers
             return headerBlock;
         }
 
-        public static Grid CreateGridFromDoc(Doc doc)
+        public static Grid CreateGridFromDoc(Doc doc) => CreateGridFromLayout((IList<IList<object>>)doc.Flatten());
+
+        public static Grid CreateGridFromLayout(IList<IList<object>> layout)
         {
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            var rows = doc.Flatten();
-
             // Create a column for each language
-            int columnCount = rows.Max(r => r.Count);
+            int columnCount = layout.Max(r => r.Count);
             for (int i = 0; i < columnCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             bool isNewDoc = false;
-            for (int r = 0; r < rows.Count; r++)
+            for (int r = 0; r < layout.Count; r++)
             {
-                var row = rows[r];
+                var row = layout[r];
 
                 // Create new row definition
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });

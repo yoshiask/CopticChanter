@@ -8,15 +8,20 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-	<Page.Resources>
-		<Style TargetType="Grid">
-			<Setter Property="Padding" Value="10"/>
-			<Setter Property="ColumnSpacing" Value="10"/>
-			<Setter Property="RowSpacing" Value="10"/>
-		</Style>
-	</Page.Resources>
-	
-	<ScrollViewer>
-		<StackPanel x:Name="MainPanel" Spacing="20"/>
-	</ScrollViewer>
+    <Page.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="ColumnSpacing" Value="12"/>
+            <Setter Property="RowSpacing" Value="12"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Padding="0">
+        <ProgressBar x:Name="Progress" VerticalAlignment="Top" IsIndeterminate="True"
+                     x:Load="{x:Bind ViewModel.CreateLayoutCommand.IsRunning, Mode=OneWay}"/>
+
+        <ScrollViewer>
+            <StackPanel x:Name="MainPanel" Spacing="24"/>
+        </ScrollViewer>
+    </Grid>
 </Page>
