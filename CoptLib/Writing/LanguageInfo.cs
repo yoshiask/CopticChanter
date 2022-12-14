@@ -168,7 +168,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     public static bool IsEquivalentTo(LanguageInfo a, LanguageInfo b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
     {
         if (a is null)
-            return b is null;
+            return b is null || options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
         return a.IsEquivalentTo(b, options);
     }
 
