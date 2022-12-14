@@ -84,8 +84,8 @@ namespace CoptLib.Models
             int translationCount = finalTranslations.Count();
 
             // Create rows for each stanza
-            int numRows = Translations.CountRows() + 1;
-            List<List<object>> layout = new(numRows)
+            int numRows = Translations.CountRows();
+            List<List<object>> layout = new(numRows + 1)
             {
                 // Add Doc to row so consumer can decide whether to show
                 // the document name
@@ -95,7 +95,6 @@ namespace CoptLib.Models
             for (int i = 0; i < numRows; i++)
                 layout.Add(new(translationCount));
 
-            List<List<object>> columns = new(translationCount);
             for (int t = 0; t < Translations.Children.Count; t++)
             {
                 var translation = Translations[t];
@@ -105,7 +104,12 @@ namespace CoptLib.Models
                     && !includedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
                     continue;
 
-                var flattenedTranslation = translation.Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null).ToList<object>();
+                var flattenedTranslation = translation.Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null)
+                    // The row count excludes sections without headers,
+                    // so we have to do the same here.
+                    .Where(p => p is Section section ? section.Title != null : p != null)
+                    .ToList<object>();
+
                 foreach (var (elem, i) in flattenedTranslation.WithIndex())
                     layout[i + 1].Add(elem);
             }
