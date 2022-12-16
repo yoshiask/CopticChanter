@@ -8,9 +8,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button x:Name="ConvertButton" Content="Translate" HorizontalAlignment="Right" Margin="0,160,0,0" VerticalAlignment="Top" Height="180" Width="100" Click="ConvertButton_Click"/>
-        <TextBox x:Name="InputBox" HorizontalAlignment="Stretch" Margin="0,160,100,0" Text="" VerticalAlignment="Top" Height="180" FontSize="22" AcceptsReturn="True" PlaceholderText="Input"/>
-        <TextBox x:Name="OutputBox" Margin="0,393,0,0" Text="" VerticalAlignment="Top" Height="178" FontSize="22" FontFamily="Coptic1" AcceptsReturn="True" PlaceholderText="Output" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-
+        <ProgressRing IsActive="True" />
     </Grid>
 </Page>
