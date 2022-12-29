@@ -1,7 +1,7 @@
 ﻿using CoptLib.IO;
+using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
@@ -52,7 +52,6 @@ namespace CoptLib.Models
 
         }
 
-        [XmlText]
         public string SourceText
         {
             get => _sourceText;
@@ -60,39 +59,33 @@ namespace CoptLib.Models
             {
                 if (_sourceText != value)
                 {
-                    HasBeenParsed = false;
                     Handled = false;
+                    HasBeenParsed = false;
+                    Inlines = new()
+                    {
+                        new Run(value, this)
+                    };
                 }
+
                 _sourceText = value;
             }
         }
 
-        public bool HasBeenParsed { get; private set; }
+        public bool HasBeenParsed { get; set; }
 
-        public string Text { get; set; }
+        public InlineCollection Inlines { get; set; }
 
-        public List<TextCommandBase> Commands { get; private set; }
+        public List<TextCommandBase> Commands { get; set; }
+
+        public void ParseCommands() => ContentHelper.ParseCommands(this);
 
         public override void HandleFont()
         {
-            if (!Handled && CopticFont.TryFindFont(Font, out var font))
-            {
-                Text = font.Convert(Text);
-                Handled = true;
-            }
+            ContentHelper.HandleFont(Inlines);
+            Handled = true;
         }
 
-        public void ParseCommands()
-        {
-            if (HasBeenParsed)
-                return;
-
-            Commands = Scripting.Scripting.ParseTextCommands(this, out var text);
-            Text = text;
-            HasBeenParsed = true;
-        }
-
-        public override string ToString() => Text ?? SourceText;
+        public string GetText() => ContentHelper.GetText(this);
     }
 
     public class Section : ContentPart, IContentCollectionContainer

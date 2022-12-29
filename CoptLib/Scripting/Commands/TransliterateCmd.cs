@@ -1,5 +1,6 @@
 ﻿using CoptLib.Extensions;
 using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Writing;
 using System;
 
@@ -7,8 +8,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class TransliterateCmd : TextCommandBase
     {
-        public TransliterateCmd(string cmd, IContent content, int startIndex, IDefinition[] parameters)
-            : base(cmd, content, startIndex, parameters)
+        public TransliterateCmd(string cmd, Run run, IDefinition[] parameters)
+            : base(cmd, run, parameters)
         {
             Parse(cmd, parameters);
         }
@@ -17,24 +18,15 @@ namespace CoptLib.Scripting.Commands
 
         private void Parse(string cmd, params IDefinition[] parameters)
         {
-            var langParam = ((IContent)parameters[0]).SourceText;
+            var langParam = parameters[0].ToString();
             var sourceParam = parameters[parameters.Length - 1];
 
             Language = LanguageInfo.Parse(langParam)
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
-            Output = sourceParam.Select(Transliterate);
-        }
+            Output = sourceParam.Select(def => def.DoForAllTextDeep(Transliterate));
 
-        private void Transliterate(IDefinition def)
-        {
-            if (def is IContent content)
-                content.Text = CopticInterpreter.Transliterate(content.Text ?? content.SourceText, Language.Known);
-
-            if (def is Section section && section.Title != null)
-                Transliterate(section.Title);
-
-            if (def is IMultilingual multi)
+            if (Output is IMultilingual multi)
             {
                 if (multi.Language != null)
                 {
@@ -45,7 +37,15 @@ namespace CoptLib.Scripting.Commands
                 {
                     multi.Language = Language;
                 }
+
+                multi.Font = null;
             }
+        }
+
+        private void Transliterate(Run run)
+        {
+            run.Text = CopticInterpreter.Transliterate(run.Text, Language.Known);
+            run.Font = null;
         }
     }
 }

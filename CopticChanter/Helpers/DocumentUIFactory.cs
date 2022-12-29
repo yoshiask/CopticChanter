@@ -6,117 +6,16 @@ using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
+
+using CLInline = CoptLib.Models.Text.Inline;
+using CLRun = CoptLib.Models.Text.Run;
+using CLSpan = CoptLib.Models.Text.Span;
 
 namespace CopticChanter.Helpers
 {
     public static class DocumentUIFactory
     {
-        public static void CreateFromContentPart(ContentPart part, Action<TextBlock> action)
-        {
-            if (action == null)
-                action = _ => { };
-
-            switch (part)
-            {
-                case IContent content:
-                    var contentBlock = CreateBlockFromContent(content);
-                    action(contentBlock);
-                    break;
-
-                case IContentCollectionContainer contentCollection:
-                    var blocks = CreateBlocksFromContentCollectionContainer(contentCollection);
-                    foreach (TextBlock block in blocks)
-                        action(block);
-                    break;
-            }
-        }
-
-        public static TextBlock CreateBlockFromContent(IContent contentPart)
-        {
-            var contentBlock = new TextBlock
-            {
-                Text = contentPart.Text,
-                TextWrapping = TextWrapping.Wrap,
-                TextAlignment = TextAlignment.Left
-            };
-
-            HandleLanguage(contentBlock, contentPart);
-
-            return contentBlock;
-        }
-
-        public static List<TextBlock> CreateBlocksFromContentCollectionContainer(IContentCollectionContainer container)
-        {
-            var blocks = new List<TextBlock>(container.Children.Count + 1);
-
-            if (container is Section section && section.Title != null)
-            {
-                var headerBlock = CreateSubheader(section.Title);
-                blocks.Add(headerBlock);
-            }
-
-            foreach (ContentPart part in container.Children)
-            {
-                switch (part)
-                {
-                    case Stanza stanza:
-                        {
-                            var block = CreateBlockFromContent(stanza);
-                            blocks.Add(block);
-                            break;
-                        }
-                    case Section subsection:
-                        {
-                            var subblocks = CreateBlocksFromContentCollectionContainer(subsection);
-                            blocks.AddRange(subblocks);
-                            break;
-                        }
-                }
-            }
-
-            return blocks;
-        }
-
-        public static TextBlock CreateHeader(string title, bool addPadding = true)
-        {
-            var headerBlock = new TextBlock
-            {
-                Text = title,
-                FontWeight = FontWeights.Bold,
-                TextWrapping = TextWrapping.Wrap
-            };
-            if (addPadding)
-            {
-                // Every header except for the first one should have a top margin
-                // to distinguish it from the previous document
-                headerBlock.Margin = new Thickness(0, 20, 0, 0);
-            }
-
-            HandleLanguage(headerBlock, title);
-
-            return headerBlock;
-        }
-
-        public static TextBlock CreateSubheader(IContent title, bool addPadding = true)
-        {
-            var headerBlock = new TextBlock
-            {
-                Text = title.Text,
-                FontWeight = FontWeights.SemiBold,
-                TextWrapping = TextWrapping.Wrap
-            };
-            if (addPadding)
-            {
-                // Every header except for the first one should have a top margin
-                // to distinguish it from the previous document
-                headerBlock.Margin = new Thickness(0, 10, 0, 0);
-            }
-
-            HandleLanguage(headerBlock, title);
-
-            return headerBlock;
-        }
-
         public static Grid CreateGridFromDoc(Doc doc) => CreateGridFromLayout((IList<IList<object>>)doc.Flatten());
 
         public static Grid CreateGridFromLayout(IList<IList<object>> layout)
@@ -164,7 +63,22 @@ namespace CopticChanter.Helpers
                     }
 
                     if (item is IContent content)
-                        block.Text = content.Text;
+                    {
+                        if (content.Inlines.SingleOrDefault() is CLRun singleRun)
+                        {
+                            // Avoid using InlineCollection when Text can be used directly
+                            block.Text = singleRun.Text;
+                        }
+                        else
+                        {
+                            // Convert the CoptLib InlineCollection to WUX
+                            foreach (CLInline inline in content.Inlines)
+                            {
+                                Inline wuxInline = CreateWUXInline(inline);
+                                block.Inlines.Add(wuxInline);
+                            }
+                        }
+                    }
 
                     HandleLanguage(block, item);
                     MainGrid.Children.Add(block);
@@ -210,6 +124,32 @@ namespace CopticChanter.Helpers
 
                     break;
             }
+        }
+
+        private static Inline CreateWUXInline(CLInline inline)
+        {
+            Inline wuxInline = null;
+
+            switch (inline)
+            {
+                case CLRun run:
+                    wuxInline = new Run
+                    {
+                        Text = run.Text,
+                    };
+                    break;
+
+                case CLSpan span:
+                    var wuxSpan = new Span();
+                    foreach (CLInline childInline in span.Inlines)
+                        wuxSpan.Inlines.Add(CreateWUXInline(childInline));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return wuxInline;
         }
     }
 }

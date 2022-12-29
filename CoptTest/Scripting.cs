@@ -29,10 +29,10 @@ namespace CoptTest
                 SourceText = string.Format(text, @"\ms{0:5:0}"),
                 DocContext = _doc 
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
+            stanza.ParseCommands();
 
-            Assert.Equal(string.Format(text, string.Empty), result);
-            Assert.True(cmds.Any());
+            Assert.Equal(string.Format(text, string.Empty), stanza.Inlines?.ToString());
+            Assert.True(stanza.Commands.Any());
         }
 
         [Theory]
@@ -54,16 +54,16 @@ namespace CoptTest
                 SourceText = $"Bless the Lord, {cmdText}.",
                 DocContext = _doc
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
+            stanza.ParseCommands();
 
-            Assert.Equal($"Bless the Lord, {convSubtext}.", result);
+            Assert.Equal($"Bless the Lord, {convSubtext}.", stanza.Inlines?.ToString());
 
-            var cmd = cmds.Single();
+            var cmd = stanza.Commands.Single();
             var langCmd = Assert.IsType<LanguageCmd>(cmd);
             var langDef = Assert.IsAssignableFrom<IContent>(cmd.Output);
 
             Assert.Equal(langCmd.Language, lang);
-            Assert.Equal(langDef.Text, convSubtext);
+            Assert.Equal(langDef?.ToString(), convSubtext);
             if (font == null)
                 Assert.Null(langCmd.Font);
             Assert.Equal(langCmd.Font?.Name, font);
@@ -98,16 +98,16 @@ namespace CoptTest
                 SourceText = preText + $"\\def{{{key}}}" + postText,
                 DocContext = _doc
             };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
+            stanza.ParseCommands();
 
-            Assert.Equal($"{preText}{parsedValue}{postText}", result);
+            Assert.Equal($"{preText}{parsedValue}{postText}", stanza.Inlines?.ToString());
 
-            var cmd = cmds.Single();
+            var cmd = stanza.Commands.Single();
             var defCmd = Assert.IsType<DefinitionCmd>(cmd);
             var defContent = Assert.IsAssignableFrom<IContent>(defCmd.Output);
             var defMulti = Assert.IsAssignableFrom<IMultilingual>(defCmd.Output);
 
-            Assert.Equal(defContent.Text, parsedValue);
+            Assert.Equal(defContent?.ToString(), parsedValue);
             Assert.Equal(defMulti.Language?.Known, lang);
             Assert.Equal(defMulti.Font, font);
         }
@@ -115,19 +115,20 @@ namespace CoptTest
         [Theory]
         [InlineData("A Coptic word, \\lang{Coptic|CS Avva Shenouda|Wcanna}, and its IPA transcription, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
                     "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, O\u031Esännä.")]
+        [InlineData("IPA transcription of a Coptic word, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
+                    "IPA transcription of a Coptic word, O\u031Esännä.")]
+        [InlineData("IPA transcription of a Coptic word, \\trslit{English|\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
+                    "English transcription of a Coptic word, Osanna.")]
         public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
         {
             expectedResult ??= text;
+            CoptLib.Models.Text.Run run = new(text, null);
 
-            Doc doc = new();
-            Stanza stanza = new(null)
-            {
-                SourceText = text,
-                DocContext = doc
-            };
-            var cmds = CoptLib.Scripting.Scripting.ParseTextCommands(stanza, out var result);
+            var parsedInlines = CoptLib.Scripting.Scripting.ParseTextCommands(run);
+            Assert.Equal(text, parsedInlines?.ToString());
 
-            Assert.Equal(expectedResult, result);
+            var resultInlines = CoptLib.Scripting.Scripting.RunTextCommands(parsedInlines);
+            Assert.Equal(expectedResult, resultInlines?.ToString());
         }
 
         [Theory]

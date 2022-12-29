@@ -244,6 +244,7 @@ namespace CoptLib.IO
             {
                 if (part is IMultilingual partMulti && partMulti.Language?.Known == KnownLanguage.Coptic)
                     partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
+
                 partContent.ParseCommands();
             }
 
@@ -254,8 +255,8 @@ namespace CoptLib.IO
                     // Populate the collection with items from the source.
                     // This is done before commands are parsed, just in
                     // case the generated content contains commands.
-                    var cmd = Scripting.Scripting.ParseTextCommands(partCollection.Source, out _)
-                        .LastOrDefault();
+                    partCollection.Source.ParseCommands();
+                    var cmd = partCollection.Source.Commands.LastOrDefault();
 
                     if (cmd.Output != null)
                     {

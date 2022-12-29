@@ -1,18 +1,18 @@
 ﻿using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Writing;
 
 namespace CoptLib.Scripting
 {
     /// <summary>
-    /// Represents a command that was embedded in an <see cref="IContent"/> 
+    /// Represents a command that was embedded in a <see cref="Models.Text.Run"/>.
     /// </summary>
     public abstract class TextCommandBase : ICommandOutput
     {
-        public TextCommandBase(string name, IContent content, int startIndex, IDefinition[] parameters)
+        public TextCommandBase(string name, Run run, IDefinition[] parameters)
         {
             Name = name;
-            SourceContent = content;
-            StartIndex = startIndex;
+            Run = run;
             Parameters = parameters;
         }
 
@@ -29,19 +29,9 @@ namespace CoptLib.Scripting
         /// <summary>
         /// The content that contained the command.
         /// </summary>
-        public IContent SourceContent { get; }
+        public Run Run { get; }
 
         public Doc DocContext { get; }
-
-        /// <summary>
-        /// The zero-based starting character position of <see cref="Text"/>
-        /// in the parent <see cref="IContent"/>.
-        /// </summary>
-        /// <remarks>
-        /// This property is often used in conjunction with <see cref="string.Substring(int, int)"/>,
-        /// where the <c>length</c> parameter is <c>Text.Length</c>.
-        /// </remarks>
-        public int StartIndex { get; }
 
         public IDefinition Output { get; protected set; }
 
@@ -50,9 +40,9 @@ namespace CoptLib.Scripting
             if (Output is TranslationCollection defCol)
             {
                 KnownLanguage lang = KnownLanguage.Default;
-                if (SourceContent is IMultilingual multi && multi.Language != null)
+                if (Run is IMultilingual multi && multi.Language != null)
                     lang = multi.Language.Known;
-                else if (SourceContent.Parent is IMultilingual parentMulti)
+                else if (Run.Parent is IMultilingual parentMulti)
                     lang = parentMulti.Language.Known;
 
                 Output = defCol[lang];

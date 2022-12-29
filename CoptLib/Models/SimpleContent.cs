@@ -1,4 +1,5 @@
-﻿using CoptLib.Scripting;
+﻿using CoptLib.Models.Text;
+using CoptLib.Scripting;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -7,6 +8,8 @@ namespace CoptLib.Models
     [XmlRoot("String")]
     public class SimpleContent : IContent
     {
+        private string _sourceText;
+
         public SimpleContent(string sourceText, IDefinition parent)
         {
             SourceText = sourceText;
@@ -14,13 +17,25 @@ namespace CoptLib.Models
             DocContext = parent?.DocContext;
         }
 
-        public string SourceText { get; set; }
+        public string SourceText
+        {
+            get => _sourceText;
+            set
+            {
+                if (_sourceText != value)
+                {
+                    HasBeenParsed = false;
+                    Inlines = new()
+                    {
+                        new Run(value, this)
+                    };
+                }
 
-        public bool HasBeenParsed { get; private set; }
+                _sourceText = value;
+            }
+        }
 
-        public string Text { get; set; }
-
-        public List<TextCommandBase> Commands { get; private set; }
+        public bool HasBeenParsed { get; set; }
 
         public string Key { get; set; }
 
@@ -30,16 +45,14 @@ namespace CoptLib.Models
 
         public bool IsExplicitlyDefined { get; set; }
 
-        public void ParseCommands()
-        {
-            if (HasBeenParsed)
-                return;
+        public InlineCollection Inlines { get; set; }
 
-            Commands = Scripting.Scripting.ParseTextCommands(this, out var text);
-            Text = text;
-            HasBeenParsed = true;
-        }
+        public List<TextCommandBase> Commands { get; set; }
 
-        public override string ToString() => Text ?? SourceText;
+        public string GetText() => ContentHelper.GetText(this);
+
+        public void ParseCommands() => ContentHelper.ParseCommands(this);
+
+        public override string ToString() => GetText();
     }
 }

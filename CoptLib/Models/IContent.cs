@@ -1,4 +1,5 @@
-﻿using CoptLib.Scripting;
+﻿using CoptLib.Models.Text;
+using CoptLib.Scripting;
 using System.Collections.Generic;
 
 namespace CoptLib.Models
@@ -16,15 +17,13 @@ namespace CoptLib.Models
         /// <summary>
         /// Whether the <see cref="SourceText"/> has been parsed.
         /// </summary>
-        bool HasBeenParsed { get; }
+        bool HasBeenParsed { get; set; }
 
         /// <summary>
-        /// The <see cref="SourceText"/> text, with any commands or non-text strings stripped out.
+        /// A collection of <see cref="Run"/>s containing the rich content
+        /// with important metadata.
         /// </summary>
-        /// <remarks>
-        /// This property is populated by calling <see cref="ParseCommands"/>.
-        /// </remarks>
-        string Text { get; set; }
+        InlineCollection Inlines { get; set; }
 
         /// <summary>
         /// A list of commands parsed from <see cref="SourceText"/>.
@@ -32,12 +31,17 @@ namespace CoptLib.Models
         /// <remarks>
         /// This property is populated by calling <see cref="ParseCommands"/>.
         /// </remarks>
-        List<TextCommandBase> Commands { get; }
+        List<TextCommandBase> Commands { get; set; }
 
         /// <summary>
         /// Parses the <see cref="SourceText"/> for commands, storing the results in
-        /// <see cref="Text"/> and <see cref="Commands"/>.
+        /// <see cref="Inlines"/> and <see cref="Commands"/>.
         /// </summary>
         void ParseCommands();
+
+        /// <summary>
+        /// Flattens <see cref="Inlines"/> into a single plain-text string.
+        /// </summary>
+        string GetText();
     }
 }

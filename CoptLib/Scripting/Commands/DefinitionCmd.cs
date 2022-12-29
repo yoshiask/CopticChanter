@@ -1,19 +1,24 @@
-﻿using CoptLib.Models;
+﻿using CommunityToolkit.Diagnostics;
+using CoptLib.Models;
+using CoptLib.Models.Text;
+using System.Linq;
 
 namespace CoptLib.Scripting.Commands
 {
     public class DefinitionCmd : TextCommandBase
     {
-        public DefinitionCmd(string name, IContent content, int startIndex, IDefinition[] parameters)
-            : base(name, content, startIndex, parameters)
+        public DefinitionCmd(string name, Run run, IDefinition[] parameters)
+            : base(name, run, parameters)
         {
-            Parse(name, content, parameters);
+            Parse(name, run, parameters);
         }
 
-        private void Parse(string cmd, IContent content, params IDefinition[] parameters)
+        private void Parse(string cmd, Run run, params IDefinition[] parameters)
         {
-            string defId = ((IContent)parameters[0]).SourceText;
-            Output = content.DocContext.Definitions[defId];
+            string defId = parameters.FirstOrDefault()?.ToString();
+            Guard.IsNotNull(defId);
+
+            Output = run.DocContext.Definitions[defId];
             HandleOutput();
         }
     }

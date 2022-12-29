@@ -124,7 +124,7 @@ namespace CopticChanter
         #endregion
 
         #region Styles
-        public static FontFamily Segoe = new FontFamily("Segoe UI Coptic");
+        public static FontFamily Segoe = new FontFamily("League Spartan YGA");
         public static FontFamily Coptic1 = new FontFamily("/Assets/Coptic1.ttf#Coptic1");
         private static SolidColorBrush _accentBrush;
         private static Color _accentColor;

@@ -1,5 +1,6 @@
 ﻿using CoptLib.Extensions;
 using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Writing;
 using System;
 
@@ -7,8 +8,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class LanguageCmd : TextCommandBase
     {
-        public LanguageCmd(string cmd, IContent content, int startIndex, IDefinition[] parameters)
-            : base(cmd, content, startIndex, parameters)
+        public LanguageCmd(string cmd, Run run, IDefinition[] parameters)
+            : base(cmd, run, parameters)
         {
             Parse(cmd, parameters);
         }
@@ -19,7 +20,7 @@ namespace CoptLib.Scripting.Commands
 
         private void Parse(string cmd, params IDefinition[] parameters)
         {
-            var langParam = ((IContent)parameters[0]).SourceText;
+            var langParam = parameters[0].ToString();
             var sourceParam = parameters[parameters.Length - 1];
 
             if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
@@ -29,21 +30,18 @@ namespace CoptLib.Scripting.Commands
 
             if (parameters.Length >= 3 && (language == KnownLanguage.Coptic || language == KnownLanguage.Greek))
             {
-                var fontParam = ((IContent)parameters[1]).SourceText;
+                var fontParam = parameters[1].ToString();
 
                 Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
             }
 
-            Output = sourceParam.Select(ConvertFont);
+            Output = sourceParam.Select(def => def.DoForAllTextDeep(ConvertFont));
         }
 
-        private void ConvertFont(IDefinition def)
+        private void ConvertFont(Run run)
         {
-            if (def is IContent content)
-                content.Text = Font != null ? Font.Convert(content.SourceText) : content.SourceText;
-
-            if (def is Section section && section.Title != null)
-                ConvertFont(section.Title);
+            if (Font != null)
+                run.Text = Font.Convert(run.Text);
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using CoptLib.Models;
+using CoptLib.Models.Text;
 using System;
 
 namespace CoptLib.Scripting.Commands
 {
     public class TimestampCmd : TextCommandBase
     {
-        public TimestampCmd(string cmd, IContent content, int startIndex, IDefinition[] parameters)
-            : base(cmd, content, startIndex, parameters)
+        public TimestampCmd(string cmd, Run run, IDefinition[] parameters)
+            : base(cmd, run, parameters)
         {
             Parse(cmd, parameters);
         }

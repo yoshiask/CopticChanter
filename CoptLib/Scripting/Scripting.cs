@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
 using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
 using NLua;
 using NodaTime;
+using OwlCore.Extensions;
 
 namespace CoptLib.Scripting
 {
@@ -83,118 +88,285 @@ namespace CoptLib.Scripting
                 throw new InvalidCastException($"Expected an IDefinition, but script returned {scriptResult.GetType().Name}");
         }
 
-        public static List<TextCommandBase> ParseTextCommands(IContent content, out string strippedText)
+        /// <summary>
+        /// Parses inline text commands from an <see cref="InlineCollection"/>.
+        /// </summary>
+        /// <param name="contentInlines">The <see cref="Inline"/>s to parse.</param>
+        /// <exception cref="ArgumentException">Mismatched brackets were detected.</exception>
+        public static InlineCollection ParseTextCommands(InlineCollection contentInlines)
         {
-            strippedText = content.SourceText;
+            InlineCollection parsedInlines = new();
 
-            // Create a list to store parsed commands
-            List<TextCommandBase> parsedCmds = new();
-            Stack<int> paramStartPositions = new();
-            Stack<int> cmdStartPositions = new();
-            for (int index = 0; index < strippedText.Length; index++)
+            for (int i = 0; i < contentInlines.Count; i++)
             {
-                char ch = strippedText[index];
-                if (ch == '\\' && index + 1 < strippedText.Length)
+                var inline = contentInlines[i];
+                parsedInlines.Append(ParseTextCommands(inline));
+            }
+
+            return parsedInlines;
+        }
+
+        /// <summary>
+        /// Parses inline text commands from a single <see cref="Inline"/>.
+        /// </summary>
+        /// <param name="inline">The content to parse.</param>
+        /// <exception cref="ArgumentException">Mismatched brackets were detected.</exception>
+        public static Inline ParseTextCommands(Inline inline)
+        {
+            switch (inline)
+            {
+                case Run run:
+                    return ParseTextCommands(run.Text.AsSpan(), run.Parent);
+
+                case Span span:
+                    InlineCollection parsedSpanInlines = new();
+                    foreach (Inline spanInline in span.Inlines)
+                        parsedSpanInlines.Add(ParseTextCommands(spanInline));
+                    return new Span(parsedSpanInlines, inline.Parent);
+
+                default:
+                    throw new ArgumentException($"Cannot parse commands from an Inline of type '{inline.GetType()}'.");
+            }
+        }
+
+        /// <summary>
+        /// Parses inline text commands from a plain string.
+        /// </summary>
+        /// <param name="text">
+        /// The text to parse.
+        /// </param>
+        /// <param name="parent">
+        /// The parent this text is associated with.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// Mismatched brackets were detected.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// An invalid internal state was encountered.
+        /// </exception>
+        public static Inline ParseTextCommands(ReadOnlySpan<char> text, IDefinition parent)
+        {
+            InlineCollection inlines = new();
+
+            int cmdStart = -1;
+            bool isEscaped = false;
+            StringBuilder plain = new(text.Length);
+            for (int index = 0; index < text.Length; index++)
+            {
+                char ch = text[index];
+                if (ch == '\\')
                 {
-                    // Check if this is an escape sequence
-                    char nextCh = strippedText[index + 1];
-                    if (nextCh == '\\' || nextCh == '{' || nextCh == '}')
+                    if (index + 1 < text.Length)
                     {
-                        // Remove escape signal '\\'
-                        strippedText = strippedText.Remove(index, 1);
-                        continue;
-                    }
-
-                    // else, this is the start of a command
-                    cmdStartPositions.Push(index);
-                }
-                else if (ch == ' ' && cmdStartPositions.Count > paramStartPositions.Count)
-                {
-                    cmdStartPositions.Pop();
-                }
-                else if (ch == '{')
-                {
-                    paramStartPositions.Push(index);
-                }
-                else if (ch == '}')
-                {
-                    if (paramStartPositions.Count == 0)
-                        throw new ArgumentException($"Mismatched end bracket at index {index}");
-
-                    var depth = paramStartPositions.Count - 1;
-                    var start = paramStartPositions.Pop();
-
-                    // Ignore only opening and closing brackets
-                    if (cmdStartPositions.Count == 0)
-                        continue;
-                    var cmdStart = cmdStartPositions.Pop();
-
-                    string name = strippedText.Substring(cmdStart + 1, start - cmdStart - 1);
-
-                    // Make sure all inputs are IDefinitions
-                    List<IDefinition> parameters = new();
-                    string paramText = strippedText.Substring(start + 1, index - start - 1);
-                    int pStartIdx = -1;
-                    int pNextStartIdx = paramText.IndexOf('|');
-                    do
-                    {
-                        IDefinition par;
-
-                        int pActStartIdx = cmdStart + start + ++pStartIdx + 1;
-                        var cmd = parsedCmds.FirstOrDefault(c => c.StartIndex == pActStartIdx);
-                        if (cmd != null)
+                        // Check if this is an escape sequence
+                        char nextCh = text[index + 1];
+                        isEscaped = nextCh == '\\' || nextCh == '{' || nextCh == '}';
+                        if (isEscaped)
                         {
-                            par = cmd.Output;
+                            // Received escape signal '\\'
+                            continue;
                         }
-                        else
+
+                        // else, this is the start of a command
+                        cmdStart = index;
+
+                        // Save everything before the command
+                        if (plain.Length > 0)
                         {
-                            int pEndIdx = pNextStartIdx >= 0 ? pNextStartIdx : paramText.Length;
-                            string text = paramText.Substring(pStartIdx, pEndIdx - pStartIdx);
-                            par = new SimpleContent(text, content);
+                            inlines.Add(new Run(plain.ToString(), parent));
+                            plain.Clear();
                         }
-
-                        parameters.Add(par);
-                        pStartIdx = pNextStartIdx;
-                        if (pStartIdx < 0)
-                            break;
-                        pNextStartIdx = paramText.IndexOf('|', pStartIdx + 1);
-                    } while (pStartIdx >= 0);
-
-                    var parsedCmd = GetCommand(name, content, cmdStart, parameters.ToArray());
-                    if (parsedCmd == null)
-                        continue;
-
-                    int cmdLength = index - cmdStart + 1;
-                    strippedText = strippedText.Remove(cmdStart, cmdLength);
-                    if (parsedCmd.Output is IContent outputContent)
-                    {
-                        if (outputContent.Text != string.Empty)
-                            strippedText = strippedText.Insert(cmdStart, outputContent.Text);
-
-                        // Make sure to update the current index
-                        index += outputContent.Text.Length - cmdLength;
                     }
                     else
                     {
-                        // Strip out the command text
-                        index = cmdStart - 1;
+                        plain.Append(ch);
+                    }
+                }
+                else if (ch == '{' && !isEscaped)
+                {
+                    int openIndex = index;
+                    int closeIndex = IndexOfClosingBrace(text, openIndex);
+
+                    // Skip to end of command
+                    index = closeIndex;
+
+                    // If there was no command name specified, just skip
+                    // everything within the braces.
+                    if (cmdStart < 0)
+                        continue;
+
+                    if (closeIndex < 0)
+                        throw new ArgumentException($"Mismatched opening bracket at index {openIndex}");
+                    else if (closeIndex <= openIndex || closeIndex >= text.Length)
+                        throw new InvalidOperationException($"Index of closing brace was not valid.");
+
+                    // Get inner string. Note that (close - open) gives the length including the closing brace.
+                    var innerText = text.Slice(openIndex + 1, closeIndex - openIndex - 1);
+
+                    var name = plain.ToString();
+                    plain.Clear();
+                    InlineCommand inCmd = new(name, parent);
+
+                    // Split and parse command parameters
+                    ParseTextCommandParameters(innerText, inCmd);
+
+                    inlines.Add(inCmd);
+                }
+                else if (ch == '}' && !isEscaped)
+                {
+                    throw new ArgumentException($"Mismatched end bracket at index {index}");
+                }
+                else
+                {
+                    if (ch == ' ' && cmdStart >= 0)
+                    {
+                        cmdStart = -1;
                     }
 
-                    parsedCmds.Add(parsedCmd);
+                    // Regular character
+                    plain.Append(ch);
+                }
+
+                isEscaped = false;
+            }
+
+            // Ensure plain text that doesn't come after a command is included
+            if (plain.Length > 0)
+                inlines.Add(new Run(plain.ToString(), parent));
+
+            return inlines.Count == 1
+                ? inlines[0]
+                : new Span(inlines, parent);
+        }
+
+        public static Inline RunTextCommands(Inline inline)
+        {
+            throw new NotImplementedException();
+
+            //var parsedCmd = GetCommand(name, contentInlines, inCmd.Parameters.ToArray());
+            //if (parsedCmd == null)
+            //    continue;
+
+            //int cmdLength = index - cmdStart + 1;
+            //if (parsedCmd.Output is IContent outputContent && outputContent.Inlines != null)
+            //{
+            //    internalInlines.Push(new Run(outputContent.Inlines, outputContent));
+            //}
+            //else if (parsedCmd.Output is Inline outputInline)
+            //{
+            //    internalInlines.Push(outputInline);
+            //}
+
+            //parsedCmds.Add(parsedCmd);
+        }
+
+        private static TextCommandBase GetCommand(string cmd, Span span, IDefinition[] parameters)
+        {
+            if (_availCmds.TryGetValue(cmd, out var type))
+                return Activator.CreateInstance(type, cmd, span, parameters) as TextCommandBase;
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the index of the closing curly bracket for the
+        /// opening bracket at the <paramref name="openIndex"/>.
+        /// </summary>
+        /// <param name="strSpan">
+        /// The string to search.
+        /// </param>
+        /// <param name="openIndex">
+        /// The index of the opening brace.
+        /// </param>
+        /// <returns></returns>
+        private static int IndexOfClosingBrace(ReadOnlySpan<char> strSpan, int openIndex = 0)
+        {
+            int openCount = 0;
+
+            int i = openIndex;
+            while (i < strSpan.Length)
+            {
+                char ch = strSpan[i];
+                bool isEscaped = i >= 1 && strSpan[i - 1] == '\\';
+
+                if (!isEscaped)
+                {
+                    if (ch == '{')
+                        openCount++;
+                    else if (ch == '}')
+                        openCount--;
+
+                    // Net equals 0 if there were the
+                    // same number of opening and closing braces
+                    if (openCount == 0)
+                        return i;
+                }
+
+                i++;
+            }
+
+            return -1;
+        }
+
+        private static void ParseTextCommandParameters(ReadOnlySpan<char> innerText, InlineCommand cmd)
+        {
+            cmd.Parameters = new();
+
+            if (innerText.Length <= 0)
+                return;
+
+            List<int> separatorIndexes = (-1).IntoList();
+            
+            // Find the index of each top-level parameter separator
+            for (int i = 0; i < innerText.Length; i++)
+            {
+                ReadOnlySpan<char> remainingText = innerText.Slice(i);
+                int nextSeparator = IndexOfFirstNonEscaped(remainingText, '|');
+                int nextOpen = IndexOfFirstNonEscaped(remainingText, '{');
+
+                if (nextSeparator < 0)
+                    break;
+
+                if (nextOpen < 0 || nextOpen > nextSeparator)
+                {
+                    // There aren't any more commands within the current parameter
+                    separatorIndexes.Add(i += nextSeparator);
+                }
+                else// if (nextOpen > -1)
+                {
+                    // There is a nested command, which might also contain parameters.
+                    // Make sure to skip over it.
+                    i += IndexOfClosingBrace(remainingText, nextOpen);
                 }
             }
 
-            if (paramStartPositions.Count > 0)
-                throw new ArgumentException($"Mismatched start brackets, {paramStartPositions.Count} total");
+            // Ensure the last parameter is captured
+            if (separatorIndexes.Count == 0 || separatorIndexes[separatorIndexes.Count - 1] < innerText.Length - 1)
+                separatorIndexes.Add(innerText.Length);
 
-            return parsedCmds;
+            for (int i = 0; i < separatorIndexes.Count - 1; i++)
+            {
+                int sep = separatorIndexes[i];
+                int nextSep = separatorIndexes[i + 1];
+
+                var paramText = innerText.Slice(sep + 1, nextSep - sep - 1);
+
+                // Recursively parse inner text
+                var parsedParam = ParseTextCommands(paramText, cmd);
+                cmd.Parameters.Add(parsedParam);
+            }
         }
 
-        private static TextCommandBase GetCommand(string cmd, IContent content, int startIndex, IDefinition[] parameters)
+        private static int IndexOfFirstNonEscaped(ReadOnlySpan<char> text, char value)
         {
-            if (_availCmds.TryGetValue(cmd, out var type))
-                return Activator.CreateInstance(type, cmd, content, startIndex, parameters) as TextCommandBase;
-            return null;
+            int i = 0;
+            while ((i += text.Slice(i).IndexOf(value)) > 0)
+            {
+                if (i < 1 || text[i - 1] != '\\')
+                    break;
+                else
+                    i++;
+            }
+            return i;
         }
     }
 }
