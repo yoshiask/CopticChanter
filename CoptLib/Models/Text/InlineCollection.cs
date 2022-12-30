@@ -12,16 +12,12 @@ namespace CoptLib.Models.Text
         /// Appends the contents of the given <see cref="Inline"/> to the current collection.
         /// </summary>
         /// <remarks>
-        /// If <paramref name="inline"/> is a <see cref="Run"/>, this is equivalent to <see cref="List{T}.Add(T)"/>.<br/>
-        /// If <paramref name="inline"/> is a <see cref="Span"/>, this is roughly equivalent to <see cref="List{T}.AddRange(IEnumerable{T})"/>.
+        /// If <paramref name="inline"/> is a <see cref="Span"/>, this is roughly equivalent to <see cref="List{T}.AddRange(IEnumerable{T})"/>.<br/>
+        /// Otherwise, this is equivalent to <see cref="List{T}.Add(T)"/>.
         /// </remarks>
         public void Append(Inline inline)
         {
-            if (inline is Run run)
-            {
-                Add(run);
-            }
-            else if (inline is Span span)
+            if (inline is Span span)
             {
                 foreach (Inline spanInline in span.Inlines)
                 {
@@ -31,6 +27,10 @@ namespace CoptLib.Models.Text
 
                     Add(spanInline);
                 }
+            }
+            else
+            {
+                Add(inline);
             }
         }
 
