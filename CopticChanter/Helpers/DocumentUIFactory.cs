@@ -64,7 +64,7 @@ namespace CopticChanter.Helpers
 
                     if (item is IContent content)
                     {
-                        if (content.Inlines.SingleOrDefault() is CLRun singleRun)
+                        if (content.Inlines.Count == 1 && content.Inlines[0] is CLRun singleRun)
                         {
                             // Avoid using InlineCollection when Text can be used directly
                             block.Text = singleRun.Text;
