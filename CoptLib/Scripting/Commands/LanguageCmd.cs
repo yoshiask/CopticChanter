@@ -35,12 +35,12 @@ namespace CoptLib.Scripting.Commands
                 Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
             }
 
-            Output = sourceParam.Select(def => def.DoForAllTextDeep(ConvertFont));
+            Output = sourceParam.Select(ConvertFont);
         }
 
-        private void ConvertFont(Run run)
+        private void ConvertFont(IDefinition def)
         {
-            if (Font != null)
+            if (Font != null && def is Run run)
                 run.Text = Font.Convert(run.Text);
         }
     }

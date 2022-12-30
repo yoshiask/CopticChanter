@@ -24,7 +24,7 @@ namespace CoptLib.Scripting.Commands
             Language = LanguageInfo.Parse(langParam)
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
-            Output = sourceParam.Select(def => def.DoForAllTextDeep(Transliterate));
+            Output = sourceParam.Select(Transliterate);
 
             if (Output is IMultilingual multi)
             {
@@ -42,8 +42,11 @@ namespace CoptLib.Scripting.Commands
             }
         }
 
-        private void Transliterate(Run run)
+        private void Transliterate(IDefinition def)
         {
+            if (def is not Run run)
+                return;
+
             run.Text = CopticInterpreter.Transliterate(run.Text, Language.Known);
             run.Font = null;
         }

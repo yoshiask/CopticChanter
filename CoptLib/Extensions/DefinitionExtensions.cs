@@ -1,6 +1,5 @@
 ﻿using CoptLib.Models;
 using CoptLib.Models.Text;
-using CoptLib.Writing;
 using System;
 
 namespace CoptLib.Extensions
@@ -37,34 +36,6 @@ namespace CoptLib.Extensions
             func(newDef);
 
             return newDef;
-        }
-
-        public static void DoForAllTextDeep(this IDefinition def, Action<Run> func)
-        {
-            void funcInlines(InlineCollection inlines)
-            {
-                foreach (var inline in inlines)
-                    funcInline(inline);
-            }
-
-            void funcInline(Inline inline)
-            {
-                if (inline is Run run)
-                    func(run);
-                else if (inline is Span span)
-                    funcInlines(span.Inlines);
-                else if (inline is InlineCommand inCmd)
-                    funcInlines(inCmd.Parameters);
-            }
-
-            if (def is Inline inline)
-                funcInline(inline);
-            
-            if (def is IContent content)
-                funcInlines(content.Inlines);
-
-            if (def is Section section && section.Title != null)
-                funcInlines(section.Title.Inlines);
         }
     }
 }
