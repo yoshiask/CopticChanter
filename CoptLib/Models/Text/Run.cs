@@ -28,5 +28,9 @@ namespace CoptLib.Models.Text
         }
 
         public override string ToString() => Text;
+
+        public override bool Equals(object obj) => obj is Run other && Text == other.Text;
+
+        public override int GetHashCode() => Text.GetHashCode();
     }
 }

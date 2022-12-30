@@ -86,6 +86,8 @@ namespace CoptLib.Models
         }
 
         public string GetText() => ContentHelper.GetText(this);
+
+        public override string ToString() => GetText();
     }
 
     public class Section : ContentPart, IContentCollectionContainer
