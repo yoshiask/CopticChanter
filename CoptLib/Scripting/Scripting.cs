@@ -260,12 +260,24 @@ namespace CoptLib.Scripting
             return cmds;
         }
 
+        /// <summary>
+        /// Executes inline text commands from an <see cref="InlineCollection"/>,
+        /// appending finished commands to the supplied collection.
+        /// </summary>
+        /// <param name="inlines">The <see cref="Inline"/>s to parse.</param>
+        /// <param name="cmds">The commands that were executed.</param>
         public static void RunTextCommands(InlineCollection inlines, in ICollection<TextCommandBase> cmds)
         {
             foreach (Inline inline in inlines)
                 RunTextCommands(inline, cmds);
         }
 
+        /// <summary>
+        /// Executes inline text commands from a single <see cref="Inline"/>,
+        /// appending finished commands to the supplied collection.
+        /// </summary>
+        /// <param name="inline">The content to run commands from.</param>
+        /// <param name="cmds">The commands that were executed.</param>
         public static void RunTextCommands(Inline inline, in ICollection<TextCommandBase> cmds)
         {
             switch (inline)
