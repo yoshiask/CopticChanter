@@ -34,7 +34,7 @@ namespace CoptLib.Models.Text
 
         public override void HandleFont()
         {
-            if (Handled)
+            if (FontHandled)
                 return;
 
             Guard.IsNotNull(Parameters);
@@ -42,15 +42,15 @@ namespace CoptLib.Models.Text
             foreach (Inline inline in Parameters)
                 inline.HandleFont();
 
-            Handled = true;
+            FontHandled = true;
         }
 
         public override string ToString()
         {
-            if (Command?.Output == null)
+            if (Command == null)
                 return $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}";
             else
-                return Command.Output.ToString();
+                return Command.Output?.ToString() ?? string.Empty;
         }
     }
 }

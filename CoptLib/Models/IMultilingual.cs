@@ -21,7 +21,7 @@ namespace CoptLib.Models
         /// Whether the content font has been handled
         /// by calling <see cref="HandleFont"/>.
         /// </summary>
-        public bool Handled { get; }
+        public bool FontHandled { get; }
 
         /// <summary>
         /// Handles the content font.

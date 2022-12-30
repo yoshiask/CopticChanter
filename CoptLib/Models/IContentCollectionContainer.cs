@@ -14,7 +14,7 @@ namespace CoptLib.Models
 
         List<ContentPart> Children { get; }
 
-        /// <inheritdoc cref="IContent.ParseCommands"/>
-        void ParseCommands();
+        /// <inheritdoc cref="IContent.HandleCommands"/>
+        void HandleCommands();
     }
 }

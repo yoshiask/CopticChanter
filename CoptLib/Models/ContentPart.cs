@@ -32,7 +32,7 @@ namespace CoptLib.Models
         public string Font { get; set; }
 
         [XmlIgnore]
-        public bool Handled { get; protected set; }
+        public bool FontHandled { get; protected set; }
 
         public abstract void HandleFont();
 
@@ -59,8 +59,8 @@ namespace CoptLib.Models
             {
                 if (_sourceText != value)
                 {
-                    Handled = false;
-                    HasBeenParsed = false;
+                    FontHandled = false;
+                    CommandsHandled = false;
                     Inlines = new()
                     {
                         new Run(value, this)
@@ -71,18 +71,18 @@ namespace CoptLib.Models
             }
         }
 
-        public bool HasBeenParsed { get; set; }
+        public bool CommandsHandled { get; set; }
 
         public InlineCollection Inlines { get; set; }
 
         public List<TextCommandBase> Commands { get; set; }
 
-        public void ParseCommands() => ContentHelper.ParseCommands(this);
+        public void HandleCommands() => ContentHelper.HandleCommands(this);
 
         public override void HandleFont()
         {
             ContentHelper.HandleFont(Inlines);
-            Handled = true;
+            FontHandled = true;
         }
 
         public string GetText() => ContentHelper.GetText(this);
@@ -111,15 +111,15 @@ namespace CoptLib.Models
             return count;
         }
 
-        public void ParseCommands()
+        public void HandleCommands()
         {
             DocReader.RecursiveTransform(Children);
-            Title?.ParseCommands();
+            Title?.HandleCommands();
         }
 
         public override void HandleFont()
         {
-            if (Handled)
+            if (FontHandled)
                 return;
 
             foreach (ContentPart part in Children)

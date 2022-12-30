@@ -11,16 +11,17 @@ namespace CoptLib.Models
         public static string GetText(IContent content)
             => content.Inlines == null ? content.SourceText : content.Inlines.ToString();
 
-        public static void ParseCommands(IContent content)
+        public static void HandleCommands(IContent content)
         {
-            if (content.HasBeenParsed)
+            if (content.CommandsHandled)
                 return;
 
-            content.Inlines.Add(new Run(content.SourceText, content));
             var parsed = Scripting.Scripting.ParseTextCommands(content.Inlines);
+            var cmds = Scripting.Scripting.RunTextCommands(parsed);
 
             content.Inlines = parsed;
-            content.HasBeenParsed = true;
+            content.Commands = cmds;
+            content.CommandsHandled = true;
         }
 
         public static void HandleFont(InlineCollection inlines)

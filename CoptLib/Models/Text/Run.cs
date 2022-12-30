@@ -20,10 +20,10 @@ namespace CoptLib.Models.Text
 
         public override void HandleFont()
         {
-            if (!Handled && CopticFont.TryFindFont(Font, out var font))
+            if (!FontHandled && CopticFont.TryFindFont(Font, out var font))
             {
                 Text = font.Convert(Text);
-                Handled = true;
+                FontHandled = true;
             }
         }
 

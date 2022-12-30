@@ -97,11 +97,8 @@ namespace CoptLib.Scripting
         {
             InlineCollection parsedInlines = new();
 
-            for (int i = 0; i < contentInlines.Count; i++)
-            {
-                var inline = contentInlines[i];
+            foreach (var inline in contentInlines)
                 parsedInlines.Append(ParseTextCommands(inline));
-            }
 
             return parsedInlines;
         }
@@ -408,6 +405,7 @@ namespace CoptLib.Scripting
             int i = 0;
             while ((i += text.Slice(i).IndexOf(value)) > 0)
             {
+                // Check if previous charater was the escape signal
                 if (i < 1 || text[i - 1] != '\\')
                     break;
                 else

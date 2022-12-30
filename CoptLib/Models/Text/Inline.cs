@@ -25,7 +25,7 @@ namespace CoptLib.Models.Text
 
         public string Font { get; set; }
 
-        public bool Handled { get; protected set; }
+        public bool FontHandled { get; protected set; }
 
         public string Key { get; set; }
 

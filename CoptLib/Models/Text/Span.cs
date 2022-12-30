@@ -21,7 +21,7 @@ namespace CoptLib.Models.Text
 
         public override void HandleFont()
         {
-            if (Handled)
+            if (FontHandled)
                 return;
 
             Guard.IsNotNull(Inlines);
@@ -29,7 +29,7 @@ namespace CoptLib.Models.Text
             foreach (Inline inline in Inlines)
                 inline.HandleFont();
 
-            Handled = true;
+            FontHandled = true;
         }
 
         public override string ToString() => Inlines.ToString();

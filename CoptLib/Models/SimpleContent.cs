@@ -24,7 +24,7 @@ namespace CoptLib.Models
             {
                 if (_sourceText != value)
                 {
-                    HasBeenParsed = false;
+                    CommandsHandled = false;
                     Inlines = new()
                     {
                         new Run(value, this)
@@ -35,7 +35,7 @@ namespace CoptLib.Models
             }
         }
 
-        public bool HasBeenParsed { get; set; }
+        public bool CommandsHandled { get; set; }
 
         public string Key { get; set; }
 
@@ -51,7 +51,7 @@ namespace CoptLib.Models
 
         public string GetText() => ContentHelper.GetText(this);
 
-        public void ParseCommands() => ContentHelper.ParseCommands(this);
+        public void HandleCommands() => ContentHelper.HandleCommands(this);
 
         public override string ToString() => GetText();
     }

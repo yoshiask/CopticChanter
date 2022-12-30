@@ -15,9 +15,10 @@ namespace CoptLib.Models
         string SourceText { get; set; }
 
         /// <summary>
-        /// Whether the <see cref="SourceText"/> has been parsed.
+        /// Whether text commands in the content have been
+        /// parsed and executed.
         /// </summary>
-        bool HasBeenParsed { get; set; }
+        bool CommandsHandled { get; set; }
 
         /// <summary>
         /// A collection of <see cref="Run"/>s containing the rich content
@@ -29,7 +30,7 @@ namespace CoptLib.Models
         /// A list of commands parsed from <see cref="SourceText"/>.
         /// </summary>
         /// <remarks>
-        /// This property is populated by calling <see cref="ParseCommands"/>.
+        /// This property is populated by calling <see cref="HandleCommands"/>.
         /// </remarks>
         List<TextCommandBase> Commands { get; set; }
 
@@ -37,7 +38,7 @@ namespace CoptLib.Models
         /// Parses the <see cref="SourceText"/> for commands, storing the results in
         /// <see cref="Inlines"/> and <see cref="Commands"/>.
         /// </summary>
-        void ParseCommands();
+        void HandleCommands();
 
         /// <summary>
         /// Flattens <see cref="Inlines"/> into a single plain-text string.
