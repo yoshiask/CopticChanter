@@ -132,13 +132,6 @@ namespace CopticChanter.Helpers
 
             switch (inline)
             {
-                case CLRun run:
-                    wuxInline = new Run
-                    {
-                        Text = run.Text,
-                    };
-                    break;
-
                 case CLSpan span:
                     var wuxSpan = new Span();
                     foreach (CLInline childInline in span.Inlines)
@@ -146,7 +139,11 @@ namespace CopticChanter.Helpers
                     break;
 
                 default:
-                    throw new NotImplementedException();
+                    wuxInline = new Run
+                    {
+                        Text = inline.ToString(),
+                    };
+                    break;
             }
 
             return wuxInline;
