@@ -33,7 +33,7 @@ namespace CoptLib.Scripting
 
         public Doc DocContext { get; }
 
-        public IDefinition Output { get; protected set; }
+        public IDefinition Output { get; set; }
 
         protected void HandleOutput()
         {

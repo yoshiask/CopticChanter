@@ -22,6 +22,10 @@ namespace CoptLib.Scripting.Commands
         {
             if (def is Run run)
                 run.Text = CopticInterpreter.IpaTranscribe(run.Text);
+
+            // Make sure referenced elements are also transcribed
+            else if (def is InlineCommand inCmd && inCmd.Command.Output != null)
+                inCmd.Command.Output.Select(Transcribe);
         }
     }
 }

@@ -44,11 +44,15 @@ namespace CoptLib.Scripting.Commands
 
         private void Transliterate(IDefinition def)
         {
-            if (def is not Run run)
-                return;
+            if (def is Run run)
+            {
+                run.Text = CopticInterpreter.Transliterate(run.Text, Language.Known);
+                run.Font = null;
+            }
 
-            run.Text = CopticInterpreter.Transliterate(run.Text, Language.Known);
-            run.Font = null;
+            // Make sure referenced elements are also transliterated
+            else if (def is InlineCommand inCmd && inCmd.Command.Output != null)
+                inCmd.Command.Output = inCmd.Command.Output.Select(Transliterate);
         }
     }
 }
