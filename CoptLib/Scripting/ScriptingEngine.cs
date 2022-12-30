@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
@@ -13,7 +11,7 @@ using OwlCore.Extensions;
 
 namespace CoptLib.Scripting
 {
-    public class Scripting
+    public class ScriptingEngine
     {
         private static readonly Dictionary<string, Type> _availCmds = new()
         {

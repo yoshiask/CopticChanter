@@ -1,4 +1,5 @@
 ﻿using CoptLib.Models.Text;
+using CoptLib.Scripting;
 
 namespace CoptLib.Models
 {
@@ -16,8 +17,8 @@ namespace CoptLib.Models
             if (content.CommandsHandled)
                 return;
 
-            var parsed = Scripting.Scripting.ParseTextCommands(content.Inlines);
-            var cmds = Scripting.Scripting.RunTextCommands(parsed);
+            var parsed = ScriptingEngine.ParseTextCommands(content.Inlines);
+            var cmds = ScriptingEngine.RunTextCommands(parsed);
 
             content.Inlines = parsed;
             content.Commands = cmds;

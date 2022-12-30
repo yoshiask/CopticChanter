@@ -1,6 +1,4 @@
 ﻿using CoptLib.Scripting;
-using CoptLib.Writing;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -42,7 +40,7 @@ namespace CoptLib.Models
         public IDefinition Parent { get; set; }
 
         [XmlIgnore]
-        public bool IsExplicitlyDefined { get; set; }// = false;
+        public bool IsExplicitlyDefined { get; set; }
     }
 
     public class Script : Definition, ICommandOutput
@@ -54,7 +52,7 @@ namespace CoptLib.Models
 
         public void Run()
         {
-            Output = Scripting.Scripting.RunLuaScript(LuaScript);
+            Output = ScriptingEngine.RunLuaScript(LuaScript);
             if (Output != null)
             {
                 Output.DocContext = DocContext;

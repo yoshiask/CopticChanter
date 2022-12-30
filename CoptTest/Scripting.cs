@@ -1,6 +1,7 @@
 ﻿using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
+using CoptLib.Scripting;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
 using System.Collections.Generic;
@@ -12,8 +13,6 @@ namespace CoptTest
 {
     public class Scripting
     {
-        Doc _doc = new Doc();
-
         private readonly ITestOutputHelper _output;
 
         public Scripting(ITestOutputHelper output)
@@ -123,12 +122,12 @@ namespace CoptTest
         public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
         {
             expectedResult ??= text;
-            CoptLib.Models.Text.Run run = new(text, null);
+            Run run = new(text, null);
 
-            var parsedInlines = CoptLib.Scripting.Scripting.ParseTextCommands(run);
+            var parsedInlines = ScriptingEngine.ParseTextCommands(run);
             Assert.Equal(text, parsedInlines?.ToString());
 
-            var cmds = CoptLib.Scripting.Scripting.RunTextCommands(parsedInlines);
+            var cmds = ScriptingEngine.RunTextCommands(parsedInlines);
             Assert.Equal(expectedResult, parsedInlines?.ToString());
         }
 
@@ -136,7 +135,7 @@ namespace CoptTest
         [MemberData(nameof(GetRunScript_Samples))]
         public void RunScript(string script, IDefinition expectedOutput)
         {
-            var result = CoptLib.Scripting.Scripting.RunLuaScript(script);
+            var result = ScriptingEngine.RunLuaScript(script);
 
             Assert.IsType(expectedOutput.GetType(), result);
 
