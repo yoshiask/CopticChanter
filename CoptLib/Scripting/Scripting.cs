@@ -239,11 +239,34 @@ namespace CoptLib.Scripting
                 : new Span(inlines, parent);
         }
 
+        /// <summary>
+        /// Executes inline text commands from an <see cref="InlineCollection"/>.
+        /// </summary>
+        /// <param name="inlines">The <see cref="Inline"/>s to parse.</param>
+        /// <returns>A list of the commands that were executed.</returns>
+        public static List<TextCommandBase> RunTextCommands(InlineCollection inlines)
+        {
+            List<TextCommandBase> cmds = new();
+            RunTextCommands(inlines, cmds);
+            return cmds;
+        }
+
+        /// <summary>
+        /// Executes inline text commands from a single <see cref="Inline"/>.
+        /// </summary>
+        /// <param name="inline">The content to run commands from.</param>
+        /// <returns>A list of the commands that were executed.</returns>
         public static List<TextCommandBase> RunTextCommands(Inline inline)
         {
             List<TextCommandBase> cmds = new();
             RunTextCommands(inline, cmds);
             return cmds;
+        }
+
+        public static void RunTextCommands(InlineCollection inlines, in ICollection<TextCommandBase> cmds)
+        {
+            foreach (Inline inline in inlines)
+                RunTextCommands(inline, cmds);
         }
 
         public static void RunTextCommands(Inline inline, in ICollection<TextCommandBase> cmds)
@@ -252,8 +275,7 @@ namespace CoptLib.Scripting
             {
                 case InlineCommand inCmd:
                     // Ensure each parameter is fully evaluated
-                    foreach (Inline paramInline in inCmd.Parameters)
-                        RunTextCommands(paramInline, cmds);
+                    RunTextCommands(inCmd.Parameters, cmds);
 
                     // Evaluate the current command
                     // If the command was already executed, just return it
@@ -277,8 +299,7 @@ namespace CoptLib.Scripting
                     break;
 
                 case Span span:
-                    foreach (Inline spanInline in span.Inlines)
-                        RunTextCommands(spanInline, cmds);
+                    RunTextCommands(span.Inlines, cmds);
                     break;
 
                 // Other inline types, such as Run, don't
