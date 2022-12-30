@@ -1,5 +1,6 @@
 ﻿using CoptLib.IO;
 using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
 using System.Collections.Generic;
@@ -29,9 +30,9 @@ namespace CoptTest
                 SourceText = string.Format(text, @"\ms{0:5:0}"),
                 DocContext = _doc 
             };
-            stanza.ParseCommands();
+            stanza.HandleCommands();
 
-            Assert.Equal(string.Format(text, string.Empty), stanza.Inlines?.ToString());
+            Assert.Equal(string.Format(text, string.Empty), stanza.GetText());
             Assert.True(stanza.Commands.Any());
         }
 
@@ -54,13 +55,13 @@ namespace CoptTest
                 SourceText = $"Bless the Lord, {cmdText}.",
                 DocContext = _doc
             };
-            stanza.ParseCommands();
+            stanza.HandleCommands();
 
-            Assert.Equal($"Bless the Lord, {convSubtext}.", stanza.Inlines?.ToString());
+            Assert.Equal($"Bless the Lord, {convSubtext}.", stanza.GetText());
 
             var cmd = stanza.Commands.Single();
             var langCmd = Assert.IsType<LanguageCmd>(cmd);
-            var langDef = Assert.IsAssignableFrom<IContent>(cmd.Output);
+            var langDef = Assert.IsAssignableFrom<Run>(cmd.Output);
 
             Assert.Equal(langCmd.Language, lang);
             Assert.Equal(langDef?.ToString(), convSubtext);
@@ -98,9 +99,9 @@ namespace CoptTest
                 SourceText = preText + $"\\def{{{key}}}" + postText,
                 DocContext = _doc
             };
-            stanza.ParseCommands();
+            stanza.HandleCommands();
 
-            Assert.Equal($"{preText}{parsedValue}{postText}", stanza.Inlines?.ToString());
+            Assert.Equal($"{preText}{parsedValue}{postText}", stanza.GetText());
 
             var cmd = stanza.Commands.Single();
             var defCmd = Assert.IsType<DefinitionCmd>(cmd);
@@ -117,7 +118,7 @@ namespace CoptTest
                     "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, O\u031Esännä.")]
         [InlineData("IPA transcription of a Coptic word, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
                     "IPA transcription of a Coptic word, O\u031Esännä.")]
-        [InlineData("IPA transcription of a Coptic word, \\trslit{English|\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
+        [InlineData("English transcription of a Coptic word, \\trslit{English|\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
                     "English transcription of a Coptic word, Osanna.")]
         public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
         {
