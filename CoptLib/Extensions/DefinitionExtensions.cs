@@ -49,10 +49,12 @@ namespace CoptLib.Extensions
 
             void funcInline(Inline inline)
             {
-                if (def is Run run)
+                if (inline is Run run)
                     func(run);
-                else if (def is Span span)
+                else if (inline is Span span)
                     funcInlines(span.Inlines);
+                else if (inline is InlineCommand inCmd)
+                    funcInlines(inCmd.Parameters);
             }
 
             if (def is Inline inline)

@@ -7,18 +7,18 @@ namespace CoptLib.Scripting.Commands
 {
     public class DefinitionCmd : TextCommandBase
     {
-        public DefinitionCmd(string name, Run run, IDefinition[] parameters)
-            : base(name, run, parameters)
+        public DefinitionCmd(string name, InlineCommand inline, IDefinition[] parameters)
+            : base(name, inline, parameters)
         {
-            Parse(name, run, parameters);
+            Parse();
         }
 
-        private void Parse(string cmd, Run run, params IDefinition[] parameters)
+        private void Parse()
         {
-            string defId = parameters.FirstOrDefault()?.ToString();
+            string defId = Parameters.FirstOrDefault()?.ToString();
             Guard.IsNotNull(defId);
 
-            Output = run.DocContext.Definitions[defId];
+            Output = Inline.DocContext.Definitions[defId];
             HandleOutput();
         }
     }

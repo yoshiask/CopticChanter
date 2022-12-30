@@ -6,17 +6,17 @@ namespace CoptLib.Scripting.Commands
 {
     public class TimestampCmd : TextCommandBase
     {
-        public TimestampCmd(string cmd, Run run, IDefinition[] parameters)
-            : base(cmd, run, parameters)
+        public TimestampCmd(string cmd, InlineCommand inline, IDefinition[] parameters)
+            : base(cmd, inline, parameters)
         {
-            Parse(cmd, parameters);
+            Parse();
         }
 
         public TimeSpan TimeOffset { get; private set; }
 
-        private void Parse(string cmd, IDefinition[] parameters)
+        private void Parse()
         {
-            string timePart = ((IContent)parameters[0]).SourceText;
+            string timePart = (Parameters[0] as IContent)?.SourceText;
             if (!TimeSpan.TryParse(timePart, out var timeOffset))
                 return;
 

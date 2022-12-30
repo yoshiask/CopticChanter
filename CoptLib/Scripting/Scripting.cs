@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
+using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
@@ -239,31 +239,57 @@ namespace CoptLib.Scripting
                 : new Span(inlines, parent);
         }
 
-        public static Inline RunTextCommands(Inline inline)
+        public static List<TextCommandBase> RunTextCommands(Inline inline)
         {
-            throw new NotImplementedException();
-
-            //var parsedCmd = GetCommand(name, contentInlines, inCmd.Parameters.ToArray());
-            //if (parsedCmd == null)
-            //    continue;
-
-            //int cmdLength = index - cmdStart + 1;
-            //if (parsedCmd.Output is IContent outputContent && outputContent.Inlines != null)
-            //{
-            //    internalInlines.Push(new Run(outputContent.Inlines, outputContent));
-            //}
-            //else if (parsedCmd.Output is Inline outputInline)
-            //{
-            //    internalInlines.Push(outputInline);
-            //}
-
-            //parsedCmds.Add(parsedCmd);
+            List<TextCommandBase> cmds = new();
+            RunTextCommands(inline, cmds);
+            return cmds;
         }
 
-        private static TextCommandBase GetCommand(string cmd, Span span, IDefinition[] parameters)
+        public static void RunTextCommands(Inline inline, in ICollection<TextCommandBase> cmds)
         {
-            if (_availCmds.TryGetValue(cmd, out var type))
-                return Activator.CreateInstance(type, cmd, span, parameters) as TextCommandBase;
+            switch (inline)
+            {
+                case InlineCommand inCmd:
+                    // Ensure each parameter is fully evaluated
+                    foreach (Inline paramInline in inCmd.Parameters)
+                        RunTextCommands(paramInline, cmds);
+
+                    // Evaluate the current command
+                    // If the command was already executed, just return it
+                    if (inCmd.Command == null)
+                    {
+                        // Get each parameter, ensuring that the output of nested commands are used.
+                        IDefinition[] parameters = new IDefinition[inCmd.Parameters.Count];
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            var param = inCmd.Parameters[i];
+                            if (param is InlineCommand paramInCmd && paramInCmd.Command?.Output != null)
+                                parameters[i] = paramInCmd.Command.Output;
+                            else
+                                parameters[i] = param;
+                        }
+
+                        inCmd.Command = GetCommand(inCmd, parameters);
+                    }
+                    
+                    cmds.Add(inCmd.Command);
+                    break;
+
+                case Span span:
+                    foreach (Inline spanInline in span.Inlines)
+                        RunTextCommands(spanInline, cmds);
+                    break;
+
+                // Other inline types, such as Run, don't
+                // need to be evaluated.
+            }
+        }
+
+        private static TextCommandBase GetCommand(InlineCommand inline, IDefinition[] parameters)
+        {
+            if (_availCmds.TryGetValue(inline.CommandName, out var type))
+                return Activator.CreateInstance(type, inline.CommandName, inline, parameters) as TextCommandBase;
             return null;
         }
 

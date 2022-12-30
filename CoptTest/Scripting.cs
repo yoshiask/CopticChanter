@@ -127,8 +127,8 @@ namespace CoptTest
             var parsedInlines = CoptLib.Scripting.Scripting.ParseTextCommands(run);
             Assert.Equal(text, parsedInlines?.ToString());
 
-            var resultInlines = CoptLib.Scripting.Scripting.RunTextCommands(parsedInlines);
-            Assert.Equal(expectedResult, resultInlines?.ToString());
+            var cmds = CoptLib.Scripting.Scripting.RunTextCommands(parsedInlines);
+            Assert.Equal(expectedResult, parsedInlines?.ToString());
         }
 
         [Theory]

@@ -8,18 +8,18 @@ namespace CoptLib.Scripting.Commands
 {
     public class TransliterateCmd : TextCommandBase
     {
-        public TransliterateCmd(string cmd, Run run, IDefinition[] parameters)
-            : base(cmd, run, parameters)
+        public TransliterateCmd(string cmd, InlineCommand inline, IDefinition[] parameters)
+            : base(cmd, inline, parameters)
         {
-            Parse(cmd, parameters);
+            Parse();
         }
 
         public LanguageInfo Language { get; private set; }
 
-        private void Parse(string cmd, params IDefinition[] parameters)
+        private void Parse()
         {
-            var langParam = parameters[0].ToString();
-            var sourceParam = parameters[parameters.Length - 1];
+            var langParam = Parameters[0].ToString();
+            var sourceParam = Parameters[Parameters.Length - 1];
 
             Language = LanguageInfo.Parse(langParam)
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");

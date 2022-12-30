@@ -9,10 +9,10 @@ namespace CoptLib.Scripting
     /// </summary>
     public abstract class TextCommandBase : ICommandOutput
     {
-        public TextCommandBase(string name, Run run, IDefinition[] parameters)
+        public TextCommandBase(string name, InlineCommand inline, IDefinition[] parameters)
         {
             Name = name;
-            Run = run;
+            Inline = inline;
             Parameters = parameters;
         }
 
@@ -29,7 +29,7 @@ namespace CoptLib.Scripting
         /// <summary>
         /// The content that contained the command.
         /// </summary>
-        public Run Run { get; }
+        public InlineCommand Inline { get; }
 
         public Doc DocContext { get; }
 
@@ -40,9 +40,9 @@ namespace CoptLib.Scripting
             if (Output is TranslationCollection defCol)
             {
                 KnownLanguage lang = KnownLanguage.Default;
-                if (Run is IMultilingual multi && multi.Language != null)
+                if (Inline is IMultilingual multi && multi.Language != null)
                     lang = multi.Language.Known;
-                else if (Run.Parent is IMultilingual parentMulti)
+                else if (Inline.Parent is IMultilingual parentMulti)
                     lang = parentMulti.Language.Known;
 
                 Output = defCol[lang];

@@ -7,15 +7,15 @@ namespace CoptLib.Scripting.Commands
 {
     public class IpaTranscribeCmd : TextCommandBase
     {
-        public IpaTranscribeCmd(string name, Run run, IDefinition[] parameters)
-            : base(name, run, parameters)
+        public IpaTranscribeCmd(string name, InlineCommand inline, IDefinition[] parameters)
+            : base(name, inline, parameters)
         {
-            Parse(name, run, parameters);
+            Parse();
         }
 
-        private void Parse(string cmd, Run run, params IDefinition[] parameters)
+        private void Parse()
         {
-            Output = parameters[0].Select(Transcribe);
+            Output = Parameters[0].Select(Transcribe);
         }
 
         private void Transcribe(IDefinition def)

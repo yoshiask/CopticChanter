@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CoptLib.Models.Text
 {
-    internal class InlineCommand : Inline
+    public class InlineCommand : Inline
     {
         public InlineCommand(string cmdName, IDefinition parent) : base(parent)
         {
@@ -17,11 +17,20 @@ namespace CoptLib.Models.Text
         {
         }
 
+        /// <summary>
+        /// The name of the command.
+        /// </summary>
         public string CommandName { get; set; }
 
-        public TextCommandBase Command { get; set; }
-
+        /// <summary>
+        /// The <see cref="Inline"/>s passed as parameters to the command.
+        /// </summary>
         public InlineCollection Parameters { get; set; }
+
+        /// <summary>
+        /// The <see cref="TextCommandBase"/> that was run.
+        /// </summary>
+        public TextCommandBase Command { get; set; }
 
         public override void HandleFont()
         {
@@ -38,7 +47,10 @@ namespace CoptLib.Models.Text
 
         public override string ToString()
         {
-            return $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}";
+            if (Command?.Output == null)
+                return $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}";
+            else
+                return Command.Output.ToString();
         }
     }
 }

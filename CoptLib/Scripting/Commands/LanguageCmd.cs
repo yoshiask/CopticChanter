@@ -8,29 +8,29 @@ namespace CoptLib.Scripting.Commands
 {
     public class LanguageCmd : TextCommandBase
     {
-        public LanguageCmd(string cmd, Run run, IDefinition[] parameters)
-            : base(cmd, run, parameters)
+        public LanguageCmd(string cmd, InlineCommand inline, IDefinition[] parameters)
+            : base(cmd, inline, parameters)
         {
-            Parse(cmd, parameters);
+            Parse();
         }
 
         public KnownLanguage Language { get; private set; }
 
         public CopticFont Font { get; private set; }
 
-        private void Parse(string cmd, params IDefinition[] parameters)
+        private void Parse()
         {
-            var langParam = parameters[0].ToString();
-            var sourceParam = parameters[parameters.Length - 1];
+            var langParam = Parameters[0].ToString();
+            var sourceParam = Parameters[Parameters.Length - 1];
 
             if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
                 return;
 
             Language = language;
 
-            if (parameters.Length >= 3 && (language == KnownLanguage.Coptic || language == KnownLanguage.Greek))
+            if (Parameters.Length >= 3 && (language == KnownLanguage.Coptic || language == KnownLanguage.Greek))
             {
-                var fontParam = parameters[1].ToString();
+                var fontParam = Parameters[1].ToString();
 
                 Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
             }
