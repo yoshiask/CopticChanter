@@ -180,7 +180,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         [KnownLanguage.Arabic]	    = "ar",
         [KnownLanguage.Aramaic]	    = "arc",
         [KnownLanguage.Armenian]	= "hy",
-        [KnownLanguage.Coptic]	    = "cop-GR",
+        [KnownLanguage.Coptic]	    = "cop",
         [KnownLanguage.Dutch]	    = "nl",
         [KnownLanguage.Egyptian]	= "egy",
         [KnownLanguage.English]	    = "en",
@@ -191,6 +191,16 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         [KnownLanguage.Hebrew]	    = "he",
         [KnownLanguage.Latin]	    = "la",
         [KnownLanguage.Spanish]	    = "es",
+
+        /// cop        | Coptic (generic)
+        /// cop-EG-ALX | Bohairic (Alexandra)
+        /// cop-EG-AST | Sahidic (Asyut)
+        /// cop-EG-FYM | Fayyumic (Faiyum)
+        /// cop-EG-SHG | Akhmimic (Sohag)
+        /// cop-EG-MN  | Oxyrhynchite (Minya)
+        /// cop-GR     | Greco-Bohairic
+        [KnownLanguage.CopticBohairic]	    = "cop-EG-ALX",
+        [KnownLanguage.CopticSahidic]	    = "cop-EG-AST",
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);

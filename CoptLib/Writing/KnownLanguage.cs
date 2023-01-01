@@ -19,4 +19,7 @@ public enum KnownLanguage
     Hebrew,
     Latin,
     Spanish,
+
+    CopticBohairic,
+    CopticSahidic,
 }
