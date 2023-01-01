@@ -13,6 +13,7 @@ namespace CoptTest
 {
     public class Scripting
     {
+        private readonly Doc _doc = new();
         private readonly ITestOutputHelper _output;
 
         public Scripting(ITestOutputHelper output)
