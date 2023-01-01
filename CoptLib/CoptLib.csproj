@@ -42,6 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="CopticCalendar.cs~RFfaa37d8.TMP" />
         <None Remove="Resources\lexicon.tsv" />
         <EmbeddedResource Include="Resources\lexicon.tsv" />
     </ItemGroup>
