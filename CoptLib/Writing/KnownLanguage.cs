@@ -13,6 +13,7 @@ public enum KnownLanguage
     Egyptian,
     English,
     French,
+    IPA,
     Italian,
     German,
     Greek,

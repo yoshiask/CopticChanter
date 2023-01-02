@@ -207,6 +207,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         [KnownLanguage.Egyptian]	= "egy",
         [KnownLanguage.English]	    = "en",
         [KnownLanguage.French]	    = "fr",
+        [KnownLanguage.IPA]	        = "ipa",    // Not an official ISO code
         [KnownLanguage.Italian]	    = "it",
         [KnownLanguage.German]	    = "de",
         [KnownLanguage.Greek]	    = "el",
