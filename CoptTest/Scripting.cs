@@ -90,7 +90,7 @@ namespace CoptTest
             var langCmd = Assert.IsType<LanguageCmd>(cmd);
             var langDef = Assert.IsAssignableFrom<Run>(cmd.Output);
 
-            Assert.Equal(langCmd.Language, lang);
+            Assert.Equal(langCmd.Language?.Known, lang);
             Assert.Equal(langDef?.ToString(), convSubtext);
             if (font == null)
                 Assert.Null(langCmd.Font);
