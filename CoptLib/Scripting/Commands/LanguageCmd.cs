@@ -2,7 +2,6 @@
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
-using System;
 
 namespace CoptLib.Scripting.Commands
 {
@@ -14,7 +13,7 @@ namespace CoptLib.Scripting.Commands
             Parse();
         }
 
-        public KnownLanguage Language { get; private set; }
+        public LanguageInfo Language { get; private set; }
 
         public CopticFont Font { get; private set; }
 
@@ -23,12 +22,12 @@ namespace CoptLib.Scripting.Commands
             var langParam = Parameters[0].ToString();
             var sourceParam = Parameters[Parameters.Length - 1];
 
-            if (!Enum.TryParse<KnownLanguage>(langParam, out var language))
+            if (!LanguageInfo.TryParse(langParam, out var language))
                 return;
 
             Language = language;
 
-            if (Parameters.Length >= 3 && (language == KnownLanguage.Coptic || language == KnownLanguage.Greek))
+            if (Parameters.Length >= 3 && (language.Known == KnownLanguage.Coptic || language.Known == KnownLanguage.Greek))
             {
                 var fontParam = Parameters[1].ToString();
 
@@ -42,6 +41,15 @@ namespace CoptLib.Scripting.Commands
         {
             if (Font != null && def is Run run)
                 run.Text = Font.Convert(run.Text);
+
+            if (def is IMultilingual multi)
+            {
+                // Clear the font since we've already handled it here
+                multi.Font = null;
+
+                // Set the new language
+                multi.Language = Language;
+            }
         }
     }
 }

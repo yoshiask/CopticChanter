@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
-using NLua;
-using NodaTime;
+using CSScriptLib;
 using OwlCore.Extensions;
 
 namespace CoptLib.Scripting
@@ -23,67 +21,14 @@ namespace CoptLib.Scripting
             { "trslit", typeof(TransliterateCmd) },
         };
 
-        public static IDictionary<string, bool> GetArgs(LocalDate date)
+        public static IDefinition RunScript(string scriptBody)
         {
-            if (date == null)
-                date = CopticDateHelper.TodayCoptic;
+            // Add common usings
+            scriptBody = "using CoptLib;\r\nusing CoptLib.Models;\r\nusing CoptLib.Models.Text;\r\nusing CoptLib.Writing;\r\nusing NodaTime;\r\n"
+                + scriptBody;
 
-            bool isPascha = date == CopticDateHelper.GetNextPascha(date);
-            var args = new Dictionary<string, bool>
-            {
-                // Check if today is the Feast of the Nativity, always Jan. 7th [Gregorian]
-                { "Nativity", date == CopticDateHelper.GetNextNativity(date) },
-
-                // Check if today is the Sunday before the Feast of the Nativity
-                { "NativitySunday", date == CopticDateHelper.GetNextNativitySunday(date) },
-
-                // Check if today is during Great Lent
-                //{ "GreatLent", date >= CopticDateHelper.GreatLentStart && date < CopticDateHelper.PalmSunday },
-
-                // Check if today is during Holy Week
-                { "HolyWeek", date >= CopticDateHelper.GetNextHosannaSunday(date) && date < CopticDateHelper.GetNextPascha(date) },
-
-                // Check if today is Palm Sunday
-                { "PalmSunday", date == CopticDateHelper.GetNextHosannaSunday(date) },
-
-                // Check if today is Pascha
-                { "Pascha", isPascha },
-                { "Easter", isPascha },
-
-                // Check if today is the Feast of the Ressurection
-                { "Ressurection", date == CopticDateHelper.GetNextFeastResurrection(date) }
-            };
-
-            return args;
-        }
-
-        public static IDefinition RunLuaScript(string scriptBody)
-        {
-            Lua state = new();
-            state.LoadCLRPackage();
-            state.DoString("import ('CoptLib', 'CoptLib.Models')");
-            state.DoString("import ('NodaTime', 'NodaTime')");
-
-            // Add the CoptLib date functions
-            state["Today"] = CopticDateHelper.TodayCoptic;
-            //state["NextCovenantThursday"] = (Func<LocalDate>)CopticDateHelper.GetNextCovenantThursday;
-            state["NextFeastResurrection"] = (Func<LocalDate>)CopticDateHelper.GetNextFeastResurrection;
-            //state["NextGoodFriday"] = (Func<LocalDate>)CopticDateHelper.GetNextGoodFriday;
-            //state["NextHosannaSunday"] = (Func<LocalDate>)CopticDateHelper.GetNextHosannaSunday;
-            state["NextLazarusSaturday"] = (Func<LocalDate>)CopticDateHelper.GetNextLazarusSaturday;
-            //state["NextNativity"] = (Func<LocalDate>)CopticDateHelper.GetNextNativity;
-            //state["NextNativityFast"] = (Func<LocalDate>)CopticDateHelper.GetNextNativityFast;
-            //state["NextNativitySunday"] = (Func<LocalDate>)CopticDateHelper.GetNextNativitySunday;
-            //state["NextPascha"] = (Func<LocalDate>)CopticDateHelper.GetNextPascha;
-
-            var scriptResult = state.DoString(scriptBody)?.FirstOrDefault();
-            state.Close();
-            return scriptResult as IDefinition;
-
-            if (scriptResult is IDefinition defResult)
-                return defResult;
-            else
-                throw new InvalidCastException($"Expected an IDefinition, but script returned {scriptResult.GetType().Name}");
+            var script = CSScript.Evaluator.CreateDelegate(scriptBody);
+            return script.Invoke() as IDefinition;
         }
 
         /// <summary>
@@ -281,13 +226,13 @@ namespace CoptLib.Scripting
             switch (inline)
             {
                 case InlineCommand inCmd:
-                    // Ensure each parameter is fully evaluated
-                    RunTextCommands(inCmd.Parameters, cmds);
-
                     // Evaluate the current command
                     // If the command was already executed, just return it
                     if (inCmd.Command == null)
                     {
+                        // Ensure each parameter is fully evaluated
+                        RunTextCommands(inCmd.Parameters, cmds);
+
                         // Get each parameter, ensuring that the output of nested commands are used.
                         IDefinition[] parameters = new IDefinition[inCmd.Parameters.Count];
                         for (int i = 0; i < parameters.Length; i++)

@@ -97,7 +97,7 @@ namespace CoptLib.Models
 
             for (int t = 0; t < Translations.Children.Count; t++)
             {
-                var translation = Translations[t];
+                var translation = Translations.Children[t];
 
                 // Ignore translation if it's in the exclusion list but not the inclusion list
                 if (excludedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild)

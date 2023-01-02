@@ -147,7 +147,7 @@ namespace CoptLib.IO
                     break;
 
                 case Script script:
-                    elem.Add(new XCData(script.LuaScript));
+                    elem.Add(new XCData(script.ScriptBody));
                     break;
 
                 case Variable variable:

@@ -141,7 +141,7 @@ namespace CoptLib.IO
                 {
                     Script script = new()
                     {
-                        LuaScript = defElem.Value
+                        ScriptBody = defElem.Value
                     };
                     def = script;
                 }
@@ -268,11 +268,17 @@ namespace CoptLib.IO
                             partCollection.Children.Add(cmdOutPart);
 
                         // If the collection doesn't have any explicit elements (in other words,
-                        // it's only children came from the source), inherit the language of the children
-                        if (!hasExplicitChildren && part is IMultilingual partMulti)
+                        // it's only children came from the source), inherit the command's properties
+                        if (!hasExplicitChildren)
                         {
-                            partMulti.Language = (cmd.Output as IMultilingual)?.Language;
-                            partMulti.Font = (cmd.Output as IMultilingual)?.Font;
+                            if (cmd.Output is IMultilingual cmdMulti && part is IMultilingual partMulti)
+                            {
+                                partMulti.Language = cmdMulti.Language;
+                                partMulti.Font = cmdMulti.Font;
+                            }
+
+                            if (cmd.Output is Section cmdSection && part is Section partSection)
+                                partSection.Title = cmdSection.Title;
                         }
                     }
                 }

@@ -7,6 +7,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class IpaTranscribeCmd : TextCommandBase
     {
+        private static readonly LanguageInfo _ipaLang = new(KnownLanguage.IPA);
+
         public IpaTranscribeCmd(string name, InlineCommand inline, IDefinition[] parameters)
             : base(name, inline, parameters)
         {
@@ -26,6 +28,18 @@ namespace CoptLib.Scripting.Commands
             // Make sure referenced elements are also transcribed
             else if (def is InlineCommand inCmd && inCmd.Command.Output != null)
                 inCmd.Command.Output.Select(Transcribe);
+
+            if (def is IMultilingual multi)
+            {
+                // Ensure that the language and font are set.
+                // Set secondary language to indicate transcription.
+                if (multi.Language != null)
+                    multi.Language.Secondary = _ipaLang;
+                else
+                    multi.Language = _ipaLang;
+
+                multi.Font = null;
+            }
         }
     }
 }

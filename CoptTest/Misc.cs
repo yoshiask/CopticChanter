@@ -65,8 +65,8 @@ namespace CoptTest
             {
                 new LanguageInfo(KnownLanguage.English),
                 new LanguageInfo(KnownLanguage.Coptic),
-                new LanguageInfo("cop-GR/en-US"),
-                new LanguageInfo("cop-GR/ar-EG"),
+                LanguageInfo.Parse("cop-GR/en-US"),
+                LanguageInfo.Parse("cop-GR/ar-EG"),
                 new LanguageInfo(KnownLanguage.Hebrew),
                 new LanguageInfo(KnownLanguage.Arabic),
                 new LanguageInfo("syr"),
@@ -75,8 +75,8 @@ namespace CoptTest
             HashSet<LanguageInfo> include = new()
             {
                 new LanguageInfo(KnownLanguage.English),
-                new LanguageInfo("cop-GR/en-US"),
-                new LanguageInfo("el"),
+                LanguageInfo.Parse("cop-GR/en-US"),
+                LanguageInfo.Parse("el"),
                 new LanguageInfo(KnownLanguage.Coptic),
                 new LanguageInfo("is"),
                 new LanguageInfo(KnownLanguage.Arabic),

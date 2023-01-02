@@ -15,13 +15,6 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     {
         Tag = tag;
 
-        int idxSecondary = tag.IndexOf('/');
-        if (idxSecondary > 0)
-        {
-            Tag = tag.Substring(0, idxSecondary);
-            Secondary = new(tag.Substring(idxSecondary + 1));
-        }
-
         string[] subtags = Tag.Split('-');
         Language = subtags[0];
 
@@ -70,13 +63,21 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     public LanguageInfo Secondary { get; set; }
 
     /// <summary>
-    /// Parses the given string as a <see cref="KnownLanguage"/> or RFC 5646
-    /// language tag.
+    /// Parses the given string as a <see cref="KnownLanguage"/> or
+    /// RFC 5646-based language tag.
     /// </summary>
     /// <param name="value">The string to parse.</param>
     public static LanguageInfo Parse(string value)
     {
         Guard.IsNotNull(value);
+
+        int idxSecondary = value.IndexOf('/');
+        if (idxSecondary > 0)
+        {
+            LanguageInfo primary = Parse(value.Substring(0, idxSecondary));
+            primary.Secondary = new(value.Substring(idxSecondary + 1));
+            return primary;
+        }
 
         // Check if language is known
         if (Enum.TryParse(value, true, out KnownLanguage kLang)
@@ -91,16 +92,37 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         return new(value);
     }
 
+    /// <summary>
+    /// Attempts to parse the given string as a <see cref="KnownLanguage"/> or
+    /// RFC 5646-based language tag.
+    /// </summary>
+    /// <param name="value">The string to parse.</param>
+    /// <param name="info">The resulting <see cref="LanguageInfo"/> if parsing succeeded.</param>
+    /// <returns></returns>
+    public static bool TryParse(string value, out LanguageInfo info)
+    {
+        try
+        {
+            info = Parse(value);
+            return true;
+        }
+        catch
+        {
+            info = null;
+            return false;
+        }
+    }
+
     public override string ToString()
     {
-        if (Known != KnownLanguage.Default)
-            return Known.ToString();
+        string str = Known != KnownLanguage.Default
+            ? Known.ToString()
+            : Tag;
 
-        string tag = Tag;
         if (Secondary != null)
-            tag += $"/{Secondary}";
+            str += $"/{Secondary}";
 
-        return tag;
+        return str;
     }
 
     /// <summary>
@@ -180,17 +202,28 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         [KnownLanguage.Arabic]	    = "ar",
         [KnownLanguage.Aramaic]	    = "arc",
         [KnownLanguage.Armenian]	= "hy",
-        [KnownLanguage.Coptic]	    = "cop-GR",
+        [KnownLanguage.Coptic]	    = "cop",
         [KnownLanguage.Dutch]	    = "nl",
         [KnownLanguage.Egyptian]	= "egy",
         [KnownLanguage.English]	    = "en",
         [KnownLanguage.French]	    = "fr",
+        [KnownLanguage.IPA]	        = "ipa",    // Not an official ISO code
         [KnownLanguage.Italian]	    = "it",
         [KnownLanguage.German]	    = "de",
         [KnownLanguage.Greek]	    = "el",
         [KnownLanguage.Hebrew]	    = "he",
         [KnownLanguage.Latin]	    = "la",
         [KnownLanguage.Spanish]	    = "es",
+
+        /// cop        | Coptic (generic)
+        /// cop-EG-ALX | Bohairic (Alexandra)
+        /// cop-EG-AST | Sahidic (Asyut)
+        /// cop-EG-FYM | Fayyumic (Faiyum)
+        /// cop-EG-SHG | Akhmimic (Sohag)
+        /// cop-EG-MN  | Oxyrhynchite (Minya)
+        /// cop-GR     | Greco-Bohairic
+        [KnownLanguage.CopticBohairic]	    = "cop-EG-ALX",
+        [KnownLanguage.CopticSahidic]	    = "cop-EG-AST",
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);

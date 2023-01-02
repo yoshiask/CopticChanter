@@ -30,7 +30,7 @@
 
     <ItemGroup>
         <PackageReference Include="OwlCore" Version="0.1.0" />
-        <PackageReference Include="NLua" Version="1.6.0" />
+		<PackageReference Include="CS-Script" Version="4.6.2" />
         <PackageReference Include="AngleSharp" Version="0.17.1" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
         <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
@@ -42,6 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="CopticCalendar.cs~RFfaa37d8.TMP" />
         <None Remove="Resources\lexicon.tsv" />
         <EmbeddedResource Include="Resources\lexicon.tsv" />
     </ItemGroup>

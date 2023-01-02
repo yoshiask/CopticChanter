@@ -13,10 +13,14 @@ public enum KnownLanguage
     Egyptian,
     English,
     French,
+    IPA,
     Italian,
     German,
     Greek,
     Hebrew,
     Latin,
     Spanish,
+
+    CopticBohairic,
+    CopticSahidic,
 }
