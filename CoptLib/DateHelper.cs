@@ -57,6 +57,31 @@ namespace CoptLib
 
 
         /// <summary>
+        /// Determines if today is this year's ocurrence of the given event.
+        /// </summary>
+        /// <param name="dateCalc">
+        /// A function that returns the date of an event in given a Coptic year.
+        /// </param>
+        public static bool IsToday(Func<int, LocalDate> dateCalc)
+        {
+            var today = NowCoptic();
+            return today == dateCalc(today.YearOfEra);
+        }
+
+        /// <summary>
+        /// Determines if today is during this year's ocurrence of the given event.
+        /// </summary>
+        /// <param name="dateCalc">
+        /// A function that returns the date of an event in given a Coptic year.
+        /// </param>
+        public static bool IsToday(Func<int, DatePeriod> dateCalc)
+        {
+            var today = NowCoptic();
+            return dateCalc(today.YearOfEra).IsDuring(today);
+        }
+
+
+        /// <summary>
         /// Gets the next occurrence of the given event.
         /// </summary>
         /// <param name="date">The current copticYear.</param>
