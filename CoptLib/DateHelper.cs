@@ -57,18 +57,6 @@ namespace CoptLib
 
 
         /// <summary>
-        /// Determines whether the date falls within a certain interval.
-        /// </summary>
-        /// <param name="date">The date to test.</param>
-        /// <param name="start">The inclusive start copticYear of the interval.</param>
-        /// <param name="end">The inclusive end copticYear of the interval.</param>
-        public static bool IsBetweenInclusive(this LocalDate date, LocalDate start, LocalDate end)
-        {
-            return date >= start && date <= end;
-        }
-
-
-        /// <summary>
         /// Gets the next occurrence of the given event.
         /// </summary>
         /// <param name="date">The current copticYear.</param>

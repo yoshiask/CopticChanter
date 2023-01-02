@@ -40,7 +40,7 @@ namespace CoptLib
         /// Determines whether the given date occurs during the period.
         /// </summary>
         /// <param name="date">The date to test.</param>
-        public bool IsDuring(LocalDate date) => DateHelper.IsBetweenInclusive(date, StartDate, EndDate);
+        public bool IsDuring(LocalDate date) => date >= StartDate && date <= EndDate;
 
         /// <summary>
         /// Creates a new <see cref="DatePeriod"/> representing the same physical
