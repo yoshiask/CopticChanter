@@ -27,24 +27,18 @@ namespace CoptLib.Scripting
         {
             Lua state = new();
             state.LoadCLRPackage();
+            state.DoString("import ('CoptLib', 'CoptLib')");
             state.DoString("import ('CoptLib', 'CoptLib.Models')");
             state.DoString("import ('CoptLib', 'CoptLib.Models.Text')");
             state.DoString("import ('CoptLib', 'CoptLib.Writing')");
             state.DoString("import ('NodaTime', 'NodaTime')");
 
-            // Add the CoptLib date functions
-            //state["Today"] = DateHelper.NowCoptic();
-            //state["NextNativityFast"] = DateHelper.GetNextFunction(CopticCalendar.NativityFast);
-            //state["NextNativity"] = DateHelper.GetNextFunction(CopticCalendar.Nativity);
-            //state["NextHosannaSunday"] = DateHelper.GetNextFunction(CopticCalendar.HosannaSunday);
-            //state["NextCovenantThursday"] = DateHelper.GetNextFunction(CopticCalendar.CovenantThursday);
-            //state["NextFeastResurrection"] = DateHelper.GetNextFunction(CopticCalendar.Resurrection);
-            //state["NextGoodFriday"] = DateHelper.GetNextFunction(CopticCalendar.GoodFriday);
-            //state["NextLazarusSaturday"] = DateHelper.GetNextFunction(CopticCalendar.LazarusSaturday);
-            //state["NextPascha"] = DateHelper.GetNextFunction(CopticCalendar.Pascha);
+            // Provide easy access to an unchanging current date,
+            // to prevent TOC/TOU errors right when the day transitions
+            state["Today"] = DateHelper.NowCoptic();
 
             var scriptResult = state.DoString(scriptBody)?.FirstOrDefault();
-            state.Close();
+            state.Dispose();
             return scriptResult as IDefinition;
 
             if (scriptResult is IDefinition defResult)

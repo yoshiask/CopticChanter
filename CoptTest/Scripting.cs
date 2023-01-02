@@ -153,9 +153,19 @@ namespace CoptTest
         {
             return new object[][]
             {
-                new object[] { "if Today == NextFeastResurrection() then return SimpleContent('aktonk', nil) else return SimpleContent('aki', nil) end", new SimpleContent("aki", null) },
                 new object[] { "return SimpleContent('Test content', nil)", new SimpleContent("Test content", null) },
                 new object[] { "if true then\r\nreturn SimpleContent('Test content', nil)\r\nend", new SimpleContent("Test content", null) },
+                new object[]
+                {
+                    """
+                    if Today == DateHelper.GetNext(Today, CopticCalendar['Resurrection']) then
+                        return SimpleContent('aktonk', nil)
+                    else
+                        return SimpleContent('aki', nil)
+                    end
+                    """,
+                    new SimpleContent("aki", null)
+                },
             };
         }
     }
