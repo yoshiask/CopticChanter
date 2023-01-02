@@ -55,11 +55,9 @@ namespace CoptLib
 
         public static LocalDate Circumcision(int copticYear) => DateHelper.NewCopticDate(copticYear, 5, 6);
 
-        public static LocalDate Theophany(int copticYear) => Circumcision(copticYear).PlusWeeks(1);
+        public static LocalDate Theophany(int copticYear) => Nativity(copticYear).PlusDays(12);
 
-        public static LocalDate Epiphany(int copticYear) => Nativity(copticYear).PlusDays(12);
-
-        public static LocalDate WeddingAtCanaOfGalilee(int copticYear) => Epiphany(copticYear).PlusDays(2);
+        public static LocalDate WeddingAtCanaOfGalilee(int copticYear) => Theophany(copticYear).PlusDays(2);
 
         public static LocalDate PresentationLordChristTemple(int copticYear) => DateHelper.NewCopticDate(copticYear, 6, 8);
 
