@@ -226,13 +226,13 @@ namespace CoptLib.Scripting
             switch (inline)
             {
                 case InlineCommand inCmd:
-                    // Ensure each parameter is fully evaluated
-                    RunTextCommands(inCmd.Parameters, cmds);
-
                     // Evaluate the current command
                     // If the command was already executed, just return it
                     if (inCmd.Command == null)
                     {
+                        // Ensure each parameter is fully evaluated
+                        RunTextCommands(inCmd.Parameters, cmds);
+
                         // Get each parameter, ensuring that the output of nested commands are used.
                         IDefinition[] parameters = new IDefinition[inCmd.Parameters.Count];
                         for (int i = 0; i < parameters.Length; i++)
