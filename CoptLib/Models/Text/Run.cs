@@ -31,6 +31,6 @@ namespace CoptLib.Models.Text
 
         public override bool Equals(object obj) => obj is Run other && Text == other.Text;
 
-        public override int GetHashCode() => Text.GetHashCode();
+        public override int GetHashCode() => Text?.GetHashCode() ?? 0;
     }
 }
