@@ -100,22 +100,6 @@ namespace CoptLib
                 return eventDate;
         }
 
-        /// <summary>
-        /// Gets a lamba function that calls <see cref="GetNext(LocalDate, Func{int, LocalDate})"/>.
-        /// </summary>
-        /// <param name="dateCalc">
-        /// A function that returns the date of an event in given a Coptic year.
-        /// </param>
-        public static Func<LocalDate, LocalDate> GetNextFunction(Func<int, LocalDate> dateCalc) => date => GetNext(date, dateCalc);
-
-        /// <summary>
-        /// Gets a lamba function that calls <see cref="GetNext(LocalDate, Func{int, LocalDate})"/>.
-        /// </summary>
-        /// <param name="dateCalc">
-        /// A function that returns the date of an event in given a Coptic year.
-        /// </param>
-        public static Func<LocalDate, DatePeriod> GetNextFunction(Func<int, DatePeriod> dateCalc) => date => GetNext(date, dateCalc);
-
 
         /// <summary>
         /// Gets the most recent occurrence of this event that has already passed.
@@ -160,21 +144,5 @@ namespace CoptLib
             else
                 return eventDate;
         }
-
-        /// <summary>
-        /// Gets a lamba function that calls <see cref="GetPrevious(LocalDate, Func{int, LocalDate})"/>.
-        /// </summary>
-        /// <param name="dateCalc">
-        /// A function that returns the date of an event in given a Coptic year.
-        /// </param>
-        public static Func<LocalDate, LocalDate> GetPreviousFunction(Func<int, LocalDate> dateCalc) => date => GetPrevious(date, dateCalc);
-
-        /// <summary>
-        /// Gets a lamba function that calls <see cref="GetPrevious(DatePeriod, Func{int, DatePeriod})"/>.
-        /// </summary>
-        /// <param name="dateCalc">
-        /// A function that returns the date of an event in given a Coptic year.
-        /// </param>
-        public static Func<LocalDate, DatePeriod> GetPreviousFunction(Func<int, DatePeriod> dateCalc) => date => GetPrevious(date, dateCalc);
     }
 }
