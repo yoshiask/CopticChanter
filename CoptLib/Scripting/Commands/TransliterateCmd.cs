@@ -25,29 +25,23 @@ namespace CoptLib.Scripting.Commands
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
             Output = sourceParam.Select(Transliterate);
-
-            if (Output is IMultilingual multi)
-            {
-                if (multi.Language != null)
-                {
-                    // Set secondary language to indicate transliteration
-                    multi.Language.Secondary = Language;
-                }
-                else
-                {
-                    multi.Language = Language;
-                }
-
-                multi.Font = null;
-            }
         }
 
         private void Transliterate(IDefinition def)
         {
             if (def is Run run)
-            {
                 run.Text = CopticInterpreter.Transliterate(run.Text, Language.Known);
-                run.Font = null;
+            
+            if (def is IMultilingual multi)
+            {
+                // Ensure that the language and font are set.
+                // Set secondary language to indicate transliteration.
+                if (multi.Language != null)
+                    multi.Language.Secondary = Language;
+                else
+                    multi.Language = Language;
+
+                multi.Font = null;
             }
 
             // Make sure referenced elements are also transliterated
