@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
-using NLua;
-using NodaTime;
+using CSScriptLib;
 using OwlCore.Extensions;
 
 namespace CoptLib.Scripting
@@ -23,28 +21,14 @@ namespace CoptLib.Scripting
             { "trslit", typeof(TransliterateCmd) },
         };
 
-        public static IDefinition RunLuaScript(string scriptBody)
+        public static IDefinition RunScript(string scriptBody)
         {
-            Lua state = new();
-            state.LoadCLRPackage();
-            state.DoString("import ('CoptLib', 'CoptLib')");
-            state.DoString("import ('CoptLib', 'CoptLib.Models')");
-            state.DoString("import ('CoptLib', 'CoptLib.Models.Text')");
-            state.DoString("import ('CoptLib', 'CoptLib.Writing')");
-            state.DoString("import ('NodaTime', 'NodaTime')");
+            // Add common usings
+            scriptBody = "using CoptLib;\r\nusing CoptLib.Models;\r\nusing CoptLib.Models.Text;\r\nusing CoptLib.Writing;\r\nusing NodaTime;\r\n"
+                + scriptBody;
 
-            // Provide easy access to an unchanging current date,
-            // to prevent TOC/TOU errors right when the day transitions
-            state["Today"] = DateHelper.NowCoptic();
-
-            var scriptResult = state.DoString(scriptBody)?.FirstOrDefault();
-            state.Dispose();
-            return scriptResult as IDefinition;
-
-            if (scriptResult is IDefinition defResult)
-                return defResult;
-            else
-                throw new InvalidCastException($"Expected an IDefinition, but script returned {scriptResult.GetType().Name}");
+            var script = CSScript.Evaluator.CreateDelegate(scriptBody);
+            return script.Invoke() as IDefinition;
         }
 
         /// <summary>

@@ -141,7 +141,7 @@ namespace CoptLib.IO
                 {
                     Script script = new()
                     {
-                        LuaScript = defElem.Value
+                        ScriptBody = defElem.Value
                     };
                     def = script;
                 }

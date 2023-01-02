@@ -46,13 +46,13 @@ namespace CoptLib.Models
     public class Script : Definition, ICommandOutput
     {
         [XmlText]
-        public string LuaScript { get; set; }
+        public string ScriptBody { get; set; }
 
         public IDefinition Output { get; protected set; }
 
         public void Run()
         {
-            Output = ScriptingEngine.RunLuaScript(LuaScript);
+            Output = ScriptingEngine.RunScript(ScriptBody);
             if (Output != null)
             {
                 Output.DocContext = DocContext;
