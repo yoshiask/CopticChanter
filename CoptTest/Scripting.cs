@@ -1,9 +1,11 @@
-﻿using CoptLib.IO;
+﻿using CoptLib;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Scripting.Commands;
 using CoptLib.Writing;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,28 +26,29 @@ namespace CoptTest
 
         [Theory]
         [MemberData(nameof(GetRunScript_Samples))]
-        public void RunCSScript(string script, object expectedOutput)
+        public void RunCSScript(string script, Func<object> expectedFunc)
         {
-            var result = ScriptingEngine.RunScript(script);
+            var actual = ScriptingEngine.RunScript(script);
+            var expected = expectedFunc();
 
             // Memberwise comparison
-            if (expectedOutput is Type expectedType)
+            if (expected is not null)
             {
-                Assert.IsType(expectedType, result);
-            }
-            else if (expectedOutput is not null)
-            {
-                Assert.IsType(expectedOutput.GetType(), result);
+                Assert.IsType(expected.GetType(), actual);
 
-                var expectedProps = expectedOutput.GetType().GetProperties();
-                var actualProps = result.GetType().GetProperties();
+                var expectedProps = expected.GetType().GetProperties();
+                var actualProps = actual.GetType().GetProperties();
                 foreach ((var ex, var ac) in expectedProps.Zip(actualProps))
                 {
-                    Assert.Equal(ex.GetValue(expectedOutput), ac.GetValue(result));
+                    Assert.Equal(ex.GetValue(expected), ac.GetValue(actual));
                 }
             }
+            else
+            {
+                Assert.Equal(expected, actual);
+            }
 
-            _output.WriteLine(result.ToString());
+            _output.WriteLine(actual?.ToString() ?? "{x:Null}");
         }
 
         [Theory]
@@ -55,7 +58,7 @@ namespace CoptTest
             Stanza stanza = new(null)
             {
                 SourceText = string.Format(text, @"\ms{0:5:0}"),
-                DocContext = _doc 
+                DocContext = _doc
             };
             stanza.HandleCommands();
 
@@ -163,7 +166,11 @@ namespace CoptTest
         {
             return new object[][]
             {
-                new object[] { "IDefinition Get() => new SimpleContent(\"Test content\", null);", new SimpleContent("Test content", null) },
+                new object[]
+                {
+                    "IDefinition Get() => new SimpleContent(\"Test content\", null);",
+                    () => new SimpleContent("Test content", null)
+                },
                 new object[]
                 {
                     """
@@ -224,7 +231,7 @@ namespace CoptTest
                         return res;
                     }
                     """,
-                    typeof(TranslationRunCollection)
+                    GetAkiAktonk
                 },
                 new object[]
                 {
@@ -238,9 +245,73 @@ namespace CoptTest
                             return new SimpleContent("aki", null);
                     }
                     """,
-                    new SimpleContent("aki", null)
+                    () =>
+                    {
+                        var today = DateHelper.NowCoptic();
+                        if (today == CopticCalendar.Resurrection(today.YearOfEra))
+                            return new SimpleContent("aktonk", null);
+                        else
+                            return new SimpleContent("aki", null);
+                    }
                 },
             };
+        }
+
+        private static IDefinition GetAkiAktonk()
+        {
+            // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
+            var Today = DateHelper.NowCoptic();
+            int year = Today.YearOfEra;
+
+            string engText, copText, araText;
+
+            var resur = CopticCalendar.Resurrection(year);
+            var holyFiftyDays = Period.DaysBetween(resur, Today);
+            bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
+
+            var pentecost = CopticCalendar.Pentecost(year);
+            var koiahk = DateHelper.NewCopticDate(year, 4, 1);
+            bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
+
+            if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
+            {
+                engText = "have risen";
+                copText = "ⲁⲕⲧⲱⲛⲕ";
+                araText = "قمت";
+            }
+            else if (Today == CopticCalendar.Nativity(year))
+            {
+                engText = "were born";
+                copText = "ⲁⲩⲙⲁⲥⲕ";
+                araText = "TODO";
+            }
+            else if (Today == CopticCalendar.Theophany(year))
+            {
+                engText = "were baptised";
+                copText = "ⲁⲕϭⲓⲱⲙⲥ";
+                araText = "TODO";
+            }
+            else if (Today == CopticCalendar.FirstFeastCross(year)
+                || Today == CopticCalendar.SecondFeastCross(year)
+                || CopticCalendar.PaschalPeriod(year).IsDuring(Today))
+            {
+                engText = "were crucified";
+                copText = "ⲁⲩⲁϣⲕ";
+                araText = "TODO";
+            }
+            else
+            {
+                engText = "have come";
+                copText = "ⲁⲕⲓ\u0300";
+                araText = "اتيت";
+            }
+
+            var res = new TranslationRunCollection("AkiAktonk");
+            res.AddNew(engText, KnownLanguage.English);
+            res.AddNew(copText, KnownLanguage.Coptic);
+            res.AddNew(araText, KnownLanguage.Arabic);
+
+            return res;
         }
     }
 }
