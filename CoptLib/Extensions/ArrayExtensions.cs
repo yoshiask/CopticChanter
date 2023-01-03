@@ -66,6 +66,13 @@ namespace CoptLib.Extensions
             foreach (var elem in source)
                 yield return (elem, i++);
         }
+
+        public static IEnumerable<TTarget> ElementsAs<TSource, TTarget>(this IEnumerable<TSource> source)
+        {
+            foreach (var elem in source)
+                if (elem is TTarget elemTarget)
+                    yield return elemTarget;
+        }
     }
 
     internal class ArrayTraverse

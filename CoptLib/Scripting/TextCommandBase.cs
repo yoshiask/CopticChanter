@@ -37,7 +37,7 @@ namespace CoptLib.Scripting
 
         protected void HandleOutput()
         {
-            if (Output is TranslationCollection defCol)
+            if (Output is ITranslationLookup defLookup)
             {
                 KnownLanguage lang = KnownLanguage.Default;
                 if (Inline is IMultilingual multi && multi.Language != null)
@@ -45,7 +45,7 @@ namespace CoptLib.Scripting
                 else if (Inline.Parent is IMultilingual parentMulti)
                     lang = parentMulti.Language.Known;
 
-                Output = defCol[lang];
+                Output = defLookup.GetByLanguage<IMultilingual>(lang) as IDefinition;
             }
         }
     }

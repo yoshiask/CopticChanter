@@ -216,28 +216,15 @@ namespace CoptTest
                             araText = "اتيت";
                         }
 
-                        var res = new TranslationCollection(null)
-                        {
-                            Key = "AkiAktonk",
-                        };
-                    
-                        var eng = new Stanza(res);
-                        var cop = new Stanza(res);
-                        var ara = new Stanza(res);
-                        eng.Language = new LanguageInfo(KnownLanguage.English);
-                        cop.Language = new LanguageInfo(KnownLanguage.Coptic);
-                        ara.Language = new LanguageInfo(KnownLanguage.Arabic);
-                        eng.SourceText = engText;
-                        cop.SourceText = copText;
-                        ara.SourceText = araText;
-                        res.Children.Add(eng);
-                        res.Children.Add(cop);
-                        res.Children.Add(ara);
+                        var res = new TranslationRunCollection("AkiAktonk");
+                        res.AddNew(engText, KnownLanguage.English);
+                        res.AddNew(copText, KnownLanguage.Coptic);
+                        res.AddNew(araText, KnownLanguage.Arabic);
 
                         return res;
                     }
                     """,
-                    typeof(TranslationCollection)
+                    typeof(TranslationRunCollection)
                 },
                 new object[]
                 {

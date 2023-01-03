@@ -1,4 +1,5 @@
-﻿using CoptLib.Writing;
+﻿using CoptLib.Extensions;
+using CoptLib.Writing;
 using System;
 using System.Linq;
 using System.Xml.Serialization;
@@ -10,7 +11,7 @@ namespace CoptLib.Models
     /// translations of the same content.
     /// </summary>
     [XmlRoot("Translations")]
-    public class TranslationCollection : Section
+    public class TranslationCollection : Section, ITranslationLookup
     {
         public TranslationCollection(IDefinition parent) : base(parent)
         {
@@ -51,6 +52,22 @@ namespace CoptLib.Models
             return Children.Count > 0
                 ? Children.Max(cp => cp.CountRows())
                 : 0;
+        }
+
+        public TMulti GetByLanguage<TMulti>(KnownLanguage knownLanguage)
+            where TMulti : IMultilingual
+        {
+            return Children
+                .ElementsAs<ContentPart, TMulti>()
+                .First(t => t.Language?.Known == knownLanguage);
+        }
+
+        public TMulti GetByLanguage<TMulti>(LanguageInfo language, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.StrictWithWild)
+            where TMulti : IMultilingual
+        {
+            return Children
+                .ElementsAs<ContentPart, TMulti>()
+                .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
         }
     }
 }
