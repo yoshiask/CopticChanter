@@ -31,6 +31,9 @@ namespace CoptLib.Models
         [XmlAttribute]
         public string Font { get; set; }
 
+        [XmlAttribute]
+        public RoleInfo Role { get; set; }
+
         [XmlIgnore]
         public bool FontHandled { get; protected set; }
 
