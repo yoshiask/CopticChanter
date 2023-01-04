@@ -36,10 +36,22 @@ namespace CoptTest
             {
                 Assert.IsType(expected.GetType(), actual);
 
+                // Check if collections are equal
+                if (expected is IEnumerable<object> expectedCollection)
+                {
+                    foreach ((var ex, var ac) in expectedCollection.Zip((IEnumerable<object>)actual))
+                    {
+                        Assert.Equal(ex, ac);
+                    }
+                }
+
                 var expectedProps = expected.GetType().GetProperties();
                 var actualProps = actual.GetType().GetProperties();
                 foreach ((var ex, var ac) in expectedProps.Zip(actualProps))
                 {
+                    if (ex.Name == "Item")
+                        continue;
+
                     Assert.Equal(ex.GetValue(expected), ac.GetValue(actual));
                 }
             }
