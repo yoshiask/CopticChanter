@@ -1,5 +1,6 @@
 ﻿using CoptLib.Extensions;
 using CoptLib.Writing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,8 @@ namespace CoptLib.Models.Text
     /// </summary>
     public class TranslationRunCollection : List<Run>, ITranslationLookup, IDefinition
     {
+        private readonly Dictionary<KnownLanguage, Run> _known = new();
+
         public TranslationRunCollection(string key = null, IDefinition parent = null)
         {
             Key = key;
@@ -36,15 +39,32 @@ namespace CoptLib.Models.Text
         /// </summary>
         /// <param name="text">The text content.</param>
         /// <param name="knownLanguage">The language of the content.</param>
-        public void AddNew(string text, KnownLanguage knownLanguage)
-            => Add(new(text, this) { Language = new(knownLanguage) });
+        /// <returns>The <see cref="Run"/> that was created.</returns>
+        public Run AddNew(string text, KnownLanguage knownLanguage)
+        {
+            Run run = new(text, this)
+            {
+                Language = new(knownLanguage)
+            };
+
+            // Add to self, for the complex LanguageInfo comparison
+            Add(run);
+
+            // Add to internal dictionary, for fast lookups of known languages
+            _known.Add(knownLanguage, run);
+
+            return run;
+        }
 
         public TMulti GetByLanguage<TMulti>(KnownLanguage knownLanguage)
             where TMulti : IMultilingual
         {
-            return this
-                .ElementsAs<Run, TMulti>()
-                .First(t => t.Language?.Known == knownLanguage);
+            var run = _known[knownLanguage];
+
+            if (run is TMulti multi)
+                return multi;
+            else
+                throw new InvalidOperationException($"Element {{ {knownLanguage}, '{run}' }} was not of type '{typeof(TMulti)}'");
         }
 
         public TMulti GetByLanguage<TMulti>(LanguageInfo language, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.StrictWithWild)
@@ -53,6 +73,11 @@ namespace CoptLib.Models.Text
             return this
                 .ElementsAs<Run, TMulti>()
                 .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
+        }
+
+        public override string ToString()
+        {
+            return $"[ \"{string.Join("\", \"", this)}\" ]";
         }
     }
 }
