@@ -137,9 +137,9 @@ namespace CoptLib.IO
 
                     def = section;
                 }
-                else if (defElemName == nameof(Script))
+                else if (defElemName == nameof(CScript))
                 {
-                    Script script = new()
+                    CScript script = new()
                     {
                         ScriptBody = defElem.Value
                     };
@@ -234,10 +234,10 @@ namespace CoptLib.IO
 
         internal static void Transform(object part)
         {
-            if (part is Script partScript)
+            if (part is CScript partScript)
                 partScript.Run();
 
-            if (part is ICommandOutput partCmdOut && partCmdOut.Output != null)
+            if (part is ICommandOutput<object> partCmdOut && partCmdOut.Output != null)
                 part = partCmdOut.Output;
 
             if (part is IContent partContent)

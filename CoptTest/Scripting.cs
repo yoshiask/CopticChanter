@@ -180,13 +180,13 @@ namespace CoptTest
             {
                 new object[]
                 {
-                    "IDefinition Get() => new SimpleContent(\"Test content\", null);",
+                    "public override IDefinition GetDefinition() => new SimpleContent(\"Test content\", null);",
                     () => new SimpleContent("Test content", null)
                 },
                 new object[]
                 {
                     """
-                    IDefinition GetAkiAktonk()
+                    public override IDefinition GetDefinition()
                     {
                         // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
                         var Today = DateHelper.NowCoptic();
@@ -248,7 +248,7 @@ namespace CoptTest
                 new object[]
                 {
                     """
-                    IDefinition GetContent()
+                    public override IDefinition GetDefinition()
                     {
                         var today = DateHelper.NowCoptic();
                         if (today == CopticCalendar.Resurrection(today.YearOfEra))

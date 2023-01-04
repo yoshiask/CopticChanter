@@ -1,4 +1,5 @@
 ﻿using CoptLib.Models;
+using CoptLib.Scripting;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -146,7 +147,7 @@ namespace CoptLib.IO
                     elem.SetAttributeValue("Title", section.Title);
                     break;
 
-                case Script script:
+                case CScript script:
                     elem.Add(new XCData(script.ScriptBody));
                     break;
 

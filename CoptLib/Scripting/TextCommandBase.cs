@@ -5,9 +5,9 @@ using CoptLib.Writing;
 namespace CoptLib.Scripting
 {
     /// <summary>
-    /// Represents a command that was embedded in a <see cref="Models.Text.Run"/>.
+    /// Represents a command that was embedded in a <see cref="Run"/>.
     /// </summary>
-    public abstract class TextCommandBase : ICommandOutput
+    public abstract class TextCommandBase : ICommandOutput<IDefinition>
     {
         public TextCommandBase(string name, InlineCommand inline, IDefinition[] parameters)
         {
