@@ -71,7 +71,7 @@ namespace CoptLib.Models.Text
             where TMulti : IMultilingual
         {
             return this
-                .ElementsAs<Run, TMulti>()
+                .ElementsAs<TMulti>()
                 .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
         }
 

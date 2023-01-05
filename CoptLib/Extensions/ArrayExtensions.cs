@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace CoptLib.Extensions
@@ -67,7 +68,7 @@ namespace CoptLib.Extensions
                 yield return (elem, i++);
         }
 
-        public static IEnumerable<TTarget> ElementsAs<TSource, TTarget>(this IEnumerable<TSource> source)
+        public static IEnumerable<TTarget> ElementsAs<TTarget>(this IEnumerable source)
         {
             foreach (var elem in source)
                 if (elem is TTarget elemTarget)

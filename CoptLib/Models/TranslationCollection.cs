@@ -58,7 +58,7 @@ namespace CoptLib.Models
             where TMulti : IMultilingual
         {
             return Children
-                .ElementsAs<ContentPart, TMulti>()
+                .ElementsAs<TMulti>()
                 .First(t => t.Language?.Known == knownLanguage);
         }
 
@@ -66,7 +66,7 @@ namespace CoptLib.Models
             where TMulti : IMultilingual
         {
             return Children
-                .ElementsAs<ContentPart, TMulti>()
+                .ElementsAs< TMulti>()
                 .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
         }
     }

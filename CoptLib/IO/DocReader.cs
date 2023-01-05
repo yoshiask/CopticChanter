@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
 using OwlCore.Extensions;
@@ -6,10 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Transactions;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 #if DEBUG
 using Output = System.Diagnostics.Debug;
@@ -216,8 +214,7 @@ namespace CoptLib.IO
             {
                 // Parse elements, remove anything not a ContentPart
                 var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
-                    .Select(d => d as ContentPart)
-                    .PruneNull();
+                    .ElementsAs<ContentPart>();
                 contentCollection.Children.AddRange(defColl);
 
                 string sourceText = elem.Attribute("Source")?.Value;
