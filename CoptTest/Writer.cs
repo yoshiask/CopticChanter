@@ -27,9 +27,9 @@ namespace CoptTest
             Assert.Equal(docEx.Name, docAc.Name);
             Assert.Equal(docEx.Uuid, docAc.Uuid);
             Assert.Equal(docEx.Author?.FullName, docAc.Author?.FullName);
-            Assert.Equal(docEx.Definitions.Count, docAc.Definitions.Count);
             Assert.Equal(docEx.DirectDefinitions.Count, docAc.DirectDefinitions.Count);
             Assert.Equal(docEx.Translations.Children.Count, docAc.Translations.Children.Count);
+            Assert.Equal(docEx.Context.Definitions.Count, docAc.Context.Definitions.Count);
         }
 
         [Fact]

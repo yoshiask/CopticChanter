@@ -123,7 +123,7 @@ namespace CoptTest
             const string postText = "'.\r\nAlong with some text after.";
             parsedValue ??= value;
 
-            _doc.DirectDefinitions = new()
+            _doc.DirectDefinitions = new List<IDefinition>()
             {
                 new Stanza(null)
                 {

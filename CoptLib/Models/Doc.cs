@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Extensions;
+using CoptLib.IO;
 using CoptLib.Writing;
 using OwlCore.Extensions;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -11,8 +13,11 @@ namespace CoptLib.Models
     [XmlRoot("Document")]
     public class Doc
     {
-        public Doc()
+        private LoadContext _context;
+
+        public Doc(LoadContext context = null)
         {
+            _context = context ?? new();
             Translations = new(null)
             {
                 DocContext = this
@@ -32,15 +37,35 @@ namespace CoptLib.Models
         public TranslationCollection Translations { get; set; }
 
         [XmlArray("Definitions")]
-        public List<IDefinition> DirectDefinitions { get; set; } = new();
+        public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
 
         [XmlElement]
         public string NextScript { get; set; }
 
         [XmlIgnore]
-        public Dictionary<string, IDefinition> Definitions { get; } = new();
+        [NotNull]
+        public LoadContext Context
+        {
+            get => _context;
+            set
+            {
+                Guard.IsNotNull(value);
+                _context = value;
+            }
+        }
 
-        public void AddDefinition(IDefinition def) => Definitions.Add(def.Key, def);
+        /// <summary>
+        /// Gets the <see cref="IDefinition"/> associated with the given key.
+        /// </summary>
+        /// <param name="key">The key to lookup.</param>
+        public IDefinition LookupDefinition(string key) => Context.LookupDefinition(key, this);
+
+        /// <summary>
+        /// Adds an <see cref="IDefinition"/> to the current context, scoped to the
+        /// this document if another definition with the same key exists.
+        /// </summary>
+        /// <param name="definition">The definition to add.</param>
+        public void AddDefinition(IDefinition definition) => Context.AddDefinition(definition, this);
 
         public IndexDoc ToIndexDocXml()
         {

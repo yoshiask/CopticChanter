@@ -18,7 +18,7 @@ namespace CoptLib.Scripting.Commands
             string defId = Parameters.FirstOrDefault()?.ToString();
             Guard.IsNotNull(defId);
 
-            Output = Inline.DocContext.Definitions[defId];
+            Output = Inline.DocContext.LookupDefinition(defId);
             HandleOutput();
         }
     }

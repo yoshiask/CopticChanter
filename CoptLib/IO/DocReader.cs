@@ -2,7 +2,6 @@
 using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,18 +18,16 @@ namespace CoptLib.IO
 {
     public static class DocReader
     {
-        public static IDictionary<string, Doc> AllDocs = new Dictionary<string, Doc>();
-
         /// <summary>
         /// Deserializes and returns a DocXML file. Only use in full .NET Framework
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(string path)
+        public static Doc ReadDocXml(string path, LoadContext context = null)
         {
             try
             {
-                return ParseDocXml(XDocument.Load(path));
+                return ParseDocXml(XDocument.Load(path), context);
             }
             catch (Exception ex)
             {
@@ -44,11 +41,11 @@ namespace CoptLib.IO
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(Stream file)
+        public static Doc ReadDocXml(Stream file, LoadContext context = null)
         {
             try
             {
-                return ParseDocXml(XDocument.Load(file, LoadOptions.None));
+                return ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
             }
             catch (Exception ex)
             {
@@ -60,15 +57,15 @@ namespace CoptLib.IO
         /// <summary>
         /// Parses the XML string into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(string xml) => ParseDocXml(XDocument.Parse(xml));
+        public static Doc ParseDocXml(string xml, LoadContext context = null) => ParseDocXml(XDocument.Parse(xml), context);
 
         /// <summary>
         /// Parses the XML document tree into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(XDocument xml)
+        public static Doc ParseDocXml(XDocument xml, LoadContext context = null)
         {
             // The actual content can't be directly deserialized, so it needs to be manually parsed
-            Doc doc = new()
+            Doc doc = new(context)
             {
                 Name = xml.Root.Element("Name")?.Value,
                 Uuid = xml.Root.Element("Uuid")?.Value,
@@ -286,7 +283,7 @@ namespace CoptLib.IO
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();
 
-            if (part is IDefinition def && def.Key != null && !def.DocContext.Definitions.ContainsKey(def.Key))
+            if (part is IDefinition def && def.Key != null && def.DocContext is not null)
                 def.DocContext.AddDefinition(def);
         }
     }
