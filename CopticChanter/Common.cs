@@ -1,7 +1,6 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.IO;
 using CoptLib.Writing;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
@@ -16,7 +15,7 @@ namespace CopticChanter
 {
     public class Common
     {
-        public static List<Doc> Docs = new List<Doc>();
+        public static LoadContext CurrentLoadContext { get; } = new LoadContext();
 
         #region Bluetooth Remote
         public static bool IsConnected = false;

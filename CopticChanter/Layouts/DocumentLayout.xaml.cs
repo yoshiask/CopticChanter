@@ -1,26 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CopticChanter.Helpers;
-using CoptLib.Models;
 using CoptLib.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Media.Audio;
-using Windows.UI.Text;
 using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -39,7 +25,7 @@ namespace CopticChanter.Layouts
             this.InitializeComponent();
         }
 
-        public DocSetViewModel ViewModel { get; } = new DocSetViewModel(Common.Docs);
+        public DocSetViewModel ViewModel { get; } = new DocSetViewModel(Common.CurrentLoadContext.LoadedDocs);
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {

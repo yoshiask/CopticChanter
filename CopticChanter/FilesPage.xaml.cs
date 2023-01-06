@@ -78,7 +78,7 @@ namespace CopticChanter
                 {
                     if (_files.Count > 0)
                     {
-                        Common.Docs.Clear();
+                        Common.CurrentLoadContext.Clear();
                         foreach (StorageFile file in _files)
                         {
                             ImportDoc(file);
@@ -133,7 +133,7 @@ namespace CopticChanter
                     string name = _files[FileView.SelectedIndex].Name;
                     await _files[FileView.SelectedIndex].DeleteAsync();
                     _files.RemoveAt(FileView.SelectedIndex);
-                    //Common.Docs.RemoveAt(FileView.SelectedIndex);
+                    //Common.CurrentLoadContext.RemoveAt(FileView.SelectedIndex);
                     FileView.Items.Remove(FileView.SelectedItem);
                     StatusBlock.Visibility = Visibility.Visible;
                     StatusBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 15, 166, 0));
@@ -150,14 +150,13 @@ namespace CopticChanter
         private void ImportDoc(StorageFile file)
 		{
             Debug.WriteLine(file.Path);
-            var doc = DocReader.ReadDocXml(file.Path);
+            var doc = Common.CurrentLoadContext.LoadDoc(file.Path);
 
-            FileView.Items.Add(new ListViewItem()
+            FileView.Items.Add(new ListViewItem
             {
                 Content = $"{doc.Name} [{doc.Uuid}]",
             });
             _files.Add(file);
-            //Common.Docs.Add(doc);
 
             StatusBlock.Visibility = Visibility.Visible;
             StatusBlock.Foreground = new SolidColorBrush(Color.FromArgb(255, 15, 166, 0));
