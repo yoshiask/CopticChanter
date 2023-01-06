@@ -77,6 +77,7 @@ namespace CoptLib.Writing
             ["ij"] = "ي",
             ["ç"] = "ش",
             ["ʤ"] = "ج",
+            ["d"] = "د",
         };
     }
 }
