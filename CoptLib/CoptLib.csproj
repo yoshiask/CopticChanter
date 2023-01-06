@@ -12,9 +12,9 @@
             A .NET Standard 2.0 library made to handle scenarios specific to Coptic for Coptic Chanter.
             Useful features:
             - CopticCalendar
-			    - Determine the current date in the Coptic calendar and era, including handling of the sunset transition time
-				- Calculate the date(s) a fast or feast occurs on for a given Coptic year
-				- Tools for automatically computing the next occurrence of a fast or feast
+                - Determine the current date in the Coptic calendar and era, including handling of the sunset transition time
+                - Calculate the date(s) a fast or feast occurs on for a given Coptic year
+                - Tools for automatically computing the next occurrence of a fast or feast
             - CopticInterpreter
                 - Convert between Coptic fonts, including Coptic1, CS Avva Shenouda [Tasbeha.org], and Coptic Unicode
                 - Perform phonetic analysis on Coptic and Greek text, which includes guessing word origin and pronunciation
@@ -33,7 +33,7 @@
 
     <ItemGroup>
         <PackageReference Include="OwlCore" Version="0.1.0" />
-		<PackageReference Include="CS-Script" Version="4.6.2" />
+        <PackageReference Include="CS-Script" Version="4.6.2" />
         <PackageReference Include="AngleSharp" Version="0.17.1" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
         <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
