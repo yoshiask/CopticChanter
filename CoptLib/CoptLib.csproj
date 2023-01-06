@@ -11,7 +11,10 @@
         <Description>
             A .NET Standard 2.0 library made to handle scenarios specific to Coptic for Coptic Chanter.
             Useful features:
-            - CopticDate (w/ Special Events)
+            - CopticCalendar
+			    - Determine the current date in the Coptic calendar and era, including handling of the sunset transition time
+				- Calculate the date(s) a fast or feast occurs on for a given Coptic year
+				- Tools for automatically computing the next occurrence of a fast or feast
             - CopticInterpreter
                 - Convert between Coptic fonts, including Coptic1, CS Avva Shenouda [Tasbeha.org], and Coptic Unicode
                 - Perform phonetic analysis on Coptic and Greek text, which includes guessing word origin and pronunciation
@@ -25,7 +28,7 @@
         </Description>
         <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
         <PackageTags>Coptic, Bohairic</PackageTags>
-        <Copyright>2017-2022</Copyright>
+        <Copyright>2017-2023</Copyright>
     </PropertyGroup>
 
     <ItemGroup>
@@ -42,7 +45,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="CopticCalendar.cs~RFfaa37d8.TMP" />
         <None Remove="Resources\lexicon.tsv" />
         <EmbeddedResource Include="Resources\lexicon.tsv" />
     </ItemGroup>
