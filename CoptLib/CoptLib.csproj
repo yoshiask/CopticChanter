@@ -21,7 +21,7 @@
                 - Transliterate Coptic text to English or Arabic letters using the Greco-Bohairic pronunciation rules
             - Scripting
                 - Powerful inline text commands for reducing duplicated text and transforming content at runtime
-                - Run Lua scripts embedded in Documents for complex logic
+                - Run C# scripts embedded in Documents for complex logic
             - IO
                 - Read/write/transform Document XML files
                 - Read and create Document Sets
