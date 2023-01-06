@@ -45,7 +45,7 @@ namespace CoptLib.Scripting.Commands
             }
 
             // Make sure referenced elements are also transliterated
-            else if (def is InlineCommand inCmd && inCmd.Command.Output != null)
+            if (def is InlineCommand inCmd && inCmd.Command.Output != null)
                 inCmd.Command.Output = inCmd.Command.Output.Select(Transliterate);
         }
     }

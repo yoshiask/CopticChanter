@@ -25,14 +25,10 @@ namespace CoptLib.Scripting.Commands
             if (def is Run run)
                 run.Text = CopticInterpreter.IpaTranscribe(run.Text);
 
-            // Make sure referenced elements are also transcribed
-            else if (def is InlineCommand inCmd && inCmd.Command.Output != null)
-                inCmd.Command.Output.Select(Transcribe);
-
             if (def is IMultilingual multi)
             {
                 // Ensure that the language and font are set.
-                // Set secondary language to indicate transcription.
+                // Set secondary language to indicate transliteration.
                 if (multi.Language != null)
                     multi.Language.Secondary = _ipaLang;
                 else
@@ -40,6 +36,10 @@ namespace CoptLib.Scripting.Commands
 
                 multi.Font = null;
             }
+
+            // Make sure referenced elements are also transliterated
+            if (def is InlineCommand inCmd && inCmd.Command.Output != null)
+                inCmd.Command.Output = inCmd.Command.Output.Select(Transcribe);
         }
     }
 }
