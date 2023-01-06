@@ -9,6 +9,7 @@ using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -61,6 +62,16 @@ namespace CoptTest
             }
 
             _output.WriteLine(actual?.ToString() ?? "{x:Null}");
+        }
+
+        [Theory]
+        [InlineData("Hymn of the Intercessions.xml")]
+        public void RunScriptInDoc(string file)
+        {
+            string xmlAc = Resource.ReadAllText(file);
+            Doc docAc = DocReader.ParseDocXml(XDocument.Parse(xmlAc));
+
+            Assert.Equal(3, docAc.DirectDefinitions.Count);
         }
 
         [Theory]

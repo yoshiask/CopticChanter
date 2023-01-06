@@ -132,7 +132,7 @@ namespace CoptLib.IO
 
                     def = section;
                 }
-                else if (defElemName == nameof(CScript))
+                else if (defElemName == "Script")
                 {
                     CScript script = new()
                     {

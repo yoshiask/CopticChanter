@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document>
+    <Name>Hymn of the Intercessions</Name>
+    <Uuid>https://tasbeha.org/hymn_library/view/210</Uuid>
+    <Translations>
+        <Translation Language="English" Title="Hymn of the Intercessions">
+            <Stanza>Through the intercessions, of the Mother of God Saint Mary, \def{Refrain}</Stanza>
+            <Stanza>Through the intercessions, of the holy archangel, Michael the head of the heavenly, \def{Refrain}</Stanza>
+            <Stanza>Through the intercessions, of the seven archangels, and the heavenly orders, \def{Refrain}</Stanza>
+            <Stanza>Through the intercessions, of the forerunner and baptizer, John the Baptist, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of my masters and fathers  the apostles, and the rest of the disciples, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the beholder of God the evangelist, Mark the apostle, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the blessed archdeacon, Stephen the first martyr, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the victorious martyr, my master prince George, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the victorious martyr, Theodorus the general, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the victorious martyr, Philopater Mercurius, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the victorious martyr, Abba Mena of Bayad, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the victorious martyr, Abba Eskhyron of Callin, \def{Refrain}</Stanza>
+            <Stanza>Through the prayers, of the saints of this day, each one by his name, \def{Refrain}</Stanza>
+            <Stanza>Through their prayers, keep the life of our honored father the high priest, Papa Abba \def{PopeName}, \def{Refrain}</Stanza>
+            <Stanza>We worship You O Christ, with Your good Father, and the Holy Spirit, for you have \def{AkiAktonk} and saved us. Have mercy on us.</Stanza>
+        </Translation>
+        <Translation Title="Ϩⲓⲧⲉⲛ ⲛⲓ̀ⲡⲣⲉⲥⲃⲓ̀ⲁ" Key="CopticTranslation" Language="Coptic" Font="CS Avva Shenouda">
+            <Stanza>Hiten ni`precbia@ `nte ];e`otokoc =e=;=u Maria@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`precbia@ `nte `pi`ar,y`aggeloc =e=;=u@ Mi,ayl `p`ar,wn `nna nivyou`i@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`precbia@ `nte pisasf `n`ar,y`aggeloc@ nem nitagma  `n`epouranion@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`precbia@ `nte pi`prodromoc `mbaptictyc@ Iwannyc piref]wmc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte na=o=c `nio] `n`apoctoloc@ nem `pcepi `nte nima;ytyc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi;e`wrimoc `n`eu`aggelictyc@ Markoc pi`apoctoloc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`ar,ydiakwn `et`cmarwout@ `Ctevanoc pisorp `mmarturoc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`a;lovoroc `mmarturoc@ pa=o=c `pouro Ge`wrgioc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`a;lovoroc `mmarturoc@ :e`odwroc pi`c`tratilatyc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`a;lovoroc `mmarturoc@ Vilopatyr Merkourioc@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`a;lovoroc `mmarturoc@ abba Myna `nte niVaiat@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte pi`a;lovoroc `mmarturoc@ `apa Ic,uron `nremKallin@ \def{Refrain}</Stanza>
+            <Stanza>Hiten ni`eu,y@ `nte ny=e=;=u `nte pai`ehoou@ piouai piouai kata pefran@ \def{Refrain}</Stanza>
+            <Stanza>Hiten nou`eu,y@ `areh `e`pwnq `mpeniwt ettaiyout `n`ar,y`ereuc@ papa abba \def{PopeName}@ \def{Refrain}</Stanza>
+            <Stanza>Tenouwst `mmok `w Pi`,rictoc@ nem Pekiwt `n`aga;oc@ nem pi`Pneuma e;ouab@ je \def{AkiAktonk} akcw] `mmon nai nan.</Stanza>
+        </Translation>
+        <Translation Source="\trslit{English|\def{CopticTranslation}}" Title="\trslit{English|Ϩⲓⲧⲉⲛ ⲛⲓ̀ⲡⲣⲉⲥⲃⲓ̀ⲁ}"/>
+        <Translation Title="الهيتينيات" Language="Arabic">
+            <Stanza>بشفاعات والدة الإله القديسة مريم, \def{Refrain}</Stanza>
+            <Stanza>بشفاعات رئيس الملائكة الطاهر ميخائيل رئيس السمائين, \def{Refrain}</Stanza>
+            <Stanza>بشفاعات رؤسات الملائكة السبعة و الطغمات السمائية, \def{Refrain}</Stanza>
+            <Stanza>بشفاعات السابق الصابغ يوحنا المعمدان, \def{Refrain}</Stanza>
+            <Stanza>بصلوات سادتي الآباء الرسل و بقية التلاميذ, \def{Refrain}</Stanza>
+            <Stanza>بصلوات ناظر الإله الإنجيلي مرقص الرسول, \def{Refrain}</Stanza>
+            <Stanza>بصلوات رئيس الشمامسة المبارك اسطفانوس أول الشهداء, \def{Refrain}</Stanza>
+            <Stanza>بصلوات المجاهد الشهيد سيدي الملك جيؤرجيوس, \def{Refrain}</Stanza>
+            <Stanza>بصلوات المجاهد الشهيد تيؤدوروس اللسفهسلار, \def{Refrain}</Stanza>
+            <Stanza>بصلوات المجاهد الشهيد مرقوريوس محب الآب, \def{Refrain}</Stanza>
+            <Stanza>بصلوات المجاهد الشهيد ابا مينا البياضي, \def{Refrain}</Stanza>
+            <Stanza>بصلواتِ المجاهدِ الشهيدِ ابا اسخيرون القليني, \def{Refrain}</Stanza>
+            <Stanza>بصلوات قديسي هذا اليوم  كل واحد باسمه, \def{Refrain}</Stanza>
+            <Stanza>بصلوات إحفظ حياة أبينا المكرم رئيس الكهنة  البابا الانبا \def{PopeName}, \def{Refrain}</Stanza>
+            <Stanza>نسجد لك ايها المسيح، مع أبيك الصالح والروح القدس، لأنك (قمت/اتيت) وخلصتنا. إرحمنا. </Stanza>
+        </Translation>
+    </Translations>
+
+    <Definitions>
+        <Translations Key="Refrain">
+            <Stanza Language="English">O Lord, grant us the forgiveness of our sins.</Stanza>
+            <Stanza Language="Coptic" Font="CS Avva Shenouda">`P[oic ari`hmot nan `mpi,w `ebol `nte nennobi.</Stanza>
+            <Stanza Language="Arabic">ياربُّ أنعم علينا بمغفرة خطايانا.</Stanza>
+        </Translations>
+        <Translations Key="PopeName">
+            <Stanza Language="English">Tawadros</Stanza>
+            <Stanza Language="Coptic">Tawadros</Stanza>
+            <Stanza Language="Arabic">تواضروس</Stanza>
+        </Translations>
+
+        <Script>
+<![CDATA[
+public override IDefinition GetDefinition()
+{
+    // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
+    var Today = DateHelper.NowCoptic();
+    int year = Today.YearOfEra;
+
+    string engText, copText, araText;
+
+    var resur = CopticCalendar.Resurrection(year);
+    var holyFiftyDays = Period.DaysBetween(resur, Today);
+    bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
+
+    var pentecost = CopticCalendar.Pentecost(year);
+    var koiahk = DateHelper.NewCopticDate(year, 4, 1);
+    bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
+
+    if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
+    {
+        engText = "have risen";
+        copText = "ⲁⲕⲧⲱⲛⲕ";
+        araText = "قمت";
+    }
+    else if (Today == CopticCalendar.Nativity(year))
+    {
+        engText = "were born";
+        copText = "ⲁⲩⲙⲁⲥⲕ";
+        araText = "TODO";
+    }
+    else if (Today == CopticCalendar.Theophany(year))
+    {
+        engText = "were baptised";
+        copText = "ⲁⲕϭⲓⲱⲙⲥ";
+        araText = "TODO";
+    }
+    else if (Today == CopticCalendar.FirstFeastCross(year)
+        || Today == CopticCalendar.SecondFeastCross(year)
+        || CopticCalendar.PaschalPeriod(year).IsDuring(Today))
+    {
+        engText = "were crucified";
+        copText = "ⲁⲩⲁϣⲕ";
+        araText = "TODO";
+    }
+    else
+    {
+        engText = "have come";
+        copText = "ⲁⲕⲓ\u0300";
+        araText = "اتيت";
+    }
+
+    var res = new TranslationRunCollection("AkiAktonk");
+    res.AddNew(engText, KnownLanguage.English);
+    res.AddNew(copText, KnownLanguage.Coptic);
+    res.AddNew(araText, KnownLanguage.Arabic);
+
+    return res;
+}
+]]>
+        </Script>
+    </Definitions>
+</Document>
