@@ -6,19 +6,37 @@ namespace CoptLib
 {
     public static partial class DateHelper
     {
+        private static LocalDateTime? _nowOverride = null;
+
+        /// <summary>
+        /// Allows the date and time used by <see cref="NowCoptic"/> to be
+        /// set separate from the system.
+        /// <para>Set to <see langword="null"/> to use current date and time.</para>
+        /// </summary>
+        public static LocalDateTime? NowOverride
+        {
+            get => _nowOverride;
+            set
+            {
+                _nowOverride = value;
+                if (_nowOverride is not null)
+                    _nowOverride = _nowOverride?.WithCoptic();
+            }
+        }
+
         /// <summary>
         /// The current date in the Coptic calendar, taking into account the <see cref="CopticCalendar.TransitionTime"/>.
         /// </summary>
         public static LocalDate NowCoptic()
         {
-            var now = DateTime.Now;
-            var copticDate = now.ToLocalDateTime().WithCoptic();
+            LocalDateTime copticDateTime = NowOverride
+                ?? DateTime.Now.ToLocalDateTime().WithCoptic();
 
             // If it's already after the transition time, snap to the next day.
-            if (copticDate.TimeOfDay >= CopticCalendar.TransitionTime)
-                copticDate = copticDate.PlusDays(1);
+            if (copticDateTime.TimeOfDay >= CopticCalendar.TransitionTime)
+                copticDateTime = copticDateTime.PlusDays(1);
 
-            return copticDate.Date;
+            return copticDateTime.Date;
         }
 
         /// <summary>
