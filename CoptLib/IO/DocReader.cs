@@ -86,7 +86,7 @@ namespace CoptLib.IO
                     if (def is not ContentPart translation)
                         continue;
                     doc.Translations.Children.Add(translation);
-                } 
+                }
             }
 
             return doc;
@@ -118,6 +118,13 @@ namespace CoptLib.IO
                 else if (defElemName == "String")
                 {
                     def = new SimpleContent(null, parent);
+                }
+                else if (defElemName == nameof(Comment))
+                {
+                    def = new Comment(parent)
+                    {
+                        Type = defElem.Attribute("Type")?.Value
+                    };
                 }
                 else if (defElemName == nameof(Section) || defElemName == "Translation")
                 {
