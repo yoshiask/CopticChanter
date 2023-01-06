@@ -29,6 +29,8 @@ namespace CoptTest
         [MemberData(nameof(GetRunScript_Samples))]
         public void RunCSScript(string script, Func<object> expectedFunc)
         {
+            DateHelper.NowOverride = new(2023, 1, 7, 11, 00, CalendarSystem.Gregorian);
+
             var actual = ScriptingEngine.RunScript(script);
             var expected = expectedFunc();
 
@@ -205,21 +207,7 @@ namespace CoptTest
 
                         string engText, copText, araText;
 
-                        var resur = CopticCalendar.Resurrection(year);
-                        var holyFiftyDays = Period.DaysBetween(resur, Today);
-                        bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
-
-                        var pentecost = CopticCalendar.Pentecost(year);
-                        var koiahk = DateHelper.NewCopticDate(year, 4, 1);
-                        bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
-
-                        if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
-                        {
-                            engText = "have risen";
-                            copText = "ⲁⲕⲧⲱⲛⲕ";
-                            araText = "قمت";
-                        }
-                        else if (Today == CopticCalendar.Nativity(year))
+                        if (Today == CopticCalendar.Nativity(year))
                         {
                             engText = "were born";
                             copText = "ⲁⲩⲙⲁⲥⲕ";
@@ -241,9 +229,26 @@ namespace CoptTest
                         }
                         else
                         {
-                            engText = "have come";
-                            copText = "ⲁⲕⲓ\u0300";
-                            araText = "اتيت";
+                            var resur = CopticCalendar.Resurrection(year);
+                            var holyFiftyDays = Period.DaysBetween(resur, Today);
+                            bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
+
+                            var pentecost = CopticCalendar.Pentecost(year);
+                            var koiahk = DateHelper.NewCopticDate(year, 4, 1);
+                            bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
+
+                            if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
+                            {
+                                engText = "have risen";
+                                copText = "ⲁⲕⲧⲱⲛⲕ";
+                                araText = "قمت";
+                            }
+                            else
+                            {
+                                engText = "have come";
+                                copText = "ⲁⲕⲓ\u0300";
+                                araText = "اتيت";
+                            }
                         }
 
                         var res = new TranslationRunCollection("AkiAktonk");
@@ -288,21 +293,7 @@ namespace CoptTest
 
             string engText, copText, araText;
 
-            var resur = CopticCalendar.Resurrection(year);
-            var holyFiftyDays = Period.DaysBetween(resur, Today);
-            bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
-
-            var pentecost = CopticCalendar.Pentecost(year);
-            var koiahk = DateHelper.NewCopticDate(year, 4, 1);
-            bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
-
-            if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
-            {
-                engText = "have risen";
-                copText = "ⲁⲕⲧⲱⲛⲕ";
-                araText = "قمت";
-            }
-            else if (Today == CopticCalendar.Nativity(year))
+            if (Today == CopticCalendar.Nativity(year))
             {
                 engText = "were born";
                 copText = "ⲁⲩⲙⲁⲥⲕ";
@@ -324,9 +315,26 @@ namespace CoptTest
             }
             else
             {
-                engText = "have come";
-                copText = "ⲁⲕⲓ\u0300";
-                araText = "اتيت";
+                var resur = CopticCalendar.Resurrection(year);
+                var holyFiftyDays = Period.DaysBetween(resur, Today);
+                bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
+
+                var pentecost = CopticCalendar.Pentecost(year);
+                var koiahk = DateHelper.NewCopticDate(year, 4, 1);
+                bool isPentecostKiahk = Today >= pentecost && Today < koiahk;
+
+                if (isHolyFiftyDays || isPentecostKiahk || Today.Day == 29)
+                {
+                    engText = "have risen";
+                    copText = "ⲁⲕⲧⲱⲛⲕ";
+                    araText = "قمت";
+                }
+                else
+                {
+                    engText = "have come";
+                    copText = "ⲁⲕⲓ\u0300";
+                    araText = "اتيت";
+                }
             }
 
             var res = new TranslationRunCollection("AkiAktonk");
