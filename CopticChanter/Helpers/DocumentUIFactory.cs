@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace CopticChanter.Helpers
 
         private static void HandleLanguage(TextBlock contentBlock, object content)
         {
-            LanguageInfo langInfo = (content as IMultilingual)?.Language
+            LanguageInfo langInfo = (content as IDefinition)?.GetLanguage()
                 ?? LanguageInfo.Default;
             KnownLanguage lang = langInfo.Known;
 

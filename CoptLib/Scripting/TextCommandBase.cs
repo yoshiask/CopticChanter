@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
 
@@ -39,12 +40,7 @@ namespace CoptLib.Scripting
         {
             if (Output is ITranslationLookup defLookup)
             {
-                KnownLanguage lang = KnownLanguage.Default;
-                if (Inline is IMultilingual multi && multi.Language != null)
-                    lang = multi.Language.Known;
-                else if (Inline.Parent is IMultilingual parentMulti)
-                    lang = parentMulti.Language.Known;
-
+                KnownLanguage lang = Inline.GetLanguage().Known;
                 Output = defLookup.GetByLanguage<IMultilingual>(lang) as IDefinition;
             }
         }
