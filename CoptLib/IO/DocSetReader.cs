@@ -70,7 +70,7 @@ namespace CoptLib.IO
                 using var docStream = entry.Open();
 
                 // Read XML
-                var doc = DocReader.ReadDocXml(docStream);
+                var doc = Set.Context.LoadDoc(docStream);
 
                 // Add to Set
                 Set.IncludedDocs.Add(doc);

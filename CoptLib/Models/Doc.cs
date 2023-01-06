@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace CoptLib.Models
 {
     [XmlRoot("Document")]
-    public class Doc
+    public class Doc : IContextualLoad
     {
         private LoadContext _context;
 
