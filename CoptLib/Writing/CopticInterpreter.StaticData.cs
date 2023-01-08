@@ -55,6 +55,9 @@ namespace CoptLib.Writing
 
         public static readonly IReadOnlyList<string> CopticPrefixes = new string[]
         {
+            /// Unknown
+            "ⲛ\u0300ⲛⲓ",
+
             // Source: https://cld.bz/users/user-73469131/Coptic-Bohairic-Introductory-Course1
 
             /// Definite articles
