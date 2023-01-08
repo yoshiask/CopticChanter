@@ -119,6 +119,7 @@ namespace CoptLib.Writing
             ["ⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,ʃ;ⲉ,e\u031E;ⲣ,ɾ;ⲟ,;ⲩ,u;ⲃ,b;ⲓ,i;ⲙ,m"),
             ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,o\u031E;ⲇ,d;ⲉ,e\u031E;\u0300,.;ⲁ,ä"),
             ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,;ⲩ,u;ⲇ,d;ⲁ,ä"),
+            ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲗ,l;ⲗ,l;ⲏ,iː;ⲗ,l;ⲟ,;ⲩ,u;ⲓ,j;ⲁ,ä"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticEquivalent[]>
