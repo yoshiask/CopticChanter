@@ -1,6 +1,8 @@
-﻿using NodaTime;
+﻿using CoptLib.Writing;
+using NodaTime;
 using NodaTime.Extensions;
 using System;
+using System.Linq;
 
 namespace CoptLib
 {
@@ -45,8 +47,52 @@ namespace CoptLib
         /// </summary>
         public static LocalDate ToCopticDate(this DateTime date) => LocalDate.FromDateTime(date).WithCoptic();
 
+        /// <summary>
+        /// Creates a new <see cref="LocalDate"/> with the given year, month, and day
+        /// using the Coptic calendar and Anno Maryrum era.
+        /// </summary>
         public static LocalDate NewCopticDate(int copticYear, int month, int day)
             => new(NodaTime.Calendars.Era.AnnoMartyrum, copticYear, month, day, CalendarSystem.Coptic);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        public static string Format(this LocalDate date, LanguageInfo language, string? patternText = null)
+        {
+            var culture = (System.Globalization.CultureInfo)language.Culture.Clone();
+
+            if (date.Calendar == CalendarSystem.Coptic)
+            {
+                // The BCL doesn't support the Coptic calendar at all.
+                // The month names even when localized are from ISO, (Kiahk -> April).
+                // This is a bit of a hack to use the correct names.
+
+                culture.DateTimeFormat.MonthNames = Enumerable
+                    .Range(1, 13)
+                    .Select(m => GetMonthName(m, language.Known))
+                    .ToArray();
+            }
+
+            if (language.Language == "cop")
+            {
+                // TODO: Add names for other dialects
+                culture.DateTimeFormat.DayNames = new[]
+                {
+                    "Ϯⲕⲩⲣⲓⲁⲕⲏ",
+                    "Ⲡⲓⲥ\u0300ⲛⲁⲩ",
+                    "Ⲡⲓϣⲟⲙⲧ",
+                    "Ⲡⲓϥ\u0300ⲧⲟⲩ",
+                    "Ⲡⲓⲧ\u0300ⲓⲟⲩ",
+                    "Ⲡⲓⲥⲟⲟⲩ",
+                    "Ⲡⲓⲥⲁⲃⲃⲁⲧⲟⲛ",
+                };
+            }
+
+            return date.ToString(patternText, culture);
+        }
 
 
         /// <summary>
