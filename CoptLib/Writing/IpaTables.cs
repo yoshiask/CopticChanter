@@ -20,6 +20,7 @@ namespace CoptLib.Writing
             ["iː"] = "i",
             ["ɪ"] = "i",
             ["ks"] = "x",
+            ["e̞ks"] = "ex",
             ["\u006F\u031E"] = "o",
             ["ɾ"] = "r",
             ["ʃ"] = "sʰ",
