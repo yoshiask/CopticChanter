@@ -102,6 +102,12 @@ namespace CopticChanter.Helpers
             contentBlock.FontFamily = Common.GetFontFamily(lang);
             contentBlock.FontSize = Common.GetFontSize(lang);
 
+            if (content is Comment)
+            {
+                contentBlock.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Yellow);
+                contentBlock.FontSize *= 0.75;
+            }
+
             var culture = langInfo.Secondary?.Culture ?? langInfo.Culture;
             if (culture != null)
             {
