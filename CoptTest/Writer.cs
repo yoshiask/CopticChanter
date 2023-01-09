@@ -81,5 +81,20 @@ namespace CoptTest
             Assert.Equal(setExpected.Author?.Website, setActual.Author?.Website);
             Assert.Equal(setExpected.IncludedDocs.Count, setActual.IncludedDocs.Count);
         }
+
+        [Theory]
+        [InlineData("The First Hoos Lobsh")]
+        [InlineData("Hymn of the Seven Tunes")]
+        public void TexWriter(string resourceName)
+        {
+            string xml = Resource.ReadAllText($"{resourceName}.xml");
+            Doc doc = DocReader.ParseDocXml(xml);
+            DocReader.ApplyDocTransforms(doc);
+
+            using (var texStreamActual = Resource.OpenTestResult($"{resourceName}.tex"))
+            {
+                Tex.WriteTex(doc, texStreamActual);
+            }
+        }
     }
 }

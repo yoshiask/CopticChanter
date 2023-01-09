@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Name>Hymn of the Seven Tunes</Name>
+    <Uuid>urn:suscopts:seven-tunes</Uuid>
+    <Translations>
+        <Translation Title="Hymn of the Seven Tunes" Language="English">
+            <Section Title="For Our Lord Jesus Christ">
+                <Comment Type="Tune">Festive tune</Comment>
+                <Stanza>O true Light, that gives light, to every man, that comes into the world.</Stanza>
+                <Stanza>You came into the world, through Your love for man, and all the creation, rejoiced at Your coming.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>You have saved Adam, from seduction, and delivered Eve, from the pangs of death.</Stanza>
+                <Stanza>You gave unto us, the Spirit of sonship, we praise and bless You, with Your angels.</Stanza>
+                <Comment Type="Tune">&quot;The Bread of Life&quot;</Comment>
+                <Stanza>When the morning hour, comes upon us, O Christ our God, the true Light.</Stanza>
+                <Stanza>Let the thought of light, shine within us, and do not let the darkness, of pain cover us.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>That we may praise You, with understanding, proclaiming and saying, with David.</Stanza>
+                <Stanza>"My eyes have reached, the morning watch, that I may meditate, upon all Your words."</Stanza>
+                <Comment Type="Tune">&quot;Rejoice O Mary&quot;</Comment>
+                <Stanza>Hear our voices, according to Your great mercy, save us O Lord our God, according to Your compassion.</Stanza>
+                <Stanza>O caring God, the Maker of all good things, who governs well, with His chosen ones.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>The strong Governor for those, who take refuge in Him, who longs for the salvation, and deliverance of everyone.</Stanza>
+                <Stanza>Through Your goodness, You provided us the night, grant us to pass, this day without sin.</Stanza>
+                <Comment Type="Tune">&quot;Let Us Give Thanks&quot;</Comment>
+                <Stanza>That we may be worthy, to lift up our hands, before You without anger, or evil thoughts.</Stanza>
+                <Stanza>At this dawn, make straight our coming in, and our going out, in the joy of Your protection.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>That we may proclaim, Your righteousness daily, and praise Your power, with David the prophet.</Stanza>
+                <Stanza>Saying "In Your peace, O Christ our Savior, we slept and arose, for we have hoped in You.</Stanza>
+                <Comment Type="Tune">&quot;With the Split&quot;</Comment>
+                <Stanza>Behold how beneficent, and how pleasant, it is for brethren, to dwell together in unity."</Stanza>
+                <Stanza>United, in the true, evangelic love, like the Apostles.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>It is like the fragrant oil, on the head of Christ, running down the beard, down to the feet.</Stanza>
+                <Stanza>That anoints every day, the elders, the children and young men, and the deacons.</Stanza>
+                <Comment Type="Tune">&quot;Through Mary&quot;</Comment>
+                <Stanza>Those whom the Holy Spirit, has attuned together, as a stringed instrument, always blessing God.</Stanza>
+                <Stanza>By psalms and hymns, and spiritual songs, by day and by night, with an incessant heart.</Stanza>
+            </Section>
+            <Comment Type="Tune">\def{StdTune}</Comment>
+            <Section Title="For the Virgin">
+                <Stanza>You are the Mother of the Light, the honored Mother of God, you have carried, the Uncircumscript Logos.</Stanza>
+                <Stanza>After you gave birth to Him, you remained a virgin, with praises and blessings, we magnify you.</Stanza>
+                <Stanza>For of His own will, and the pleasure of His Father, and the Holy Spirit, He came and saved us.</Stanza>
+                <Stanza>And we too, hope to win mercy, through your intercessions, with the Lover of Mankind.</Stanza>
+                <Stanza>The select incense, of your virginity, ascended to the throne, of the Father.</Stanza>
+                <Stanza>Better than the incense, of the Cherubim, and the Seraphim, O Virgin Mary.</Stanza>
+                <Stanza>Hail to the new heaven, whom the Father has created, and made a place of rest, for His beloved Son.</Stanza>
+                <Stanza>Hail to the royal throne, of Him who is, carried by, the Cherubim.</Stanza>
+                <Stanza>Hail to the advocate, of our souls, you are indeed, the pride of our race.</Stanza>
+                <Stanza>Intercede on our behalf, O full of grace, before our Savior, our Lord Jesus Christ.</Stanza>
+                <Stanza>That He may confirm us, in the upright faith, and grant us the forgiveness, of our sins.</Stanza>
+                <Stanza>Through the intercessions, of the Theotokos Saint Mary, O Lord grant us, the forgiveness of our sins.</Stanza>
+            </Section>
+            <Section Title="For the Angels">
+                <Stanza>Thousands of thousands, and myriads of myriads, of archangels, and holy angels.</Stanza>
+                <Stanza>They stand before, the throne, of the Pantocrator, proclaiming and saying.</Stanza>
+                <Stanza>"Holy holy, holy in truth, the glory and the honor, befit the Trinity."</Stanza>
+                <Stanza>Through the intercessions, of the whole choir of the angels, O Lord grant us, the forgiveness of our sins.</Stanza>
+            </Section>
+            <Section Title="For the Apostles">
+                <Stanza>Our fathers the Apostles, preached to the nations, the Gospel, of Jesus Christ.</Stanza>
+                <Stanza>Their voices went forth, unto all the earth, and their words have reached, the ends of the world.</Stanza>
+                <Stanza>Through the prayers, of my lords and fathers the Apostles, O Lord grant us, the forgiveness of our sins.</Stanza>
+            </Section>
+            <Section Title="For the Martyrs">
+                <Stanza>Unfading crowns, the Lord has placed, upon the whole choir, of the martyrs.</Stanza>
+                <Stanza>He saved and delivered them, because they took refuge in Him, they celebrated with Him, in His kingdom.</Stanza>
+                <Stanza>Through the prayers, of the whole choir of the martyrs, O Lord grant us, the forgiveness of our sins.</Stanza>
+            </Section>
+            <Section Title="For the Saints">
+                <Stanza>Your saints bless You, and they speak, of the glory, of Your kingdom.</Stanza>
+                <Stanza>Your kingdom O my God, is an eternal kingdom, and Your Lordship, is unto all ages.</Stanza>
+                <Stanza>Through the prayers, of the whole choir of the cross-bearers, the righteous and the just, O Lord grant us, the forgiveness of our sins.</Stanza>
+            </Section>
+            <Section Title="For the Patriarchs and the Prophets">
+                <Stanza>Hail to Elijah, the prophet of temperance, and Elisha, his elect disciple.</Stanza>
+                <Stanza>The great Evangelist, of the land of Egypt, Mark the Apostle, the first prelate.</Stanza>
+                <Stanza>You are the Mother of God, O Virgin Mary, ask Him on our behalf, to have mercy upon our race.</Stanza>
+                <Stanza>The great patriarch, our father Abba Severus, whose holy teachings, enlightened our minds.</Stanza>
+                <Stanza>Our father the confessor, Abba Dioscorus, defended the faith, against the heretics.</Stanza>
+                <Stanza>And all of our fathers, who have pleased the Lord, may their holy blessings, be a guard unto us.</Stanza>
+                <Stanza>Through their prayers, O God grant us, the forgiveness of our sins, and give us peace.</Stanza>
+            </Section>
+        </Translation>
+        <Translation Key="CopticTranslation" Title="Ⲡⲓⲟⲩⲱⲓⲛⲓ ⲛ&#x0300;ⲧⲁⲫ&#x0300;ⲙⲏⲓ" Language="Coptic">
+            <Section Title="Ⲉⲑⲃⲉ Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓ̀ⲭⲣⲓⲥⲧⲟⲥ">
+                <Comment Type="Tune"></Comment>
+                <Stanza>Ⲡⲓⲟⲩⲱⲓⲛⲓ ⲛ̀ⲧⲁⲫ̀ⲙⲏⲓ: ⲫⲏⲉⲧⲉⲣⲟⲩⲱⲓⲛⲓ: ⲉ̀ⲣⲱⲙⲓ ⲛⲓⲃⲉⲛ: ⲉⲑⲛⲏⲟⲩ ⲉ̀ⲡⲓⲕⲟⲥⲙⲟⲥ.</Stanza>
+                <Stanza>Ⲁⲕⲓ̀ ⲉ̀ⲡⲓⲕⲟⲥⲙⲟⲥ: ϩⲓⲧⲉⲛ ⲧⲉⲕⲙⲉⲧⲙⲁⲓⲣⲱⲙⲓ: ⲁ̀ϯⲕ̀ⲧⲏⲥⲓⲥ ⲧⲏⲣⲥ: ⲑⲉⲗⲏⲗ ϧⲁ ⲡⲉⲕϫⲓⲛⲓ̀.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>Ⲁⲕⲥⲱϯ ⲛ̀Ⲁⲇⲁⲙ: ⲉ̀ⲃⲟⲗ ϧⲉⲛ ϯⲁ̀ⲡⲁⲧⲏ: ⲁⲕⲉⲣ Ⲉ̀ⲩⲁ ⲛ̀ⲣⲉⲙϩⲉ: ϧⲉⲛ ⲛⲓⲛⲁⲕϩⲓ ⲛ̀ⲧⲉ ⲫ̀ⲙⲟⲩ.</Stanza>
+                <Stanza>Ⲁⲕϯ ⲛⲁⲛ ⲙ̀Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ: ⲛ̀ⲧⲉ ϯⲙⲉⲧϣⲏⲣⲓ: ⲉⲛϩⲱⲥ ⲉⲛⲥ̀ⲙⲟⲩ ⲉ̀ⲣⲟⲕ: ⲛⲉⲙ ⲛⲉⲕⲁⲅⲅⲉⲗⲟⲥ.</Stanza>
+                <Comment Type="Tune">"Ⲡⲓⲱⲓⲕ"</Comment>
+                <Stanza>Ϧⲉⲛ ⲡ̀ϫⲓⲛⲑ̀ⲣⲉϥⲓ̀ ⲛⲁⲛ ⲉ̀ϧⲟⲩⲛ: ⲛ̀ϫⲉ ⲫ̀ⲛⲁⲩ ⲛ̀ϣⲱⲣⲡ: ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ Ⲡⲉⲛⲛⲟⲩϯ: Ⲡⲓⲟⲩⲱⲓⲛⲓ ⲛ̀ⲧⲁⲫ̀ⲙⲏⲓ.</Stanza>
+                <Stanza>Ⲙⲁⲣⲟⲩϣⲁⲓ ⲛ̀ϧⲏⲧⲉⲛ: ⲛ̀ϫⲉ ⲛⲓⲗⲟⲅⲓⲥⲙⲟⲥ ⲛ̀ⲧⲉ ⲡⲓⲟⲩⲱⲓⲛⲓ: ⲟⲩⲟϩ ⲙ̀ⲡⲉⲛⲑ̀ⲣⲉϥϩⲟⲃⲥⲧⲉⲛ: ⲛ̀ϫⲉ ⲡ̀ⲭⲁⲕⲓ ⲛ̀ⲛⲓⲡⲁⲑⲟⲥ.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>Ϩⲓⲛⲁ ⲛ̀ⲧⲉⲛϩⲱⲥ ⲉ̀ⲣⲟⲕ: ⲛ̀ⲛⲟⲏ̀ⲧⲟⲥ ⲛⲉⲙ Ⲇⲁⲩⲓⲇ: ⲉⲛⲱϣ ⲟⲩⲃⲏⲕ: ⲟⲩⲟϩ ⲉⲛϫⲱ ⲙ̀ⲙⲟⲥ.</Stanza>
+                <Stanza>Ϫⲉ ⲁⲩⲉⲣϣⲟⲣⲡ ⲙ̀ⲫⲟϩ: ⲛ̀ϫⲉ ⲛⲁⲃⲁⲗ ⲙ̀ⲫ̀ⲛⲁⲩ ⲛ̀ϣⲱⲣⲡ: ⲉ̀ⲉⲣⲙⲉⲗⲉⲧⲁⲛ: ϧⲉⲛ ⲛⲉⲕⲥⲁϫⲓ ⲧⲏⲣⲟⲩ.</Stanza>
+                <Comment Type="Tune">&quot;Ⲟⲩⲛⲟϥ ⲙ&#x0300;ⲙⲟ Ⲙⲁⲣⲓⲁ&quot;</Comment>
+                <Stanza>Ⲥⲱⲧⲉⲙ ⲉ̀ⲧⲉⲛⲥ̀ⲙⲏ: ⲕⲁⲧⲁ ⲡⲉⲕⲛⲓϣϯ ⲛ̀ⲛⲁⲓ: ⲛⲁϩⲙⲉⲛ Ⲡ̀ϭⲟⲓⲥ Ⲡⲉⲛⲛⲟⲩϯ: ⲕⲁⲧⲁ ⲛⲉⲕⲙⲉⲧϣⲉⲛϩⲏⲧ.</Stanza>
+                <Stanza>Ⲫ̀ⲛⲟⲩϯ Ⲡⲓϥⲁⲓⲣⲱⲟⲩϣ: ⲛ̀ⲣⲉϥⲉⲣⲡⲉⲑⲛⲁⲛⲉϥ: Ⲡⲓⲣⲉϥⲉⲣⲟⲓⲕⲟⲛⲟⲙⲓⲛ: ⲛ̀ⲛⲉϥⲥⲱⲧⲡ ⲛ̀ⲕⲁⲗⲱⲥ.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>Ⲡⲓⲣⲉϥⲉⲣϩⲉⲙⲓ ⲉⲧϫⲟⲣ: ⲛ̀ⲛⲏⲉ̀ⲧⲁⲩⲫⲱⲧ ϩⲁⲣⲟϥ: ⲫ̀ⲣⲉϥϭⲓϣϣⲱⲟⲩ ⲛ̀ⲧⲉ ⲟⲩⲟⲛ ⲛⲓⲃⲉⲛ: ⲛⲟϩⲉⲙ ⲛ̀ⲧⲟⲩⲟⲩϫⲁⲓ.</Stanza>
+                <Stanza>Ϧⲉⲛ ⲧⲉⲕⲙⲉⲧⲭ̀ⲣⲏⲥⲧⲟⲥ: ⲁⲕⲥⲟⲃϯ ⲛⲁⲛ ⲙ̀ⲡⲓⲉ̀ϫⲱⲣϩ: ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ ⲙ̀ⲡⲁⲓⲉ̀ϩⲟⲟⲩ: ⲉ̀ⲛⲟⲓ ⲛ̀ⲁⲑⲛⲟⲃⲓ.</Stanza>
+                <Comment Type="Tune">&quot;Ⲙⲁⲣⲉⲛⲟⲩⲱⲛϩ&quot;</Comment>
+                <Stanza>Ⲉⲑⲣⲉⲛⲉⲣⲡ̀ⲉⲙⲡ̀ϣⲁ: ⲉ̀ϥⲁⲓ ⲛ̀ⲛⲉⲛϫⲓϫ ⲉ̀ⲡ̀ϣⲱⲓ: ϩⲁⲣⲟⲕ ⲙ̀ⲡⲉⲕⲙ̀ⲑⲟ: ⲭⲱⲣⲓⲥ ϫⲱⲛⲧ ⲛⲉⲙ ⲙⲟⲕⲙⲉⲕ ⲉϥϩⲱⲟⲩ.</Stanza>
+                <Stanza>Ϧⲉⲛ ⲧⲁⲓϩⲁⲛⲁⲧⲟⲟⲩⲓ̀: ⲥⲟⲩⲧⲱⲛ ⲛⲉⲛⲙⲱⲓⲧ ⲉ̀ϧⲟⲩⲛ: ⲛⲉⲙ ⲛⲉⲛⲙⲱⲓⲧ ⲉ̀ⲃⲟⲗ: ϧⲉⲛ ⲡ̀ⲟⲩⲛⲟϥ ⲛ̀ⲧⲉ ⲧⲉⲕⲥ̀ⲕⲉⲡⲏ.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>Ⲉⲑⲣⲉⲛϫⲱ ⲛ̀ⲧⲉⲕⲙⲉⲑⲙⲏⲓ: ⲛ̀ⲉ̀ϩⲟⲟⲩ ⲛⲓⲃⲉⲛ: ⲛ̀ⲧⲉⲛϩⲱⲥ ⲉ̀ⲧⲉⲕϫⲟⲙ: ⲛⲉⲙ Ⲇⲁⲩⲓⲇ ⲡⲓⲡ̀ⲣⲟⲫⲏⲧⲏⲥ.</Stanza>
+                <Stanza>Ϫⲉ ϧⲉⲛ ⲧⲉⲕϩⲓⲣⲏⲛⲏ: Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ Ⲡⲉⲛⲥⲱⲧⲏⲣ: ⲁ̀ⲛⲉⲛⲕⲟⲧ ⲁⲛⲧⲱⲟⲩⲛ: ϫⲉ ⲁ̀ⲛⲉⲣϩⲉⲗⲡⲓⲥ ⲉ̀ⲣⲟⲕ.</Stanza>
+                <Comment Type="Tune">&quot;Ϧⲉⲛ ⲟⲩϣⲱⲧ&quot;</Comment>
+                <Stanza>Ϩⲏⲡⲡⲉ ⲟⲩⲡⲉⲑⲛⲁⲛⲉϥ: ⲓⲉ ⲟⲩⲡⲉⲧϩⲟⲗϫ ⲉ̀ⲃⲏⲗ: ⲉ̀ⲡ̀ϯⲙⲁϯ ⲛ̀ϩⲁⲛⲥ̀ⲛⲏⲟⲩ: ⲉⲩϣⲟⲡ ϩⲓ ⲟⲩⲙⲁ.</Stanza>
+                <Stanza>Ⲉⲩⲉⲣⲥⲩⲙⲫⲱⲛⲓⲛ: ϧⲉⲛ ⲟⲩⲁ̀ⲅⲁⲡⲏ ⲙ̀ⲙⲏⲓ: ⲛ̀ⲉⲩⲁⲅⲅⲉⲗⲓⲕⲏ: ⲕⲁⲧⲁ ⲛⲓⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ.</Stanza>
+                <Comment Type="Tune">\def{StdTune}</Comment>
+                <Stanza>Ⲙ̀ⲫ̀ⲣⲏϯ ⲙ̀ⲡⲓⲥⲟϫⲉⲛ: ⲉ̀ϯⲁ̀ⲫⲉ ⲙ̀Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲉϥⲛⲏⲟⲩ ⲉ̀ϫⲉⲛ ϯⲙⲟⲣⲧ: ϣⲁ ⲉ̀ϧ̀ⲣⲏⲓ ⲉ̀ⲛⲓϭⲁⲗⲁⲩϫ.</Stanza>
+                <Stanza>Ⲉϥⲑⲱϩⲥ ⲙ̀ⲙⲏⲛⲓ ⲛⲓⲃⲉⲛ: ⲛⲓϧⲉⲗⲗⲟⲓ ⲛⲉⲙ ⲛⲓⲁ̀ⲗⲱⲟⲩⲓ̀: ⲛⲉⲙ ⲛⲓϧⲉⲗϣⲓⲣⲓ: ⲛⲉⲙ ⲛⲓⲇⲓⲁⲕⲟⲛⲓⲥⲧⲏⲥ.</Stanza>
+                <Comment Type="Tune">&quot;Ⲉⲃⲟⲗϩⲓⲧⲉⲛ Ⲙⲁⲣⲓⲁ&quot;</Comment>
+                <Stanza>Ⲛⲁⲓ ⲉ̀ⲧⲁϥϩⲟⲧⲡⲟⲩ ⲉⲩⲥⲟⲡ: ⲛ̀ϫⲉ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ⲙ̀ⲫ̀ⲣⲏϯ ⲛ̀ⲟⲩⲕⲩⲑⲁⲣⲁ: ⲉⲩⲥ̀ⲙⲟⲩ ⲉ̀Ⲫ̀ⲛⲟⲩϯ ⲛ̀ⲥⲏⲟⲩ ⲛⲓⲃⲉⲛ.</Stanza>
+                <Stanza>Ϧⲉⲛ ϩⲁⲛⲯⲁⲗⲙⲟⲥ ⲛⲉⲙ ϩⲁⲛϩⲱⲥ: ⲛⲉⲙ ϩⲁⲛϩⲱⲇⲏ ⲙ̀ⲡ̀ⲛⲉⲩⲙⲁⲧⲓⲕⲟⲛ: ⲙ̀ⲡⲓⲉ̀ϩⲟⲟⲩ ⲛⲉⲙ ⲡⲓⲉ̀ϫⲱⲣϩ: ϧⲉⲛ ⲟⲩϩⲏⲧ ⲛ̀ⲁⲧⲭⲁⲣⲱϥ.</Stanza>
+            </Section>
+            <Comment Type="Tune">\def{StdTune}</Comment>
+            <Section Title="Ⲉⲑⲃⲉ Ϯⲡⲁⲣⲑⲉⲛⲟⲥ">
+                <Stanza>Ⲛ̀ⲑⲟ Ⲑ̀ⲙⲁⲩ ⲙ̀Ⲡⲓⲟⲩⲱⲓⲛⲓ: ⲉⲧⲧⲁⲓⲏⲟⲩⲧ ⲙ̀Ⲙⲁⲥⲛⲟⲩϯ: ⲁ̀ⲣⲉϥⲁⲓ ϧⲁ Ⲡⲓⲗⲟⲅⲟⲥ: Ⲡⲓⲁ̀ⲭⲱⲣⲓⲧⲟⲥ.</Stanza>
+                <Stanza>Ⲙⲉⲛⲉⲛⲥⲁ ⲑ̀ⲣⲉⲙⲁⲥϥ: ⲁ̀ⲣⲉⲟ̀ϩⲓ ⲉ̀ⲣⲉⲟⲓ ⲙ̀ⲡⲁⲣⲑⲉⲛⲟⲥ: ϧⲉⲛ ϩⲁⲛϩⲱⲥ ⲛⲉⲙ ϩⲁⲛⲥ̀ⲙⲟⲩ: ⲧⲉⲛϭⲓⲥⲓ ⲙ̀ⲙⲟ.</Stanza>
+                <Stanza>Ϫⲉ ⲛ̀ⲑⲟϥ ϧⲉⲛ ⲡⲉϥⲟⲩⲱϣ: ⲛⲉⲙ ⲡ̀ϯⲙⲁϯ ⲙ̀Ⲡⲉϥⲓⲱⲧ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ⲁϥⲓ̀ ⲁϥⲥⲱϯ ⲙ̀ⲙⲟⲛ.</Stanza>
+                <Stanza>Ⲁ̀ⲛⲟⲛ ϩⲱⲛ ⲧⲉⲛⲧⲱⲃϩ: ⲉⲑⲣⲉⲛϣⲁϣⲛⲓ ⲉⲩⲛⲁⲓ: ϩⲓⲧⲉⲛ ⲛⲉⲡ̀ⲣⲉⲥⲃⲓⲁ: ⲛ̀ⲧⲟⲧϥ ⲙ̀Ⲡⲓⲙⲁⲓⲣⲱⲙⲓ.</Stanza>
+                <Stanza>Ⲁ̀ ⲡⲓⲥ̀ⲑⲟⲓⲛⲟⲩϥⲓ ⲉⲧⲥⲱⲧⲡ: ⲛ̀ⲧⲉ ⲧⲉⲡⲁⲣⲑⲉⲛⲓⲁ: ⲁϥϣⲉⲛⲁϥ ⲉ̀ⲡ̀ϣⲱⲓ: ϣⲁ ⲡⲓⲑ̀ⲣⲟⲛⲟⲥ ⲙ̀Ⲫ̀ⲓⲱⲧ.</Stanza>
+                <Stanza>Ⲉ̀ϩⲟⲧⲉ ⲡⲓⲥ̀ⲑⲟⲓⲛⲟϥⲓ: ⲛ̀ⲧⲉ Ⲛⲓⲭⲉⲣⲟⲩⲃⲓⲙ: ⲛⲉⲙ Ⲛⲓⲥⲉⲣⲁⲫⲓⲙ: Ⲙⲁⲣⲓⲁ Ϯⲡⲁⲣⲑⲉⲛⲟⲥ.</Stanza>
+                <Stanza>Ⲭⲉⲣⲉ ϯⲫⲉ ⲙ̀ⲃⲉⲣⲓ: ⲑⲏⲉ̀ⲧⲁ Ⲫ̀ⲓⲱⲧ ⲑⲁⲙⲓⲟⲥ: ⲁϥⲭⲁⲥ ⲛ̀ⲟⲩⲙⲁ ⲛ̀ⲉⲙⲧⲟⲛ: ⲙ̀Ⲡⲉϥϣⲏⲣⲓ ⲙ̀ⲙⲉⲛⲣⲓⲧ.</Stanza>
+                <Stanza>Ⲭⲉⲣⲉ ⲡⲓⲑ̀ⲣⲟⲛⲟⲥ: ⲙ̀ⲃⲁⲥⲓⲗⲓⲕⲟⲛ: ⲙ̀ⲫⲏⲉ̀ⲧⲟⲩϥⲁⲓ ⲙ̀ⲙⲟϥ: ϩⲓϫⲉⲛ Ⲛⲓⲭⲉⲣⲟⲩⲃⲓⲙ.</Stanza>
+                <Stanza>Ⲭⲉⲣⲉ ϯⲡ̀ⲣⲟⲥⲧⲁⲧⲏⲥ: ⲛ̀ⲧⲉ ⲛⲉⲛⲯⲩⲭⲏ: ⲛ̀ⲑⲟ ⲅⲁⲣ ⲁ̀ⲗⲏⲑⲱⲥ: ⲡⲉ ⲡ̀ϣⲟⲩϣⲟⲩ ⲙ̀ⲡⲉⲛⲅⲉⲛⲟⲥ.</Stanza>
+                <Stanza>Ⲁ̀ⲣⲓⲡ̀ⲣⲉⲥⲃⲉⲩⲓⲛ ⲉ̀ϫⲱⲛ: ⲱ̀ ⲑⲏⲉⲑⲙⲉϩ ⲛ̀ϩ̀ⲙⲟⲧ: ⲛⲁϩⲣⲉⲛ Ⲡⲉⲛⲥⲱⲧⲏⲣ: Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ.</Stanza>
+                <Stanza>Ϩⲟⲡⲱⲥ ⲛ̀ⲧⲉϥⲧⲁϫⲣⲟⲛ: ϧⲉⲛ ⲡⲓⲛⲁϩϯ ⲉⲧⲥⲟⲩⲧⲱⲛ: ⲟⲩⲟϩ ⲛ̀ⲧⲉϥⲉⲣϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲓⲡ̀ⲣⲉⲥⲃⲓⲁ: ⲛ̀ⲧⲉ Ϯⲑⲉⲟ̀ⲧⲟⲕⲟⲥ ⲉⲑⲟⲩⲁⲃ Ⲙⲁⲣⲓⲁ: Ⲡ̀ϭⲟⲓⲥ ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+            </Section>
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲁⲅⲅⲉⲗⲟⲥ">
+                <Stanza>Ϩⲁⲛⲁⲛ̀ϣⲟ ⲛ̀ϣⲟ: ⲛⲉⲙ ϩⲁⲛⲑ̀ⲃⲁ ⲛ̀ⲑ̀ⲃⲁ: ⲛ̀ⲁⲣⲭⲏⲁⲅⲅⲉⲗⲟⲥ: ⲛⲉⲙ ⲁⲅⲅⲉⲗⲟⲥ ⲉⲑⲟⲩⲁⲃ.</Stanza>
+                <Stanza>Ⲉⲩⲟ̀ϩⲓ ⲉ̀ⲣⲁⲧⲟⲩ: ⲙ̀ⲡⲉⲙ̀ⲑⲟ ⲙ̀ⲡⲓⲑ̀ⲣⲟⲛⲟⲥ: ⲛ̀ⲧⲉ Ⲡⲓⲡⲁⲛⲧⲟⲕⲣⲁⲧⲱⲣ: ⲉⲩⲱϣ ⲉ̀ⲃⲟⲗ ⲉⲩϫⲱ ⲙ̀ⲙⲟⲥ.</Stanza>
+                <Stanza>Ϫⲉ ⲭ̀ⲟⲩⲁⲃ ⲭ̀ⲟⲩⲁⲃ: ⲭ̀ⲟⲩⲁⲃ ϧⲉⲛ ⲟⲩⲙⲉⲑⲙⲏⲓ: ⲡⲓⲱ̀ⲟⲩ ⲛⲉⲙ ⲡⲓⲧⲁⲓⲟ: ⲉⲣⲡ̀ⲣⲉⲡⲓ ⲛ̀Ϯⲧ̀ⲣⲓⲁⲥ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲓⲡ̀ⲣⲉⲥⲃⲓⲁ: ⲛ̀ⲧⲉ ⲡ̀ⲭⲟⲣⲟⲥ ⲧⲏⲣϥ ⲛ̀ⲧⲉ ⲛⲓⲁⲅⲅⲉⲗⲟⲥ: Ⲡ̀ϭⲟⲓⲥ ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+            </Section>
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓ̀ⲁⲡⲟⲥⲧⲟⲗⲟⲥ">
+                <Stanza>Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ: ⲁⲩϩⲓⲱⲓϣ ϧⲉⲛ ⲛⲓⲉⲑⲛⲟⲥ: ϧⲉⲛ ⲡⲓⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ: ⲛ̀ⲧⲉ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ.</Stanza>
+                <Stanza>Ⲁ̀ ⲡⲟⲩϧ̀ⲣⲱⲟⲩ ϣⲉⲛⲁϥ: ϩⲓϫⲉⲛ ⲡ̀ⲕⲁϩⲓ ⲧⲏⲣϥ: ⲟⲩⲟϩ ⲛⲟⲩⲥⲁϫⲓ ⲁⲩⲫⲟϩ: ϣⲁ ⲁⲩⲣⲏϫⲥ ⲛ̀ϯⲟⲓⲕⲟⲩⲙⲉⲛⲏ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲓⲉⲩⲭⲏ: ⲛ̀ⲧⲉ ⲛⲁϭⲟⲓⲥ ⲛ̀ⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ: Ⲡ̀ϭⲟⲓⲥ ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+            </Section>
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲙⲁⲣⲧⲩⲣⲟⲥ">
+                <Stanza>Ϩⲁⲛⲭ̀ⲗⲟⲙ ⲛ̀ⲁⲧⲗⲱⲙ: ⲁϥⲧⲏⲓⲧⲟⲩ ⲛ̀ϫⲉ Ⲡ̀ϭⲟⲓⲥ: ϩⲓϫⲉⲛ ⲡ̀ⲭⲟⲣⲟⲥ ⲧⲏⲣϥ: ⲛ̀ⲧⲉ ⲛⲓⲙⲁⲣⲧⲩⲣⲟⲥ.</Stanza>
+                <Stanza>Ⲁϥⲧⲟⲩϫⲱⲟⲩ ⲁϥⲛⲁϩⲙⲟⲩ: ϫⲉ ⲁⲩⲫⲱⲧ ϩⲁⲣⲟϥ: ⲁⲩⲉⲣϣⲁⲓ ⲛⲉⲙⲁϥ: ϧⲉⲛ ⲧⲉϥⲙⲉⲧⲟⲩⲣⲟ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲓⲉⲩⲭⲏ: ⲛ̀ⲧⲉ ⲡ̀ⲭⲟⲣⲟⲥ ⲧⲏⲣϥ ⲛ̀ⲧⲉ ⲛⲓⲙⲁⲣⲧⲩⲣⲟⲥ: Ⲡ̀ϭⲟⲓⲥ ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+            </Section>
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲏⲉⲑⲟⲩⲁⲃ">
+                <Stanza>Ⲛⲏⲉⲑⲟⲩⲁⲃ ⲛ̀ⲧⲁⲕ: ⲉⲩⲉ̀ⲥ̀ⲙⲟⲩ ⲉ̀ⲣⲟⲕ: ⲉⲩⲉ̀ⲥⲁϫⲓ ⲙ̀ⲡ̀ⲱ̀ⲟⲩ: ⲛ̀ⲧⲉ ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ.</Stanza>
+                <Stanza>Ⲧⲉⲕⲙⲉⲧⲟⲩⲣⲟ Ⲡⲁⲛⲟⲩϯ: ⲟⲩⲙⲉⲧⲟⲩⲣⲟ ⲛ̀ⲉ̀ⲛⲉϩ: ⲟⲩⲟϩ ⲧⲉⲕⲙⲉⲧϭⲟⲓⲥ: ϣⲁ ⲛⲓⲅⲉⲛⲉⲁ̀ ⲧⲏⲣⲟⲩ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲓⲉⲩⲭⲏ: ⲛ̀ⲧⲉ ⲡ̀ⲭⲟⲣⲟⲥ ⲧⲏⲣϥ ⲛ̀ⲧⲉ ⲛⲓⲥ̀ⲧⲁⲩⲣⲟⲫⲟⲣⲟⲥ: ⲛⲉⲙ ⲛⲓⲑ̀ⲙⲏⲓ ⲛⲉⲙ ⲛⲓⲇⲓⲕⲉⲟⲥ: Ⲡ̀ϭⲟⲓⲥ ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.</Stanza>
+            </Section>
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ ⲛⲉⲙ Ⲛⲓ̀ⲡⲣⲟⲫⲏⲧⲏⲥ">
+                <Stanza>Ⲭⲉⲣⲉ Ⲏ̀ⲗⲓⲁⲥ: ⲡⲓⲥⲟⲫⲣⲟⲛ ⲙ̀ⲡ̀ⲣⲟⲫⲏⲧⲏⲥ: ⲛⲉⲙ Ⲉ̀ⲗⲓⲥⲉⲟⲥ: ⲡⲉϥⲥⲱⲧⲡ ⲙ̀ⲙⲁⲑⲏⲧⲏⲥ.</Stanza>
+                <Stanza>Ⲡⲓⲛⲓϣϯ ⲛ̀ⲣⲉϥϩⲓⲱⲓϣ: ϧⲉⲛ ϯⲭⲱⲣⲁ ⲛ̀ⲧⲉ Ⲭⲏⲙⲓ: Ⲙⲁⲣⲕⲟⲥ ⲡⲓⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ: ⲡⲉⲥϣⲟⲣⲡ ⲛ̀ⲛⲉϥⲉⲣϩⲉⲙⲓ.</Stanza>
+                <Stanza>Ⲛ̀ⲑⲟ ⲡⲉ Ⲑ̀ⲙⲁⲩ ⲙ̀Ⲫ̀ⲛⲟⲩϯ: Ⲙⲁⲣⲓⲁ Ϯⲡⲁⲣⲑⲉⲛⲟⲥ: ⲧⲱⲃϩ ⲙ̀ⲙⲟϥ ⲉ̀ϫⲱⲛ: ⲉⲑⲣⲉϥⲛⲁⲓ ϧⲁ ⲡⲉⲛⲅⲉⲛⲟⲥ.</Stanza>
+                <Stanza>Ⲡⲓⲛⲓϣϯ ⲙ̀ⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ: ⲡⲉⲛⲓⲱⲧ ⲁⲃⲃⲁ Ⲥⲉⲩⲏⲣⲟⲥ: ⲫⲏⲉ̀ⲧⲁ ⲛⲉϥⲥ̀ⲃⲱⲟⲩⲓ̀ ⲉⲑⲟⲩⲁⲃ: ⲉⲣⲟⲩⲱⲓⲛⲓ ⲙ̀ⲡⲉⲛⲛⲟⲩⲥ.</Stanza>
+                <Stanza>Ⲡⲉⲛⲓⲱⲧ ⲛ̀ⲟ̀ⲙⲟⲗⲟⲅⲓⲧⲏⲥ: ⲁⲃⲃⲁ Ⲇⲓⲟⲥⲕⲟⲣⲟⲥ: ⲁϥⲙⲓϣⲓ ⲉ̀ϫⲉⲛ ⲡⲓⲛⲁϩϯ: ⲟⲩⲃⲉ ⲛⲓϩⲉⲣⲉⲧⲓⲕⲟⲥ.</Stanza>
+                <Stanza>Ⲛⲉⲙ ⲛⲉⲛⲓⲟϯ ⲧⲏⲣⲟⲩ: ⲉ̀ⲧⲁⲩⲣⲁⲛⲁϥ ⲙ̀Ⲡ̀ϭⲟⲓⲥ: ⲉ̀ⲣⲉ ⲡⲟⲩⲥ̀ⲙⲟⲩ ⲉⲑⲟⲩⲁⲃ: ϣⲱⲡⲓ ⲛⲁⲛ ⲛ̀ⲟⲩⲣⲉϥⲣⲱⲓⲥ.</Stanza>
+                <Stanza>Ϩⲓⲧⲉⲛ ⲛⲟⲩⲉⲩⲭⲏ: ⲁ̀ⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ Ⲫ̀ⲛⲟⲩϯ: ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ: ⲙⲟⲓ ⲛⲁⲛ ⲛ̀ⲟⲩⲥⲱϯ.</Stanza>
+            </Section>
+        </Translation>
+        <Translation Source="\trslit{English|\def{CopticTranslation}}" />
+    </Translations>
+
+    <Definitions>
+        <Translations Key="StdTune">
+            <Stanza Language="English">Standard tune</Stanza>
+            <Stanza Language="Coptic"></Stanza>
+        </Translations>
+    </Definitions>
+</Document>
