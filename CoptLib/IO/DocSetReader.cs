@@ -29,9 +29,9 @@ namespace CoptLib.IO
         {
             var meta = await RootFolder.GetItemAsync(DocSetWriter.META_ENTRY);
             if (meta is not IFile metaEntry)
-                throw new InvalidDataException($"Expected {meta.Id} to be a file, got {meta.GetType()}");
+                throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
             else if (meta is null)
-                throw new InvalidDataException($"Metadata does not exist at {DocSetWriter.META_ENTRY}");
+                throw new InvalidDataException($"Metadata does not exist at '{DocSetWriter.META_ENTRY}'");
 
             using var metaEntryStream = await metaEntry.OpenStreamAsync();
             Set = DocSet.Deserialize(XDocument.Load(metaEntryStream));
@@ -44,9 +44,9 @@ namespace CoptLib.IO
         {
             var index = await RootFolder.GetItemAsync(DocSetWriter.INDEX_ENTRY);
             if (index is not IFile indexEntry)
-                throw new InvalidDataException($"Expected {index.Id} to be a file, got {index.GetType()}");
+                throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
             else if (index is null)
-                throw new InvalidDataException($"Index does not exist at {DocSetWriter.INDEX_ENTRY}");
+                throw new InvalidDataException($"Index does not exist at '{DocSetWriter.INDEX_ENTRY}'");
 
             using var indexEntryStream = await indexEntry.OpenStreamAsync();
             using StreamReader indexReader = new(indexEntryStream);
@@ -73,9 +73,9 @@ namespace CoptLib.IO
 
             var docs = await RootFolder.GetItemAsync(DocSetWriter.DOCS_DIRECTORY);
             if (docs is not IFolder docsDir)
-                throw new InvalidDataException($"Expected {docs.Id} to be a folder, got {docs.GetType()}");
+                throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
             else if (docs is null)
-                throw new InvalidDataException($"Docs directory does not exist at {DocSetWriter.DOCS_DIRECTORY}");
+                throw new InvalidDataException($"Docs directory does not exist at '{DocSetWriter.DOCS_DIRECTORY}'");
 
             foreach (string uuid in Index.Keys)
             {
