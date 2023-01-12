@@ -3,10 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using CoptLib.IO;
 using CoptLib.Models;
 using OwlCore.Storage;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,19 +41,18 @@ public partial class DocSetViewModel : ObservableObject
     private IAsyncRelayCommand _createLayoutCommand;
 
     /// <summary>
-    /// Creates a new <see cref="DocSet"/> view model from the given file.
+    /// Creates a new <see cref="DocSet"/> view model from the given folder.
     /// </summary>
-    /// <param name="file">
-    /// The doc set file to read.
+    /// <param name="folder">
+    /// The root folder of the doc set.
     /// </param>
     /// <returns>
     /// A <see cref="DocSetViewModel"/> representing the set.
     /// </returns>
-    public static async Task<DocSetViewModel> CreateFromFile(IFile file)
+    public static async Task<DocSetViewModel> CreateFromFile(IFolder folder)
     {
-        using var fileStream = await file.OpenStreamAsync(System.IO.FileAccess.Read);
-        using DocSetReader reader = new(fileStream);
-        reader.ReadAll();
+        DocSetReader reader = new(folder);
+        await reader.ReadAll();
         return new(reader.Set);
     }
 

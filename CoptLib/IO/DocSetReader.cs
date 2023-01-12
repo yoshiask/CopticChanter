@@ -1,47 +1,55 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Models;
-using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.IO;
-using System.Xml.Serialization;
+using OwlCore.Storage;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CoptLib.IO
 {
-    public class DocSetReader : IDisposable
+    public class DocSetReader
     {
-        private ZipArchive Archive { get; set; }
+        private IFolder RootFolder { get; set; }
 
         public Dictionary<string, string> Index { get; private set; }
 
         public DocSet Set { get; private set; }
 
-        public DocSetReader(Stream zipStream)
+        public DocSetReader(IFolder folder)
         {
-            Archive = new(zipStream);
+            RootFolder = folder;
         }
 
-        public DocSetReader(string filePath) : this(File.OpenRead(filePath))
+        /// <summary>
+        /// Reads the set metadata (such as ID and author).
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReadMetadata()
         {
+            var meta = await RootFolder.GetItemAsync(DocSetWriter.META_ENTRY);
+            if (meta is not IFile metaEntry)
+                throw new InvalidDataException($"Expected {meta.Id} to be a file, got {meta.GetType()}");
+            else if (meta is null)
+                throw new InvalidDataException($"Metadata does not exist at {DocSetWriter.META_ENTRY}");
 
+            using var metaEntryStream = await metaEntry.OpenStreamAsync();
+            Set = DocSet.Deserialize(XDocument.Load(metaEntryStream));
         }
 
         /// <summary>
         /// Reads the set information without parsing any documents.
         /// </summary>
-        public void ReadIndex()
+        public async Task ReadIndex()
         {
-            var indexEntry = Archive.GetEntry(DocSetWriter.INDEX_ENTRY);
-            using var indexEntryStream = indexEntry.Open();
+            var index = await RootFolder.GetItemAsync(DocSetWriter.INDEX_ENTRY);
+            if (index is not IFile indexEntry)
+                throw new InvalidDataException($"Expected {index.Id} to be a file, got {index.GetType()}");
+            else if (index is null)
+                throw new InvalidDataException($"Index does not exist at {DocSetWriter.INDEX_ENTRY}");
+
+            using var indexEntryStream = await indexEntry.OpenStreamAsync();
             using StreamReader indexReader = new(indexEntryStream);
-
-            // Create empty set object
-            Set = new(indexReader.ReadLine(), indexReader.ReadLine());
-
-            // Deserialize Author XML
-            string authorXml = indexReader.ReadLine();
-            XmlSerializer serializer = new(typeof(Author));
-            Set.Author = (Author)serializer.Deserialize(new StringReader(authorXml));
 
             // Read doc list
             Index = new();
@@ -56,18 +64,27 @@ namespace CoptLib.IO
         /// Reads and parses all <see cref="Doc"/>s in the set.
         /// </summary>
         /// <remarks>
-        /// Must be called after <see cref="ReadIndex"/>.
+        /// Must be called after <see cref="ReadMetadata"/> and <see cref="ReadIndex"/>.
         /// </remarks>
-        public void ReadDocs()
+        public async Task ReadDocs()
         {
             Guard.IsNotNull(Index);
-            Guard.IsNotNull(Archive);
+            Guard.IsNotNull(RootFolder);
+
+            var docs = await RootFolder.GetItemAsync(DocSetWriter.DOCS_DIRECTORY);
+            if (docs is not IFolder docsDir)
+                throw new InvalidDataException($"Expected {docs.Id} to be a folder, got {docs.GetType()}");
+            else if (docs is null)
+                throw new InvalidDataException($"Docs directory does not exist at {DocSetWriter.DOCS_DIRECTORY}");
 
             foreach (string uuid in Index.Keys)
             {
                 // Open entry for doc
-                var entry = Archive.GetEntry(DocSetWriter.DOC_ENTRY_PREFIX + uuid);
-                using var docStream = entry.Open();
+                var entry = await docsDir.GetItemAsync(uuid);
+                if (entry is not IFile entryFile)
+                    continue;
+
+                using var docStream = await entryFile.OpenStreamAsync();
 
                 // Read XML
                 var doc = Set.Context.LoadDoc(docStream);
@@ -78,14 +95,13 @@ namespace CoptLib.IO
         }
 
         /// <summary>
-        /// Reads the set information and index, then parses all contained documents.
+        /// Reads the set information and meta, then parses all contained documents.
         /// </summary>
-        public void ReadAll()
+        public async Task ReadAll()
         {
-            ReadIndex();
-            ReadDocs();
+            await ReadMetadata();
+            await ReadIndex();
+            await ReadDocs();
         }
-
-        public void Dispose() => Archive.Dispose();
     }
 }
