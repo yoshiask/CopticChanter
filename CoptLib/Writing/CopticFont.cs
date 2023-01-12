@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +40,7 @@ namespace CoptLib.Writing
 
             // Generate a dictionary that has the start mapping as keys and the target mapping as values
             Dictionary<string, string> mergedMap = new();
-            var sourceMap = DictionaryTools.SwitchColumns(Charmap);
+            var sourceMap = Charmap.SwitchColumns();
             foreach (KeyValuePair<string, string> spair in sourceMap)
             {
                 if (target.Charmap.ContainsKey(spair.Value))
