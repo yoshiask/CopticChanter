@@ -3,6 +3,7 @@ using CoptLib.IO;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace CoptLib.Models
 {
@@ -35,6 +36,39 @@ namespace CoptLib.Models
                 Guard.IsNotNull(value);
                 _context = value;
             }
+        }
+
+        public XDocument Serialize()
+        {
+            XDocument xdoc = new();
+
+            XElement setXml = new("Set");
+            setXml.SetAttributeValue(nameof(Uuid), Uuid);
+            setXml.SetAttributeValue(nameof(Name), Name);
+
+            if (Author != null)
+            {
+                XElement authorXml = Author.SerializeElement();
+                setXml.Add(authorXml);
+            }
+
+            xdoc.Add(setXml);
+            return xdoc;
+        }
+
+        public static DocSet Deserialize(XDocument xdoc)
+        {
+            var setXml = xdoc.Root;
+            string uuid = setXml.Attribute(nameof(Uuid))?.Value;
+            string name = setXml.Attribute(nameof(Name))?.Value;
+
+            DocSet set = new(uuid, name);
+
+            var authorXml = setXml.Elements(nameof(Author)).FirstOrDefault();
+            if (authorXml != null)
+                set.Author = Author.DeserializeElement(authorXml);
+
+            return set;
         }
     }
 }

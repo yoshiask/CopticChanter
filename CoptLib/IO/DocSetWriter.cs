@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Xml;
 
 namespace CoptLib.IO
 {
     public class DocSetWriter
     {
-        internal static string DOC_ENTRY_PREFIX = $"docs{Path.DirectorySeparatorChar}";
-        internal static string INDEX_ENTRY = "index";
+        internal static string DOCS_DIRECTORY = "docs";
+        internal static string INDEX_ENTRY = "index.tsv";
+        internal static string META_ENTRY = "meta.xml";
 
         public DocSet Set { get; }
 
@@ -29,14 +31,11 @@ namespace CoptLib.IO
 
             // Begin building index
             StringBuilder sb = new();
-            sb.AppendLine(Set.Uuid);
-            sb.AppendLine(Set.Name);
-            sb.AppendLine(Set.Author.ToXmlString());
 
             foreach (var doc in Set.IncludedDocs)
             {
                 // Write each Document to its own entry
-                var docEntry = archive.CreateEntry(DOC_ENTRY_PREFIX + doc.Uuid);
+                var docEntry = archive.CreateEntry(Path.Combine(DOCS_DIRECTORY, doc.Uuid));
                 using var docEntryStream = docEntry.Open();
                 DocWriter.WriteDocXml(doc, docEntryStream);
 
@@ -46,9 +45,20 @@ namespace CoptLib.IO
 
             // Write the index to an entry
             var indexEntry = archive.CreateEntry(INDEX_ENTRY);
-            using var indexEntryStream = indexEntry.Open();
-            using StreamWriter sw = new(indexEntryStream);
-            sw.Write(sb.ToString());
+            using (var indexEntryStream = indexEntry.Open())
+            using (StreamWriter sw = new(indexEntryStream))
+            {
+                sw.Write(sb.ToString());
+            }
+
+            // Write additional metadata
+            var metaEntry = archive.CreateEntry(META_ENTRY);
+            using (var metaEntryStream = metaEntry.Open())
+            using (XmlTextWriter xw = new(metaEntryStream, Encoding.Unicode))
+            {
+                var xml = Set.Serialize();
+                xml.WriteTo(xw);
+            }
         }
 
         /// <summary>

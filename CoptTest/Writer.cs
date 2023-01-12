@@ -1,10 +1,11 @@
 ﻿using CoptLib.IO;
 using CoptLib.Models;
-using System;
+using OwlCore.Storage.SystemIO.Compression;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Xunit;
 
@@ -33,7 +34,7 @@ namespace CoptTest
         }
 
         [Fact]
-        public void DocSetWriter_CreateFromDocList()
+        public async Task DocSetWriter_CreateFromDocList()
         {
             string resourceName = "test_set.zip";
             string[] fileNames = new[]
@@ -46,7 +47,7 @@ namespace CoptTest
             using (var setStreamActual = Resource.OpenTestResult(resourceName))
             {
                 List<Doc> docs = new(fileNames
-                    .Select(f => Resource.ReadAllText(f))
+                    .Select(Resource.ReadAllText)
                     .Select(x => DocReader.ParseDocXml(x)));
 
                 DocSetWriter setWriter = new("test-set", "Test Set", docs);
@@ -61,17 +62,21 @@ namespace CoptTest
 
             DocSet setActual;
             using (var setStreamActual = Resource.OpenTestResult(resourceName, FileMode.Open))
-            using (DocSetReader readerActual = new(setStreamActual))
+            using (ZipArchive setArchiveActual = new(setStreamActual))
             {
-                readerActual.ReadAll();
+                ZipArchiveFolder setFolderActual = new(Path.GetFileNameWithoutExtension(resourceName), resourceName, setArchiveActual);
+                DocSetReader readerActual = new(setFolderActual);
+                await readerActual.ReadAll();
                 setActual = readerActual.Set;
             }
 
             DocSet setExpected;
             using (var setStreamExpected = Resource.Open(resourceName))
-            using (DocSetReader readerExpected = new(setStreamExpected))
+            using (ZipArchive setArchiveExpected = new(setStreamExpected))
             {
-                readerExpected.ReadAll();
+                ZipArchiveFolder setFolderExpected = new(Path.GetFileNameWithoutExtension(resourceName), resourceName, setArchiveExpected);
+                DocSetReader readerExpected = new(setFolderExpected);
+                await readerExpected.ReadAll();
                 setExpected = readerExpected.Set;
             }
 
