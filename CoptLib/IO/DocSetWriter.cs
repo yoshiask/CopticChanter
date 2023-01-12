@@ -1,8 +1,10 @@
 ﻿using CoptLib.Models;
+using OwlCore.Storage;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace CoptLib.IO
@@ -25,18 +27,20 @@ namespace CoptLib.IO
             Set = new(uuid, name, docs);
         }
 
-        public void Write(Stream stream)
+        public async Task Write(IModifiableFolder rootFolder)
         {
-            using ZipArchive archive = new(stream, ZipArchiveMode.Create);
-
             // Begin building index
             StringBuilder sb = new();
+
+            var docs = await rootFolder.CreateFolderAsync(DOCS_DIRECTORY);
+            if (docs is not IModifiableFolder docsDir)
+                throw new InvalidOperationException($"'{rootFolder.Id}' and all its subfolders must be modifiable.");
 
             foreach (var doc in Set.IncludedDocs)
             {
                 // Write each Document to its own entry
-                var docEntry = archive.CreateEntry(Path.Combine(DOCS_DIRECTORY, doc.Uuid));
-                using var docEntryStream = docEntry.Open();
+                var docEntry = await docsDir.CreateFileAsync(doc.Uuid);
+                using var docEntryStream = await docEntry.OpenStreamAsync(FileAccess.Write);
                 DocWriter.WriteDocXml(doc, docEntryStream);
 
                 // Write the Document ID and name to index
@@ -44,30 +48,21 @@ namespace CoptLib.IO
             }
 
             // Write the index to an entry
-            var indexEntry = archive.CreateEntry(INDEX_ENTRY);
-            using (var indexEntryStream = indexEntry.Open())
+            var indexEntry = await rootFolder.CreateFileAsync(INDEX_ENTRY);
+            using (var indexEntryStream = await indexEntry.OpenStreamAsync(FileAccess.Write))
             using (StreamWriter sw = new(indexEntryStream))
             {
                 sw.Write(sb.ToString());
             }
 
             // Write additional metadata
-            var metaEntry = archive.CreateEntry(META_ENTRY);
-            using (var metaEntryStream = metaEntry.Open())
+            var metaEntry = await rootFolder.CreateFileAsync(META_ENTRY);
+            using (var metaEntryStream = await metaEntry.OpenStreamAsync(FileAccess.Write))
             using (XmlTextWriter xw = new(metaEntryStream, Encoding.Unicode))
             {
                 var xml = Set.Serialize();
                 xml.WriteTo(xw);
             }
-        }
-
-        /// <summary>
-        /// Saves the set to a file.
-        /// </summary>
-        public void Write(string path)
-        {
-            using var fileStream = File.Open(path, FileMode.OpenOrCreate);
-            Write(fileStream);
         }
     }
 }

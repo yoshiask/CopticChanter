@@ -45,7 +45,10 @@ namespace CoptTest
             };
 
             using (var setStreamActual = Resource.OpenTestResult(resourceName))
+            using (ZipArchive setArchiveActual = new(setStreamActual, ZipArchiveMode.Update))
             {
+                ZipArchiveFolder setFolderActual = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveActual);
+
                 List<Doc> docs = new(fileNames
                     .Select(Resource.ReadAllText)
                     .Select(x => DocReader.ParseDocXml(x)));
@@ -57,14 +60,14 @@ namespace CoptTest
                     Email = "jjask7@gmail.com",
                     Website = "https://github.com/yoshiask"
                 };
-                setWriter.Write(setStreamActual);
+                await setWriter.Write(setFolderActual);
             }
 
             DocSet setActual;
             using (var setStreamActual = Resource.OpenTestResult(resourceName, FileMode.Open))
             using (ZipArchive setArchiveActual = new(setStreamActual))
             {
-                ZipArchiveFolder setFolderActual = new(Path.GetFileNameWithoutExtension(resourceName), resourceName, setArchiveActual);
+                ZipArchiveFolder setFolderActual = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveActual);
                 DocSetReader readerActual = new(setFolderActual);
                 await readerActual.ReadAll();
                 setActual = readerActual.Set;
@@ -74,7 +77,7 @@ namespace CoptTest
             using (var setStreamExpected = Resource.Open(resourceName))
             using (ZipArchive setArchiveExpected = new(setStreamExpected))
             {
-                ZipArchiveFolder setFolderExpected = new(Path.GetFileNameWithoutExtension(resourceName), resourceName, setArchiveExpected);
+                ZipArchiveFolder setFolderExpected = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveExpected);
                 DocSetReader readerExpected = new(setFolderExpected);
                 await readerExpected.ReadAll();
                 setExpected = readerExpected.Set;
