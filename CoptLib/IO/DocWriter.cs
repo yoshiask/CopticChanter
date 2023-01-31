@@ -148,6 +148,7 @@ namespace CoptLib.IO
                     break;
 
                 case CScript script:
+                    elem.Name = "Script";
                     elem.Add(new XCData(script.ScriptBody));
                     break;
 
