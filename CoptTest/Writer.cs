@@ -1,6 +1,6 @@
 ﻿using CoptLib.IO;
 using CoptLib.Models;
-using OwlCore.Storage.SystemIO.Compression;
+using OwlCore.Storage.Archive;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -36,19 +36,16 @@ namespace CoptTest
         [Fact]
         public async Task DocSetWriter_CreateFromDocList()
         {
-            string resourceName = "test_set.zip";
-            string[] fileNames = new[]
+            const string resourceName = "test_set.zip";
+            string[] fileNames =
             {
                 "Let Us Praise the Lord.xml",
                 "The First Hoos Lobsh.xml",
                 "Watos Hymn for the Three Saintly Children.xml"
             };
 
-            using (var setStreamActual = Resource.OpenTestResult(resourceName))
-            using (ZipArchive setArchiveActual = new(setStreamActual, ZipArchiveMode.Update))
+            using (ZipArchiveFolder setFolderActual = new(Resource.GetTestResult(resourceName)))
             {
-                ZipArchiveFolder setFolderActual = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveActual);
-
                 List<Doc> docs = new(fileNames
                     .Select(Resource.ReadAllText)
                     .Select(x => DocReader.ParseDocXml(x)));
@@ -64,20 +61,16 @@ namespace CoptTest
             }
 
             DocSet setActual;
-            using (var setStreamActual = Resource.OpenTestResult(resourceName, FileMode.Open))
-            using (ZipArchive setArchiveActual = new(setStreamActual))
+            using (ZipArchiveFolder setFolderActual = new(Resource.GetTestResult(resourceName, FileMode.Open)))
             {
-                ZipArchiveFolder setFolderActual = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveActual);
                 DocSetReader readerActual = new(setFolderActual);
                 await readerActual.ReadAll();
                 setActual = readerActual.Set;
             }
 
             DocSet setExpected;
-            using (var setStreamExpected = Resource.Open(resourceName))
-            using (ZipArchive setArchiveExpected = new(setStreamExpected))
+            using (ZipArchiveFolder setFolderExpected = new(Resource.Get(resourceName)))
             {
-                ZipArchiveFolder setFolderExpected = new(resourceName, Path.GetFileNameWithoutExtension(resourceName), setArchiveExpected);
                 DocSetReader readerExpected = new(setFolderExpected);
                 await readerExpected.ReadAll();
                 setExpected = readerExpected.Set;

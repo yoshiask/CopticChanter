@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Resources\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Resources\" />
+        <None Include="Resources\**" CopyToOutputDirectory="Always" LinkBase="Resources\" />
     </ItemGroup>
 
 </Project>

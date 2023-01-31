@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using OwlCore.Storage;
+using OwlCore.Storage.SystemIO;
 
 namespace CoptTest
 {
@@ -26,9 +28,23 @@ namespace CoptTest
 
         public static string ReadAllText(string name) => File.ReadAllText(Path(name));
 
+        public static IFile Get(string name, FileMode mode = FileMode.Open)
+        {
+            string path = Path(name);
+            File.Open(path, mode).Dispose();
+            return new SystemFile(path);
+        }
+        
 
         public static string TestResultPath(string name) => _trPrefix + name;
 
         public static Stream OpenTestResult(string name, FileMode mode = FileMode.Create) => File.Open(TestResultPath(name), mode);
+
+        public static IFile GetTestResult(string name, FileMode mode = FileMode.Create)
+        {
+            string path = TestResultPath(name);
+            File.Open(path, mode).Dispose();
+            return new SystemFile(path);
+        }
     }
 }
