@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
@@ -94,12 +95,18 @@ namespace CopticChanter.Helpers
 
         private static void HandleLanguage(TextBlock contentBlock, object content)
         {
-            LanguageInfo langInfo = (content as IMultilingual)?.Language
+            LanguageInfo langInfo = (content as IDefinition)?.GetLanguage()
                 ?? LanguageInfo.Default;
             KnownLanguage lang = langInfo.Known;
 
             contentBlock.FontFamily = Common.GetFontFamily(lang);
             contentBlock.FontSize = Common.GetFontSize(lang);
+
+            if (content is Comment)
+            {
+                contentBlock.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Yellow);
+                contentBlock.FontSize *= 0.75;
+            }
 
             var culture = langInfo.Secondary?.Culture ?? langInfo.Culture;
             if (culture != null)

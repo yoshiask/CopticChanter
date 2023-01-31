@@ -1,15 +1,12 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Transactions;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 #if DEBUG
 using Output = System.Diagnostics.Debug;
@@ -21,18 +18,16 @@ namespace CoptLib.IO
 {
     public static class DocReader
     {
-        public static IDictionary<string, Doc> AllDocs = new Dictionary<string, Doc>();
-
         /// <summary>
         /// Deserializes and returns a DocXML file. Only use in full .NET Framework
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(string path)
+        public static Doc ReadDocXml(string path, LoadContext context = null)
         {
             try
             {
-                return ParseDocXml(XDocument.Load(path));
+                return ParseDocXml(XDocument.Load(path), context);
             }
             catch (Exception ex)
             {
@@ -46,11 +41,11 @@ namespace CoptLib.IO
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(Stream file)
+        public static Doc ReadDocXml(Stream file, LoadContext context = null)
         {
             try
             {
-                return ParseDocXml(XDocument.Load(file, LoadOptions.None));
+                return ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
             }
             catch (Exception ex)
             {
@@ -62,15 +57,15 @@ namespace CoptLib.IO
         /// <summary>
         /// Parses the XML string into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(string xml) => ParseDocXml(XDocument.Parse(xml));
+        public static Doc ParseDocXml(string xml, LoadContext context = null) => ParseDocXml(XDocument.Parse(xml), context);
 
         /// <summary>
         /// Parses the XML document tree into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(XDocument xml)
+        public static Doc ParseDocXml(XDocument xml, LoadContext context = null)
         {
             // The actual content can't be directly deserialized, so it needs to be manually parsed
-            Doc doc = new()
+            Doc doc = new(context)
             {
                 Name = xml.Root.Element("Name")?.Value,
                 Uuid = xml.Root.Element("Uuid")?.Value,
@@ -91,7 +86,7 @@ namespace CoptLib.IO
                     if (def is not ContentPart translation)
                         continue;
                     doc.Translations.Children.Add(translation);
-                } 
+                }
             }
 
             return doc;
@@ -124,6 +119,13 @@ namespace CoptLib.IO
                 {
                     def = new SimpleContent(null, parent);
                 }
+                else if (defElemName == nameof(Comment))
+                {
+                    def = new Comment(parent)
+                    {
+                        Type = defElem.Attribute("Type")?.Value
+                    };
+                }
                 else if (defElemName == nameof(Section) || defElemName == "Translation")
                 {
                     Section section = new(parent);
@@ -137,9 +139,9 @@ namespace CoptLib.IO
 
                     def = section;
                 }
-                else if (defElemName == nameof(Script))
+                else if (defElemName == "Script")
                 {
-                    Script script = new()
+                    CScript script = new()
                     {
                         ScriptBody = defElem.Value
                     };
@@ -216,8 +218,7 @@ namespace CoptLib.IO
             {
                 // Parse elements, remove anything not a ContentPart
                 var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
-                    .Select(d => d as ContentPart)
-                    .PruneNull();
+                    .ElementsAs<ContentPart>();
                 contentCollection.Children.AddRange(defColl);
 
                 string sourceText = elem.Attribute("Source")?.Value;
@@ -234,10 +235,10 @@ namespace CoptLib.IO
 
         internal static void Transform(object part)
         {
-            if (part is Script partScript)
+            if (part is CScript partScript)
                 partScript.Run();
 
-            if (part is ICommandOutput partCmdOut && partCmdOut.Output != null)
+            if (part is ICommandOutput<object> partCmdOut && partCmdOut.Output != null)
                 part = partCmdOut.Output;
 
             if (part is IContent partContent)
@@ -289,7 +290,7 @@ namespace CoptLib.IO
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();
 
-            if (part is IDefinition def && def.Key != null && !def.DocContext.Definitions.ContainsKey(def.Key))
+            if (part is IDefinition def && def.Key != null && def.DocContext is not null)
                 def.DocContext.AddDefinition(def);
         }
     }

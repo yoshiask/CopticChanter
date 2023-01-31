@@ -68,6 +68,8 @@ namespace CoptTest
             new object[] { "ⲓⲣⲏⲛⲏ", "irini" },
             new object[] { "Ⲓⲥⲭⲩⲣⲟⲛ", "Iskiron" },
             new object[] { "Ⲟⲩⲟϩ", "Owoh" },
+            new object[] { "ⲁϥϭⲓⲥⲁⲣⲝ", "afcʰisarex" },
+            new object[] { "ⲛ̀ⲛⲓⲡⲁⲭⲛⲏ", ".ennipakʰni" },
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
                            "Tenuosʰt .emmok .o Pi.ekʰristos: nem Pekyot .en.agʰatʰos: nem Pi.epnevma etʰowab: je ak.i aksoti .emmon." },
         };

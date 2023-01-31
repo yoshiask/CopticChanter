@@ -1,5 +1,7 @@
 ﻿using CoptLib.Models;
 using CoptLib.Models.Text;
+using CoptLib.Writing;
+using OwlCore.Extensions;
 using System;
 
 namespace CoptLib.Extensions
@@ -29,5 +31,20 @@ namespace CoptLib.Extensions
 
             return newDef;
         }
+
+        public static LanguageInfo GetLanguage(this IDefinition def)
+        {
+            if (def is IMultilingual multi && LangIsNotNullOrDefault(def))
+                return multi.Language;
+
+            var ancestor = def.CrawlBy(d => d.Parent, LangIsNotNullOrDefault);
+
+            return (ancestor as IMultilingual)?.Language ?? LanguageInfo.Default;
+        }
+
+        private static bool LangIsNotNullOrDefault(IDefinition def)
+            => def is IMultilingual multi
+            && multi?.Language is not null 
+            && multi.Language.Known != KnownLanguage.Default;
     }
 }

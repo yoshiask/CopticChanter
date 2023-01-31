@@ -27,12 +27,11 @@ namespace CopticChanter
             {
                 if (files != null && files.Count > 0)
                 {
-                    Common.Docs.Clear();
+                    Common.CurrentLoadContext.Clear();
                     foreach (StorageFile file in files)
                     {
                         Debug.WriteLine(file.Path);
-                        var doc = DocReader.ReadDocXml(file.Path);
-                        Common.Docs.Add(doc);
+                        var doc = Common.CurrentLoadContext.LoadDoc(file.Path);
                         Debug.WriteLine(doc.Name);
                     }
 

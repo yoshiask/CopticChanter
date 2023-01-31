@@ -1,24 +1,44 @@
-﻿using NodaTime;
+﻿using CoptLib.Writing;
+using NodaTime;
 using NodaTime.Extensions;
 using System;
+using System.Linq;
 
 namespace CoptLib
 {
     public static partial class DateHelper
     {
+        private static LocalDateTime? _nowOverride = null;
+
+        /// <summary>
+        /// Allows the date and time used by <see cref="NowCoptic"/> to be
+        /// set separate from the system.
+        /// <para>Set to <see langword="null"/> to use current date and time.</para>
+        /// </summary>
+        public static LocalDateTime? NowOverride
+        {
+            get => _nowOverride;
+            set
+            {
+                _nowOverride = value;
+                if (_nowOverride is not null)
+                    _nowOverride = _nowOverride?.WithCoptic();
+            }
+        }
+
         /// <summary>
         /// The current date in the Coptic calendar, taking into account the <see cref="CopticCalendar.TransitionTime"/>.
         /// </summary>
         public static LocalDate NowCoptic()
         {
-            var now = DateTime.Now;
-            var copticDate = now.ToLocalDateTime().WithCoptic();
+            LocalDateTime copticDateTime = NowOverride
+                ?? DateTime.Now.ToLocalDateTime().WithCoptic();
 
             // If it's already after the transition time, snap to the next day.
-            if (copticDate.TimeOfDay >= CopticCalendar.TransitionTime)
-                copticDate = copticDate.PlusDays(1);
+            if (copticDateTime.TimeOfDay >= CopticCalendar.TransitionTime)
+                copticDateTime = copticDateTime.PlusDays(1);
 
-            return copticDate.Date;
+            return copticDateTime.Date;
         }
 
         /// <summary>
@@ -27,8 +47,52 @@ namespace CoptLib
         /// </summary>
         public static LocalDate ToCopticDate(this DateTime date) => LocalDate.FromDateTime(date).WithCoptic();
 
+        /// <summary>
+        /// Creates a new <see cref="LocalDate"/> with the given year, month, and day
+        /// using the Coptic calendar and Anno Maryrum era.
+        /// </summary>
         public static LocalDate NewCopticDate(int copticYear, int month, int day)
             => new(NodaTime.Calendars.Era.AnnoMartyrum, copticYear, month, day, CalendarSystem.Coptic);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        public static string Format(this LocalDate date, LanguageInfo language, string? patternText = null)
+        {
+            var culture = (System.Globalization.CultureInfo)language.Culture.Clone();
+
+            if (date.Calendar == CalendarSystem.Coptic)
+            {
+                // The BCL doesn't support the Coptic calendar at all.
+                // The month names even when localized are from ISO, (Kiahk -> April).
+                // This is a bit of a hack to use the correct names.
+
+                culture.DateTimeFormat.MonthNames = Enumerable
+                    .Range(1, 13)
+                    .Select(m => GetMonthName(m, language.Known))
+                    .ToArray();
+            }
+
+            if (language.Language == "cop")
+            {
+                // TODO: Add names for other dialects
+                culture.DateTimeFormat.DayNames = new[]
+                {
+                    "Ϯⲕⲩⲣⲓⲁⲕⲏ",
+                    "Ⲡⲓⲥ\u0300ⲛⲁⲩ",
+                    "Ⲡⲓϣⲟⲙⲧ",
+                    "Ⲡⲓϥ\u0300ⲧⲟⲩ",
+                    "Ⲡⲓⲧ\u0300ⲓⲟⲩ",
+                    "Ⲡⲓⲥⲟⲟⲩ",
+                    "Ⲡⲓⲥⲁⲃⲃⲁⲧⲟⲛ",
+                };
+            }
+
+            return date.ToString(patternText, culture);
+        }
 
 
         /// <summary>

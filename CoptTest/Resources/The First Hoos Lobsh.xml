@@ -3,7 +3,7 @@
     <Name>The First Hoos Lobsh</Name>
     <Uuid>28c70071-ce5e-4add-aa5c-d093acfb2784</Uuid>
     <Translations>
-        <Translation Language="English">
+        <Translation Language="English" Title="The First Hoos Lobsh">
             <Stanza>With the split, the waters of the sea split, and the very deep, became a walkway.</Stanza>
             <Stanza>A hidden earth, was shone upon by the sun, and an untrodden road, was walked upon.</Stanza>
             <Stanza>The flowing water, stood still, by a miraculous, act of wonder.</Stanza>
@@ -14,7 +14,7 @@
             <Stanza>Through the intercessions, of the Mother of God Saint Mary, O Lord grant us, the forgiveness of our sins.</Stanza>
             <Stanza>We worship You O Christ, with Your good Father, and the Holy Spirit, for You have (risen/come) and saved us.</Stanza>
         </Translation>
-        <Translation Key="CopticTranslation" Language="Coptic" Font="CS Avva Shenouda">
+        <Translation Key="CopticTranslation" Language="Coptic" Font="CS Avva Shenouda" Title="Pilwbs `nte Pihwc `nHouit">
             <Stanza>Qen ouswt afswt@ `nje pimwou `nte `viom@ ouoh `vnoun etsyk@ afswpi `nouma `mmosi.</Stanza>
             <Stanza>Oukahi `na;ouwnh@ `a`vry sai hijwf@ oumwit `natcini@ aumosi hiwtf.</Stanza>
             <Stanza>Oumwou efbyl `ebol@ af`ohi `eratf@ qen ouhwb `n`svyri@ `mparadoxon.</Stanza>
@@ -26,7 +26,7 @@
             <Stanza>Tenouwst `mmok `w Pi`,rictoc@ nem Pekiwt `n`aga;oc@ nem Pi`pneuma e;ouab@ je (aktwnk/ak`i) akcw] `mmon.</Stanza>
         </Translation>
         <Translation Source="\ipa{\def{CopticTranslation}}"/>
-        <Translation Language="Arabic">
+        <Translation Language="Arabic" Title="لبش الهوس الأول">
             <Stanza>قطعاً إنقطع، ماء البحر، والعمق العميق، صار مَسلكاً.</Stanza>
             <Stanza>أرض غير ظاهرة، أشرقت الشمس عليها، وطريق غير مسلوكة، مشوا عليها</Stanza>
             <Stanza>ماء مُنحل، وقف، بفِعل عجيب، مُعِجز.</Stanza>

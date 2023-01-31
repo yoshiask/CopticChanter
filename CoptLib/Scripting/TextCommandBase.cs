@@ -1,13 +1,14 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
 
 namespace CoptLib.Scripting
 {
     /// <summary>
-    /// Represents a command that was embedded in a <see cref="Models.Text.Run"/>.
+    /// Represents a command that was embedded in a <see cref="Run"/>.
     /// </summary>
-    public abstract class TextCommandBase : ICommandOutput
+    public abstract class TextCommandBase : ICommandOutput<IDefinition>
     {
         public TextCommandBase(string name, InlineCommand inline, IDefinition[] parameters)
         {
@@ -37,15 +38,10 @@ namespace CoptLib.Scripting
 
         protected void HandleOutput()
         {
-            if (Output is TranslationCollection defCol)
+            if (Output is ITranslationLookup defLookup)
             {
-                KnownLanguage lang = KnownLanguage.Default;
-                if (Inline is IMultilingual multi && multi.Language != null)
-                    lang = multi.Language.Known;
-                else if (Inline.Parent is IMultilingual parentMulti)
-                    lang = parentMulti.Language.Known;
-
-                Output = defCol[lang];
+                KnownLanguage lang = Inline.GetLanguage().Known;
+                Output = defLookup.GetByLanguage<IMultilingual>(lang) as IDefinition;
             }
         }
     }

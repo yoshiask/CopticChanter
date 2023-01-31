@@ -43,24 +43,6 @@ namespace CoptLib.Models
         public bool IsExplicitlyDefined { get; set; }
     }
 
-    public class Script : Definition, ICommandOutput
-    {
-        [XmlText]
-        public string ScriptBody { get; set; }
-
-        public IDefinition Output { get; protected set; }
-
-        public void Run()
-        {
-            Output = ScriptingEngine.RunScript(ScriptBody);
-            if (Output != null)
-            {
-                Output.DocContext = DocContext;
-                Output.Parent = this;
-            }
-        }
-    }
-
     public class Variable : Definition
     {
         [XmlAttribute]

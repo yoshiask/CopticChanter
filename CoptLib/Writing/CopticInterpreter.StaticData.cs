@@ -55,6 +55,9 @@ namespace CoptLib.Writing
 
         public static readonly IReadOnlyList<string> CopticPrefixes = new string[]
         {
+            /// Unknown
+            "ⲛ\u0300ⲛⲓ",
+
             // Source: https://cld.bz/users/user-73469131/Coptic-Bohairic-Introductory-Course1
 
             /// Definite articles
@@ -115,6 +118,11 @@ namespace CoptLib.Writing
             ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,;ⲃ,v;ⲁ,ä"),
             ["ⲅⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲅ,g;ⲏ,e"),
             ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,k;ⲟ,;ⲓ,i;ⲁ,ä;ⲕ,k"),
+            ["ⲃⲏⲑⲗⲉⲉⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲃ,b;ⲏ,e\u031E;ⲑ,θ;ⲗ,l;ⲉ,e\u031E;ⲉ,e\u031E;ⲙ,m"),
+            ["ⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,ʃ;ⲉ,e\u031E;ⲣ,ɾ;ⲟ,;ⲩ,u;ⲃ,b;ⲓ,i;ⲙ,m"),
+            ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,o\u031E;ⲇ,d;ⲉ,e\u031E;\u0300,.;ⲁ,ä"),
+            ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,;ⲩ,u;ⲇ,d;ⲁ,ä"),
+            ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲗ,l;ⲗ,l;ⲏ,iː;ⲗ,l;ⲟ,;ⲩ,u;ⲓ,j;ⲁ,ä"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticEquivalent[]>

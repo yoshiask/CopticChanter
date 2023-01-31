@@ -25,6 +25,7 @@ namespace CoptLib
 #pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
             return language switch
             {
+                KnownLanguage.Coptic or
                 KnownLanguage.CopticBohairic => monthNum switch
                 {
                     1 => "Ⲑⲱⲟⲩⲧ",

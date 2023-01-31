@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.Extensions;
+using CoptLib.Models;
 using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
@@ -59,9 +60,9 @@ namespace CopticWriter.Helpers
             {
                 switch (part)
                 {
-                    case Stanza stanza:
+                    case IContent content:
                         {
-                            var block = CreateBlockFromContent(stanza);
+                            var block = CreateBlockFromContent(content);
                             blocks.Add(block);
                             break;
                         }
@@ -128,7 +129,7 @@ namespace CopticWriter.Helpers
             for (int i = 0; i < translationCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-            // Create rows for each stanza
+            // Create rows for each content
             // Don't forget one for each header too
             int numRows = doc.Translations?.CountRows() ?? 0;
             for (int i = 0; i <= numRows; i++)
@@ -156,7 +157,7 @@ namespace CopticWriter.Helpers
 
         private static void HandleLanguage(TextBox contentBlock, object content)
         {
-            KnownLanguage lang = (content as IMultilingual)?.Language?.Known ?? KnownLanguage.Default;
+            KnownLanguage lang = (content as IDefinition)?.GetLanguage()?.Known ?? KnownLanguage.Default;
 
             contentBlock.FontFamily = Common.DefaultFont;
             contentBlock.FontSize = Common.DefaultFontSize;
