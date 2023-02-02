@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
+using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace CoptLib.Scripting.Commands
             Output = Inline.DocContext.LookupDefinition(defId);
 
             // Register the current inline with the referenced definition
-            Output.References.Add(Inline);
+            Output.RegisterReference(Inline);
 
             HandleOutput();
         }

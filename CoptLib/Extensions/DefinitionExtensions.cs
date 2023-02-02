@@ -42,6 +42,14 @@ namespace CoptLib.Extensions
             return (ancestor as IMultilingual)?.Language ?? LanguageInfo.Default;
         }
 
+        /// <summary>
+        /// Registers the given definition as a reference of this definition.
+        /// </summary>
+        /// <param name="def">The referenced definition.</param>
+        /// <param name="referencee">The definition referencing it.</param>
+        public static void RegisterReference(this IDefinition def, IDefinition referencee)
+            => def.References.Add(referencee);
+
         private static bool LangIsNotNullOrDefault(IDefinition def)
             => def is IMultilingual multi
             && multi?.Language is not null 
