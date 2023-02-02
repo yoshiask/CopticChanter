@@ -7,7 +7,7 @@ namespace CoptLib.Models.Text
     /// Inline supports common API for classes involved in the text object model,
     /// such as properties that control language, font families, and so on.
     /// </summary>
-    public abstract class Inline : IDefinition, IMultilingual
+    public abstract class Inline : Definition, IMultilingual
     {
         public Inline(IDefinition parent)
         {
@@ -26,14 +26,6 @@ namespace CoptLib.Models.Text
         public string Font { get; set; }
 
         public bool FontHandled { get; protected set; }
-
-        public string Key { get; set; }
-
-        public Doc DocContext { get; set; }
-
-        public IDefinition Parent { get; set; }
-
-        public bool IsExplicitlyDefined { get; set; }
 
         public abstract void HandleFont();
     }

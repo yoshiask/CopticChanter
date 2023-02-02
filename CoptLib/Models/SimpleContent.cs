@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace CoptLib.Models
 {
     [XmlRoot("String")]
-    public class SimpleContent : IContent
+    public class SimpleContent : Definition, IContent
     {
         private string _sourceText;
 
@@ -36,14 +36,6 @@ namespace CoptLib.Models
         }
 
         public bool CommandsHandled { get; set; }
-
-        public string Key { get; set; }
-
-        public Doc DocContext { get; set; }
-
-        public IDefinition Parent { get; set; }
-
-        public bool IsExplicitlyDefined { get; set; }
 
         public InlineCollection Inlines { get; set; }
 
