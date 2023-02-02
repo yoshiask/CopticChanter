@@ -65,9 +65,9 @@ namespace CoptLib.IO
             root.Add(new XElement(nameof(doc.Name), doc.Name));
             root.Add(new XElement(nameof(doc.Key), doc.Key));
 
-            XElement transsElem = new("Translations");
+            XElement transsElem = new(nameof(doc.Translations));
             if (doc.Translations.Source != null)
-                transsElem.SetAttributeValue("Source", doc.Translations.Source);
+                transsElem.SetAttributeValue(nameof(doc.Translations.Source), doc.Translations.Source);
             foreach (ContentPart translation in doc.Translations.Children.Where(IsExplicitlyDefined))
                 transsElem.Add(SerializeObject(translation, "Translation"));
 
@@ -107,7 +107,7 @@ namespace CoptLib.IO
 
             if (obj is IDefinition def)
             {
-                elem.SetAttributeValue("Key", def.Key);
+                elem.SetAttributeValue(nameof(def.Key), def.Key);
                 parent = def.Parent;
             }
             if (obj is IContent content)
@@ -119,17 +119,17 @@ namespace CoptLib.IO
                 var parentMultilingual = parent as IMultilingual;
                 if (parentMultilingual != null && parentMultilingual?.Language != multilingual.Language
                     && multilingual.Language?.Known != Writing.KnownLanguage.Default)
-                    elem.SetAttributeValue("Language", multilingual.Language);
+                    elem.SetAttributeValue(nameof(multilingual.Language), multilingual.Language);
 
                 if (parentMultilingual?.Font != multilingual.Font)
-                    elem.SetAttributeValue("Font", multilingual.Font);
+                    elem.SetAttributeValue(nameof(multilingual.Font), multilingual.Font);
             }
             if (obj is IContentCollectionContainer contentCollection)
             {
                 foreach (var child in contentCollection.Children)
                     elem.Add(SerializeObject(child));
 
-                elem.SetAttributeValue("Source", contentCollection.Source);
+                elem.SetAttributeValue(nameof(contentCollection.Source), contentCollection.Source);
             }
 
             // Serialize class-specific properties
@@ -144,7 +144,7 @@ namespace CoptLib.IO
                     break;
 
                 case Section section:
-                    elem.SetAttributeValue("Title", section.Title);
+                    elem.SetAttributeValue(nameof(section.Title), section.Title);
                     break;
 
                 case CScript script:
@@ -153,9 +153,9 @@ namespace CoptLib.IO
                     break;
 
                 case Variable variable:
-                    elem.SetAttributeValue("Label", variable.Label);
-                    elem.SetAttributeValue("DefaultValue", variable.DefaultValue);
-                    elem.SetAttributeValue("Configurable", variable.Configurable);
+                    elem.SetAttributeValue(nameof(variable.Label), variable.Label);
+                    elem.SetAttributeValue(nameof(variable.DefaultValue), variable.DefaultValue);
+                    elem.SetAttributeValue(nameof(variable.Configurable), variable.Configurable);
                     break;
             }
 

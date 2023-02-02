@@ -81,7 +81,7 @@ namespace CoptLib.IO
                 doc.DirectDefinitions = defs;
             }
 
-            var transsElem = xml.Root.Element("Translations");
+            var transsElem = xml.Root.Element(nameof(doc.Translations));
             if (transsElem != null)
             {
                 foreach (var def in ParseDefinitionCollection(transsElem.Elements(), doc, null))
@@ -133,7 +133,7 @@ namespace CoptLib.IO
                 {
                     Section section = new(parent);
 
-                    string title = defElem.Attribute("Title")?.Value;
+                    string title = defElem.Attribute(nameof(section.Title))?.Value;
                     if (title != null)
                         section.Title = new Stanza(section)
                         {
@@ -154,9 +154,9 @@ namespace CoptLib.IO
                 {
                     Variable variable = new()
                     {
-                        Label = defElem.Attribute("Label")?.Value,
-                        DefaultValue = defElem.Attribute("DefaultValue")?.Value,
-                        Configurable = bool.Parse(defElem.Attribute("Configurable")?.Value),
+                        Label = defElem.Attribute(nameof(variable.Label))?.Value,
+                        DefaultValue = defElem.Attribute(nameof(variable.DefaultValue))?.Value,
+                        Configurable = bool.Parse(defElem.Attribute(nameof(variable.Configurable))?.Value),
                     };
                     def = variable;
                 }
@@ -184,7 +184,7 @@ namespace CoptLib.IO
             {
                 def.DocContext = doc;
                 def.Parent = parent;
-                def.Key = elem.Attribute("Key")?.Value;
+                def.Key = elem.Attribute(nameof(def.Key))?.Value;
 
                 // Not every IDefinition is explicitly defined,
                 // but since this branch only runs when we already
@@ -197,9 +197,9 @@ namespace CoptLib.IO
             }
             if (obj is IMultilingual multilingual)
             {
-                multilingual.Font = elem.Attribute("Font")?.Value;
+                multilingual.Font = elem.Attribute(nameof(multilingual.Font))?.Value;
 
-                string langVal = elem.Attribute("Language")?.Value;
+                string langVal = elem.Attribute(nameof(multilingual.Language))?.Value;
                 if (!string.IsNullOrEmpty(langVal))
                 {
                     multilingual.Language = LanguageInfo.Parse(langVal);
@@ -224,7 +224,7 @@ namespace CoptLib.IO
                     .ElementsAs<ContentPart>();
                 contentCollection.Children.AddRange(defColl);
 
-                string sourceText = elem.Attribute("Source")?.Value;
+                string sourceText = elem.Attribute(nameof(contentCollection.Source))?.Value;
                 if (sourceText != null)
                     contentCollection.Source = new SimpleContent(sourceText, defCC);
             }
