@@ -28,7 +28,7 @@ namespace CoptLib.IO
         /// <returns></returns>
         public async Task ReadMetadata()
         {
-            var meta = await RootFolder.GetItemAsync(RootFolder.Id + DocSetWriter.META_ENTRY);
+            var meta = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.META_ENTRY);
             if (meta is not IFile metaEntry)
                 throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
             else if (meta is null)
@@ -43,7 +43,7 @@ namespace CoptLib.IO
         /// </summary>
         public async Task ReadIndex()
         {
-            var index = await RootFolder.GetItemAsync(RootFolder.Id + DocSetWriter.INDEX_ENTRY);
+            var index = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.INDEX_ENTRY);
             if (index is not IFile indexEntry)
                 throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
             else if (index is null)
@@ -78,7 +78,7 @@ namespace CoptLib.IO
                 await zipFolder.CreateFolderAsync(DocSetWriter.DOCS_DIRECTORY);
             }
 
-            var docs = await RootFolder.GetItemAsync($"{RootFolder.Id}{DocSetWriter.DOCS_DIRECTORY}/");
+            var docs = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.DOCS_DIRECTORY + "/");
             if (docs is not IFolder docsDir)
                 throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
             else if (docs is null)
@@ -87,7 +87,7 @@ namespace CoptLib.IO
             foreach (string uuid in Index.Keys)
             {
                 // Open entry for doc
-                var entry = await docsDir.GetItemAsync(docsDir.Id + uuid);
+                var entry = await docsDir.GetFirstItemByNameAsync(uuid);
                 if (entry is not IFile entryFile)
                     continue;
 
