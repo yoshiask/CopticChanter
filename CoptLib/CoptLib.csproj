@@ -12,6 +12,7 @@
             A .NET Standard 2.0 library made to handle scenarios involving documents with interdependencies and multilingual content.
         </Description>
         <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Coptic, Bohairic</PackageTags>
         <Copyright>2017-2023</Copyright>
     </PropertyGroup>
@@ -33,6 +34,8 @@
 	<ItemGroup>
 		<None Remove="Resources\lexicon.tsv" />
 		<EmbeddedResource Include="Resources\lexicon.tsv" />
+
+        <None Include="README.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
 </Project>
