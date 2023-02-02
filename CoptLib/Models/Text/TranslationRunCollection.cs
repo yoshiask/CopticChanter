@@ -34,6 +34,8 @@ namespace CoptLib.Models.Text
 
         public bool IsExplicitlyDefined { get; set; }
 
+        public IList<IDefinition> References { get; } = new List<IDefinition>();
+
         /// <summary>
         /// Creates a new <see cref="Run"/> with the given text and language.
         /// </summary>
