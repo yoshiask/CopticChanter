@@ -22,9 +22,9 @@ namespace CoptLib.IO
             Set = set;
         }
 
-        public DocSetWriter(string uuid, string name, IEnumerable<Doc> docs = null)
+        public DocSetWriter(string key, string name, IEnumerable<Doc> docs = null)
         {
-            Set = new(uuid, name, docs);
+            Set = new(key, name, docs);
         }
 
         public async Task Write(IModifiableFolder rootFolder)
@@ -39,12 +39,12 @@ namespace CoptLib.IO
             foreach (var doc in Set.IncludedDocs)
             {
                 // Write each Document to its own entry
-                var docEntry = await docsDir.CreateFileAsync(doc.Uuid);
+                var docEntry = await docsDir.CreateFileAsync(doc.Key);
                 using var docEntryStream = await docEntry.OpenStreamAsync(FileAccess.Write);
                 DocWriter.WriteDocXml(doc, docEntryStream);
 
                 // Write the Document ID and name to index
-                sb.AppendLine(doc.Uuid + "\t" + doc.Name);
+                sb.AppendLine(doc.Key + "\t" + doc.Name);
             }
 
             // Write the index to an entry

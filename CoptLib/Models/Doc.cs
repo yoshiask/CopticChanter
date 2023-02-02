@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace CoptLib.Models
 {
     [XmlRoot("Document")]
-    public class Doc : IContextualLoad
+    public class Doc : Definition, IContextualLoad
     {
         private LoadContext _context;
 
@@ -22,13 +22,14 @@ namespace CoptLib.Models
             {
                 DocContext = this
             };
+
+            Parent = null;
+            DocContext = this;
+            IsExplicitlyDefined = true;
         }
 
         [XmlElement]
         public string Name { get; set; }
-
-        [XmlElement]
-        public string Uuid { get; set; }
 
         [XmlElement]
         public Author Author { get; set; }
@@ -72,7 +73,7 @@ namespace CoptLib.Models
             return new IndexDoc()
             {
                 Name = this.Name,
-                Uuid = this.Uuid
+                Uuid = this.Key
             };
         }
 

@@ -11,15 +11,15 @@ namespace CoptLib.Models
     {
         private LoadContext _context;
 
-        public DocSet(string uuid, string name, IEnumerable<Doc> docs = null, LoadContext context = null)
+        public DocSet(string key, string name, IEnumerable<Doc> docs = null, LoadContext context = null)
         {
-            Uuid = uuid;
+            Key = key;
             Name = name;
             IncludedDocs = docs?.ToList() ?? new();
             Context = context ?? new();
         }
 
-        public string Uuid { get; set; }
+        public string Key { get; set; }
 
         public string Name { get; set; }
 
@@ -43,7 +43,7 @@ namespace CoptLib.Models
             XDocument xdoc = new();
 
             XElement setXml = new("Set");
-            setXml.SetAttributeValue(nameof(Uuid), Uuid);
+            setXml.SetAttributeValue(nameof(Key), Key);
             setXml.SetAttributeValue(nameof(Name), Name);
 
             if (Author != null)
@@ -59,7 +59,9 @@ namespace CoptLib.Models
         public static DocSet Deserialize(XDocument xdoc)
         {
             var setXml = xdoc.Root;
-            string uuid = setXml.Attribute(nameof(Uuid))?.Value;
+
+            // BACKCOMPAT: Support documents that use the Uuid element name
+            string uuid = (setXml.Attribute(nameof(Key)) ?? setXml.Attribute("Uuid"))?.Value;
             string name = setXml.Attribute(nameof(Name))?.Value;
 
             DocSet set = new(uuid, name);

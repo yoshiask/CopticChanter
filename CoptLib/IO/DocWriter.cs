@@ -62,8 +62,8 @@ namespace CoptLib.IO
             XDocument xdoc = new();
             XElement root = new("Document");
 
-            root.Add(new XElement("Name", doc.Name));
-            root.Add(new XElement("Uuid", doc.Uuid));
+            root.Add(new XElement(nameof(doc.Name), doc.Name));
+            root.Add(new XElement(nameof(doc.Key), doc.Key));
 
             XElement transsElem = new("Translations");
             if (doc.Translations.Source != null)

@@ -154,7 +154,7 @@ namespace CopticChanter
 
             FileView.Items.Add(new ListViewItem
             {
-                Content = $"{doc.Name} [{doc.Uuid}]",
+                Content = $"{doc.Name} [{doc.Key}]",
             });
             _files.Add(file);
 

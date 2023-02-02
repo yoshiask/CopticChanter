@@ -128,7 +128,7 @@ namespace CoptLib.IO
             Guard.IsNotNull(key, nameof(key));
             Guard.IsNotNull(ctxItem, nameof(ctxItem));
 
-            return $"{key};Scope='{ctxItem.Uuid}'";
+            return $"{key};Scope='{ctxItem.Key}'";
         }
     }
 }

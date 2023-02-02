@@ -26,7 +26,7 @@ namespace CoptTest
             Doc docAc = DocReader.ParseDocXml(XDocument.Parse(xmlAc));
 
             Assert.Equal(docEx.Name, docAc.Name);
-            Assert.Equal(docEx.Uuid, docAc.Uuid);
+            Assert.Equal(docEx.Key, docAc.Key);
             Assert.Equal(docEx.Author?.FullName, docAc.Author?.FullName);
             Assert.Equal(docEx.DirectDefinitions.Count, docAc.DirectDefinitions.Count);
             Assert.Equal(docEx.Translations.Children.Count, docAc.Translations.Children.Count);
@@ -77,7 +77,7 @@ namespace CoptTest
             }
 
             Assert.Equal(setExpected.Name, setActual.Name);
-            Assert.Equal(setExpected.Uuid, setActual.Uuid);
+            Assert.Equal(setExpected.Key, setActual.Key);
             Assert.Equal(setExpected.Author?.Email, setActual.Author?.Email);
             Assert.Equal(setExpected.Author?.Website, setActual.Author?.Website);
             Assert.Equal(setExpected.IncludedDocs.Count, setActual.IncludedDocs.Count);

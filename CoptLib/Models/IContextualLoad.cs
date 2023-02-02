@@ -10,7 +10,7 @@ public interface IContextualLoad
     /// <summary>
     /// The unique identifier of the current item.
     /// </summary>
-    string Uuid { get; set; }
+    string Key { get; set; }
 
     /// <summary>
     /// The context this item was loaded in.

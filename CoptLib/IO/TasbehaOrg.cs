@@ -36,7 +36,7 @@ namespace CoptLib.IO
 
             Doc doc = new()
             {
-                Uuid = $"urn:tasbehaorg:{lyricId}",
+                Key = $"urn:tasbehaorg:{lyricId}",
             };
 
             // Set document name

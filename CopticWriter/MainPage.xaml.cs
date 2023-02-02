@@ -110,7 +110,7 @@ namespace CopticWriter
             Docs.Add(new Doc()
             {
                 Name = "Untitled",
-                Uuid = "42c70071-ce5e-4add-aa5c-d093acfb2784"
+                Key = "42c70071-ce5e-4add-aa5c-d093acfb2784"
             });
         }
 	}

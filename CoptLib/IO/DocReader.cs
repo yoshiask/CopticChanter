@@ -67,9 +67,12 @@ namespace CoptLib.IO
             // The actual content can't be directly deserialized, so it needs to be manually parsed
             Doc doc = new(context)
             {
-                Name = xml.Root.Element("Name")?.Value,
-                Uuid = xml.Root.Element("Uuid")?.Value,
+                Name = xml.Root.Element(nameof(doc.Name))?.Value,
+                Key = xml.Root.Element(nameof(doc.Key))?.Value,
             };
+
+            // BACKCOMPAT: Support documents that use the Uuid element name
+            doc.Key ??= xml.Root.Element("Uuid")?.Value;
 
             var defsElem = xml.Root.Element("Definitions");
             if (defsElem != null)
