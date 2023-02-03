@@ -15,7 +15,7 @@ namespace CopticChanter
 {
     public class Common
     {
-        public static LoadContext CurrentLoadContext { get; } = new LoadContext();
+        public static LoadContextBase CurrentLoadContext { get; } = new LoadContext();
 
         #region Bluetooth Remote
         public static bool IsConnected = false;

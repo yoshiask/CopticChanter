@@ -13,9 +13,9 @@ namespace CoptLib.Models
     [XmlRoot("Document")]
     public class Doc : Definition, IContextualLoad
     {
-        private LoadContext _context;
+        private LoadContextBase _context;
 
-        public Doc(LoadContext context = null)
+        public Doc(LoadContextBase context = null)
         {
             _context = context ?? new();
             Translations = new(null)
@@ -45,7 +45,7 @@ namespace CoptLib.Models
 
         [XmlIgnore]
         [NotNull]
-        public LoadContext Context
+        public LoadContextBase Context
         {
             get => _context;
             set

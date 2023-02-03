@@ -9,9 +9,9 @@ namespace CoptLib.Models
 {
     public class DocSet : IContextualLoad
     {
-        private LoadContext _context;
+        private LoadContextBase _context;
 
-        public DocSet(string key, string name, IEnumerable<Doc> docs = null, LoadContext context = null)
+        public DocSet(string key, string name, IEnumerable<Doc> docs = null, LoadContextBase context = null)
         {
             Key = key;
             Name = name;
@@ -28,7 +28,7 @@ namespace CoptLib.Models
         public Author Author { get; set; }
 
         [NotNull]
-        public LoadContext Context
+        public LoadContextBase Context
         {
             get => _context;
             set

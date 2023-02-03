@@ -23,7 +23,7 @@ namespace CoptLib.IO
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(string path, LoadContext context = null)
+        public static Doc ReadDocXml(string path, LoadContextBase context = null)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace CoptLib.IO
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
-        public static Doc ReadDocXml(Stream file, LoadContext context = null)
+        public static Doc ReadDocXml(Stream file, LoadContextBase context = null)
         {
             try
             {
@@ -57,15 +57,15 @@ namespace CoptLib.IO
         /// <summary>
         /// Parses the XML string into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(string xml, LoadContext context = null) => ParseDocXml(XDocument.Parse(xml), context);
+        public static Doc ParseDocXml(string xml, LoadContextBase context = null) => ParseDocXml(XDocument.Parse(xml), context);
 
         /// <summary>
         /// Parses the XML document tree into a <see cref="Doc"/>.
         /// </summary>
-        public static Doc ParseDocXml(XDocument xml, LoadContext context = null)
+        public static Doc ParseDocXml(XDocument xml, LoadContextBase context = null)
         {
             // The actual content can't be directly deserialized, so it needs to be manually parsed
-            Doc doc = new(context)
+            Doc doc = new(context ?? new LoadContext())
             {
                 Name = xml.Root.Element(nameof(doc.Name))?.Value,
                 Key = xml.Root.Element(nameof(doc.Key))?.Value,
