@@ -11,7 +11,8 @@ namespace CoptLib.IO
 {
     public class DocSetReader
     {
-        private IFolder RootFolder { get; set; }
+        [System.Diagnostics.CodeAnalysis.NotNull]
+        private IFolder RootFolder { get; }
 
         public Dictionary<string, string> Index { get; private set; }
 
@@ -19,6 +20,7 @@ namespace CoptLib.IO
 
         public DocSetReader(IFolder folder)
         {
+            Guard.IsNotNull(folder);
             RootFolder = folder;
         }
 
@@ -70,7 +72,6 @@ namespace CoptLib.IO
         public async Task ReadDocs()
         {
             Guard.IsNotNull(Index);
-            Guard.IsNotNull(RootFolder);
 
             if (RootFolder is ZipArchiveFolder zipFolder)
             {
