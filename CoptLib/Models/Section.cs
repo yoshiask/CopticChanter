@@ -1,5 +1,4 @@
-﻿using CoptLib.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace CoptLib.Models
@@ -8,7 +7,6 @@ namespace CoptLib.Models
     {
         public Section(IDefinition parent) : base(parent)
         {
-
         }
 
         public IContent Title { get; set; }
@@ -29,7 +27,7 @@ namespace CoptLib.Models
 
         public void HandleCommands()
         {
-            DocReader.RecursiveTransform(Children);
+            Doc.RecursiveTransform(Children);
             Title?.HandleCommands();
         }
 

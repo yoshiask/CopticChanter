@@ -37,7 +37,7 @@ namespace CoptLib.IO
             string key = definition.Key;
 
             // If key already exists and a ctxItem was specified, scope the def
-            if (contextualItem is not null && _definitions.ContainsKey(definition.Key))
+            if (contextualItem is not null && _definitions.ContainsKey(key))
                 key = BuildScopedKey(key, contextualItem);
 
             _definitions[key] = definition;

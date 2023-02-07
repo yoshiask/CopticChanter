@@ -5,7 +5,6 @@ using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 
 #if DEBUG
@@ -93,16 +92,6 @@ namespace CoptLib.IO
             }
 
             return doc;
-        }
-
-        /// <summary>
-        /// Parses text commands and applies font conversions in the given document.
-        /// </summary>
-        /// <param name="doc">The document to apply all transforms on.</param>
-        public static void ApplyDocTransforms(Doc doc)
-        {
-            RecursiveTransform(doc.DirectDefinitions);
-            RecursiveTransform(doc.Translations.Children);
         }
 
         private static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, Doc doc, IDefinition parent)
@@ -228,73 +217,6 @@ namespace CoptLib.IO
                 if (sourceText != null)
                     contentCollection.Source = new SimpleContent(sourceText, defCC);
             }
-        }
-
-        internal static void RecursiveTransform(System.Collections.IEnumerable parts)
-        {
-            foreach (var part in parts)
-                Transform(part);
-        }
-
-        internal static void Transform(object part)
-        {
-            if (part is CScript partScript)
-                partScript.Run();
-
-            if (part is ICommandOutput<object> partCmdOut && partCmdOut.Output != null)
-                part = partCmdOut.Output;
-
-            if (part is IContent partContent)
-            {
-                if (part is IMultilingual partMulti && partMulti.Language?.Known == KnownLanguage.Coptic)
-                    partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
-
-                partContent.HandleCommands();
-            }
-
-            if (part is IContentCollectionContainer partCollection)
-            {
-                if (partCollection.Source != null)
-                {
-                    // Populate the collection with items from the source.
-                    // This is done before commands are parsed, just in
-                    // case the generated content contains commands.
-                    partCollection.Source.HandleCommands();
-                    var cmd = partCollection.Source.Commands.LastOrDefault();
-
-                    if (cmd.Output != null)
-                    {
-                        bool hasExplicitChildren = partCollection.Children.Count > 0;
-
-                        if (cmd.Output is IContentCollectionContainer cmdOutCollection)
-                            partCollection.Children.AddRange(cmdOutCollection.Children);
-                        else if (cmd.Output is ContentPart cmdOutPart)
-                            partCollection.Children.Add(cmdOutPart);
-
-                        // If the collection doesn't have any explicit elements (in other words,
-                        // it's only children came from the source), inherit the command's properties
-                        if (!hasExplicitChildren)
-                        {
-                            if (cmd.Output is IMultilingual cmdMulti && part is IMultilingual partMulti)
-                            {
-                                partMulti.Language = cmdMulti.Language;
-                                partMulti.Font = cmdMulti.Font;
-                            }
-
-                            if (cmd.Output is Section cmdSection && part is Section partSection)
-                                partSection.Title = cmdSection.Title;
-                        }
-                    }
-                }
-
-                partCollection.HandleCommands();
-            }
-
-            if (part is IMultilingual multilingual)
-                multilingual.HandleFont();
-
-            if (part is IDefinition def && def.Key != null && def.DocContext is not null)
-                def.DocContext.AddDefinition(def);
         }
     }
 }

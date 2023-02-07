@@ -90,7 +90,7 @@ namespace CoptTest
         {
             string xml = Resource.ReadAllText($"{resourceName}.xml");
             Doc doc = DocReader.ParseDocXml(xml);
-            DocReader.ApplyDocTransforms(doc);
+            doc.ApplyTransforms();
 
             using (var texStreamActual = Resource.OpenTestResult($"{resourceName}.tex"))
             {

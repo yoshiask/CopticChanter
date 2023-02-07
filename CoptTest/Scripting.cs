@@ -147,7 +147,7 @@ namespace CoptTest
                     Language = new(lang)
                 }
             };
-            DocReader.ApplyDocTransforms(_doc);
+            _doc.ApplyTransforms();
 
             Stanza stanza = new(null)
             {

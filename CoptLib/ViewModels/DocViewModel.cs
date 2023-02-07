@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CoptLib.IO;
 using CoptLib.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -19,12 +18,12 @@ public partial class DocViewModel : ObservableObject
     [ObservableProperty]
     ObservableCollection<ObservableCollection<object>> _layout;
 
-    public void ApplyTransforms() => DocReader.ApplyDocTransforms(Doc);
+    public void ApplyTransforms() => Doc.ApplyTransforms();
 
     public ObservableCollection<ObservableCollection<object>> CreateLayout()
     {
         // Apply transforms before display
-        DocReader.ApplyDocTransforms(Doc);
+        Doc.ApplyTransforms();
 
         Layout = new(Doc
             .Flatten()
