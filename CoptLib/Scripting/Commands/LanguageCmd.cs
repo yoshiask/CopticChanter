@@ -35,6 +35,7 @@ namespace CoptLib.Scripting.Commands
             }
 
             Output = sourceParam.Select(ConvertFont);
+            Evaluated = true;
         }
 
         private void ConvertFont(IDefinition def)

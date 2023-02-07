@@ -18,6 +18,7 @@ namespace CoptLib.Scripting.Commands
         private void Parse()
         {
             Output = Parameters[0].Select(Transcribe);
+            Evaluated = true;
         }
 
         private void Transcribe(IDefinition def)

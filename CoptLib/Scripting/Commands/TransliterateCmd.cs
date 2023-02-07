@@ -25,6 +25,7 @@ namespace CoptLib.Scripting.Commands
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
 
             Output = sourceParam.Select(Transliterate);
+            Evaluated = true;
         }
 
         private void Transliterate(IDefinition def)

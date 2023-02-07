@@ -16,5 +16,10 @@ namespace CoptLib.Scripting
         /// from the source text.
         /// </remarks>
         public TReturn Output { get; }
+
+        /// <summary>
+        /// Whether the command has been evaluated.
+        /// </summary>
+        public bool Evaluated { get; }
     }
 }

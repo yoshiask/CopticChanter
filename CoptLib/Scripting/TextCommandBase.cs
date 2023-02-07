@@ -36,6 +36,8 @@ namespace CoptLib.Scripting
 
         public IDefinition Output { get; set; }
 
+        public bool Evaluated { get; protected set; }
+
         protected void HandleOutput()
         {
             if (Output is ITranslationLookup defLookup)

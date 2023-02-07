@@ -21,6 +21,7 @@ namespace CoptLib.Scripting.Commands
                 return;
 
             TimeOffset = timeOffset;
+            Evaluated = true;
         }
     }
 }

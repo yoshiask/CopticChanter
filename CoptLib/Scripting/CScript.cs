@@ -3,20 +3,24 @@ using System.Xml.Serialization;
 
 namespace CoptLib.Scripting;
 
-public class CScript : Definition, ICommandOutput<object>
+public class CScript : Definition, ICommandOutput<IDefinition>
 {
     [XmlText]
     public string ScriptBody { get; set; }
 
-    public object Output { get; protected set; }
+    public IDefinition Output { get; protected set; }
+
+    public bool Evaluated { get; protected set; }
 
     public void Run()
     {
+        if (Evaluated)
+            return;
+
         Output = ScriptingEngine.RunScript(ScriptBody);
-        if (Output is IDefinition def)
-        {
-            def.DocContext = DocContext;
-            def.Parent = this;
-        }
+        Output.DocContext = DocContext;
+        Output.Parent = this;
+
+        Evaluated = true;
     }
 }

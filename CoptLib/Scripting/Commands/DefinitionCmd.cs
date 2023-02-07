@@ -21,10 +21,12 @@ namespace CoptLib.Scripting.Commands
 
             Output = Inline.DocContext.LookupDefinition(defId);
 
+            HandleOutput();
+
             // Register the current inline with the referenced definition
             Output.RegisterReference(Inline);
 
-            HandleOutput();
+            Evaluated = true;
         }
     }
 }
