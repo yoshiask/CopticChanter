@@ -49,9 +49,9 @@ public partial class DocSetViewModel : ObservableObject
     /// <returns>
     /// A <see cref="DocSetViewModel"/> representing the set.
     /// </returns>
-    public static async Task<DocSetViewModel> CreateFromFile(IFolder folder)
+    public static async Task<DocSetViewModel> ReadFromFile(IFolder folder, LoadContextBase context = null)
     {
-        DocSetReader reader = new(folder);
+        DocSetReader reader = new(folder, context);
         await reader.ReadAll();
         return new(reader.Set);
     }

@@ -56,7 +56,7 @@ namespace CoptLib.Models
             return xdoc;
         }
 
-        public static DocSet Deserialize(XDocument xdoc)
+        public static DocSet Deserialize(XDocument xdoc, LoadContextBase context = null)
         {
             var setXml = xdoc.Root;
 
@@ -64,7 +64,7 @@ namespace CoptLib.Models
             string uuid = (setXml.Attribute(nameof(Key)) ?? setXml.Attribute("Uuid"))?.Value;
             string name = setXml.Attribute(nameof(Name))?.Value;
 
-            DocSet set = new(uuid, name);
+            DocSet set = new(uuid, name, context: context);
 
             var authorXml = setXml.Elements(nameof(Author)).FirstOrDefault();
             if (authorXml != null)

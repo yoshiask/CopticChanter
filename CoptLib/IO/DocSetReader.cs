@@ -14,14 +14,19 @@ namespace CoptLib.IO
         [System.Diagnostics.CodeAnalysis.NotNull]
         private IFolder RootFolder { get; }
 
+        [System.Diagnostics.CodeAnalysis.NotNull]
+        private LoadContextBase Context { get; }
+
         public Dictionary<string, string> Index { get; private set; }
 
         public DocSet Set { get; private set; }
 
-        public DocSetReader(IFolder folder)
+        public DocSetReader(IFolder folder, LoadContextBase context = null)
         {
             Guard.IsNotNull(folder);
+
             RootFolder = folder;
+            Context = context ?? new();
         }
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace CoptLib.IO
                 throw new InvalidDataException($"Metadata does not exist at '{DocSetWriter.META_ENTRY}'");
 
             using var metaEntryStream = await metaEntry.OpenStreamAsync();
-            Set = DocSet.Deserialize(XDocument.Load(metaEntryStream));
+            Set = DocSet.Deserialize(XDocument.Load(metaEntryStream), Context);
         }
 
         /// <summary>
