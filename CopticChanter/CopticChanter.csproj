@@ -104,10 +104,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
-    <Compile Include="FilesPage.xaml.cs">
-      <DependentUpon>FilesPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\DocumentUIFactory.cs" />
+    <Compile Include="Helpers\OwlCore.Storage.Uwp\WindowsStorageFile.cs" />
+    <Compile Include="Helpers\OwlCore.Storage.Uwp\WindowsStorageFolder.cs" />
+    <Compile Include="Helpers\OwlCore.Storage.Uwp\WindowsStorageFolderWatcher.cs" />
     <Compile Include="ImportPage.xaml.cs">
       <DependentUpon>ImportPage.xaml</DependentUpon>
     </Compile>
@@ -192,10 +192,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="FilesPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ImportPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
