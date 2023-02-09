@@ -1,6 +1,6 @@
-﻿using CoptLib.IO;
+﻿using CoptLib.ViewModels;
+using OwlCore.Storage.Uwp;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
@@ -22,26 +22,14 @@ namespace CopticChanter
 
         private async void LoadDocs(bool present = false)
         {
-            IReadOnlyList<StorageFile> files = await ApplicationData.Current.RoamingFolder.GetFilesAsync();
+            var roamingFolder = new WindowsStorageFolder(ApplicationData.Current.RoamingFolder);
+
             try
             {
-                if (files != null && files.Count > 0)
-                {
-                    Common.CurrentLoadContext.Clear();
-                    foreach (StorageFile file in files)
-                    {
-                        Debug.WriteLine(file.Path);
-                        var doc = Common.CurrentLoadContext.LoadDoc(file.Path);
-                        Debug.WriteLine(doc.Name);
-                    }
+                var setVm = await DocSetViewModel.ReadFromFile(roamingFolder);
 
-                    if (present)
-                        Present();
-                }
-                else
-                {
-                    Frame.Navigate(typeof(FilesPage));
-                }
+                if (present)
+                    Present(setVm);
             }
             catch (Exception ex)
             {
@@ -55,14 +43,12 @@ namespace CopticChanter
                 };
 
                 await errorDialog.ShowAsync();
-
-                Frame.Navigate(typeof(FilesPage));
             }
         }
 
-        private void Present()
+        private void Present(DocSetViewModel vm)
         {
-            Frame.Navigate(typeof(Layouts.DocumentLayout), new Layouts.DocumentLayoutArgs());
+            Frame.Navigate(typeof(Layouts.DocumentLayout), new Layouts.DocumentLayoutArgs(vm));
         }
     }
 }

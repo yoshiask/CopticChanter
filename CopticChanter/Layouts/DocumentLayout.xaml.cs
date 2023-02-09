@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -25,20 +26,28 @@ namespace CopticChanter.Layouts
             this.InitializeComponent();
         }
 
-        public DocSetViewModel ViewModel { get; } = new DocSetViewModel(Common.CurrentLoadContext.LoadedDocs);
+        public DocSetViewModel ViewModel
+        {
+            get => (DocSetViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
+            nameof(ViewModel), typeof(DocSetViewModel), typeof(DocumentLayout), new PropertyMetadata(null));
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             var args = e.Parameter as DocumentLayoutArgs;
-            ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
-            ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
             Background = new SolidColorBrush(args.BackColor);
             Foreground = new SolidColorBrush(args.ForeColor);
 
+            ViewModel = args.ViewModel;
             ViewModel.Layout.CollectionChanged += LayoutChanged;
             ViewModel.CreateLayoutCommand.Execute(null);
 
             base.OnNavigatedTo(e);
+
+            ApplicationView.GetForCurrentView().FullScreenSystemOverlayMode = FullScreenSystemOverlayMode.Minimal;
+            ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
         }
 
         private async void LayoutChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

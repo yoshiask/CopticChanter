@@ -1,22 +1,23 @@
-﻿using Windows.UI;
+﻿using CoptLib.ViewModels;
+using Windows.UI;
 
 namespace CopticChanter.Layouts
 {
     public class DocumentLayoutArgs
     {
+        public DocSetViewModel ViewModel;
         public Color BackColor;
         public Color ForeColor;
 
-        public DocumentLayoutArgs(Color bcolor, Color fcolor)
+        public DocumentLayoutArgs(DocSetViewModel vm, Color bcolor, Color fcolor)
         {
+            ViewModel = vm;
             BackColor = bcolor;
             ForeColor = fcolor;
         }
 
-        public DocumentLayoutArgs()
+        public DocumentLayoutArgs(DocSetViewModel vm) : this(vm, Colors.Black, Colors.White)
         {
-            BackColor = Colors.Black;
-            ForeColor = Colors.White;
         }
     }
 }
