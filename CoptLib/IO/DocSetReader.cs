@@ -84,7 +84,7 @@ namespace CoptLib.IO
                 await zipFolder.CreateFolderAsync(DocSetWriter.DOCS_DIRECTORY);
             }
 
-            var docs = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.DOCS_DIRECTORY + "/");
+            var docs = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.DOCS_DIRECTORY);
             if (docs is not IFolder docsDir)
                 throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
             else if (docs is null)
