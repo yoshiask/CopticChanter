@@ -69,15 +69,6 @@ namespace CoptLib.Models
         /// <param name="definition">The definition to add.</param>
         public void AddDefinition(IDefinition definition) => Context.AddDefinition(definition, this);
 
-        public IndexDoc ToIndexDocXml()
-        {
-            return new IndexDoc()
-            {
-                Name = this.Name,
-                Uuid = this.Key
-            };
-        }
-
         /// <summary>
         /// Flattens the document to a list of lists (2D array), where
         /// each list is a single row in the document.

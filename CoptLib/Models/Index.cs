@@ -1,33 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace CoptLib.Models
 {
-    [XmlRoot(ElementName = "CopticDocIndex")]
-    public class Index
-    {
-        public string Name;
-
-        public string Uuid;
-
-        [XmlElement]
-        public List<IndexDoc> IncludedDocs = new List<IndexDoc>();
-    }
-
-    [XmlRoot(ElementName = "Doc")]
-    public class IndexDoc
+    [XmlRoot("Doc")]
+    public class DocIndexEntry
     {
         [XmlAttribute]
-        public string Name;
+        public string Name { get; set; }
 
         [XmlAttribute]
-        public string Uuid;
+        public string Uuid { get; set; }
 
-        //[XmlAttribute]
-        //public Language Language;
+        [XmlAttribute]
+        public string RelativePath { get; set; }
     }
 }
