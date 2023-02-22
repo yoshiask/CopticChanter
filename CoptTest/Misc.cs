@@ -27,6 +27,22 @@ namespace CoptTest
         }
 
         [Theory]
+        [InlineData("en-US", KnownLanguage.English)]
+        [InlineData("cop", KnownLanguage.Coptic)]
+        [InlineData("cop-EG-ALX", KnownLanguage.CopticBohairic)]
+        [InlineData("ar", KnownLanguage.Arabic)]
+        [InlineData("ar-EG", KnownLanguage.Arabic)]
+        [InlineData("cop/en", KnownLanguage.Coptic, KnownLanguage.English)]
+        [InlineData("cop/en-US", KnownLanguage.Coptic, KnownLanguage.English)]
+        [InlineData("cop-EG-ALX/en-US", KnownLanguage.CopticBohairic, KnownLanguage.English)]
+        public void LanguageInfo_ParseKnownLanguage(string tag, KnownLanguage kLang, KnownLanguage? secKLang = null)
+        {
+            var li = LanguageInfo.Parse(tag);
+            Assert.Equal(kLang, li.Known);
+            Assert.Equal(secKLang, li.Secondary?.Known);
+        }
+
+        [Theory]
         [InlineData("en-US", "en-US", true)]
         [InlineData("en-US", "en", true, LEO.StrictWithWild)]
         [InlineData("cop-GR", "cop", true, LEO.StrictWithWild)]
@@ -82,9 +98,25 @@ namespace CoptTest
                 new LanguageInfo(KnownLanguage.Arabic),
             };
 
-            var result = universe.Intersect(include, new LanguageInfoEqualityComparer(LEO.StrictWithWild));
+            var actual = include
+                .Intersect(universe, new LanguageInfoEqualityComparer(LEO.StrictWithWild))
+                .ToList();
 
-            Assert.Equal(4, result.Count());
+            List<LanguageInfo> expected = new()
+            {
+                new LanguageInfo(KnownLanguage.English),
+                LanguageInfo.Parse("cop-GR/en-US"),
+                new LanguageInfo(KnownLanguage.Arabic),
+            };
+
+            Assert.Equal(expected.Count, actual.Count);
+            
+            foreach (var actualItem in actual)
+            {
+                if (expected.Contains(actualItem, new LanguageInfoEqualityComparer(LEO.Strict)))
+                    expected.Remove(actualItem);
+            }
+            Assert.Equal(0, expected.Count);
         }
 
         public static readonly string[] LanguageInfo_Parse_Samples = new string[]

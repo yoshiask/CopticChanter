@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace CoptLib.Writing;
 
@@ -15,15 +16,21 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     {
         Tag = tag;
 
-        string[] subtags = Tag.Split('-');
-        Language = subtags[0];
+        string[] components = Tag.Split('-');
+        
+        Language = components[0];
+        UpdateKnownFromSubtag(Language);
 
-        if (subtags.Length >= 2)
+        if (components.Length >= 2)
         {
-            Region = subtags[1];
+            Region = components[1];
+            UpdateKnownFromSubtag($"{Language}-{Region}");
 
-            if (subtags.Length >= 3)
-                Variant = subtags[2];
+            if (components.Length >= 3)
+            {
+                Variant = components[2];
+                UpdateKnownFromSubtag(Tag);
+            }
         }
 
         try
@@ -36,7 +43,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     /// <summary>
     /// Creates a new instance of <see cref="LanguageInfo"/> using the known language name.
     /// </summary>
-    public LanguageInfo(KnownLanguage known) : this(KnownLanguages[known])
+    public LanguageInfo(KnownLanguage known) : this(KnownLanguages.Keys.ElementAt((int)known))
     {
         Known = known;
     }
@@ -80,13 +87,9 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         }
 
         // Check if language is known
-        if (Enum.TryParse(value, true, out KnownLanguage kLang)
-            && KnownLanguages.TryGetValue(kLang, out var kLangTag))
+        if (Enum.TryParse(value, true, out KnownLanguage kLang))
         {
-            return new(kLangTag)
-            {
-                Known = kLang
-            };
+            return new(KnownLanguages.Values.ElementAt((int)kLang));
         }
 
         return new(value);
@@ -115,13 +118,9 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public override string ToString()
     {
-        string str = Known != KnownLanguage.Default
-            ? Known.ToString()
-            : Tag;
-
-        if (Secondary != null)
+        string str = Tag;
+        if (Secondary is not null)
             str += $"/{Secondary}";
-
         return str;
     }
 
@@ -194,26 +193,26 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         return a.IsEquivalentTo(b, options);
     }
 
-    private static readonly IReadOnlyDictionary<KnownLanguage, string> KnownLanguages = new Dictionary<KnownLanguage, string>
+    private static readonly IReadOnlyDictionary<string, KnownLanguage> KnownLanguages = new Dictionary<string, KnownLanguage>
     {
-        [KnownLanguage.Default]	    = "und",
-        [KnownLanguage.Akkadian]	= "akk",
-        [KnownLanguage.Amharic]	    = "am",
-        [KnownLanguage.Arabic]	    = "ar",
-        [KnownLanguage.Aramaic]	    = "arc",
-        [KnownLanguage.Armenian]	= "hy",
-        [KnownLanguage.Coptic]	    = "cop",
-        [KnownLanguage.Dutch]	    = "nl",
-        [KnownLanguage.Egyptian]	= "egy",
-        [KnownLanguage.English]	    = "en",
-        [KnownLanguage.French]	    = "fr",
-        [KnownLanguage.IPA]	        = "ipa",    // Not an official ISO code
-        [KnownLanguage.Italian]	    = "it",
-        [KnownLanguage.German]	    = "de",
-        [KnownLanguage.Greek]	    = "el",
-        [KnownLanguage.Hebrew]	    = "he",
-        [KnownLanguage.Latin]	    = "la",
-        [KnownLanguage.Spanish]	    = "es",
+        ["und"]		    = KnownLanguage.Default,
+        ["akk"]		    = KnownLanguage.Akkadian,
+        ["am"]		    = KnownLanguage.Amharic,
+        ["ar"]		    = KnownLanguage.Arabic,
+        ["arc"]		    = KnownLanguage.Aramaic,
+        ["hy"]		    = KnownLanguage.Armenian,
+        ["cop"]		    = KnownLanguage.Coptic,
+        ["nl"]		    = KnownLanguage.Dutch,
+        ["egy"]		    = KnownLanguage.Egyptian,
+        ["en"]		    = KnownLanguage.English,
+        ["fr"]		    = KnownLanguage.French,
+        ["ipa"]		    = KnownLanguage.IPA,    // Not an official ISO code
+        ["it"]		    = KnownLanguage.Italian,
+        ["de"]		    = KnownLanguage.German,
+        ["el"]		    = KnownLanguage.Greek,
+        ["he"]		    = KnownLanguage.Hebrew,
+        ["la"]		    = KnownLanguage.Latin,
+        ["es"]		    = KnownLanguage.Spanish,
 
         /// cop        | Coptic (generic)
         /// cop-EG-ALX | Bohairic (Alexandra)
@@ -222,9 +221,15 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         /// cop-EG-SHG | Akhmimic (Sohag)
         /// cop-EG-MN  | Oxyrhynchite (Minya)
         /// cop-GR     | Greco-Bohairic
-        [KnownLanguage.CopticBohairic]	    = "cop-EG-ALX",
-        [KnownLanguage.CopticSahidic]	    = "cop-EG-AST",
+        ["cop-EG-ALX"]	= KnownLanguage.CopticBohairic,
+        ["cop-EG-AST"]	= KnownLanguage.CopticSahidic,
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);
+
+    private void UpdateKnownFromSubtag(string subtag)
+    {
+        if (KnownLanguages.ContainsKey(subtag))
+            Known = KnownLanguages[subtag];
+    }
 }
