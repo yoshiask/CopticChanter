@@ -162,8 +162,6 @@ namespace CoptLib.Models
             {
                 if (part is IMultilingual partMulti && partMulti.Language?.Known == KnownLanguage.Coptic)
                     partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
-
-                partContent.HandleCommands();
             }
 
             if (part is IContentCollectionContainer partCollection)
@@ -201,9 +199,10 @@ namespace CoptLib.Models
                         }
                     }
                 }
-
-                partCollection.HandleCommands();
             }
+
+            if (part is ISupportsTextCommands suppTextCmds)
+                suppTextCmds.HandleCommands();
 
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();

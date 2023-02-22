@@ -25,7 +25,7 @@ namespace CoptLib.Models
             return count;
         }
 
-        public void HandleCommands()
+        public override void HandleCommands()
         {
             Doc.RecursiveTransform(Children);
             Title?.HandleCommands();

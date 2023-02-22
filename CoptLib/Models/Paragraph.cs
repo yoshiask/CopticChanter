@@ -1,6 +1,4 @@
 ﻿using CoptLib.Models.Text;
-using CoptLib.Scripting;
-using System.Collections.Generic;
 
 namespace CoptLib.Models
 {
@@ -32,13 +30,9 @@ namespace CoptLib.Models
             }
         }
 
-        public bool CommandsHandled { get; set; }
-
         public InlineCollection Inlines { get; set; }
 
-        public List<TextCommandBase> Commands { get; set; }
-
-        public void HandleCommands() => ContentHelper.HandleCommands(this);
+        public override void HandleCommands() => ContentHelper.HandleCommands(this);
 
         public override void HandleFont()
         {

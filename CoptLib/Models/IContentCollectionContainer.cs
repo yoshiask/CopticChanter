@@ -13,8 +13,5 @@ namespace CoptLib.Models
         SimpleContent Source { get; set; }
 
         List<ContentPart> Children { get; }
-
-        /// <inheritdoc cref="IContent.HandleCommands"/>
-        void HandleCommands();
     }
 }
