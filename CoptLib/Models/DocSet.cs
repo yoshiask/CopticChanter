@@ -27,7 +27,6 @@ namespace CoptLib.Models
 
         public Author Author { get; set; }
 
-        [NotNull]
         public LoadContextBase Context
         {
             get => _context;

@@ -45,7 +45,6 @@ namespace CoptLib.Models
         public string NextScript { get; set; }
 
         [XmlIgnore]
-        [NotNull]
         public LoadContextBase Context
         {
             get => _context;

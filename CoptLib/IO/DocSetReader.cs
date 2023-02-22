@@ -11,10 +11,8 @@ namespace CoptLib.IO
 {
     public class DocSetReader
     {
-        [System.Diagnostics.CodeAnalysis.NotNull]
         private IFolder RootFolder { get; }
 
-        [System.Diagnostics.CodeAnalysis.NotNull]
         private LoadContextBase Context { get; }
 
         public Dictionary<string, string> Index { get; private set; }
