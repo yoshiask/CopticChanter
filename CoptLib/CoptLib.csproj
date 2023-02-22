@@ -21,7 +21,7 @@
         <PackageReference Include="OwlCore" Version="0.1.0" />
         <PackageReference Include="OwlCore.Storage" Version="0.7.0" />
 		<PackageReference Include="CS-Script" Version="4.6.2" />
-		<PackageReference Include="AngleSharp" Version="0.17.1" />
+		<PackageReference Include="AngleSharp" Version="1.0.1" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
 		<PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
 		<PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
@@ -35,7 +35,7 @@
 		<None Remove="Resources\lexicon.tsv" />
 		<EmbeddedResource Include="Resources\lexicon.tsv" />
 
-        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
