@@ -13,7 +13,7 @@ namespace OwlCore.Storage.Uwp
     /// <summary>
     /// An implementation of <see cref="IFolder"/> for <see cref="Windows.Storage.StorageFolder"/>.
     /// </summary>
-    public class WindowsStorageFolder : IFolder, IAddressableFolder, IFolderCanFastGetItem, IModifiableFolder
+    public class WindowsStorageFolder : IFolder, IChildFolder, IFastGetItem, IModifiableFolder
     {
         /// <summary>
         /// Creates a new instance of <see cref="WindowsStorageFolder"/>.
@@ -38,7 +38,7 @@ namespace OwlCore.Storage.Uwp
         public string Name => StorageFolder.Name;
 
         /// <inheritdoc/>
-        public async Task<IAddressableStorable> GetItemAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<IStorableChild> GetItemAsync(string id, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -59,7 +59,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<IAddressableStorable> GetItemsAsync(StorableType type = StorableType.All, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<IStorableChild> GetItemsAsync(StorableType type = StorableType.All, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -119,7 +119,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async Task<IAddressableFile> CreateCopyOfAsync(IFile fileToCopy, bool overwrite = false, CancellationToken cancellationToken = default)
+        public async Task<IChildFile> CreateCopyOfAsync(IFile fileToCopy, bool overwrite = false, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -152,7 +152,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async Task<IAddressableFile> MoveFromAsync(IAddressableFile fileToMove, IModifiableFolder source, bool overwrite = false, CancellationToken cancellationToken = default)
+        public async Task<IChildFile> MoveFromAsync(IChildFile fileToMove, IModifiableFolder source, bool overwrite = false, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -171,7 +171,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async Task<IAddressableFile> CreateFileAsync(string name, bool overwrite = false, CancellationToken cancellationToken = default)
+        public async Task<IChildFile> CreateFileAsync(string name, bool overwrite = false, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var storageFile = await StorageFolder.CreateFileAsync(name, overwrite ? CreationCollisionOption.ReplaceExisting : CreationCollisionOption.OpenIfExists);
@@ -180,7 +180,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async Task<IAddressableFolder> CreateFolderAsync(string name, bool overwrite = false, CancellationToken cancellationToken = default)
+        public async Task<IChildFolder> CreateFolderAsync(string name, bool overwrite = false, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var storageFolder = await StorageFolder.CreateFolderAsync(name, overwrite ? CreationCollisionOption.ReplaceExisting : CreationCollisionOption.OpenIfExists);
@@ -189,7 +189,7 @@ namespace OwlCore.Storage.Uwp
         }
 
         /// <inheritdoc/>
-        public async Task DeleteAsync(IAddressableStorable item, CancellationToken cancellationToken = default)
+        public async Task DeleteAsync(IStorableChild item, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var parent = await item.GetParentAsync(cancellationToken);

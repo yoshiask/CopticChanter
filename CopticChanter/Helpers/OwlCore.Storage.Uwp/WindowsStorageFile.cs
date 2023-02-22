@@ -9,7 +9,7 @@ namespace OwlCore.Storage.Uwp
     /// <summary>
     /// An implementation of <see cref="IFile"/> for <see cref="Windows.Storage.StorageFile"/>.
     /// </summary>
-    public class WindowsStorageFile : IFile, IAddressableFile
+    public class WindowsStorageFile : IFile, IChildFile
     {
         /// <summary>
         /// Creates a new instance of <see cref="WindowsStorageFile"/>.

@@ -39,26 +39,28 @@ namespace CoptLib.IO
             foreach (var doc in Set.IncludedDocs)
             {
                 // Write each Document to its own entry
-                var docEntry = await docsDir.CreateFileAsync(doc.Key);
-                using var docEntryStream = await docEntry.OpenStreamAsync(FileAccess.Write);
-                DocWriter.WriteDocXml(doc, docEntryStream);
+                var docFile = await docsDir.CreateFileAsync(doc.Key);
+                using var docFileStream = await docFile.OpenStreamAsync(FileAccess.Write);
+                DocWriter.WriteDocXml(doc, docFileStream);
 
-                // Write the Document ID and name to index
-                sb.AppendLine(doc.Key + "\t" + doc.Name);
+                // Write the Document location and name to index
+                string relativePath = await docsDir.GetRelativePathToAsync(docFile);
+                sb.AppendLine(relativePath);
+                sb.AppendLine(doc.Name);
             }
 
             // Write the index to an entry
-            var indexEntry = await rootFolder.CreateFileAsync(INDEX_ENTRY);
-            using (var indexEntryStream = await indexEntry.OpenStreamAsync(FileAccess.Write))
-            using (StreamWriter sw = new(indexEntryStream))
+            var indexFile = await rootFolder.CreateFileAsync(INDEX_ENTRY);
+            using (var indexFileStream = await indexFile.OpenStreamAsync(FileAccess.Write))
+            using (StreamWriter sw = new(indexFileStream))
             {
                 sw.Write(sb.ToString());
             }
 
             // Write additional metadata
-            var metaEntry = await rootFolder.CreateFileAsync(META_ENTRY);
-            using (var metaEntryStream = await metaEntry.OpenStreamAsync(FileAccess.Write))
-            using (XmlTextWriter xw = new(metaEntryStream, Encoding.Unicode))
+            var metaFile = await rootFolder.CreateFileAsync(META_ENTRY);
+            using (var metaFileStream = await metaFile.OpenStreamAsync(FileAccess.Write))
+            using (XmlTextWriter xw = new(metaFileStream, Encoding.Unicode))
             {
                 var xml = Set.Serialize();
                 xml.WriteTo(xw);

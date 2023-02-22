@@ -35,7 +35,7 @@ namespace CoptLib.IO
         /// <returns></returns>
         public async Task ReadMetadata()
         {
-            var meta = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.META_ENTRY);
+            var meta = await RootFolder.GetFirstByNameAsync(DocSetWriter.META_ENTRY);
             if (meta is not IFile metaEntry)
                 throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
             else if (meta is null)
@@ -50,7 +50,7 @@ namespace CoptLib.IO
         /// </summary>
         public async Task ReadIndex()
         {
-            var index = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.INDEX_ENTRY);
+            var index = await RootFolder.GetFirstByNameAsync(DocSetWriter.INDEX_ENTRY);
             if (index is not IFile indexEntry)
                 throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
             else if (index is null)
@@ -63,8 +63,9 @@ namespace CoptLib.IO
             Index = new();
             while (!indexReader.EndOfStream)
             {
-                string[] parts = indexReader.ReadLine().Split('\t');
-                Index.Add(parts[0], parts[1]);
+                string relativePath = indexReader.ReadLine();
+                string name = indexReader.ReadLine();
+                Index.Add(relativePath, name);
             }
         }
 
@@ -84,16 +85,16 @@ namespace CoptLib.IO
                 await zipFolder.CreateFolderAsync(DocSetWriter.DOCS_DIRECTORY);
             }
 
-            var docs = await RootFolder.GetFirstItemByNameAsync(DocSetWriter.DOCS_DIRECTORY);
+            var docs = await RootFolder.GetFirstByNameAsync(DocSetWriter.DOCS_DIRECTORY);
             if (docs is not IFolder docsDir)
                 throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
             else if (docs is null)
                 throw new InvalidDataException($"Docs directory does not exist at '{DocSetWriter.DOCS_DIRECTORY}'");
 
-            foreach (string uuid in Index.Keys)
+            foreach (string relativePath in Index.Keys)
             {
                 // Open entry for doc
-                var entry = await docsDir.GetFirstItemByNameAsync(uuid);
+                var entry = await docsDir.GetItemByRelativePathAsync(relativePath);
                 if (entry is not IFile entryFile)
                     continue;
 
