@@ -50,7 +50,7 @@ namespace CoptTest
                     .Select(Resource.ReadAllText)
                     .Select(x => DocReader.ParseDocXml(x)));
 
-                DocSetWriter setWriter = new("test-set", "Test Set", docs);
+                DocSetWriter setWriter = new("urn:coptlib:test-set", "Test Set", docs);
                 setWriter.Set.Author = new()
                 {
                     FullName = "Yoshi Askharoun",
