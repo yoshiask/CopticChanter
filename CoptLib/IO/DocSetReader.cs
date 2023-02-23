@@ -92,14 +92,14 @@ namespace CoptLib.IO
             foreach (string relativePath in Index.Keys)
             {
                 // Open entry for doc
-                var entry = await docsDir.GetItemByRelativePathAsync(relativePath);
-                if (entry is not IFile entryFile)
-                    continue;
+                var docItem = await docsDir.GetItemByRelativePathAsync(relativePath);
+                if (docItem is not IFile docFile)
+                    throw new InvalidDataException($"Expected '{relativePath}' to be a file, got '{docItem.GetType()}'");
 
-                using var docStream = await entryFile.OpenStreamAsync();
+                using var docFileStream = await docFile.OpenStreamAsync();
 
                 // Read XML
-                var doc = Set.Context.LoadDoc(docStream);
+                var doc = Set.Context.LoadDoc(docFileStream);
 
                 // Add to Set
                 Set.IncludedDocs.Add(doc);

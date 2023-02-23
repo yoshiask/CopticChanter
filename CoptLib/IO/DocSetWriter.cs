@@ -12,7 +12,7 @@ namespace CoptLib.IO
     public class DocSetWriter
     {
         internal static string DOCS_DIRECTORY = "docs";
-        internal static string INDEX_ENTRY = "index.tsv";
+        internal static string INDEX_ENTRY = "index";
         internal static string META_ENTRY = "meta.xml";
 
         public DocSet Set { get; }
