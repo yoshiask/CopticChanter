@@ -1,7 +1,9 @@
 ﻿using CoptLib.ViewModels;
+using OwlCore.Storage;
 using OwlCore.Storage.Uwp;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 
@@ -22,11 +24,29 @@ namespace CopticChanter
 
         private async void LoadDocs(bool present = false)
         {
+            var meta = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("meta.xml");
             var roamingFolder = new WindowsStorageFolder(ApplicationData.Current.RoamingFolder);
 
             try
             {
-                var setVm = await DocSetViewModel.ReadFromFile(roamingFolder);
+
+                DocSetViewModel setVm;
+
+                if (meta != null)
+                {
+                    setVm = await DocSetViewModel.ReadFromFile(roamingFolder);
+                }
+                else
+                {
+                    var set = new CoptLib.Models.DocSet("adhoc", "Coptic Chanter");
+                    await foreach (var file in roamingFolder.GetItemsAsync(StorableType.File).Select(s => (IFile)s))
+                    {
+                        using var fileStream = await file.OpenStreamAsync();
+                        set.IncludedDocs.Add(set.Context.LoadDoc(fileStream));
+                    }
+
+                    setVm = new DocSetViewModel(set);
+                }
 
                 if (present)
                     Present(setVm);
