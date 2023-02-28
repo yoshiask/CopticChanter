@@ -185,7 +185,8 @@ namespace CoptLib.Writing
                         var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
 
                         // /g/ if followed by /i/ or /e/
-                        if (chNextIpa.StartsWith("i", StringComparison.Ordinal) || chNextIpa.StartsWith("e", StringComparison.Ordinal))
+                        if (chNextIpa != null &&
+                            (chNextIpa.StartsWith("i", StringComparison.Ordinal) || chNextIpa.StartsWith("e", StringComparison.Ordinal)))
                             ipa = "g";
 
                         // /ŋ/ if followed by /g/ or /k/
