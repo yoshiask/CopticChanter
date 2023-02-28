@@ -2,16 +2,9 @@
 using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
-
-#if DEBUG
-using Output = System.Diagnostics.Debug;
-#else
-using Output = System.Console;
-#endif
 
 namespace CoptLib.IO
 {
@@ -24,15 +17,7 @@ namespace CoptLib.IO
         /// <returns></returns>
         public static Doc ReadDocXml(string path, LoadContextBase context = null)
         {
-            try
-            {
-                return ParseDocXml(XDocument.Load(path), context);
-            }
-            catch (Exception ex)
-            {
-                Output.WriteLine(ex.Message);
-                return null;
-            }
+            return ParseDocXml(XDocument.Load(path), context);
         }
 
         /// <summary>
@@ -42,15 +27,7 @@ namespace CoptLib.IO
         /// <returns></returns>
         public static Doc ReadDocXml(Stream file, LoadContextBase context = null)
         {
-            try
-            {
-                return ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
-            }
-            catch (Exception ex)
-            {
-                Output.WriteLine(ex.Message);
-                return null;
-            }
+            return ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
         }
 
         /// <summary>
