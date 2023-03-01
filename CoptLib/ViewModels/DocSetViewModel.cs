@@ -14,13 +14,12 @@ public partial class DocSetViewModel : ObservableObject
 {
     private DocSetViewModel()
     {
-        CreateLayoutCommand = new AsyncRelayCommand(() => Task.Run(CreateLayout));
+        CreateTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
     }
 
-    public DocSetViewModel(DocSet set) : this()
+    public DocSetViewModel(DocSet set) : this(set.IncludedDocs)
     {
         Set = set;
-        Docs = new(set.IncludedDocs.Select(d => new DocViewModel(d)));
     }
 
     public DocSetViewModel(IEnumerable<Doc> docs) : this()
@@ -32,13 +31,13 @@ public partial class DocSetViewModel : ObservableObject
     private DocSet _set;
 
     [ObservableProperty]
-    private ObservableCollection<ObservableCollection<ObservableCollection<object>>> _layout = new();
+    private ObservableCollection<List<List<object>>> _table = new();
 
     [ObservableProperty]
     private ObservableCollection<DocViewModel> _docs;
 
     [ObservableProperty]
-    private IAsyncRelayCommand _createLayoutCommand;
+    private IAsyncRelayCommand _createTableCommand;
 
     /// <summary>
     /// Creates a new <see cref="DocSet"/> view model from the given folder.
@@ -56,17 +55,17 @@ public partial class DocSetViewModel : ObservableObject
         return new(reader.Set);
     }
 
-    public void CreateLayout()
+    public void CreateTable()
     {
-        Layout.Clear();
+        Table.Clear();
 
-        foreach (var layout in Docs.Select(dvm => dvm.CreateLayout()))
+        foreach (var table in Docs.Select(dvm => dvm.CreateTable()))
         {
             // Ignore layouts that are empty (or just a Doc with no content)
-            if (layout.Count <= 1)
+            if (table.Count <= 1)
                 continue;
 
-            Layout.Add(layout);
+            Table.Add(table);
         }
     }
 }

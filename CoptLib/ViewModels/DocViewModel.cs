@@ -1,34 +1,39 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using CoptLib.Models;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CoptLib.ViewModels;
 
 public partial class DocViewModel : ObservableObject
 {
-    public DocViewModel(Doc doc)
+    public DocViewModel(Doc doc) : this(new DocLayout(doc))
     {
-        Doc = doc;
+    }
+
+    public DocViewModel(DocLayout layout)
+    {
+        Layout = layout;
+        Doc = layout.Doc;
+        CreateTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
     }
 
     [ObservableProperty]
     private Doc _doc;
 
     [ObservableProperty]
-    ObservableCollection<ObservableCollection<object>> _layout;
+    DocLayout _layout;
 
-    public void ApplyTransforms() => Doc.ApplyTransforms();
+    [ObservableProperty]
+    private IAsyncRelayCommand _createTableCommand;
 
-    public ObservableCollection<ObservableCollection<object>> CreateLayout()
+    public List<List<object>> CreateTable()
     {
         // Apply transforms before display
         Doc.ApplyTransforms();
 
-        Layout = new(Doc
-            .Flatten()
-            .Select(r => new ObservableCollection<object>(r))
-        );
-        return Layout;
+        return Layout.CreateTable();
     }
 }

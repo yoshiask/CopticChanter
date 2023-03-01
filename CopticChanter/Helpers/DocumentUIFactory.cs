@@ -2,7 +2,6 @@
 using CoptLib.Models;
 using CoptLib.Writing;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -17,22 +16,24 @@ namespace CopticChanter.Helpers
 {
     public static class DocumentUIFactory
     {
-        public static Grid CreateGridFromDoc(Doc doc) => CreateGridFromLayout((IList<IList<object>>)doc.Flatten());
+        public static Grid CreateGridFromDoc(Doc doc) => CreateGridFromLayout(new DocLayout(doc));
 
-        public static Grid CreateGridFromLayout(IList<IList<object>> layout)
+        public static Grid CreateGridFromLayout(DocLayout layout)
         {
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
 
+            var table = layout.CreateTable();
+
             // Create a column for each language
-            int columnCount = layout.Max(r => r.Count);
+            int columnCount = table.Max(r => r.Count);
             for (int i = 0; i < columnCount; i++)
                 MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             bool isNewDoc = false;
-            for (int r = 0; r < layout.Count; r++)
+            for (int r = 0; r < table.Count; r++)
             {
-                var row = layout[r];
+                var row = table[r];
 
                 // Create new row definition
                 MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });

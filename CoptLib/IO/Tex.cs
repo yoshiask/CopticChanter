@@ -12,7 +12,9 @@ namespace CoptLib.IO
     {
         public static void WriteTex(Doc doc, Stream stream)
         {
-            var layout = doc.Flatten();
+            DocLayout layout = new(doc);
+            var table = layout.CreateTable();
+
             int numCols = doc.Translations.Children.Count;
 
             using StreamWriter writer = new(stream);
@@ -55,9 +57,9 @@ namespace CoptLib.IO
 
             // Write rows
             bool isNewDoc = false;
-            for (int r = 0; r < layout.Count; r++)
+            for (int r = 0; r < table.Count; r++)
             {
-                var row = layout[r];
+                var row = table[r];
 
                 if (row.Count == 1 && row[0] is Doc)
                 {

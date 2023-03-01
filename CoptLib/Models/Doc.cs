@@ -15,6 +15,7 @@ namespace CoptLib.Models
     public class Doc : Definition, IContextualLoad
     {
         private LoadContextBase _context;
+        private bool _transformed = false;
 
         public Doc(LoadContextBase context = null)
         {
@@ -69,76 +70,19 @@ namespace CoptLib.Models
         public void AddDefinition(IDefinition definition) => Context.AddDefinition(definition, this);
 
         /// <summary>
-        /// Flattens the document to a list of lists (2D array), where
-        /// each list is a single row in the document.
-        /// </summary>
-        /// <param name="excludedTranslations">
-        /// A list of translations to exclude from the layout.
-        /// </param>
-        /// <param name="includedTranslations">
-        /// A list of translations to explicitly include in the layout.
-        /// Overrides entries in <paramref name="excludedTranslations"/>.
-        /// </param>
-        /// <remarks>
-        /// Typically used for generating a layout for display purposes.
-        /// </remarks>
-        public List<List<object>> Flatten(IEnumerable<LanguageInfo> excludedTranslations = null, IEnumerable<LanguageInfo> includedTranslations = null)
-        {
-            Guard.IsNotNull(Translations);
-
-            // Remove any entries in the excluded translations list
-            // to prevent unnecessary equality checks later
-            excludedTranslations ??= System.Array.Empty<LanguageInfo>();
-            includedTranslations ??= System.Array.Empty<LanguageInfo>();
-
-            var allTranslations = Translations.Children.Select(t => t.Language).ToList();
-            includedTranslations = includedTranslations.Intersect(allTranslations, LanguageInfoEqualityComparer.StrictWithWild).ToList();
-            var finalTranslations = allTranslations
-                .Except(excludedTranslations, LanguageInfoEqualityComparer.StrictWithWild)
-                .Union(includedTranslations);
-
-            // Get the number of translations to display
-            int translationCount = finalTranslations.Count();
-
-            // Create rows for each stanza
-            int numRows = Translations.CountRows();
-            List<List<object>> layout = new(numRows + 1)
-            {
-                // Add Doc to row so consumer can decide whether to show
-                // the document name
-                this.IntoList<object>()
-            };
-
-            for (int i = 0; i < numRows; i++)
-                layout.Add(new(translationCount));
-
-            for (int t = 0; t < Translations.Children.Count; t++)
-            {
-                var translation = Translations.Children[t];
-
-                // Ignore translation if it's in the exclusion list but not the inclusion list
-                if (excludedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild)
-                    && !includedTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
-                    continue;
-
-                var flattenedTranslation = translation.Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null)
-                    // The row count excludes sections without headers,
-                    // so we have to do the same here.
-                    .Where(p => p is Section section ? section.Title != null : p != null)
-                    .ToList<object>();
-
-                foreach (var (elem, i) in flattenedTranslation.WithIndex())
-                    layout[i + 1].Add(elem);
-            }
-
-            return layout;
-        }
-
-        /// <summary>
         /// Parses text commands and applies font conversions.
         /// </summary>
-        public void ApplyTransforms()
+        /// <param name="force">
+        /// When <see langword="true"/>, the transform will be reapplied
+        /// even if the document has already been parsed. Note that this does
+        /// not apply recursively, meaning that commands and font conversions
+        /// that have already been applied and are unchanged will not be duplicated.
+        /// </param>
+        public void ApplyTransforms(bool force = false)
         {
+            if (_transformed && !force)
+                return;
+
             RecursiveTransform(DirectDefinitions);
             RecursiveTransform(Translations.Children);
         }
