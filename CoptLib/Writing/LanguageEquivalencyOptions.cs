@@ -13,7 +13,7 @@ public enum LanguageEquivalencyOptions : uint
     /// <summary>
     /// The tags must either match exactly or have null values.
     /// </summary>
-    StrictWithWild = ~0,
+    StrictWithWild = ~0u,
 
     /// <summary>
     /// The language must match.
