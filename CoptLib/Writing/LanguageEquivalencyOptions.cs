@@ -3,7 +3,7 @@
 namespace CoptLib.Writing;
 
 [Flags]
-public enum LanguageEquivalencyOptions
+public enum LanguageEquivalencyOptions : uint
 {
     /// <summary>
     /// The tags much match exactly.
