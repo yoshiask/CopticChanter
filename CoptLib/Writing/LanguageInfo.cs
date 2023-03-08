@@ -82,14 +82,14 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         if (idxSecondary > 0)
         {
             LanguageInfo primary = Parse(value.Substring(0, idxSecondary));
-            primary.Secondary = new(value.Substring(idxSecondary + 1));
+            primary.Secondary = Parse(value.Substring(idxSecondary + 1));
             return primary;
         }
 
         // Check if language is known
         if (Enum.TryParse(value, true, out KnownLanguage kLang))
         {
-            return new(KnownLanguages.Values.ElementAt((int)kLang));
+            return new(KnownLanguages.Keys.ElementAt((int)kLang));
         }
 
         return new(value);
