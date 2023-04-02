@@ -252,7 +252,7 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="srcText">The Coptic text to transcribe.</param>
         /// <remarks>
-        /// Use <seealso cref="PhoneticAnalysis(string)"/> for more granular results.
+        /// Use <seealso cref="PhoneticAnalysis(string, bool, bool)"/> for more granular results.
         /// </remarks>
         public static string IpaTranscribe(string srcText, bool useCache = true)
         {
@@ -271,10 +271,10 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="srcText">The Coptic text to transcribe.</param>
         /// <param name="lang">The language to transliterate to.</param>
-        /// <param name="srcTxtLength">The number of characters in the original string. Used for optimization.</param>
+        /// <param name="srcTextLength">The number of characters in the original string. Used for optimization.</param>
         public static string Transliterate(PhoneticEquivalent[][] srcText, KnownLanguage lang, int srcTextLength = 0)
         {
-            if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var table))
+            if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var ipaTable))
                 throw new ArgumentException($"{lang} is not a supported transliteration target.");
 
             StringBuilder sb = new(srcTextLength);
@@ -284,7 +284,7 @@ namespace CoptLib.Writing
                 {
                     // Look up IPA letter in table, if it doesn't
                     // exist, leave it as is
-                    if (!table.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
+                    if (!ipaTable.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
                         tl = pe.Ipa;
 
                     tl = pe.IsUpper ? char.ToUpper(tl[0]) + tl.Substring(1) : tl;
