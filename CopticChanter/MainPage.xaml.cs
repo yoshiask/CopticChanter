@@ -39,7 +39,7 @@ namespace CopticChanter
                 else
                 {
                     var set = new CoptLib.Models.DocSet("adhoc", "Coptic Chanter");
-                    await foreach (var file in roamingFolder.GetItemsAsync(StorableType.File).Select(s => (IFile)s))
+                    await foreach (var file in roamingFolder.GetFilesAsync())
                     {
                         using var fileStream = await file.OpenStreamAsync();
                         set.IncludedDocs.Add(set.Context.LoadDoc(fileStream));
