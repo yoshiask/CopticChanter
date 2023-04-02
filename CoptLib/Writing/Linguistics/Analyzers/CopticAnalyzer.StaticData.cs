@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace CoptLib.Writing
+namespace CoptLib.Writing.Linguistics.Analyzers
 {
-    partial class CopticInterpreter
+    partial class CopticAnalyzer
     {
         public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.' };
         public static readonly char[] Vowels = new[] { 'ⲁ', 'ⲉ', 'ⲓ', 'ⲏ', 'ⲟ', 'ⲱ' };
