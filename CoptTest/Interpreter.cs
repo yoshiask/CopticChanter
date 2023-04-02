@@ -1,4 +1,6 @@
 ﻿using CoptLib.Writing;
+using CoptLib.Writing.Linguistics;
+using CoptLib.Writing.Linguistics.Analyzers;
 using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
@@ -8,6 +10,7 @@ namespace CoptTest
     public class Interpreter
     {
         private readonly ITestOutputHelper _output;
+        private readonly LinguisticAnalyzer _analyzer = new CopticGrecoBohairicAnalyzer();
 
         public Interpreter(ITestOutputHelper output)
         {
@@ -78,7 +81,7 @@ namespace CoptTest
         [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
         public void IpaTranscribe_CopticUnicode(string sample)
         {
-            var result = CopticInterpreter.IpaTranscribe(sample);
+            var result = _analyzer.IpaTranscribe(sample);
             _output.WriteLine(result);
         }
 
@@ -86,7 +89,7 @@ namespace CoptTest
         [MemberData(nameof(GetIpaTranscribe_CopticStandard_Samples))]
         public void IpaTranscribe_CopticStandard(string sample)
         {
-            string result = CopticInterpreter.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
+            string result = _analyzer.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
             _output.WriteLine(result);
         }
 
@@ -94,7 +97,7 @@ namespace CoptTest
         [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
         public void Transliterate_CopticUnicode(string sample, string expected)
         {
-            var result = CopticInterpreter.Transliterate(sample, KnownLanguage.English);
+            var result = _analyzer.Transliterate(sample, KnownLanguage.English);
             _output.WriteLine(result);
             Assert.Equal(expected, result);
         }

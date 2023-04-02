@@ -101,10 +101,14 @@ namespace CoptLib.Models
             if (part is ICommandOutput<object> partCmdOut && partCmdOut.Output != null)
                 part = partCmdOut.Output;
 
-            if (part is IContent partContent)
+            if (part is IContent partContent && part is IMultilingual partContentMulti)
             {
-                if (part is IMultilingual partMulti && partMulti.Language?.Known == KnownLanguage.Coptic)
-                    partContent.SourceText = CopticInterpreter.ExpandAbbreviations(partContent.SourceText);
+                try
+                {
+                    var analyzer = Writing.Linguistics.LinguisticLanguageService.Default.GetAnalyzerForLanguage(partContentMulti.Language);
+                    partContent.SourceText = analyzer.ExpandAbbreviations(partContent.SourceText);
+                }
+                catch { }
             }
 
             if (part is IContentCollectionContainer partCollection)
