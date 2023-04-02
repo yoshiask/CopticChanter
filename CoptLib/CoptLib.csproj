@@ -1,25 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<Version>2.5.0</Version>
-        <Authors>Joshua Askharoun</Authors>
-        <Company>Joshua Askharoun</Company>
-        <Product>Coptic Chanter</Product>
-        <Description>
-            A .NET Standard 2.0 library made to handle scenarios involving documents with interdependencies and multilingual content.
-        </Description>
-        <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>Coptic, Bohairic</PackageTags>
-        <Copyright>2017-2023</Copyright>
-    </PropertyGroup>
+		<Authors>Joshua Askharoun</Authors>
+		<Company>Joshua Askharoun</Company>
+		<Product>Coptic Chanter</Product>
+		<Description>
+			A .NET Standard 2.0 library made to handle scenarios involving documents with interdependencies and multilingual content.
+		</Description>
+		<PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>Coptic, Bohairic</PackageTags>
+		<Copyright>2017-2023</Copyright>
 
-    <ItemGroup>
-        <PackageReference Include="OwlCore" Version="0.2.1" />
-        <PackageReference Include="OwlCore.Storage" Version="0.8.3" />
+		<!-- SourceLink and NuGet symbols -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="OwlCore" Version="0.2.1" />
+		<PackageReference Include="OwlCore.Storage" Version="0.8.3" />
 		<PackageReference Include="CS-Script" Version="4.6.5" />
 		<PackageReference Include="AngleSharp" Version="1.0.1" />
 		<PackageReference Include="System.Linq" Version="4.3.0" />
@@ -29,13 +34,15 @@
 		<PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
 		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
 		<PackageReference Include="NodaTime" Version="3.1.9" />
+
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Remove="Resources\lexicon.tsv" />
 		<EmbeddedResource Include="Resources\lexicon.tsv" />
 
-        <None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
