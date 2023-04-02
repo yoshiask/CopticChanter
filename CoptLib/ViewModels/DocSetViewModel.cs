@@ -14,7 +14,7 @@ public partial class DocSetViewModel : ObservableObject
 {
     private DocSetViewModel()
     {
-        CreateTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
+        CreateTablesCommand = new AsyncRelayCommand(() => Task.Run(CreateTables));
     }
 
     public DocSetViewModel(DocSet set) : this(set.IncludedDocs)
@@ -31,13 +31,13 @@ public partial class DocSetViewModel : ObservableObject
     private DocSet _set;
 
     [ObservableProperty]
-    private ObservableCollection<List<List<object>>> _table = new();
+    private ObservableCollection<List<List<object>>> _tables = new();
 
     [ObservableProperty]
     private ObservableCollection<DocViewModel> _docs;
 
     [ObservableProperty]
-    private IAsyncRelayCommand _createTableCommand;
+    private IAsyncRelayCommand _createTablesCommand;
 
     /// <summary>
     /// Creates a new <see cref="DocSet"/> view model from the given folder.
@@ -55,9 +55,9 @@ public partial class DocSetViewModel : ObservableObject
         return new(reader.Set);
     }
 
-    public void CreateTable()
+    public void CreateTables()
     {
-        Table.Clear();
+        Tables.Clear();
 
         foreach (var table in Docs.Select(dvm => dvm.CreateTable()))
         {
@@ -65,7 +65,7 @@ public partial class DocSetViewModel : ObservableObject
             if (table.Count <= 1)
                 continue;
 
-            Table.Add(table);
+            Tables.Add(table);
         }
     }
 }
