@@ -2,6 +2,7 @@
 using CoptLib.Models;
 using CoptLib.Writing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -18,12 +19,12 @@ namespace CopticChanter.Helpers
     {
         public static Grid CreateGridFromDoc(Doc doc) => CreateGridFromLayout(new DocLayout(doc));
 
-        public static Grid CreateGridFromLayout(DocLayout layout)
+        public static Grid CreateGridFromLayout(DocLayout layout) => CreateGridFromTable(layout.CreateTable());
+        
+        public static Grid CreateGridFromTable(List<List<object>> table)
         {
             Grid MainGrid = new Grid();
             MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
-
-            var table = layout.CreateTable();
 
             // Create a column for each language
             int columnCount = table.Max(r => r.Count);

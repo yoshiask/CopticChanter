@@ -18,7 +18,7 @@
 
     <Grid Padding="0">
         <ProgressBar x:Name="Progress" VerticalAlignment="Top" IsIndeterminate="True"
-                     x:Load="{x:Bind ViewModel.CreateLayoutCommand.IsRunning, Mode=OneWay}"/>
+                     x:Load="{x:Bind ViewModel.CreateTablesCommand.IsRunning, Mode=OneWay}"/>
 
         <ScrollViewer>
             <StackPanel x:Name="MainPanel" Spacing="24"/>

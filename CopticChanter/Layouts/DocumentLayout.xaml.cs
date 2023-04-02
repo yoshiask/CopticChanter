@@ -41,8 +41,8 @@ namespace CopticChanter.Layouts
             Foreground = new SolidColorBrush(args.ForeColor);
 
             ViewModel = args.ViewModel;
-            ViewModel.Layout.CollectionChanged += LayoutChanged;
-            ViewModel.CreateLayoutCommand.Execute(null);
+            ViewModel.Tables.CollectionChanged += TablesChanged;
+            ViewModel.CreateTablesCommand.Execute(null);
 
             base.OnNavigatedTo(e);
 
@@ -50,20 +50,22 @@ namespace CopticChanter.Layouts
             ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
         }
 
-        private async void LayoutChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private async void TablesChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, delegate
             {
-                if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-                    return;
-
-                foreach (var item in e.NewItems)
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
                 {
-                    var layout = (IList<IList<object>>)((IList<ObservableCollection<object>>)item)
-                        .Select(r => (IList<object>)r)
-                        .ToList();
-                    var grid = DocumentUIFactory.CreateGridFromLayout(layout);
-                    MainPanel.Children.Add(grid);
+                    MainPanel.Children.Clear();
+                }
+                else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                {
+                    foreach (var item in e.NewItems)
+                    {
+                        var table = (List<List<object>>)item;
+                        var grid = DocumentUIFactory.CreateGridFromTable(table);
+                        MainPanel.Children.Add(grid);
+                    }
                 }
             });
         }
