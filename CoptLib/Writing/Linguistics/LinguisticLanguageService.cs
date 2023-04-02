@@ -16,6 +16,7 @@ public class LinguisticLanguageService
     public static LinguisticLanguageService Default = new(new()
     {
         { new LanguageInfo(KnownLanguage.Coptic), lang => new CopticGrecoBohairicAnalyzer() },
+        { new LanguageInfo(KnownLanguage.CopticBohairic), lang => new CopticOldBohairicAnalyzer() },
     });
 
     /// <summary>

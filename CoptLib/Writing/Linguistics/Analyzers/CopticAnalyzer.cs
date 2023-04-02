@@ -18,11 +18,17 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     /// </summary>
     public static Dictionary<string, KnownLanguage> LoanWords => _loanWords ?? GetLoanWords();
 
-    private static readonly Dictionary<int, PhoneticEquivalent[]> _wordCache = new();
+    protected readonly IReadOnlyDictionary<char, string> _ipaTranscriptions;
+    protected readonly Dictionary<int, PhoneticEquivalent[]> _wordCache;
 
-    public CopticAnalyzer(LanguageInfo languageInfo) : base(languageInfo)
+    public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, Dictionary<int, PhoneticEquivalent[]> wordCache)
+        : base(languageInfo)
     {
         Guard.IsEqualTo(languageInfo.Language, "cop");
+        Guard.IsNotNull(ipaTranscriptions);
+
+        _ipaTranscriptions = ipaTranscriptions;
+        _wordCache = wordCache;
     }
 
     public override string ExpandAbbreviations(string srcText)
@@ -91,7 +97,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             {
                 char ch = srcWord[c];
                 char? chPrev = (c - 1) >= 0 ? srcWord[c - 1] : null;
-                SimpleIpaTranscriptions.TryGetValue(char.ToLower(ch), out var ipa);
+                _ipaTranscriptions.TryGetValue(char.ToLower(ch), out var ipa);
 
                 // Handle jenkim
                 if (ch == '\u0300' && chPrev != null)
@@ -108,6 +114,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             }
 
             LetterPhoneticAnalysis(ipaWord.AsSpan(srcWordStartIdx), srcWord);
+            System.Diagnostics.Debug.WriteLine($"Analyzed {srcWord} using {GetType().Name}");
 
         finished:
 

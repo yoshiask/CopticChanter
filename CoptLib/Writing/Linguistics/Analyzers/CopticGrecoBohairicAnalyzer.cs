@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 {
+    private static readonly Dictionary<int, PhoneticEquivalent[]> _grecoBohairicWordCache = new();
+
     public CopticGrecoBohairicAnalyzer() : this(new LanguageInfo(KnownLanguage.Coptic))
     {
     }
 
-    protected CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo)
+    protected CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, GrecoBohairicSimpleIpaTranscriptions, _grecoBohairicWordCache)
     {
     }
 
@@ -153,4 +156,40 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             ipaWord[i].Ipa = ipa;
         }
     }
+
+    protected static IReadOnlyDictionary<char, string> GrecoBohairicSimpleIpaTranscriptions = new Dictionary<char, string>
+    {
+        ['ⲁ'] = "ä",
+        ['ⲃ'] = "b",    // Always pronounced "v" in names
+        ['ⲅ'] = "g",
+        ['ⲇ'] = "ð",    // Pronouned "d" in names
+        ['ⲉ'] = "\u0065\u031E",
+        ['ⲍ'] = "z",
+        ['ⲏ'] = "iː",
+        ['ⲑ'] = "θ",
+        ['ⲓ'] = "i",
+        ['ⲕ'] = "k",
+        ['ⲗ'] = "l",
+        ['ⲙ'] = "m",
+        ['ⲛ'] = "n",
+        ['ⲝ'] = "ks",   // Pronounced "eks" when at the start of a word
+        ['ⲟ'] = "\u006F\u031E", // "ⲟⲩ" handled by VowelCombinations
+        ['ⲡ'] = "p",
+        ['ⲣ'] = "ɾ",
+        ['ⲥ'] = "s",
+        ['ⲧ'] = "t",
+        ['ⲩ'] = "i",
+        ['ⲫ'] = "f",
+        ['ⲭ'] = "k",
+        ['ⲯ'] = "ps",   // Pronounced "eps" when following a consonant
+        ['ⲱ'] = "\u006F\u031E",
+        ['ϣ'] = "ʃ",
+        ['ϥ'] = "f",
+        ['ϧ'] = "x",
+        ['ϩ'] = "h",
+        ['ϫ'] = "g",
+        ['ϭ'] = "tʃ",   // Pronounced "etʃ" when following a consonant
+        ['ϯ'] = "ti",
+        ['\u0300'] = "ɛ"  // Jenkim splits syllable
+    };
 }

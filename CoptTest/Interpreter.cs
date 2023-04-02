@@ -102,6 +102,15 @@ namespace CoptTest
             Assert.Equal(expected, result);
         }
 
+        CopticOldBohairicAnalyzer _obAnalyzer = new();
+        [Theory]
+        [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
+        public void IpaTranscribe_OldBohairic(string sample)
+        {
+            var result = _obAnalyzer.IpaTranscribe(sample);
+            _output.WriteLine(result);
+        }
+
         public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
         {
             foreach (string sample in IpaTranscribe_CopticUnicode_Samples)
