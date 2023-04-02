@@ -2,6 +2,7 @@
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
+using CoptLib.Writing.Linguistics;
 
 namespace CoptLib.Scripting.Commands
 {
@@ -15,16 +16,24 @@ namespace CoptLib.Scripting.Commands
             Parse();
         }
 
+        public IDefinition Source { get; private set; }
+
+        public LinguisticAnalyzer Analyzer { get; private set; }
+
         private void Parse()
         {
-            Output = Parameters[0].Select(Transcribe);
+            Source = Parameters[0];
+            Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
+
+            Output = Source.Select(Transcribe);
+
             Evaluated = true;
         }
 
         private void Transcribe(IDefinition def)
         {
             if (def is Run run)
-                run.Text = CopticInterpreter.IpaTranscribe(run.Text);
+                run.Text = Analyzer.IpaTranscribe(run.Text);
 
             if (def is IMultilingual multi)
             {
