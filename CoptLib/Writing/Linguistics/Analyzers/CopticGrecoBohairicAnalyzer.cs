@@ -43,6 +43,9 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                     if (chNextVow && chNext != 'ⲱ')
                     {
                         ipa = "w";
+
+                        if (chNext == 'ⲁ')
+                            ipaWord[i + 1] = new(chNext, "æ");
                     }
                     else
                     {
@@ -71,13 +74,18 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                         ipa = "i" + ipa;
                     }
                 }
+                else if (chPrev == 'ⲟ' || chPrev == 'ⲱ')
+                {
+                    // Digraph /ɔɪ/
+                    ipaWord[i - 1] = new(chPrev, "ɔ");
+                }
                 else if (chPrevVow)
                     ipa = "ɪ";
             }
             else if (ch == 'ⲑ' && (chPrev == 'ⲥ' || chPrev == 'ϣ'))
             {
                 // Becomes /t/ when following ⲥ or ϣ
-                ipa = "t";
+                ipa = "t̪";
             }
             else if (ch == 'ⲭ')
             {
@@ -87,7 +95,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 if (origin == KnownLanguage.Greek)
                 {
                     // If Greek: /ç/ before /e/ or /i/, else /x/
-                    ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ç" : "x";
+                    ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ʃ" : "χ";
                 }
                 else
                 {
@@ -138,7 +146,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 else if (ch == 'ⲃ')
                     ipa = "v";
                 else if (chNextEI && ch == 'ϫ')
-                    ipa = "ʤ";
+                    ipa = "d͡ʒ";
             }
             else
             {
@@ -159,11 +167,11 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
     protected static IReadOnlyDictionary<char, string> GrecoBohairicSimpleIpaTranscriptions = new Dictionary<char, string>
     {
-        ['ⲁ'] = "ä",
-        ['ⲃ'] = "b",    // Always pronounced "v" in names
+        ['ⲁ'] = "ɑ",
+        ['ⲃ'] = "b̪",
         ['ⲅ'] = "g",
-        ['ⲇ'] = "ð",    // Pronouned "d" in names
-        ['ⲉ'] = "\u0065\u031E",
+        ['ⲇ'] = "ð",
+        ['ⲉ'] = "ɛ",
         ['ⲍ'] = "z",
         ['ⲏ'] = "iː",
         ['ⲑ'] = "θ",
@@ -172,24 +180,24 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         ['ⲗ'] = "l",
         ['ⲙ'] = "m",
         ['ⲛ'] = "n",
-        ['ⲝ'] = "ks",   // Pronounced "eks" when at the start of a word
-        ['ⲟ'] = "\u006F\u031E", // "ⲟⲩ" handled by VowelCombinations
-        ['ⲡ'] = "p",
-        ['ⲣ'] = "ɾ",
+        ['ⲝ'] = "ks",
+        ['ⲟ'] = "o\u031E", // "ⲟⲩ" handled by VowelCombinations
+        ['ⲡ'] = "p̪",
+        ['ⲣ'] = "r",
         ['ⲥ'] = "s",
-        ['ⲧ'] = "t",
-        ['ⲩ'] = "i",
-        ['ⲫ'] = "f",
+        ['ⲧ'] = "t̪",
+        ['ⲩ'] = "ɪ",
+        ['ⲫ'] = "ɸ",
         ['ⲭ'] = "k",
-        ['ⲯ'] = "ps",   // Pronounced "eps" when following a consonant
-        ['ⲱ'] = "\u006F\u031E",
+        ['ⲯ'] = "ps",
+        ['ⲱ'] = "o\u031E",
         ['ϣ'] = "ʃ",
-        ['ϥ'] = "f",
-        ['ϧ'] = "x",
+        ['ϥ'] = "ɸ",
+        ['ϧ'] = "χ",
         ['ϩ'] = "h",
         ['ϫ'] = "g",
-        ['ϭ'] = "tʃ",   // Pronounced "etʃ" when following a consonant
-        ['ϯ'] = "ti",
+        ['ϭ'] = "t̠ʃ",
+        ['ϯ'] = "t̪i",
         ['\u0300'] = "ɛ"  // Jenkim splits syllable
     };
 }

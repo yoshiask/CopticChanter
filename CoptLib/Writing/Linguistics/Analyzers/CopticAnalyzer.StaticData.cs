@@ -72,22 +72,22 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             // sure the end result is capitalized.
 
             ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
-            ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,i;ⲁ,ä"),
-            ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ä;ⲕ,k"),
-            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ä;ⲅ,g;ⲱ,o\u031E"),
+            ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ɑ;ⲣ,ɾ;ⲓ,i;ⲁ,ɑ"),
+            ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ɑ;ⲕ,k"),
+            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ɑ;ⲅ,g;ⲱ,o\u031E"),
             ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
-            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ä;ⲩ,v;ⲓ,i;ⲇ,d"),
-            ["ⲙⲓⲭⲁⲏⲗ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲓ,i;ⲭ,x;ⲁ,ä;ⲏ,iː;ⲗ,l"),
-            ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲇ,d;ⲁ,ä;ⲙ,m"),
+            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ɑ;ⲩ,v;ⲓ,i;ⲇ,d"),
+            ["ⲙⲓⲭⲁⲏⲗ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲓ,i;ⲭ,x;ⲁ,ɑ;ⲏ,iː;ⲗ,l"),
+            ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲇ,d;ⲁ,ɑ;ⲙ,m"),
             ["ⲑⲉⲟ̀ⲇⲱⲣⲟⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲑ,θ;ⲉ,e\u031E;\u0300,.;ⲟ,o;ⲇ,d;ⲱ,o\u031E;ⲣ,ɾ;ⲟ,o;ⲥ,s"),
-            ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲃ,;ⲃ,v;ⲁ,ä"),
+            ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲃ,;ⲃ,v;ⲁ,ɑ"),
             ["ⲅⲏ".GetHashCode()] = PhoneticEquivalent.Parse("ⲅ,g;ⲏ,e"),
-            ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,k;ⲟ,;ⲓ,i;ⲁ,ä;ⲕ,k"),
+            ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,k;ⲟ,;ⲓ,i;ⲁ,ɑ;ⲕ,k"),
             ["ⲃⲏⲑⲗⲉⲉⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲃ,b;ⲏ,e\u031E;ⲑ,θ;ⲗ,l;ⲉ,e\u031E;ⲉ,e\u031E;ⲙ,m"),
             ["ⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲭ,ʃ;ⲉ,e\u031E;ⲣ,ɾ;ⲟ,;ⲩ,u;ⲃ,b;ⲓ,i;ⲙ,m"),
-            ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,o\u031E;ⲇ,d;ⲉ,e\u031E;\u0300,.;ⲁ,ä"),
-            ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,;ⲩ,u;ⲇ,d;ⲁ,ä"),
-            ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ä;ⲗ,l;ⲗ,l;ⲏ,iː;ⲗ,l;ⲟ,;ⲩ,u;ⲓ,j;ⲁ,ä"),
+            ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,o\u031E;ⲇ,d;ⲉ,e\u031E;\u0300,.;ⲁ,ɑ"),
+            ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,;ⲩ,u;ⲇ,d;ⲁ,ɑ"),
+            ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲗ,l;ⲗ,l;ⲏ,iː;ⲗ,l;ⲟ,;ⲩ,u;ⲓ,j;ⲁ,ɑ"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticEquivalent[]>
