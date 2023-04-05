@@ -23,10 +23,10 @@ public abstract class LinguisticAnalyzer
     public abstract PhoneticEquivalent[][] PhoneticAnalysis(string srcText);
 
     /// <summary>
-    /// Transcribes Coptic text using the Greco-Bohairic pronunciation into
+    /// Transcribes text into
     /// <see href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">IPA</see>.
     /// </summary>
-    /// <param name="srcText">The Coptic text to transcribe.</param>
+    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     /// <remarks>
     /// Use <seealso cref="PhoneticAnalysis(string)"/> for more granular results.
     /// </remarks>
@@ -42,11 +42,10 @@ public abstract class LinguisticAnalyzer
     }
 
     /// <summary>
-    /// Transliterates Coptic text to the specified language using
-    /// the Greco-Bohairic pronunciation.
+    /// Transliterates text to the specified script.
     /// </summary>
-    /// <param name="srcText">The Coptic text to transcribe.</param>
-    /// <param name="lang">The language to transliterate to.</param>
+    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
+    /// <param name="lang">The script to transliterate to.</param>
     /// <param name="srcTextLength">The number of characters in the original string. Used for optimization.</param>
     public string Transliterate(PhoneticEquivalent[][] srcText, KnownLanguage lang, int srcTextLength = 0)
     {
@@ -72,13 +71,53 @@ public abstract class LinguisticAnalyzer
     }
 
     /// <summary>
-    /// Transliterates Coptic text to the specified language using
-    /// the Greco-Bohairic pronunciation.
+    /// Transliterates text to the specified script.
     /// </summary>
-    /// <param name="srcText">The Coptic text to transcribe.</param>
-    /// <param name="lang">The language to transliterate to.</param>
+    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
+    /// <param name="lang">The script to transliterate to.</param>
     public string Transliterate(string srcText, KnownLanguage lang)
         => Transliterate(PhoneticAnalysis(srcText), lang);
+
+    /// <summary>
+    /// Transcribes text into
+    /// <see href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">IPA</see>,
+    /// then generates <see href="https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language">SSML</see>
+    /// with the pronunciation.
+    /// </summary>
+    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
+    public (string, string) GenerateSsml(string srcText)
+    {
+        var phWords = PhoneticAnalysis(srcText);
+
+        string[] ipaWords = new string[phWords.Length];
+        string[] srcWords = new string[phWords.Length];
+        for (int i = 0; i < phWords.Length; i++)
+        {
+            var phWord = phWords[i];
+            ipaWords[i] = string.Join(null, phWord.Select(ph => ph.Ipa));
+            srcWords[i] = string.Join(null, phWord.Select(ph => ph.GetSource()));
+        }
+
+        string ipaText = string.Join(null, ipaWords);
+
+        StringBuilder ssmlSentenceBuilder = new();
+        for (int w = 0; w < phWords.Length; w++)
+        {
+            var ipaWord = ipaWords[w];
+            var srcWord = srcWords[w];
+
+            if (srcWord[0] == ' ')
+                ssmlSentenceBuilder.Append(' ');
+            else if (Separators.Contains(srcWord[0]))
+                ssmlSentenceBuilder.Append("<break time=\"300ms\"/>");
+            else
+                ssmlSentenceBuilder.Append($"<phoneme alphabet=\"ipa\" ph=\"{ipaWord}\">{srcWord}</phoneme>");
+        }
+
+        string ssmlSentence = ssmlSentenceBuilder.ToString();
+        string ssml = $"<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"en-US\">\r\n    <voice name=\"el-GR-NestorasNeural\">\r\n        <s>{ssmlSentence}</s>\r\n    </voice>\r\n</speak>";
+        return (ssml, ipaText);
+    }
 
     /// <summary>
     /// Replaces all abbreviations with the full word.
