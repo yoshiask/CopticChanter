@@ -9,5 +9,18 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <ProgressRing IsActive="True" />
+        <StackPanel>
+            <TextBox x:Name="inBox"/>
+            <Button Content="Listen" Click="Button_Click"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <MediaPlayerElement x:Name="media" AreTransportControlsEnabled="True"/>
+                <Button Content="Save" Click="SaveButton_Click" Grid.Column="1"/>
+            </Grid>
+            <TextBlock x:Name="ipaOut" IsTextSelectionEnabled="True"/>
+        </StackPanel>
     </Grid>
 </Page>
