@@ -4,7 +4,6 @@ namespace CoptLib.Writing.Linguistics.Analyzers
 {
     partial class CopticAnalyzer
     {
-        public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.' };
         public static readonly char[] Vowels = new[] { 'ⲁ', 'ⲉ', 'ⲓ', 'ⲏ', 'ⲟ', 'ⲱ' };
         public static readonly char[] CopticSpecificLetters = new[] { 'ϣ', 'ϥ', 'ϧ', 'ϫ', 'ϯ', 'ϭ' };
         public static readonly char[] GreekSpecificLetters = new[] { 'ⲅ', 'ⲇ', 'ⲍ', 'ⲝ', 'ⲯ' };
@@ -44,18 +43,14 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             /// Possestive articles
             // Simple
             "ⲙ̀",
-            // 1st singular
-            // "ⲡⲁ", "ⲧⲁ", "ⲛⲁ",    // Ignored due to false positives
             // 2nd masculine singular
             "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
-            // 2nd feminine singular
-            "ⲡⲉ", "ⲧⲉ", "ⲛⲉ",
             // 3rd masculine singular
             "ⲡⲉϥ", "ⲧⲉϥ", "ⲛⲉϥ",
             // 3rd feminine singular
             "ⲡⲉⲥ", "ⲧⲉⲥ", "ⲛⲉⲥ",
             // 1st plural
-            "ⲡⲉⲛ", "ⲧⲉⲛ", //"ⲛⲉⲛ",
+            "ⲡⲉⲛ", "ⲧⲉⲛ", "ⲛⲉⲛ",
             // 2nd plural
             "ⲡⲉⲧⲉⲛ", "ⲧⲉⲧⲉⲛ", "ⲛⲉⲧⲉⲛ",
             // 3rd plural
@@ -63,6 +58,11 @@ namespace CoptLib.Writing.Linguistics.Analyzers
 
             /// Demonstrative adjectives
             "ⲡⲁⲓ", "ⲧⲁⲓ", "ⲛⲁⲓ",
+
+            // Possessive 1st singular
+            "ⲡⲁ", "ⲧⲁ", "ⲛⲁ",
+            // 2nd feminine singular
+            "ⲡⲉ", "ⲧⲉ", "ⲛⲉ",
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciations = new Dictionary<int, PhoneticEquivalent[]>
