@@ -5,13 +5,16 @@ namespace CoptLib.Extensions;
 
 public static class StringExtensions
 {
-    public static bool StartsWithAny(this string str, IEnumerable<string> values)
+    public static bool StartsWithAny(this string str, IEnumerable<string> values, StringComparison comparisonType = default)
     {
         foreach (string val in values)
-            if (str.StartsWith(val))
+            if (str.StartsWith(val, comparisonType))
                 return true;
         return false;
     }
+
+    public static bool StartsWithAny(this string str, StringComparison comparisonType = default, params string[] values)
+        => StartsWithAny(str, values, comparisonType);
 
     public static bool EndsWithAny(this string str, IEnumerable<string> values)
     {
