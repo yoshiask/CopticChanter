@@ -119,7 +119,7 @@ namespace CoptLib.IO
 
         private static string GetShortLanguage(IDefinition multi)
         {
-            return multi.GetLanguage().Known.ToString().Substring(0, 4);
+            return multi.GetLanguage().Known.ToString()[..4];
         }
     }
 }

@@ -348,7 +348,7 @@ namespace CoptLib.Scripting
             // Find the index of each top-level parameter separator
             for (int i = 0; i < innerText.Length; i++)
             {
-                ReadOnlySpan<char> remainingText = innerText.Slice(i);
+                ReadOnlySpan<char> remainingText = innerText[i..];
                 int nextSeparator = IndexOfFirstNonEscaped(remainingText, '|');
                 int nextOpen = IndexOfFirstNonEscaped(remainingText, '{');
 
@@ -388,7 +388,7 @@ namespace CoptLib.Scripting
         private static int IndexOfFirstNonEscaped(ReadOnlySpan<char> text, char value)
         {
             int i = 0;
-            while ((i += text.Slice(i).IndexOf(value)) > 0)
+            while ((i += text[i..].IndexOf(value)) > 0)
             {
                 // Check if previous charater was the escape signal
                 if (i < 1 || text[i - 1] != '\\')

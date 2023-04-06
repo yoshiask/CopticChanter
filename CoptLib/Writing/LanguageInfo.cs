@@ -81,8 +81,8 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         int idxSecondary = value.IndexOf('/');
         if (idxSecondary > 0)
         {
-            LanguageInfo primary = Parse(value.Substring(0, idxSecondary));
-            primary.Secondary = Parse(value.Substring(idxSecondary + 1));
+            LanguageInfo primary = Parse(value[..idxSecondary]);
+            primary.Secondary = Parse(value[(idxSecondary + 1)..]);
             return primary;
         }
 

@@ -275,10 +275,10 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
             if (idx >= 0)
             {
-                string valueStr = line.Substring(idx + 1);
+                string valueStr = line[(idx + 1)..];
                 if (!Enum.TryParse(valueStr, out value))
                     value = KnownLanguage.Default;
-                key = line.Substring(0, idx);
+                key = line[..idx];
             }
             else
             {

@@ -56,7 +56,7 @@
                 if (Ipa.Length == 1)
                     return Ipa.ToUpper();
                 else
-                    return char.ToUpper(Ipa[0]) + Ipa.Substring(1);
+                    return char.ToUpper(Ipa[0]) + Ipa[1..];
             }
         }
 

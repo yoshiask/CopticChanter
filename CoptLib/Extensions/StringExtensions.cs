@@ -27,8 +27,8 @@ public static class StringExtensions
         {
             if (str.StartsWith(val, comparisonType))
             {
-                start = str.Substring(0, val.Length);
-                return str.Substring(val.Length);
+                start = str[..val.Length];
+                return str[val.Length..];
             }
         }
 
@@ -44,12 +44,12 @@ public static class StringExtensions
         while ((index = s.IndexOfAny(separator, start)) >= 0)
         {
             if (index - start > 0)
-                yield return s.Substring(start, index - start);
+                yield return s[start..index];
             yield return s.Substring(index, 1);
             start = index + 1;
         }
 
         if (start < s.Length)
-            yield return s.Substring(start);
+            yield return s[start..];
     }
 }
