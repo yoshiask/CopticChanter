@@ -71,12 +71,12 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             // however, the CopyCasing step in the phonetic analysis will make
             // sure the end result is capitalized.
 
-            ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲏ,;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
+            ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,;ⲏ,iː;ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
             ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲁ,ɑ;ⲣ,ɾ;ⲓ,i;ⲁ,ɑ"),
             ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticEquivalent.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d;ⲣ,ɾ;ⲁ,ɑ;ⲕ,k"),
             ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲃ,b;ⲇ,d;ⲉ,e\u031E;ⲛ,n;ⲁ,ɑ;ⲅ,g;ⲱ,o\u031E"),
             ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,i;ⲥ,s;ⲭ,k;ⲩ,i;ⲣ,ɾ;ⲟ,o;ⲛ,n"),
-            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ɑ;ⲩ,v;ⲓ,i;ⲇ,d"),
+            ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticEquivalent.Parse("ⲇ,d;ⲁ,ɑ;ⲩ,v;ⲓ,iː;ⲇ,d"),
             ["ⲙⲓⲭⲁⲏⲗ".GetHashCode()] = PhoneticEquivalent.Parse("ⲙ,m;ⲓ,i;ⲭ,x;ⲁ,ɑ;ⲏ,iː;ⲗ,l"),
             ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲇ,d;ⲁ,ɑ;ⲙ,m"),
             ["ⲑⲉⲟ̀ⲇⲱⲣⲟⲥ".GetHashCode()] = PhoneticEquivalent.Parse("ⲑ,θ;ⲉ,e\u031E;\u0300,.;ⲟ,o;ⲇ,d;ⲱ,o\u031E;ⲣ,ɾ;ⲟ,o;ⲥ,s"),
@@ -88,6 +88,10 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,o\u031E;ⲇ,d;ⲉ,e\u031E;\u0300,.;ⲁ,ɑ"),
             ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲓ,j;ⲟ,;ⲩ,u;ⲇ,d;ⲁ,ɑ"),
             ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticEquivalent.Parse("ⲁ,ɑ;ⲗ,l;ⲗ,l;ⲏ,iː;ⲗ,l;ⲟ,;ⲩ,u;ⲓ,j;ⲁ,ɑ"),
+
+            ["ⲛⲓ".GetHashCode()] = PhoneticEquivalent.Parse("ⲛ,n;ⲓ,iː"),
+            ["ⲡⲓ".GetHashCode()] = PhoneticEquivalent.Parse("ⲡ,p\u032A;ⲓ,iː"),
+            ["ⲛ\u0300ⲛⲓ".GetHashCode()] = PhoneticEquivalent.Parse("\u0300,ɛ;ⲛ,n;ⲛ,n;ⲓ,iː"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticEquivalent[]> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticEquivalent[]>

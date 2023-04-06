@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoptLib.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -116,8 +117,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
 
                 // /g/ if followed by /i/ or /e/
-                if (chNextIpa != null &&
-                    (chNextIpa.StartsWith("i", StringComparison.Ordinal) || chNextIpa.StartsWith("e", StringComparison.Ordinal)))
+                if (chNextIpa != null && chNextIpa.StartsWithAny(StringComparison.Ordinal, "i", "e", "ɛ"))
                     ipa = "g";
 
                 // /ŋ/ if followed by /g/ or /k/
@@ -142,7 +142,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             {
                 // Current letter preceeds a vowel
                 if (ch == '\u0300')
-                    ipa = ".";
+                    ipa = isFirstChar ? string.Empty : ".";
                 else if (ch == 'ⲃ')
                     ipa = "v";
                 else if (chNextEI && ch == 'ϫ')
@@ -153,7 +153,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 // Current letter preceeds a consonant
                 if (ch == 'ⲃ' && chNext == 'ⲩ')
                     ipa = "v";
-                else if (ch == 'ⲝ')// || (chNext != null && (ch == 'ⲯ' || ch == 'ϭ')))
+                else if (false && ch == 'ⲝ' || (!isLastChar && (ch == 'ⲯ' || ch == 'ϭ')))
                     ipa = "e\u031E" + ipa;
                 else if (ch == '\u0300')
                     ipa = "ɛ";
