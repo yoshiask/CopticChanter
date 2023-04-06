@@ -85,7 +85,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             else if (ch == 'ⲑ' && (chPrev == 'ⲥ' || chPrev == 'ϣ'))
             {
                 // Becomes /t/ when following ⲥ or ϣ
-                ipa = "t̪";
+                ipa = "t\u032A";
             }
             else if (ch == 'ⲭ')
             {
@@ -146,7 +146,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 else if (ch == 'ⲃ')
                     ipa = "v";
                 else if (chNextEI && ch == 'ϫ')
-                    ipa = "d͡ʒ";
+                    ipa = "d\u0361ʒ";
             }
             else
             {
@@ -168,7 +168,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
     protected static IReadOnlyDictionary<char, string> GrecoBohairicSimpleIpaTranscriptions = new Dictionary<char, string>
     {
         ['ⲁ'] = "ɑ",
-        ['ⲃ'] = "b̪",
+        ['ⲃ'] = "b\u032A",
         ['ⲅ'] = "g",
         ['ⲇ'] = "ð",
         ['ⲉ'] = "ɛ",
@@ -182,10 +182,10 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         ['ⲛ'] = "n",
         ['ⲝ'] = "ks",
         ['ⲟ'] = "o\u031E", // "ⲟⲩ" handled by VowelCombinations
-        ['ⲡ'] = "p̪",
+        ['ⲡ'] = "p\u032A",
         ['ⲣ'] = "r",
         ['ⲥ'] = "s",
-        ['ⲧ'] = "t̪",
+        ['ⲧ'] = "t\u032A",
         ['ⲩ'] = "ɪ",
         ['ⲫ'] = "ɸ",
         ['ⲭ'] = "k",
@@ -196,8 +196,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         ['ϧ'] = "χ",
         ['ϩ'] = "h",
         ['ϫ'] = "g",
-        ['ϭ'] = "t̠ʃ",
-        ['ϯ'] = "t̪i",
+        ['ϭ'] = "t\u0320ʃ",
+        ['ϯ'] = "t\u032Ai",
         ['\u0300'] = "ɛ"  // Jenkim splits syllable
     };
 }
