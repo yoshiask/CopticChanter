@@ -116,7 +116,6 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             var morph = word.Substring(srcWordStartIdx);
             PhoneticAnalysisInternal(morph, srcWord);
             morph.CopyTo(word, srcWordStartIdx);
-            System.Diagnostics.Debug.WriteLine($"Analyzed {srcWord} using {GetType().Name}");
 
         finished:
 
