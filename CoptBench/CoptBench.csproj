@@ -8,10 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\CoptTest\CoptTest.csproj" />
+        <ProjectReference Include="..\CoptTest\CoptTest.csproj" />
     </ItemGroup>
 
 </Project>
