@@ -83,6 +83,19 @@ namespace CoptLib.Extensions
                     return true;
             return false;
         }
+
+        public static IList<T> Slice<T>(this IEnumerable<T> collection, int startIndex, int length)
+        {
+            if (collection is Array)
+            {
+                var array = (T[])collection;
+                return new ArraySegment<T>(array, startIndex, length);
+            }
+            else
+            {
+                return collection.Skip(startIndex).Take(length).ToArray();
+            }
+        }
     }
 
     internal class ArrayTraverse
