@@ -20,7 +20,7 @@ public abstract class LinguisticAnalyzer
     /// </summary>
     /// <param name="srcText">The text to analyze.</param>
     /// <returns>An array of transcribed words using IPA.</returns>
-    public abstract PhoneticEquivalent[][] PhoneticAnalysis(string srcText);
+    public abstract PhoneticWord[] PhoneticAnalysis(string srcText);
 
     /// <summary>
     /// Transcribes text into
@@ -35,7 +35,7 @@ public abstract class LinguisticAnalyzer
         var words = PhoneticAnalysis(srcText);
 
         return string.Join(null, words.Select(
-            word => string.Join(null, word.Select(
+            word => string.Join(null, word.Equivalents.Select(
                 ph => ph.GetIpa()
             )))
         );
@@ -47,7 +47,7 @@ public abstract class LinguisticAnalyzer
     /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     /// <param name="lang">The script to transliterate to.</param>
     /// <param name="srcTextLength">The number of characters in the original string. Used for optimization.</param>
-    public string Transliterate(PhoneticEquivalent[][] srcText, KnownLanguage lang, int srcTextLength = 0)
+    public string Transliterate(PhoneticWord[] srcText, KnownLanguage lang, int srcTextLength = 0)
     {
         if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var ipaTable))
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
@@ -55,7 +55,7 @@ public abstract class LinguisticAnalyzer
         StringBuilder sb = new(srcTextLength);
         foreach (var word in srcText)
         {
-            foreach (var pe in word)
+            foreach (var pe in word.Equivalents)
             {
                 // Look up IPA letter in table, if it doesn't
                 // exist, leave it as is
@@ -94,8 +94,8 @@ public abstract class LinguisticAnalyzer
         for (int i = 0; i < phWords.Length; i++)
         {
             var phWord = phWords[i];
-            ipaWords[i] = string.Join(null, phWord.Select(ph => ph.Ipa));
-            srcWords[i] = string.Join(null, phWord.Select(ph => ph.GetSource()));
+            ipaWords[i] = string.Join(null, phWord.Equivalents.Select(ph => ph.Ipa));
+            srcWords[i] = string.Join(null, phWord.Equivalents.Select(ph => ph.GetSource()));
         }
 
         string ipaText = string.Join(null, ipaWords);

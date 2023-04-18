@@ -19,9 +19,9 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     public static Dictionary<string, KnownLanguage> LoanWords => _loanWords ?? GetLoanWords();
 
     protected readonly IReadOnlyDictionary<char, string> _ipaTranscriptions;
-    protected readonly Dictionary<int, PhoneticEquivalent[]> _wordCache;
+    protected readonly Dictionary<int, PhoneticWord> _wordCache;
 
-    public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, Dictionary<int, PhoneticEquivalent[]> wordCache)
+    public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, Dictionary<int, PhoneticWord> wordCache)
         : base(languageInfo)
     {
         Guard.IsEqualTo(languageInfo.Language, "cop");
@@ -38,27 +38,27 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
         return srcText;
     }
 
-    public override PhoneticEquivalent[][] PhoneticAnalysis(string srcText)
+    public override PhoneticWord[] PhoneticAnalysis(string srcText)
         => PhoneticAnalysis(srcText, true, true);
 
     /// <inheritdoc cref="PhoneticAnalysis(string)"/>
-    public PhoneticEquivalent[][] PhoneticAnalysis(string srcText, bool useCache, bool checkPrefixes)
+    public PhoneticWord[] PhoneticAnalysis(string srcText, bool useCache, bool checkPrefixes)
     {
         string[] srcWords = srcText.SplitAndKeep(Separators).ToArray();
-        var ipaWords = new PhoneticEquivalent[srcWords.Length][];
+        var ipaWords = new PhoneticWord[srcWords.Length];
 
         for (int w = 0; w < srcWords.Length; w++)
         {
             string srcWordInit = srcWords[w];
             int srcWordInitHash = srcWordInit.ToLower().GetHashCode();
-            PhoneticEquivalent[] ipaWord;
+            PhoneticWord word;
 
             // Check if entire word has known special pronunciation
-            if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out ipaWord))
+            if (KnownPronunciationsWithPrefix.TryGetValue(srcWordInitHash, out word))
                 goto finished;
 
             // Check if word is in cache
-            if (useCache && _wordCache.TryGetValue(srcWordInitHash, out ipaWord))
+            if (useCache && _wordCache.TryGetValue(srcWordInitHash, out word))
                 goto finished;
 
             string srcWord = srcWordInit;
@@ -72,14 +72,14 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             }
 
             // Initialize phonetic equivalent list and handle prefix
-            ipaWord = new PhoneticEquivalent[srcWordInit.Length];
+            word = new(new PhoneticEquivalent[srcWordInit.Length], new List<int>());
             if (prefix != null)
             {
                 // Run analysis on only the prefix
                 var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
 
                 // Copy pronunciation to full word pronunciation
-                ipaPrefix.CopyTo(ipaWord, 0);
+                ipaPrefix.CopyTo(word, 0);
             }
 
             // Check if base word has known special pronunciation
@@ -87,7 +87,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             if (KnownPronunciations.TryGetValue(srcWordHash, out var ipaBaseWordKnown))
             {
                 // Copy pronunciation to full word pronunciation
-                ipaBaseWordKnown.CopyTo(ipaWord, srcWordStartIdx);
+                ipaBaseWordKnown.CopyTo(word, srcWordStartIdx);
 
                 goto finished;
             }
@@ -110,26 +110,28 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                     srcWord = new(srcChars);
                 }
 
-                ipaWord[c + srcWordStartIdx] = new(ch, ipa!);
+                word.Equivalents[c + srcWordStartIdx] = new(ch, ipa!);
             }
 
-            LetterPhoneticAnalysis(ipaWord.AsSpan(srcWordStartIdx), srcWord);
+            var morph = word.Substring(srcWordStartIdx);
+            PhoneticAnalysisInternal(morph, srcWord);
+            morph.CopyTo(word, srcWordStartIdx);
             System.Diagnostics.Debug.WriteLine($"Analyzed {srcWord} using {GetType().Name}");
 
         finished:
 
             // Preserve casing
-            ipaWords[w] = CopyCasing(srcWordInit, ipaWord);
+            ipaWords[w] = CopyCasing(srcWordInit, word);
 
             // Add word to cache
             if (useCache && !_wordCache.ContainsKey(srcWordInitHash))
-                _wordCache.Add(srcWordInitHash, ipaWord);
+                _wordCache.Add(srcWordInitHash, word);
         }
 
         return ipaWords;
     }
 
-    protected abstract void LetterPhoneticAnalysis(Span<PhoneticEquivalent> ipaWord, string srcWord);
+    protected abstract void PhoneticAnalysisInternal(PhoneticWord ipaWord, string srcWord);
 
     /// <summary>
     /// Uses clues to make an educated guess about which language
@@ -222,16 +224,16 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     /// </summary>
     /// <param name="srcWord">The string to copy casing from.</param>
     /// <param name="ipaWord">The pronunciation to copy casing to.</param>
-    private static PhoneticEquivalent[] CopyCasing(string srcWord, PhoneticEquivalent[] ipaWord)
+    private static PhoneticWord CopyCasing(string srcWord, PhoneticWord ipaWord)
     {
         // A clone of the array needs to made, otherwise changing the source
         // array will affect all references to it. This is particularly a problem
         // when a word appears more than once in a sentence in different cases.
-        var ipaWordNew = (PhoneticEquivalent[])ipaWord.Clone();
+        var newEquivalents = ipaWord.Equivalents.ToArray();
 
         for (int c = 0; c < srcWord.Length; c++)
-            ipaWordNew[c].IsUpper = char.IsUpper(srcWord[c]);
-        return ipaWordNew;
+            newEquivalents[c].IsUpper = char.IsUpper(srcWord[c]);
+        return new(newEquivalents, ipaWord.SyllableBreaks);
     }
 
     /// <summary>

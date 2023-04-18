@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticOldBohairicAnalyzer : CopticAnalyzer
 {
-    private static readonly Dictionary<int, PhoneticEquivalent[]> _oldBohairicWordCache = new();
+    private static readonly Dictionary<int, PhoneticWord> _oldBohairicWordCache = new();
  
     public CopticOldBohairicAnalyzer() : this(new LanguageInfo(KnownLanguage.Coptic))
     {
@@ -17,16 +16,18 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
     {
     }
 
-    protected override void LetterPhoneticAnalysis(Span<PhoneticEquivalent> ipaWord, string srcWord)
+    protected override void PhoneticAnalysisInternal(PhoneticWord word, string srcWord)
     {
-        for (int i = 0; i < ipaWord.Length; i++)
+        var ipaWord = word.Equivalents;
+
+        for (int i = 0; i < ipaWord.Count; i++)
         {
             var ph = ipaWord[i];
             char ch = char.ToLower(ph.Source);
             string ipa = ph.Ipa;
 
             bool isFirstChar = (i - 1) < 0;
-            bool isLastChar = (i + 1) >= ipaWord.Length;
+            bool isLastChar = (i + 1) >= ipaWord.Count;
             char chPrev = !isFirstChar ? ipaWord[i - 1].Source : '\0';
             char chNext = !isLastChar ? ipaWord[i + 1].Source : '\0';
             bool chPrevVow = !isFirstChar && Vowels.Contains(chPrev);
@@ -80,7 +81,7 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
             }
             else if (ch == 'ⲅ')
             {
-                var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
+                var chNextIpa = i < ipaWord.Count - 1 ? ipaWord[i + 1].Ipa : null;
 
                 // /g/ if followed by /i/ or /e/
                 if (chNextIpa != null &&
@@ -101,8 +102,9 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
             }
 
             // Use original character if no IPA equivalent is found
-            ipa ??= ch.ToString();
-            ipaWord[i].Ipa = ipa;
+            var equivalent = ipaWord[i];
+            equivalent.Ipa = ipa ?? ch.ToString();
+            ipaWord[i] = equivalent;
         }
     }
 

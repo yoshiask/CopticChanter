@@ -7,7 +7,7 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 {
-    private static readonly Dictionary<int, PhoneticEquivalent[]> _grecoBohairicWordCache = new();
+    private static readonly Dictionary<int, PhoneticWord> _grecoBohairicWordCache = new();
 
     public CopticGrecoBohairicAnalyzer() : this(new LanguageInfo(KnownLanguage.Coptic))
     {
@@ -17,17 +17,19 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
     {
     }
 
-    protected override void LetterPhoneticAnalysis(Span<PhoneticEquivalent> ipaWord, string srcWord)
+    protected override void PhoneticAnalysisInternal(PhoneticWord word, string srcWord)
     {
         KnownLanguage? origin = null;
-        for (int i = 0; i < ipaWord.Length; i++)
+        var ipaWord = word.Equivalents;
+
+        for (int i = 0; i < ipaWord.Count; i++)
         {
             var ph = ipaWord[i];
             char ch = char.ToLower(ph.Source);
             string ipa = ph.Ipa;
 
             bool isFirstChar = (i - 1) < 0;
-            bool isLastChar = (i + 1) >= ipaWord.Length;
+            bool isLastChar = (i + 1) >= ipaWord.Count;
             char chPrev = !isFirstChar ? ipaWord[i - 1].Source : '\0';
             char chNext = !isLastChar ? ipaWord[i + 1].Source : '\0';
             bool chPrevVow = !isFirstChar && Vowels.Contains(chPrev);
@@ -114,7 +116,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             }
             else if (ch == 'ⲅ')
             {
-                var chNextIpa = i < ipaWord.Length - 1 ? ipaWord[i + 1].Ipa : null;
+                var chNextIpa = i < ipaWord.Count - 1 ? ipaWord[i + 1].Ipa : null;
 
                 // /g/ if followed by /i/ or /e/
                 if (chNextIpa != null && chNextIpa.StartsWithAny(StringComparison.Ordinal, "i", "e", "ɛ"))
@@ -153,7 +155,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 // Current letter preceeds a consonant
                 if (ch == 'ⲃ' && chNext == 'ⲩ')
                     ipa = "v";
-                else if (false && ch == 'ⲝ' || (!isLastChar && (ch == 'ⲯ' || ch == 'ϭ')))
+                else if (false)// && ch == 'ⲝ' || (!isLastChar && (ch == 'ⲯ' || ch == 'ϭ')))
                     ipa = "e\u031E" + ipa;
                 else if (ch == '\u0300')
                     ipa = "ɛ";
@@ -161,7 +163,10 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
             // Use original character if no IPA equivalent is found
             ipa ??= ch.ToString();
-            ipaWord[i].Ipa = ipa;
+
+            var equivalent = ipaWord[i];
+            equivalent.Ipa = ipa;
+            ipaWord[i] = equivalent;
         }
     }
 
