@@ -62,24 +62,27 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                 goto finished;
 
             string srcWord = srcWordInit;
-            string? prefix = null;
+            string? prefixStr = null;
             int srcWordStartIdx = 0;
             if (checkPrefixes)
             {
                 // Separate prefixes
-                srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefix, StringComparison.OrdinalIgnoreCase);
-                srcWordStartIdx = prefix?.Length ?? 0;
+                srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefixStr, StringComparison.OrdinalIgnoreCase);
+                srcWordStartIdx = prefixStr?.Length ?? 0;
             }
 
             // Initialize phonetic equivalent list and handle prefix
             word = new(new PhoneticEquivalent[srcWordInit.Length], new List<int>());
-            if (prefix != null)
+            if (prefixStr != null)
             {
                 // Run analysis on only the prefix
-                var ipaPrefix = PhoneticAnalysis(prefix, useCache, false)[0];
+                var prefix = PhoneticAnalysis(prefixStr, useCache, false)[0];
 
                 // Copy pronunciation to full word pronunciation
-                ipaPrefix.CopyTo(word, 0);
+                prefix.CopyTo(word, 0);
+
+                // Add a syllable break between the prefix and base morphs
+                word.SyllableBreaks.Add(prefix.Length);
             }
 
             // Check if base word has known special pronunciation
@@ -216,6 +219,14 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
         // Remove duplicate underscores
         return stringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Marks where syllables are in the given <paramref name="word"/>.
+    /// </summary>
+    private static void MarkSyllables(PhoneticWord word)
+    {
+
     }
 
     /// <summary>

@@ -88,15 +88,12 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticWord.Parse("ⲓ,j;ⲟ,o\u031E", "ⲇ,d;ⲉ,e\u031E", "ⲁ,ɑ"),
             ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticWord.Parse("ⲓ,j;ⲟ,;ⲩ,u", "ⲇ,d;ⲁ,ɑ"),
             ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ;ⲗ,l", "ⲗ,l;ⲏ,iː", "ⲗ,l;ⲟ,;ⲩ,u", "ⲓ,j;ⲁ,ɑ"),
-
-            ["ⲛⲓ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲓ,iː"),
-            ["ⲡⲓ".GetHashCode()] = PhoneticWord.Parse("ⲡ,p\u032A;ⲓ,iː"),
-            ["ⲛ\u0300ⲛⲓ".GetHashCode()] = PhoneticWord.Parse("\u0300,ɛ;ⲛ,n", "ⲛ,n;ⲓ,iː"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticWord> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticWord>
         {
             ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o\u031E;ⲩ,w;ⲟ,o\u031E;ϩ,h"),
+            ["ⲛⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲉ,ɛ;ⲙ,m"),
         };
     }
 }

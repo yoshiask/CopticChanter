@@ -66,9 +66,9 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             }
             else if (ch == 'ⲓ')
             {
-                // Becomes a "yuh" sound before a vowel, dipthong after
                 if (chNextVow)
                 {
+                    // Becomes a "yuh" sound before a vowel
                     ipa = "j";
 
                     if (!isFirstChar && !Vowels.Contains(chPrev))
@@ -83,7 +83,13 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                     ipaWord[i - 1] = new(chPrev, "ɔ");
                 }
                 else if (chPrevVow)
+                {
                     ipa = "ɪ";
+                }
+                else if (isLastChar)
+                {
+                    ipa = "iː";
+                }
             }
             else if (ch == 'ⲑ' && (chPrev == 'ⲥ' || chPrev == 'ϣ'))
             {
