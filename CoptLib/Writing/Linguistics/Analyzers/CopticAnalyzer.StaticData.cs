@@ -74,25 +74,25 @@ namespace CoptLib.Writing.Linguistics.Analyzers
             ["ⲓⲏⲥⲟⲩⲥ".GetHashCode()] = PhoneticWord.Parse("ⲓ,;ⲏ,iː", "ⲥ,s;ⲟ,;ⲩ,u;ⲥ,s"),
             ["ⲙⲁⲣⲓⲁ".GetHashCode()] = PhoneticWord.Parse("ⲙ,m;ⲁ,ɑ", "ⲣ,ɾ;ⲓ,i", "ⲁ,ɑ"),
             ["ⲥⲉⲇⲣⲁⲕ".GetHashCode()] = PhoneticWord.Parse("ⲥ,s;ⲉ,e\u031E;ⲇ,d", "ⲣ,ɾ;ⲁ,ɑ;ⲕ,k"),
-            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ;ⲃ,b", "ⲇ,d;ⲉ,e\u031E", "ⲛ,n;ⲁ,ɑ", "ⲅ,g;ⲱ,o\u031E"),
+            ["ⲁⲃⲇⲉⲛⲁⲅⲱ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ;ⲃ,b", "ⲇ,d;ⲉ,e\u031E", "ⲛ,n;ⲁ,ɑ", "ⲅ,g;ⲱ,o"),
             ["ⲓⲥⲭⲩⲣⲟⲛ".GetHashCode()] = PhoneticWord.Parse("ⲓ,i;ⲥ,s", "ⲭ,k;ⲩ,i", "ⲣ,ɾ;ⲟ,o;ⲛ,n"),
             ["ⲇⲁⲩⲓⲇ".GetHashCode()] = PhoneticWord.Parse("ⲇ,d;ⲁ,ɑ", "ⲩ,v;ⲓ,iː;ⲇ,d"),
             ["ⲙⲓⲭⲁⲏⲗ".GetHashCode()] = PhoneticWord.Parse("ⲙ,m;ⲓ,i", "ⲭ,x;ⲁ,ɑ", "ⲏ,iː;ⲗ,l"),
             ["ⲁⲇⲁⲙ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ", "ⲇ,d;ⲁ,ɑ;ⲙ,m"),
-            ["ⲑⲉⲟ̀ⲇⲱⲣⲟⲥ".GetHashCode()] = PhoneticWord.Parse("ⲑ,θ;ⲉ,e\u031E", "ⲟ,o", "ⲇ,d;ⲱ,o\u031E", "ⲣ,ɾ;ⲟ,o;ⲥ,s"),
+            ["ⲑⲉⲟ̀ⲇⲱⲣⲟⲥ".GetHashCode()] = PhoneticWord.Parse("ⲑ,θ;ⲉ,e\u031E", "\u0300,;ⲟ,o", "ⲇ,d;ⲱ,o", "ⲣ,ɾ;ⲟ,o;ⲥ,s"),
             ["ⲁⲃⲃⲁ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ;ⲃ,v", "ⲃ,v;ⲁ,ɑ"),
             ["ⲅⲏ".GetHashCode()] = PhoneticWord.Parse("ⲅ,g;ⲏ,e"),
             ["ⲭⲟⲓⲁⲕ".GetHashCode()] = PhoneticWord.Parse("ⲭ,k;ⲟ,;ⲓ,i", "ⲁ,ɑ;ⲕ,k"),
             ["ⲃⲏⲑⲗⲉⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲃ,b;ⲏ,e\u031E;ⲑ,θ", "ⲗ,l;ⲉ,e\u031E", "ⲉ,e\u031E;ⲙ,m"),
             ["ⲭⲉⲣⲟⲩⲃⲓⲙ".GetHashCode()] = PhoneticWord.Parse("ⲭ,ʃ;ⲉ,e\u031E", "ⲣ,ɾ;ⲟ,;ⲩ,u", "ⲃ,b;ⲓ,i;ⲙ,m"),
-            ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticWord.Parse("ⲓ,j;ⲟ,o\u031E", "ⲇ,d;ⲉ,e\u031E", "ⲁ,ɑ"),
+            ["ⲓⲟⲇⲉⲁ̀".GetHashCode()] = PhoneticWord.Parse("ⲓ,j;ⲟ,o", "ⲇ,d;ⲉ,e\u031E", "\u0300,;ⲁ,ɑ"),
             ["ⲓⲟⲩⲇⲁ".GetHashCode()] = PhoneticWord.Parse("ⲓ,j;ⲟ,;ⲩ,u", "ⲇ,d;ⲁ,ɑ"),
             ["ⲁⲗⲗⲏⲗⲟⲩⲓⲁ".GetHashCode()] = PhoneticWord.Parse("ⲁ,ɑ;ⲗ,l", "ⲗ,l;ⲏ,iː", "ⲗ,l;ⲟ,;ⲩ,u", "ⲓ,j;ⲁ,ɑ"),
         };
 
         public static readonly IReadOnlyDictionary<int, PhoneticWord> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticWord>
         {
-            ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o\u031E", "ⲩ,w;ⲟ,o\u031E;ϩ,h"),
+            ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o", "ⲩ,w;ⲟ,o;ϩ,h"),
             ["ⲛⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲉ,ɛ;ⲙ,m"),
         };
     }

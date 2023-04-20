@@ -68,7 +68,7 @@ public abstract class LinguisticAnalyzer
                 if (!ipaTable.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
                     tl = pe.Ipa;
 
-                tl = pe.IsUpper ? char.ToUpper(tl[0]) + tl[1..] : tl;
+                tl = pe.IsUpper && tl.Length >= 2 ? char.ToUpper(tl[0]) + tl[1..] : tl;
                 sb.Append(tl);
             }
         }
