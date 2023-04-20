@@ -1,4 +1,6 @@
-﻿namespace CoptLib.Writing.Linguistics;
+﻿using System;
+
+namespace CoptLib.Writing.Linguistics;
 
 /// <summary>
 /// Represents a character and its pronunciation.
@@ -82,13 +84,5 @@ public struct PhoneticEquivalent
         return word;
     }
 
-    /// <summary>
-    /// Creates a copy of the current object.
-    /// </summary>
-    /// <remarks>
-    /// Since <see cref="IPA"/> is a reference type, its reference
-    /// is copied rather than its value. Changes made to that property
-    /// will affect all copies of this object.
-    /// </remarks>
-    public PhoneticEquivalent Clone() => new(Source, Ipa, IsUpper);
+    public bool IsVowel { get; set; }
 }

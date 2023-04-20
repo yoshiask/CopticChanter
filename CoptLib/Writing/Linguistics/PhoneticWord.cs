@@ -4,20 +4,23 @@ using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace CoptLib.Writing.Linguistics;
 
 public class PhoneticWord
 {
-    public PhoneticWord(IList<PhoneticEquivalent> equivalents, IList<int> syllableBreaks)
+    const char DEFAULT_SYLLABLE_SEPARATOR = 'ˌ';
+
+    public PhoneticWord(IList<PhoneticEquivalent> equivalents, IEnumerable<int> syllableBreaks)
     {
         Equivalents = equivalents;
-        SyllableBreaks = syllableBreaks;
+        SyllableBreaks = new(syllableBreaks);
     }
 
     public IList<PhoneticEquivalent> Equivalents { get; }
 
-    public IList<int> SyllableBreaks { get; }
+    public SortedSet<int> SyllableBreaks { get; }
 
     public int Length => Equivalents.Count;
 
@@ -32,7 +35,7 @@ public class PhoneticWord
             var syllableEquivalents = PhoneticEquivalent.Parse(syllable);
             equivalents.AddRange(syllableEquivalents);
 
-            syllableBreaks.Add(currentSyllableBreak += syllable.Length);
+            syllableBreaks.Add(currentSyllableBreak += syllableEquivalents.Length);
         }
 
         // No need to specify that the last syllable ends
@@ -57,7 +60,7 @@ public class PhoneticWord
         int syllableIndex = 0;
         foreach (int syllableBreak in SyllableBreaks)
         {
-            destinationWord.SyllableBreaks.ReplaceOrAdd(syllableIndex, syllableBreak + offset);
+            destinationWord.SyllableBreaks.Add(syllableBreak + offset);
             syllableIndex++;
         }
     }
@@ -80,12 +83,47 @@ public class PhoneticWord
 
     public override string ToString()
     {
-        string ogStr = string.Join(null, Equivalents.Select(pe => pe.GetSource()));
-
-        string ipaStr = string.Join(null, Equivalents.Select(pe => pe.GetIpa()));
-        foreach (int syllableBreak in SyllableBreaks)
-            ipaStr = ipaStr.Insert(syllableBreak, "'");
-
+        string ogStr = ToString(false);
+        string ipaStr = ToString(true, DEFAULT_SYLLABLE_SEPARATOR);
         return $"({ogStr}, {ipaStr})";
     }
+
+    /// <summary>
+    /// Returns a string that represents either the original word or
+    /// its IPA transcription, using the original casing.
+    /// </summary>
+    /// <param name="useIpa">
+    /// Whether to use the IPA transcription instead of the original text.
+    /// </param>
+    /// <param name="insertSyllableMarkers">
+    /// Whether to include syllable markers in the final string.
+    /// </param>
+    public string ToString(bool useIpa, char? syllableMarkerChar = null)
+    {
+        Func<PhoneticEquivalent, object> getLetter = useIpa
+            ? (PhoneticEquivalent pe) => pe.GetIpa()
+            : (PhoneticEquivalent pe) => pe.GetSource();
+
+        StringBuilder sb = new(Length + (syllableMarkerChar != null ? SyllableBreaks.Count : 0));
+
+        for (int i = 0; i < Length; i++)
+        {
+            if (syllableMarkerChar != null && SyllableBreaks.Contains(i))
+                sb.Append(syllableMarkerChar);
+
+            var pe = Equivalents[i];
+            if (useIpa)
+                sb.Append(pe.GetIpa());
+            else
+                sb.Append(pe.GetSource());
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Returns a string that represents the IPA transcription of
+    /// the source word, using the original casing.
+    /// </summary>
+    public string ToIpaString() => ToString(true, DEFAULT_SYLLABLE_SEPARATOR);
 }

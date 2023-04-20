@@ -92,7 +92,7 @@ namespace CoptLib.Writing.Linguistics.Analyzers
 
         public static readonly IReadOnlyDictionary<int, PhoneticWord> KnownPronunciationsWithPrefix = new Dictionary<int, PhoneticWord>
         {
-            ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o\u031E;ⲩ,w;ⲟ,o\u031E;ϩ,h"),
+            ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o\u031E", "ⲩ,w;ⲟ,o\u031E;ϩ,h"),
             ["ⲛⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲉ,ɛ;ⲙ,m"),
         };
     }

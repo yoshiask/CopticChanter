@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public abstract class LinguisticAnalyzer
 {
-    public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.' };
+    public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.', '/' };
 
     public LanguageInfo Language { get; }
 
@@ -35,10 +36,8 @@ public abstract class LinguisticAnalyzer
         var words = PhoneticAnalysis(srcText);
 
         return string.Join(null, words.Select(
-            word => string.Join(null, word.Equivalents.Select(
-                ph => ph.GetIpa()
-            )))
-        );
+            word => word.ToIpaString()
+        ));
     }
 
     /// <summary>
@@ -55,8 +54,15 @@ public abstract class LinguisticAnalyzer
         StringBuilder sb = new(srcTextLength);
         foreach (var word in srcText)
         {
-            foreach (var pe in word.Equivalents)
+            var syllableBreaks = word.SyllableBreaks;
+
+            for (int i = 0; i < word.Length; i++)
             {
+                if (syllableBreaks.Contains(i))
+                    sb.Append('\'');
+
+                var pe = word.Equivalents[i];
+
                 // Look up IPA letter in table, if it doesn't
                 // exist, leave it as is
                 if (!ipaTable.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
@@ -87,21 +93,21 @@ public abstract class LinguisticAnalyzer
     /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     public (string, string) GenerateSsml(string srcText)
     {
-        var phWords = PhoneticAnalysis(srcText);
+        var words = PhoneticAnalysis(srcText);
 
-        string[] ipaWords = new string[phWords.Length];
-        string[] srcWords = new string[phWords.Length];
-        for (int i = 0; i < phWords.Length; i++)
+        string[] ipaWords = new string[words.Length];
+        string[] srcWords = new string[words.Length];
+        for (int i = 0; i < words.Length; i++)
         {
-            var phWord = phWords[i];
-            ipaWords[i] = string.Join(null, phWord.Equivalents.Select(ph => ph.Ipa));
-            srcWords[i] = string.Join(null, phWord.Equivalents.Select(ph => ph.GetSource()));
+            var word = words[i];
+            ipaWords[i] = word.ToIpaString().ToLower();
+            srcWords[i] = word.ToString(false);
         }
 
         string ipaText = string.Join(null, ipaWords);
 
         StringBuilder ssmlSentenceBuilder = new();
-        for (int w = 0; w < phWords.Length; w++)
+        for (int w = 0; w < words.Length; w++)
         {
             var ipaWord = ipaWords[w];
             var srcWord = srcWords[w];

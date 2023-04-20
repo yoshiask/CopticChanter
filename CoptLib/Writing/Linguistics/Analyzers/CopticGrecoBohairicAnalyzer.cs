@@ -36,6 +36,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             bool chNextVow = !isLastChar && Vowels.Contains(chNext);
             bool chNextEI = chNext == 'ⲉ' || chNext == 'ⲓ';
 
+            bool isVowel = Vowels.Contains(ch) || ch == 'ⲩ' || (!chNextVow && ch == '\u0300');
+
             // Handle special rules
             if (ch == 'ⲩ')
             {
@@ -49,6 +51,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
                         if (chNext == 'ⲁ')
                             ipaWord[i + 1] = new(chNext, "æ");
+
+                        isVowel = false;
                     }
                     else
                     {
@@ -62,6 +66,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 else if (chPrev == 'ⲁ' || chPrev == 'ⲉ')
                 {
                     ipa = "v";
+                    isVowel = false;
                 }
             }
             else if (ch == 'ⲓ')
@@ -75,6 +80,10 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                     {
                         // Add /i/ back if following a consonant
                         ipa = "i" + ipa;
+                    }
+                    else
+                    {
+                        isVowel = false;
                     }
                 }
                 else if (chPrev == 'ⲟ' || chPrev == 'ⲱ')
@@ -150,7 +159,10 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             {
                 // Current letter preceeds a vowel
                 if (ch == '\u0300')
-                    ipa = isFirstChar ? string.Empty : ".";
+                {
+                    ipa = string.Empty;
+                    word.SyllableBreaks.Add(i);
+                }
                 else if (ch == 'ⲃ')
                     ipa = "v";
                 else if (chNextEI && ch == 'ϫ')
@@ -172,6 +184,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
             var equivalent = ipaWord[i];
             equivalent.Ipa = ipa;
+            equivalent.IsVowel = isVowel;
             ipaWord[i] = equivalent;
         }
     }
@@ -192,7 +205,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         ['ⲙ'] = "m",
         ['ⲛ'] = "n",
         ['ⲝ'] = "ks",
-        ['ⲟ'] = "o\u031E", // "ⲟⲩ" handled by VowelCombinations
+        ['ⲟ'] = "o", // "ⲟⲩ" handled by VowelCombinations
         ['ⲡ'] = "p\u032A",
         ['ⲣ'] = "r",
         ['ⲥ'] = "s",
@@ -201,7 +214,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         ['ⲫ'] = "ɸ",
         ['ⲭ'] = "k",
         ['ⲯ'] = "ps",
-        ['ⲱ'] = "o\u031E",
+        ['ⲱ'] = "o",
         ['ϣ'] = "ʃ",
         ['ϥ'] = "ɸ",
         ['ϧ'] = "χ",

@@ -118,6 +118,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
             var morph = word.Substring(srcWordStartIdx);
             PhoneticAnalysisInternal(morph, srcWord);
+            MarkSyllables(morph);
             morph.CopyTo(word, srcWordStartIdx);
 
         finished:
@@ -226,7 +227,69 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     /// </summary>
     private static void MarkSyllables(PhoneticWord word)
     {
+#nullable enable
+        // First pass: Apply the maximal onset principle
+        for (int c = word.Equivalents.Count - 1; c >= 0; --c)
+        {
+            var currPe = word.Equivalents[c];
+            bool isLast = c >= word.Equivalents.Count - 1;
+            bool isFirst = c == 0;
+            PhoneticEquivalent nextPe = isLast ? default : word.Equivalents[c + 1];
+            PhoneticEquivalent prevPe = isFirst ? default : word.Equivalents[c - 1];
 
+            // Jenkim or "ϯ" (/ti/)
+            if (currPe.Source == '\u0300' || currPe.Source == 'ϯ')
+                word.SyllableBreaks.Add(c);
+            // Long
+            else if (currPe.Ipa.Length > 0 && currPe.Ipa[^1] == 'ː')
+                word.SyllableBreaks.Add(--c);
+            // ⲟⲩ digraph
+            else if (!isLast && currPe.Source == 'ⲟ' && nextPe.Source == 'ⲩ')
+            {
+                word.SyllableBreaks.Add(c);
+
+                if (c - 1 > 0)
+                    word.SyllableBreaks.Add(--c);
+            }
+            // CVC
+            else if (!isLast && !isFirst && !prevPe.IsVowel && currPe.IsVowel && !nextPe.IsVowel)
+                word.SyllableBreaks.Add(--c);
+            // VC or CV
+            else if (!isLast && currPe.IsVowel ^ nextPe.IsVowel)
+                word.SyllableBreaks.Add(c);
+        }
+
+        // Second pass: Combine consonant-only and break up complex syllables
+        var breaks = word.SyllableBreaks.ToArray();
+        for (int i = -1; i < breaks.Length - 1; ++i)
+        {
+            int start = i < 0 ? 0 : breaks[i];
+            int end = breaks[i + 1];
+            int length = end - start;
+
+            if (length == 0)
+            {
+                word.SyllableBreaks.Remove(start);
+            }
+            else if (word.Equivalents.Skip(start).Take(length).All(s => !s.IsVowel))
+            {
+                // Maximal onset principle, add the consonants to the next syllable
+                // so it has as longer onset, but only if allowed
+                bool isOu() => i < word.Length - 3 && word.Equivalents[i + 1].Source == 'ⲟ' && word.Equivalents[i + 2].Source == 'ⲩ';
+                bool isTi() => i < word.Length - 2 && word.Equivalents[i + 1].Source == 'ϯ';
+
+                if (!isOu() && !isTi())
+                {
+                    word.SyllableBreaks.Remove(end);
+                    ++i;
+                }
+                else
+                {
+                    word.SyllableBreaks.Remove(start);
+                }
+            }
+        }
+#nullable disable
     }
 
     /// <summary>
