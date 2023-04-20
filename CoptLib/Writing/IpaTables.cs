@@ -12,6 +12,7 @@ namespace CoptLib.Writing
 
         public static IReadOnlyDictionary<string, string> IpaToEnglish() => new Dictionary<string, string>
         {
+            [Linguistics.PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR.ToString()] = "·",
             ["ä"] = "a\u0306",  // ă
             ["æ"] = "a",
             ["ɑ"] = "a\u0306",
@@ -47,6 +48,7 @@ namespace CoptLib.Writing
             ["ps"] = "ps",
             ["ʃ"] = "sʰ",
             ["χ"] = "kʰ",
+            ["x"] = "kʰ",
             ["ç"] = "sʰ",
             ["h"] = "h",
             ["t\u0320ʃ"] = "cʰ",
@@ -55,6 +57,7 @@ namespace CoptLib.Writing
 
         public static IReadOnlyDictionary<string, string> IpaToArabic() => new Dictionary<string, string>
         {
+            [Linguistics.PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR.ToString()] = "·",
             ["ä"] = "ا",
             ["b"] = "ب",
             ["ɣ"] = "غ",
