@@ -78,8 +78,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
                     if (!isFirstChar && !Vowels.Contains(chPrev))
                     {
-                        // Add /i/ back if following a consonant
-                        ipa = "i" + ipa;
+                        // Add /e̞/ back if following a consonant
+                        ipa = "e̞" + ipa;
                     }
                     else
                     {
