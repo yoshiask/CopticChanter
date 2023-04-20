@@ -59,7 +59,7 @@ public abstract class LinguisticAnalyzer
             for (int i = 0; i < word.Length; i++)
             {
                 if (syllableBreaks.Contains(i))
-                    sb.Append('\'');
+                    sb.Append(ipaTable[PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR.ToString()]);
 
                 var pe = word.Equivalents[i];
 
@@ -68,7 +68,7 @@ public abstract class LinguisticAnalyzer
                 if (!ipaTable.TryGetValue(pe.Ipa.ToLowerInvariant(), out var tl))
                     tl = pe.Ipa;
 
-                tl = pe.IsUpper && tl.Length >= 2 ? char.ToUpper(tl[0]) + tl[1..] : tl;
+                tl = pe.IsUpper && tl.Length >= 1 ? char.ToUpper(tl[0]) + tl[1..] : tl;
                 sb.Append(tl);
             }
         }
