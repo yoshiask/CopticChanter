@@ -10,7 +10,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public class PhoneticWord
 {
-    const char DEFAULT_SYLLABLE_SEPARATOR = 'ˌ';
+    public const char DEFAULT_SYLLABLE_SEPARATOR = 'ˌ';
 
     public PhoneticWord(IList<PhoneticEquivalent> equivalents, IEnumerable<int> syllableBreaks)
     {
