@@ -11,7 +11,7 @@
         <ProgressRing IsActive="True" />
         <StackPanel>
             <TextBox x:Name="inBox"/>
-            <Button Content="Listen" Click="Button_Click"/>
+            <Button Content="Listen" Click="ListenButton_Click"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -22,5 +22,8 @@
             </Grid>
             <TextBlock x:Name="ipaOut" IsTextSelectionEnabled="True"/>
         </StackPanel>
+
+        <Button Content="Continue to documents" Click="LoadDocsButton_Click"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
     </Grid>
 </Page>

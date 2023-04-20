@@ -4,6 +4,7 @@ using OwlCore.Storage.Uwp;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.Media.MediaProperties;
 using Windows.Media.SpeechSynthesis;
@@ -28,11 +29,9 @@ namespace CopticChanter
             media.SetMediaPlayer(new Windows.Media.Playback.MediaPlayer());
             media.TransportControls.IsCompact = true;
             media.TransportControls.IsFullWindowButtonVisible = false;
-
-            //LoadDocs(true);
         }
 
-        private async void LoadDocs(bool present = false)
+        private async Task LoadDocs(bool present = false)
         {
             var meta = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("meta.xml");
             var roamingFolder = new WindowsStorageFolder(ApplicationData.Current.RoamingFolder);
@@ -80,7 +79,7 @@ namespace CopticChanter
             Frame.Navigate(typeof(Layouts.DocumentLayout), new Layouts.DocumentLayoutArgs(vm));
         }
 
-        private async void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private async void ListenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             // The string to speak with SSML customizations.
             //string ipa = "niˌaŋˈgeˌlos";
@@ -142,6 +141,11 @@ namespace CopticChanter
                 transcoder.PrepareFileTranscodeAsync(wavFile, mp3File, profile);
             await prepareOp.TranscodeAsync();
             await wavFile.DeleteAsync();
+        }
+
+        private async void LoadDocsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await LoadDocs(true);
         }
     }
 }
