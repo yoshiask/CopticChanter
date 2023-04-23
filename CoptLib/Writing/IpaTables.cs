@@ -32,6 +32,7 @@ namespace CoptLib.Writing
             ["i"] = "i\u0306",  // ĭ
             ["j"] = "y",
             ["ij"] = "i\u0306y",// ĭy
+            ["e\u031Ej"] = "e\u0306y",// ĕy
             ["k"] = "k",
             ["l"] = "l",
             ["m"] = "m",
