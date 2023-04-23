@@ -78,6 +78,9 @@ namespace CoptTest
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ", "Ten·u·osʰt" },
             new object[] { "ⲁⲕⲥⲱϯ", "ăk·so·ti" },
             new object[] { "ⲉ̀ⲧⲉⲛⲥ̀ⲙⲏ", "e·ten·es·mi" },
+            new object[] { "Ⲡⲉⲛⲛⲟⲩϯ", "Pen·nu·ti" },
+            new object[] { "ⲙ̀Ⲫ̀ⲓⲱⲧ", "em·Ef·yot" },
+            new object[] { "ⲡⲉⲧⲥ̀ϣⲉ", "pet·es·sʰe" },
             new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
                            "Ten·u·osʰt em·mok o Pi·ekʰ·rĭs·tos: nem Pek·yot en·ă·gʰă·tʰos: nem Pi·ep·nev·mă etʰ·o·wab: je ăk·i ăk·so·ti em·mon." },
         };
