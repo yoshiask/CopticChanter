@@ -251,6 +251,9 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                 if (c - 1 > 0)
                     word.SyllableBreaks.Add(--c);
             }
+            // Prevent splitting of digraphs
+            else if (!isLast && prevPe.Source == 'ⲓ' && (currPe.Source == 'ⲁ' || currPe.Source == 'ⲉ' || currPe.Source == 'ⲟ'))
+                continue;
             // CVC
             else if (!isLast && !isFirst && !prevPe.IsVowel && currPe.IsVowel && !nextPe.IsVowel)
                 word.SyllableBreaks.Add(--c);
