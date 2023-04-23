@@ -29,12 +29,12 @@ namespace CoptTest
         [Theory]
         [InlineData("en-US", KnownLanguage.English)]
         [InlineData("cop", KnownLanguage.Coptic)]
-        [InlineData("cop-EG-ALX", KnownLanguage.CopticBohairic)]
+        [InlineData("cop-boh", KnownLanguage.CopticBohairic)]
         [InlineData("ar", KnownLanguage.Arabic)]
         [InlineData("ar-EG", KnownLanguage.Arabic)]
         [InlineData("cop/en", KnownLanguage.Coptic, KnownLanguage.English)]
         [InlineData("cop/en-US", KnownLanguage.Coptic, KnownLanguage.English)]
-        [InlineData("cop-EG-ALX/en-US", KnownLanguage.CopticBohairic, KnownLanguage.English)]
+        [InlineData("cop-boh/en-US", KnownLanguage.CopticBohairic, KnownLanguage.English)]
         public void LanguageInfo_ParseKnownLanguage(string tag, KnownLanguage kLang, KnownLanguage? secKLang = null)
         {
             var li = LanguageInfo.Parse(tag);
@@ -46,17 +46,21 @@ namespace CoptTest
         [InlineData("en-US", "en-US", true)]
         [InlineData("en-US", "en", true, LEO.StrictWithWild)]
         [InlineData("cop-GR", "cop", true, LEO.StrictWithWild)]
-        [InlineData("cop-EG-ALX", "cop", true, LEO.StrictWithWild)]
-        [InlineData("cop-EG-ALX/en-US", "cop", true, LEO.StrictWithWild)]
-        [InlineData("cop-EG-ALX", "cop", false, LEO.Strict)]
-        [InlineData("cop-EG-ALX", "cop-EG", false, LEO.Strict)]
-        [InlineData("cop-EG-ALX", "cop-EG-ALX", true, LEO.Strict)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-ALX/en-US", true, LEO.Strict)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-ALX", true, LEO.StrictWithWild)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", false, LEO.StrictWithWild)]//
-        [InlineData("cop-EG-ALX", "cop-EG-AST", true, LEO.LanguageRegion)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", true, LEO.LanguageRegion | LEO.TreatNullAsWild)]
-        [InlineData("cop-EG-ALX/en-US", "cop-EG-AST", true, LEO.LanguageRegion)]
+        [InlineData("cop-boh", "cop", true, LEO.StrictWithWild)]
+        [InlineData("cop-boh/en-US", "cop", true, LEO.StrictWithWild)]
+        [InlineData("cop-boh", "cop", false, LEO.Strict)]
+        [InlineData("cop-boh", "cop-EG", false, LEO.Strict)]
+        [InlineData("cop-boh", "cop-boh", true, LEO.Strict)]
+        [InlineData("cop-boh/en-US", "cop-boh/en-US", true, LEO.Strict)]
+        [InlineData("cop-boh/en-US", "cop-boh", true, LEO.StrictWithWild)]
+        [InlineData("cop-boh/en-US", "cop-sah", false, LEO.StrictWithWild)]//
+        [InlineData("cop-boh", "cop-sah", false, LEO.LanguageRegion)]
+        [InlineData("cop-boh", "cop-sah", true, LEO.Language)]
+        [InlineData("cop-boh", "cop-sah", false, LEO.Region)]
+        [InlineData("cop-boh/en-US", "cop-boh-EL", true, LEO.LanguageRegion | LEO.TreatNullAsWild)]
+        [InlineData("cop-boh/en-US", "cop-boh", true, LEO.LanguageRegion | LEO.TreatNullAsWild)]
+        [InlineData("cop-boh/en-US", "cop-sah", false, LEO.LanguageRegion)]
+        [InlineData("cop-boh/en-US", "cop-sah", true, LEO.Language)]
         [InlineData("pt-BR", "en-BR", true, LEO.Region)]
         [InlineData("cop-GR/en-US", "ar-EG/en-US", true, LEO.Secondary)]
         [InlineData("cop-GR/en-US", "ar-EG/en", true, LEO.Secondary | LEO.TreatNullAsWild)]
@@ -116,14 +120,14 @@ namespace CoptTest
                 if (expected.Contains(actualItem, new LanguageInfoEqualityComparer(LEO.Strict)))
                     expected.Remove(actualItem);
             }
-            Assert.Equal(0, expected.Count);
+            Assert.Empty(expected);
         }
 
         public static readonly string[] LanguageInfo_Parse_Samples = new string[]
         {
             KnownLanguage.English.ToString(), KnownLanguage.Coptic.ToString(),
             KnownLanguage.Arabic.ToString(), KnownLanguage.Default.ToString(),
-            "cop", "cop-GR", "cop-EG-AST", "de", "it-IT", "en-US",
+            "cop", "cop-GR", "cop-sah", "de", "it-IT", "en-US",
             "cop-GR/en-US"
         };
 

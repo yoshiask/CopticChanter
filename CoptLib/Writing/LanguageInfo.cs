@@ -214,15 +214,14 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         ["la"]		    = KnownLanguage.Latin,
         ["es"]		    = KnownLanguage.Spanish,
 
-        /// cop        | Coptic (generic)
-        /// cop-EG-ALX | Bohairic (Alexandra)
-        /// cop-EG-AST | Sahidic (Asyut)
-        /// cop-EG-FYM | Fayyumic (Faiyum)
-        /// cop-EG-SHG | Akhmimic (Sohag)
-        /// cop-EG-MN  | Oxyrhynchite (Minya)
-        /// cop-GR     | Greco-Bohairic
-        ["cop-EG-ALX"]	= KnownLanguage.CopticBohairic,
-        ["cop-EG-AST"]	= KnownLanguage.CopticSahidic,
+        ["cop-boh"]     = KnownLanguage.CopticBohairic,
+        ["cop-sah"]     = KnownLanguage.CopticSahidic,
+        /// cop-akh     | Akhmimic
+        /// cop-fay     | Fayyumic
+        /// cop-her     | Hermopolitan
+        /// cop-lyc     | Lycopolitan
+        /// cop-oxy     | Oxyrhynchite
+        /// cop-boh-EL  | Greco-Bohairic
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);
