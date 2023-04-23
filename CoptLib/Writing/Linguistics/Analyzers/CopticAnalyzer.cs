@@ -251,7 +251,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                 if (c - 1 > 0)
                     word.SyllableBreaks.Add(--c);
             }
-            // Prevent splitting of digraphs
+            // Prevent splitting of other digraphs
             else if (!isLast && prevPe.Source == 'ⲓ' && (currPe.Source == 'ⲁ' || currPe.Source == 'ⲉ' || currPe.Source == 'ⲟ'))
                 continue;
             // CVC
@@ -278,10 +278,11 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             {
                 // Maximal onset principle, add the consonants to the next syllable
                 // so it has as longer onset, but only if allowed
-                bool isOu() => i < word.Length - 3 && word.Equivalents[i + 1].Source == 'ⲟ' && word.Equivalents[i + 2].Source == 'ⲩ';
-                bool isTi() => i < word.Length - 2 && word.Equivalents[i + 1].Source == 'ϯ';
+                bool isOu() => start < word.Length - 3 && word.Equivalents[start + 1].Source == 'ⲟ' && word.Equivalents[start + 2].Source == 'ⲩ';
+                bool isTi() => start < word.Length - 2 && word.Equivalents[start + 1].Source == 'ϯ';
+                bool isJenkim() => start < word.Length - 2 && word.Equivalents[start + 1].Source == '\u0300';
 
-                if (!isOu() && !isTi())
+                if (!(isOu() || isTi() || isJenkim()))
                 {
                     word.SyllableBreaks.Remove(end);
                     ++i;
