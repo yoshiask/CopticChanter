@@ -228,6 +228,13 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     private static void MarkSyllables(PhoneticWord word)
     {
 #nullable enable
+        // Start the list with 0, then later end it with the length of the word.
+        // This allows the second pass to 
+        List<int> breaks = new()
+        {
+            0
+        };
+
         // First pass: Apply the maximal onset principle
         for (int c = word.Equivalents.Count - 1; c >= 0; --c)
         {
@@ -239,60 +246,82 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
             // Jenkim or "ϯ" (/ti/)
             if (currPe.Source == '\u0300' || currPe.Source == 'ϯ')
-                word.SyllableBreaks.Add(c);
+                breaks.Add(c);
             // Long
             else if (currPe.Ipa.Length > 0 && currPe.Ipa[^1] == 'ː')
-                word.SyllableBreaks.Add(--c);
+                breaks.Add(--c);
             // ⲟⲩ digraph
             else if (!isLast && currPe.Source == 'ⲟ' && nextPe.Source == 'ⲩ')
             {
-                word.SyllableBreaks.Add(c);
+                breaks.Add(c);
 
                 if (c - 1 > 0)
-                    word.SyllableBreaks.Add(--c);
+                    breaks.Add(--c);
             }
             // Prevent splitting of other digraphs
             else if (!isLast && prevPe.Source == 'ⲓ' && (currPe.Source == 'ⲁ' || currPe.Source == 'ⲉ' || currPe.Source == 'ⲟ'))
                 continue;
             // CVC
             else if (!isLast && !isFirst && !prevPe.IsVowel && currPe.IsVowel && !nextPe.IsVowel)
-                word.SyllableBreaks.Add(--c);
+                breaks.Add(--c);
             // VC or CV
             else if (!isLast && currPe.IsVowel ^ nextPe.IsVowel)
-                word.SyllableBreaks.Add(c);
+                breaks.Add(c);
         }
 
-        // Second pass: Combine consonant-only and break up complex syllables
-        var breaks = word.SyllableBreaks.ToArray();
-        for (int i = -1; i < breaks.Length - 1; ++i)
+        // Essentially clip the bounds of each syllable. These invalid
+        // syllables should be removed in the following pass.
+        breaks.RemoveAll(b => b < 0 || b > word.Length);
+        breaks.Sort();
+        breaks.Add(word.Length);
+
+        // Second pass: Combine consonant-only syllables and break up complex syllables
+        for (int i = 0; i < breaks.Count - 1; ++i)
         {
-            int start = i < 0 ? 0 : breaks[i];
+            int start = breaks[i];
             int end = breaks[i + 1];
             int length = end - start;
 
+            var substring = word.Substring(start, length);
+
             if (length == 0)
             {
-                word.SyllableBreaks.Remove(start);
+                breaks.Remove(start);
+                --i;
             }
-            else if (word.Equivalents.Skip(start).Take(length).All(s => !s.IsVowel))
+            else if (substring.Equivalents.All(s => !(s.IsVowel || s.Source == 'ϩ')))
             {
                 // Maximal onset principle, add the consonants to the next syllable
                 // so it has as longer onset, but only if allowed
-                bool isOu() => start < word.Length - 3 && word.Equivalents[start + 1].Source == 'ⲟ' && word.Equivalents[start + 2].Source == 'ⲩ';
                 bool isTi() => start < word.Length - 2 && word.Equivalents[start + 1].Source == 'ϯ';
+                bool isOu()
+                {
+                    if (start < word.Length - 3 && word.Equivalents[start + 1].Source == 'ⲟ' && word.Equivalents[start + 2].Source == 'ⲩ')
+                    {
+                        // Allow the digraph to be merged into the previous syllable
+                        // if a vowel follows the digraph.
+                        return start < word.Length - 4 && word.Equivalents[start + 3].IsVowel;
+                    }
+
+                    return false;
+                }
                 bool isJenkim() => start < word.Length - 2 && word.Equivalents[start + 1].Source == '\u0300';
 
-                if (!(isOu() || isTi() || isJenkim()))
+                if (isOu() || isTi() || isJenkim())
                 {
-                    word.SyllableBreaks.Remove(end);
-                    ++i;
+                    breaks.Remove(start);
+                    --i;
                 }
                 else
                 {
-                    word.SyllableBreaks.Remove(start);
+                    breaks.Remove(end);
                 }
             }
         }
+
+        word.SyllableBreaks = new(breaks);
+        word.SyllableBreaks.Remove(0);
+        word.SyllableBreaks.Remove(word.Length);
 #nullable disable
     }
 

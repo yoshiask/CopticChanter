@@ -20,7 +20,7 @@ public class PhoneticWord
 
     public IList<PhoneticEquivalent> Equivalents { get; }
 
-    public SortedSet<int> SyllableBreaks { get; }
+    public SortedSet<int> SyllableBreaks { get; set; }
 
     public int Length => Equivalents.Count;
 
