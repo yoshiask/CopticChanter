@@ -86,14 +86,15 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                         isVowel = false;
                     }
                 }
-                else if (chPrev == 'ⲟ' || chPrev == 'ⲱ')
-                {
-                    // Digraph /ɔɪ/
-                    ipaWord[i - 1] = new(chPrev, "ɔ");
-                }
                 else if (chPrevVow)
                 {
                     ipa = "ɪ";
+
+                    if (chPrev == 'ⲟ' || chPrev == 'ⲱ')
+                    {
+                        // Digraph /ɔɪ/
+                        ipaWord[i - 1] = new(chPrev, "ɔ");
+                    }
                 }
                 else if (isLastChar)
                 {
