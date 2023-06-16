@@ -20,8 +20,9 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
     protected readonly IReadOnlyDictionary<char, string> _ipaTranscriptions;
     protected readonly Dictionary<int, PhoneticWord> _wordCache;
+    protected readonly IReadOnlyList<string> _knownPrefixes;
 
-    public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, Dictionary<int, PhoneticWord> wordCache)
+    public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, IReadOnlyList<string> knownPrefixes, Dictionary<int, PhoneticWord> wordCache)
         : base(languageInfo)
     {
         Guard.IsEqualTo(languageInfo.Language, "cop");
@@ -29,6 +30,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
         _ipaTranscriptions = ipaTranscriptions;
         _wordCache = wordCache;
+        _knownPrefixes = knownPrefixes;
     }
 
     public override string ExpandAbbreviations(string srcText)
@@ -67,7 +69,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             if (checkPrefixes)
             {
                 // Separate prefixes
-                srcWord = srcWordInit.StripAnyFromStart(CopticPrefixes, out prefixStr, StringComparison.OrdinalIgnoreCase);
+                srcWord = srcWordInit.StripAnyFromStart(_knownPrefixes, out prefixStr, StringComparison.OrdinalIgnoreCase);
                 srcWordStartIdx = prefixStr?.Length ?? 0;
             }
 
@@ -289,7 +291,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                 breaks.Remove(start);
                 --i;
             }
-            else if (substring.Equivalents.All(s => !(s.IsVowel || s.Source == 'ϩ')))
+            else if (substring.Equivalents.All(s => !s.IsVowel))
             {
                 // Maximal onset principle, add the consonants to the next syllable
                 // so it has as longer onset, but only if allowed

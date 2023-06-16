@@ -13,7 +13,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
     {
     }
 
-    protected CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, GrecoBohairicSimpleIpaTranscriptions, _grecoBohairicWordCache)
+    protected CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, GrecoBohairicSimpleIpaTranscriptions, BohairicKnownPrefixes, _grecoBohairicWordCache)
     {
     }
 
@@ -189,6 +189,64 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             ipaWord[i] = equivalent;
         }
     }
+
+    public static IReadOnlyList<string> BohairicKnownPrefixes = new string[]
+    {
+        /// Unknown
+        "ⲛ\u0300ⲛⲓ", "ⲁⲕ",
+
+        // Source: https://cld.bz/users/user-73469131/Coptic-Bohairic-Introductory-Course1
+
+        /// Definite articles
+        // Singular masculine
+        "ⲡ̀", "ⲫ̀", "ⲡⲓ",
+        // Singular feminine
+        "ϯ", "ⲑ̀", "ⲧ̀",
+        // Plural
+        "ⲛⲓ", "ⲛⲉⲛ", "ⲛ̀",
+
+        /// Indefinite articles
+        // Singular (masculine and feminine)
+        "ⲟⲩ",
+        // Plural
+        "ϩⲁⲛ",
+
+        /// Possestive articles
+        // Simple
+        "ⲙ̀",
+        // 2nd masculine singular
+        "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
+        // 3rd masculine singular
+        "ⲡⲉϥ", "ⲧⲉϥ", "ⲛⲉϥ",
+        // 3rd feminine singular
+        "ⲡⲉⲥ", "ⲧⲉⲥ", "ⲛⲉⲥ",
+        // 1st plural
+        "ⲡⲉⲛ", "ⲧⲉⲛ", "ⲛⲉⲛ",
+        // 2nd plural
+        "ⲡⲉⲧⲉⲛ", "ⲧⲉⲧⲉⲛ", "ⲛⲉⲧⲉⲛ",
+        // 3rd plural
+        "ⲡⲟⲩ", "ⲧⲟⲩ", "ⲛⲟⲩ",
+
+        /// Relative clauses (who, whom, which)
+        "ⲉⲑ", "ⲉⲧⲉ", "ⲉⲧ", "ⲉ̀",
+
+        /// Relative nouns
+        // Singular masculine
+        "ⲡⲉⲧⲉ", "ⲡⲉⲧ",
+        // Plural
+        "ⲛⲉⲧⲉ", "ⲛⲉⲧ",
+
+        /// Demonstrative adjectives
+        "ⲡⲁⲓ", "ⲧⲁⲓ", "ⲛⲁⲓ",
+
+        // Possessive 1st singular
+        "ⲡⲁ", "ⲧⲁ", "ⲛⲁ",
+        // 2nd feminine singular
+        "ⲡⲉ", "ⲧⲉ", "ⲛⲉ",
+
+        /// Perfect/pluperfect/aorist tense
+        "ⲁ̀"
+    };
 
     protected static IReadOnlyDictionary<char, string> GrecoBohairicSimpleIpaTranscriptions = new Dictionary<char, string>
     {
