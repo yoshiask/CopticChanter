@@ -1,4 +1,5 @@
-﻿using CoptLib.Writing;
+﻿using System;
+using CoptLib.Writing;
 
 namespace CoptLib.Models;
 
@@ -6,22 +7,25 @@ namespace CoptLib.Models;
 /// Represents any collection of <see cref="IMultilingual"/>s that can
 /// be looked up by language.
 /// </summary>
-public interface ITranslationLookup
+public interface ITranslationLookup<out T> where T : IMultilingual
 {
     /// <summary>
-    /// Gets the first <typeparamref name="TMulti"/> in the collection of the given language.
+    /// Gets the first <typeparamref name="T"/> in the collection of the given language.
     /// </summary>
-    /// <typeparam name="TMulti">The type of multilingual content.</typeparam>
     /// <param name="knownLanguage">The language to search for.</param>
-    TMulti GetByLanguage<TMulti>(KnownLanguage knownLanguage)
-        where TMulti : IMultilingual;
+    /// <param name="predicate">An additional results filter.</param>
+    T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool> predicate = null);
 
     /// <summary>
-    /// Gets the first <typeparamref name="TMulti"/> in the collection of the given language.
+    /// Gets the first <typeparamref name="T"/> in the collection of the given language.
     /// </summary>
-    /// <typeparam name="TMulti">The type of multilingual content.</typeparam>
     /// <param name="language">The language to check equivalency against.</param>
+    /// <param name="predicate">An additional results filter.</param>
     /// <param name="options">The rules to compare using.</param>
-    TMulti GetByLanguage<TMulti>(LanguageInfo language, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.StrictWithWild)
-        where TMulti : IMultilingual;
+    T GetByLanguage(LanguageInfo language, Func<T, bool> predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO);
+}
+
+/// <inheritdoc />
+public interface ITranslationLookup : ITranslationLookup<IMultilingual>
+{
 }

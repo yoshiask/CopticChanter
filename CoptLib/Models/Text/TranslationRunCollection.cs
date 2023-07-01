@@ -1,8 +1,6 @@
-﻿using CoptLib.Extensions;
-using CoptLib.Writing;
+﻿using CoptLib.Writing;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CoptLib.Models.Text
 {
@@ -15,26 +13,14 @@ namespace CoptLib.Models.Text
     /// elements.
     /// </para>
     /// </summary>
-    public class TranslationRunCollection : List<Run>, ITranslationLookup, IDefinition
+    public class TranslationRunCollection : TranslationCollection<Run>
     {
         private readonly Dictionary<KnownLanguage, Run> _known = new();
 
         public TranslationRunCollection(string key = null, IDefinition parent = null)
+            : base(key, parent)
         {
-            Key = key;
-            Parent = parent;
-            DocContext = parent?.DocContext;
         }
-
-        public string Key { get; set; }
-
-        public Doc DocContext { get; set; }
-
-        public IDefinition Parent { get; set; }
-
-        public bool IsExplicitlyDefined { get; set; }
-
-        public IList<IDefinition> References { get; } = new List<IDefinition>();
 
         /// <summary>
         /// Creates a new <see cref="Run"/> with the given text and language.
@@ -49,32 +35,41 @@ namespace CoptLib.Models.Text
                 Language = new(knownLanguage)
             };
 
-            // Add to self, for the complex LanguageInfo comparison
-            Add(run);
-
-            // Add to internal dictionary, for fast lookups of known languages
-            _known.Add(knownLanguage, run);
+            
 
             return run;
         }
 
-        public TMulti GetByLanguage<TMulti>(KnownLanguage knownLanguage)
-            where TMulti : IMultilingual
+        /// <summary>
+        /// Adds the existing <see cref="Run"/> to the list of translations.
+        /// </summary>
+        /// <param name="run">The run to add.</param>
+        public void AddRun(Run run)
         {
-            var run = _known[knownLanguage];
+            // Add to self, for the complex LanguageInfo comparison
+            Add(run);
 
-            if (run is TMulti multi)
-                return multi;
-            else
-                throw new InvalidOperationException($"Element {{ {knownLanguage}, '{run}' }} was not of type '{typeof(TMulti)}'");
+            // Add to internal dictionary, for fast lookups of known languages
+            if (run.Language?.Known is not null and not KnownLanguage.Default)
+                _known.Add(run.Language.Known, run);
         }
 
-        public TMulti GetByLanguage<TMulti>(LanguageInfo language, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.StrictWithWild)
-            where TMulti : IMultilingual
+        /// <summary>
+        /// Adds the existing <see cref="Run"/>s to the list of translations.
+        /// </summary>
+        /// <param name="runs">The runs to add.</param>
+        public void AddRuns(IEnumerable<Run> runs)
         {
-            return this
-                .ElementsAs<TMulti>()
-                .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
+            foreach (var run in runs)
+                AddRun(run);
+        }
+        
+        public override Run GetByLanguage(KnownLanguage knownLanguage, Func<Run, bool> predicate = null)
+        {
+            if (!_known.TryGetValue(knownLanguage, out Run run) || (predicate is not null && !predicate(run)))
+                run = base.GetByLanguage(knownLanguage, predicate);
+
+            return run;
         }
 
         public override string ToString()

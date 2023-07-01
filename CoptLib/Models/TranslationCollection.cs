@@ -1,73 +1,48 @@
-﻿using CoptLib.Extensions;
-using CoptLib.Writing;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
+using CoptLib.Writing;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+public class TranslationCollection<T> : List<T>, ITranslationLookup<T>, IDefinition where T : IMultilingual
 {
-    /// <summary>
-    /// Represents a collection of multiple <see cref="ContentPart"/>s that are
-    /// translations of the same content.
-    /// </summary>
-    [XmlRoot("Translations")]
-    public class TranslationCollection : Section, ITranslationLookup
+    public TranslationCollection(string key = null, IDefinition parent = null)
     {
-        public TranslationCollection(IDefinition parent) : base(parent)
-        {
-        }
+        Key = key;
+        Parent = parent;
+        DocContext = parent?.DocContext;
+    }
 
-        /// <summary>
-        /// Gets the first <see cref="ContentPart"/> that has the
-        /// given key.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// The content does not contain a translation with the given key.
-        /// </exception>
-        public ContentPart this[string key]
-            => Children.First(t => t.Key.Equals(key, StringComparison.Ordinal));
+    public string Key { get; set; }
+    public Doc DocContext { get; set; }
+    public IDefinition Parent { get; set; }
+    public bool IsExplicitlyDefined { get; set; }
+    public IList<IDefinition> References { get; } = new List<IDefinition>();
+    
+    public virtual T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool> predicate = null)
+    {
+        IEnumerable<T> items = predicate is null
+            ? this : this.Where(predicate);
 
-        /// <summary>
-        /// Gets the first <see cref="ContentPart"/> in the given <see cref="KnownLanguage"/>.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// The content does not contain a translation for the given language.
-        /// </exception>
-        public ContentPart this[KnownLanguage lang] => Children.First(t => t.Language?.Known == lang);
+        return items
+            .First(t => t.Language?.Known == knownLanguage);
+    }
 
-        /// <summary>
-        /// Gets the <see cref="ContentPart"/> at the given index.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="idx"/> is less than 0 or greater than or equal to the
-        /// number of elements.
-        /// </exception>
-        public ContentPart this[int idx] => Children[idx];
+    public virtual T GetByLanguage(LanguageInfo language, Func<T, bool> predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO)
+    {
+        IEnumerable<T> items = predicate is null
+            ? this : this.Where(predicate);
 
-        public override int CountRows()
-        {
-            // Unlike Sections, the content of a TranslationCollection
-            // is meant to be shown in parallel (side-by-side) rather
-            // than in series (one after the other).
-            return Children.Count > 0
-                ? Children.Max(cp => cp.CountRows())
-                : 0;
-        }
+        return items
+            .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
+    }
+}
 
-        public TMulti GetByLanguage<TMulti>(KnownLanguage knownLanguage)
-            where TMulti : IMultilingual
-        {
-            return Children
-                .ElementsAs<TMulti>()
-                .First(t => t.Language?.Known == knownLanguage);
-        }
-
-        public TMulti GetByLanguage<TMulti>(LanguageInfo language, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.StrictWithWild)
-            where TMulti : IMultilingual
-        {
-            return Children
-                .ElementsAs< TMulti>()
-                .First(t => t.Language?.IsEquivalentTo(language, options) ?? false);
-        }
+public class TranslationCollection : TranslationCollection<IMultilingual>
+{
+    public TranslationCollection(string key = null, IDefinition parent = null)
+        : base(key, parent)
+    {
     }
 }

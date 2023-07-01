@@ -1,11 +1,7 @@
 ﻿using CommunityToolkit.Diagnostics;
-using CoptLib.Extensions;
 using CoptLib.IO;
 using CoptLib.Scripting;
-using CoptLib.Writing;
-using OwlCore.Extensions;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -37,7 +33,7 @@ namespace CoptLib.Models
         public Author Author { get; set; }
 
         [XmlArray("Translations")]
-        public TranslationCollection Translations { get; set; }
+        public TranslationCollectionSection Translations { get; set; }
 
         [XmlArray("Definitions")]
         public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();

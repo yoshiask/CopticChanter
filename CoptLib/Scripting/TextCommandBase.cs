@@ -15,6 +15,7 @@ namespace CoptLib.Scripting
             Name = name;
             Inline = inline;
             Parameters = parameters;
+            DocContext = inline.DocContext;
         }
 
         /// <summary>
@@ -40,10 +41,10 @@ namespace CoptLib.Scripting
 
         protected void HandleOutput()
         {
-            if (Output is ITranslationLookup defLookup)
+            if (Output is ITranslationLookup<IMultilingual> defLookup)
             {
                 KnownLanguage lang = Inline.GetLanguage().Known;
-                Output = defLookup.GetByLanguage<IMultilingual>(lang) as IDefinition;
+                Output = defLookup.GetByLanguage(lang) as IDefinition;
             }
         }
     }

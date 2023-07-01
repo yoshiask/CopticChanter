@@ -139,7 +139,7 @@ namespace CoptLib.IO
                     elem.Name = "String";
                     break;
 
-                case TranslationCollection:
+                case TranslationCollectionSection:
                     elem.Name = "Translations";
                     break;
 
