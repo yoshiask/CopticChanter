@@ -8,6 +8,8 @@ namespace CoptLib.Writing;
 
 public class LanguageInfo : IEquatable<LanguageInfo>
 {
+    public const LanguageEquivalencyOptions DefaultLEO = LanguageEquivalencyOptions.StrictWithWild;
+    
     /// <summary>
     /// Creates a new instance of <see cref="LanguageInfo"/> using the
     /// given RFC 5646 language tag.
@@ -32,12 +34,6 @@ public class LanguageInfo : IEquatable<LanguageInfo>
                 UpdateKnownFromSubtag(Tag);
             }
         }
-
-        try
-        {
-            Culture = CultureInfo.GetCultureInfo(Tag);
-        }
-        catch { }
     }
 
     /// <summary>
@@ -45,7 +41,6 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     /// </summary>
     public LanguageInfo(KnownLanguage known) : this(KnownLanguages.Keys.ElementAt((int)known))
     {
-        Known = known;
     }
 
     /// <summary>
@@ -61,7 +56,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public string Variant { get; }
 
-    public CultureInfo Culture { get; }
+    public CultureInfo Culture { get; private set; }
 
     /// <summary>
     /// A secondary content language, typically used for
@@ -230,5 +225,9 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     {
         if (KnownLanguages.ContainsKey(subtag))
             Known = KnownLanguages[subtag];
+
+        var culture = OwlCore.Flow.Catch(() => CultureInfo.GetCultureInfo(subtag));
+        if (culture is not null)
+            Culture = culture;
     }
 }
