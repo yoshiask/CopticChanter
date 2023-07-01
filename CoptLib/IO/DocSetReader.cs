@@ -5,7 +5,6 @@ using System.IO;
 using OwlCore.Storage;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using OwlCore.Storage.Archive;
 
 namespace CoptLib.IO
 {
@@ -33,10 +32,13 @@ namespace CoptLib.IO
         /// <returns></returns>
         public async Task ReadMetadata()
         {
+            if (Set is not null)
+                return;
+            
             var meta = await RootFolder.GetFirstByNameAsync(DocSetWriter.META_ENTRY);
             if (meta is not IFile metaEntry)
                 throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
-            else if (meta is null)
+            if (meta is null)
                 throw new InvalidDataException($"Metadata does not exist at '{DocSetWriter.META_ENTRY}'");
 
             using var metaEntryStream = await metaEntry.OpenStreamAsync();
@@ -48,10 +50,13 @@ namespace CoptLib.IO
         /// </summary>
         public async Task ReadIndex()
         {
+            if (Index is not null)
+                return;
+            
             var index = await RootFolder.GetFirstByNameAsync(DocSetWriter.INDEX_ENTRY);
             if (index is not IFile indexEntry)
                 throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
-            else if (index is null)
+            if (index is null)
                 throw new InvalidDataException($"Index does not exist at '{DocSetWriter.INDEX_ENTRY}'");
 
             using var indexEntryStream = await indexEntry.OpenStreamAsync();
@@ -61,8 +66,8 @@ namespace CoptLib.IO
             Index = new();
             while (!indexReader.EndOfStream)
             {
-                string relativePath = indexReader.ReadLine();
-                string name = indexReader.ReadLine();
+                string relativePath = await indexReader.ReadLineAsync();
+                string name = await indexReader.ReadLineAsync();
                 Index.Add(relativePath, name);
             }
         }
@@ -70,23 +75,15 @@ namespace CoptLib.IO
         /// <summary>
         /// Reads and parses all <see cref="Doc"/>s in the set.
         /// </summary>
-        /// <remarks>
-        /// Must be called after <see cref="ReadMetadata"/> and <see cref="ReadIndex"/>.
-        /// </remarks>
         public async Task ReadDocs()
         {
-            Guard.IsNotNull(Index);
-
-            if (RootFolder is ZipArchiveFolder zipFolder)
-            {
-                // Workaround for ZipArchiveFolder's crude virtual folder detection
-                await zipFolder.CreateFolderAsync(DocSetWriter.DOCS_DIRECTORY);
-            }
+            await ReadMetadata();
+            await ReadIndex();
 
             var docs = await RootFolder.GetFirstByNameAsync(DocSetWriter.DOCS_DIRECTORY);
             if (docs is not IFolder docsDir)
                 throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
-            else if (docs is null)
+            if (docs is null)
                 throw new InvalidDataException($"Docs directory does not exist at '{DocSetWriter.DOCS_DIRECTORY}'");
 
             foreach (string relativePath in Index.Keys)
@@ -96,24 +93,12 @@ namespace CoptLib.IO
                 if (docItem is not IFile docFile)
                     throw new InvalidDataException($"Expected '{relativePath}' to be a file, got '{docItem.GetType()}'");
 
-                using var docFileStream = await docFile.OpenStreamAsync();
-
                 // Read XML
-                var doc = Set.Context.LoadDoc(docFileStream);
+                var doc = await Set.Context.LoadDoc(docFile);
 
                 // Add to Set
                 Set.IncludedDocs.Add(doc);
             }
-        }
-
-        /// <summary>
-        /// Reads the set information and meta, then parses all contained documents.
-        /// </summary>
-        public async Task ReadAll()
-        {
-            await ReadMetadata();
-            await ReadIndex();
-            await ReadDocs();
         }
     }
 }
