@@ -36,7 +36,7 @@ namespace CoptLib.Scripting.Commands
         private void Transliterate(IDefinition def)
         {
             if (def is Run run)
-                run.Text = Analyzer.Transliterate(run.Text, Language.Known);
+                run.Text = Analyzer.Transliterate(run.Text, Language.Known, "\u200B\u00B7");
             
             if (def is IMultilingual multi)
             {
