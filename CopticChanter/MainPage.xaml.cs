@@ -1,9 +1,10 @@
-﻿using CoptLib.ViewModels;
+﻿using CoptLib.Models;
+using CoptLib.ViewModels;
 using OwlCore.Storage;
+using OwlCore.Storage.SharpCompress;
 using OwlCore.Storage.Uwp;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.Media.MediaProperties;
@@ -33,27 +34,37 @@ namespace CopticChanter
 
         private async Task LoadDocs(bool present = false)
         {
-            var meta = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("meta.xml");
             var roamingFolder = new WindowsStorageFolder(ApplicationData.Current.RoamingFolder);
 
             try
             {
                 DocSetViewModel setVm;
 
+                var meta = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("meta.xml");
                 if (meta != null)
                 {
-                    setVm = await DocSetViewModel.ReadFromFile(roamingFolder);
+                    setVm = await DocSetViewModel.LoadFromFolder(roamingFolder);
                 }
                 else
                 {
-                    var set = new CoptLib.Models.DocSet("adhoc", "Coptic Chanter");
-                    await foreach (var file in roamingFolder.GetFilesAsync())
+                    var setZipItem = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("set.zip");
+                    if (setZipItem is IStorageFile setZipStorageFile)
                     {
-                        using var fileStream = await file.OpenStreamAsync();
-                        set.IncludedDocs.Add(set.Context.LoadDoc(fileStream));
+                        var setZipFile = new WindowsStorageFile(setZipStorageFile);
+                        var setZipFolder = new ReadOnlyArchiveFolder(setZipFile);
+                        setVm = await DocSetViewModel.LoadFromFolder(setZipFolder);
                     }
+                    else
+                    {
+                        var set = new DocSet("adhoc", "Coptic Chanter");
+                        await foreach (var file in roamingFolder.GetFilesAsync())
+                        {
+                            using var fileStream = await file.OpenStreamAsync();
+                            set.IncludedDocs.Add(set.Context.LoadDoc(fileStream));
+                        }
 
-                    setVm = new DocSetViewModel(set);
+                        setVm = new DocSetViewModel(set);
+                    }
                 }
 
                 if (present)
