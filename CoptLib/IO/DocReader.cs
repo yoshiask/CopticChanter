@@ -1,27 +1,33 @@
-﻿using CoptLib.Extensions;
-using CoptLib.Models;
+﻿using CoptLib.Models;
 using CoptLib.Scripting;
 using CoptLib.Writing;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
+using CoptLib.Models.Text;
 
 namespace CoptLib.IO
 {
     public static class DocReader
     {
         /// <summary>
-        /// Deserializes and returns a DocXML file. Only use in full .NET Framework
+        /// Deserializes and returns a DocXML file.
         /// </summary>
         /// <param name="path">The path to the XML file</param>
         /// <returns></returns>
+        /// <remarks>
+        /// Do not use when broad filesystem access is not available.
+        /// Instead, load the file manually and use <see cref="ReadDocXml(string,CoptLib.IO.LoadContextBase)"/>. 
+        /// </remarks>
         public static Doc ReadDocXml(string path, LoadContextBase context = null)
         {
             return ParseDocXml(XDocument.Load(path), context);
         }
 
         /// <summary>
-        /// Deserializes and returns a DocXML file. For use in UWP
+        /// Deserializes and returns a DocXML file.
         /// </summary>
         /// <param name="file">A Stream of the XML file</param>
         /// <returns></returns>
@@ -43,7 +49,7 @@ namespace CoptLib.IO
             // The actual content can't be directly deserialized, so it needs to be manually parsed
             Doc doc = new(context ?? new LoadContext())
             {
-                Name = xml.Root.Element(nameof(doc.Name))?.Value,
+                Name = xml.Root!.Element(nameof(doc.Name))?.Value,
                 Key = xml.Root.Element(nameof(doc.Key))?.Value,
             };
 
@@ -84,18 +90,7 @@ namespace CoptLib.IO
                 {
                     def = new Stanza(parent);
                 }
-                else if (defElemName == "String")
-                {
-                    def = new SimpleContent(null, parent);
-                }
-                else if (defElemName == nameof(Comment))
-                {
-                    def = new Comment(parent)
-                    {
-                        Type = defElem.Attribute("Type")?.Value
-                    };
-                }
-                else if (defElemName == nameof(Section) || defElemName == "Translation")
+                else if (defElemName is nameof(Section) or "Translation")
                 {
                     Section section = new(parent);
 
@@ -107,6 +102,21 @@ namespace CoptLib.IO
                         };
 
                     def = section;
+                }
+                else if (defElemName == nameof(Run))
+                {
+                    def = new Run(defElem.Value, parent);
+                }
+                else if (defElemName == nameof(Comment))
+                {
+                    def = new Comment(parent)
+                    {
+                        Type = defElem.Attribute("Type")?.Value
+                    };
+                }
+                else if (defElemName == "String")
+                {
+                    def = new SimpleContent(null, parent);
                 }
                 else if (defElemName == "Script")
                 {
@@ -128,13 +138,13 @@ namespace CoptLib.IO
                 }
                 else if (defElemName == "Translations")
                 {
-                    def = new TranslationCollection(parent);
+                    def = new TranslationCollection(parent: parent);
                 }
 
                 if (def == null)
                     continue;
 
-                ParseCommonXml(def, defElem, doc, def.Parent);
+                ParseCommonXml(ref def, defElem, doc, def.Parent);
 
                 if (def.Key != null)
                     doc.AddDefinition(def);
@@ -144,24 +154,23 @@ namespace CoptLib.IO
             return defs;
         }
 
-        private static void ParseCommonXml(object obj, XElement elem, Doc doc, IDefinition parent)
+        private static void ParseCommonXml(ref IDefinition def, XElement elem, Doc doc, IDefinition parent)
         {
-            if (obj is IDefinition def)
-            {
-                def.DocContext = doc;
-                def.Parent = parent;
-                def.Key = elem.Attribute(nameof(def.Key))?.Value;
+            def.DocContext = doc;
+            def.Parent = parent;
+            def.Key = elem.Attribute(nameof(def.Key))?.Value;
 
-                // Not every IDefinition is explicitly defined,
-                // but since this branch only runs when we already
-                // have an XML element, this is a safe assumption.
-                def.IsExplicitlyDefined = true;
-            }
-            if (obj is IContent content)
+            // Not every IDefinition is explicitly defined,
+            // but since this branch only runs when we already
+            // have an XML element, this is a safe assumption.
+            def.IsExplicitlyDefined = true;
+                
+            if (def is IContent content)
             {
                 content.SourceText = elem.Value;
             }
-            if (obj is IMultilingual multilingual)
+            
+            if (def is IMultilingual multilingual)
             {
                 multilingual.Font = elem.Attribute(nameof(multilingual.Font))?.Value;
 
@@ -177,22 +186,41 @@ namespace CoptLib.IO
                     multilingual.Language ??= parentMultilingual.Language;
                 }
 
-                if (obj is Section sectionMulti && sectionMulti.Title is IMultilingual sectionTitleMulti)
+                if (def is Section {Title: IMultilingual sectionTitleMulti} sectionMulti)
                 {
                     sectionTitleMulti.Font ??= sectionMulti.Font;
                     sectionTitleMulti.Language ??= sectionMulti.Language;
                 }
             }
-            if (obj is IContentCollectionContainer contentCollection && obj is IDefinition defCC)
+            
+            if (def is IContentCollectionContainer contentCollection and IDefinition defCC)
             {
                 // Parse elements, remove anything not a ContentPart
                 var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
-                    .ElementsAs<ContentPart>();
+                    .OfType<ContentPart>();
                 contentCollection.Children.AddRange(defColl);
 
                 string sourceText = elem.Attribute(nameof(contentCollection.Source))?.Value;
                 if (sourceText != null)
                     contentCollection.Source = new SimpleContent(sourceText, defCC);
+            }
+
+            if (def is TranslationCollection translationCollection and IDefinition defTC)
+            {
+                var translations = ParseDefinitionCollection(elem.Elements(), doc, defTC)
+                    .OfType<IMultilingual>()
+                    .ToImmutableArray();
+
+                if (translations.All(t => t is Run))
+                {
+                    TranslationRunCollection runs = new(def.Key, def.Parent);
+                    runs.AddRuns(translations.OfType<Run>());
+                    def = runs;
+                }
+                else
+                {
+                    translationCollection.AddRange(translations);
+                }
             }
         }
     }
