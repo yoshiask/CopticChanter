@@ -94,6 +94,7 @@ namespace CoptLib.Writing.Linguistics.Analyzers
         {
             ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o", "ⲩ,w;ⲟ,o;ϩ,h"),
             ["ⲛⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲉ,ɛ;ⲙ,m"),
+            ["ⲛⲁϩⲣⲉⲛ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲁ,ɑ;ϩ,h", "ⲣ,ɾ;ⲉ,ɛ;ⲛ,n"),
         };
     }
 }

@@ -12,7 +12,7 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
     {
     }
 
-    protected CopticOldBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, OldBohairicSimpleIpaTranscriptions, _oldBohairicWordCache)
+    protected CopticOldBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, OldBohairicSimpleIpaTranscriptions, CopticGrecoBohairicAnalyzer.BohairicKnownPrefixes, _oldBohairicWordCache)
     {
     }
 
