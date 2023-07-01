@@ -1,9 +1,9 @@
 ﻿using CoptLib.IO;
 using CoptLib.Models;
-using OwlCore.Storage.Archive;
+using OwlCore.Storage.SharpCompress;
+using SharpCompress.Archives.Zip;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -44,7 +44,9 @@ namespace CoptTest
                 "Watos Hymn for the Three Saintly Children.xml"
             };
 
-            using (ZipArchiveFolder setFolderActual = new(Resource.GetTestResult(resourceName)))
+            var setFileNew = Resource.GetTestResult(resourceName);
+            using (var archive = ZipArchive.Create())
+            using (ArchiveFolder setFolderNew = new(archive, resourceName, setFileNew.Name))
             {
                 List<Doc> docs = new(fileNames
                     .Select(Resource.ReadAllText)
@@ -57,22 +59,26 @@ namespace CoptTest
                     Email = "jjask7@gmail.com",
                     Website = "https://github.com/yoshiask"
                 };
-                await setWriter.Write(setFolderActual);
+
+                await setWriter.Write(setFolderNew);
+
+                using var setFileStream = await setFileNew.OpenStreamAsync(FileAccess.Write);
+                archive.SaveTo(setFileStream);
             }
 
             DocSet setActual;
-            using (ZipArchiveFolder setFolderActual = new(Resource.GetTestResult(resourceName, FileMode.Open)))
+            using (ArchiveFolder setFolderActual = new(Resource.GetTestResult(resourceName, FileMode.Open)))
             {
                 DocSetReader readerActual = new(setFolderActual);
-                await readerActual.ReadAll();
+                await readerActual.ReadDocs();
                 setActual = readerActual.Set;
             }
 
             DocSet setExpected;
-            using (ZipArchiveFolder setFolderExpected = new(Resource.Get(resourceName)))
+            using (ArchiveFolder setFolderExpected = new(Resource.Get(resourceName)))
             {
                 DocSetReader readerExpected = new(setFolderExpected);
-                await readerExpected.ReadAll();
+                await readerExpected.ReadDocs();
                 setExpected = readerExpected.Set;
             }
 

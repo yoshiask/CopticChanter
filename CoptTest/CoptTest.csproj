@@ -3,13 +3,14 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
+        <LangVersion>latest</LangVersion>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
+        <PackageReference Include="OwlCore.Storage.SharpCompress" Version="0.0.0" />
 
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
         <PackageReference Include="xunit" Version="2.4.2" />
