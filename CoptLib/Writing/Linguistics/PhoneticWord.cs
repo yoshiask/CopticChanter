@@ -10,7 +10,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public class PhoneticWord
 {
-    public const char DEFAULT_SYLLABLE_SEPARATOR = 'ˌ';
+    public const string DEFAULT_SYLLABLE_SEPARATOR = "ˌ";
 
     public PhoneticWord(IList<PhoneticEquivalent> equivalents, IEnumerable<int> syllableBreaks)
     {
@@ -95,27 +95,22 @@ public class PhoneticWord
     /// <param name="useIpa">
     /// Whether to use the IPA transcription instead of the original text.
     /// </param>
-    /// <param name="insertSyllableMarkers">
-    /// Whether to include syllable markers in the final string.
+    /// <param name="syllableSeparator">
+    /// The <see cref="string"/> to separate syllables with,
+    /// or <see langword="null"/> to not separate syllables.
     /// </param>
-    public string ToString(bool useIpa, char? syllableMarkerChar = null)
+    public string ToString(bool useIpa, string? syllableSeparator = null)
     {
-        Func<PhoneticEquivalent, object> getLetter = useIpa
-            ? (PhoneticEquivalent pe) => pe.GetIpa()
-            : (PhoneticEquivalent pe) => pe.GetSource();
-
-        StringBuilder sb = new(Length + (syllableMarkerChar != null ? SyllableBreaks.Count : 0));
+        bool insertSyllableBreaks = syllableSeparator is not null;
+        StringBuilder sb = new(Length + (insertSyllableBreaks ? SyllableBreaks.Count : 0));
 
         for (int i = 0; i < Length; i++)
         {
-            if (syllableMarkerChar != null && SyllableBreaks.Contains(i))
-                sb.Append(syllableMarkerChar);
+            if (insertSyllableBreaks && SyllableBreaks.Contains(i))
+                sb.Append(syllableSeparator);
 
             var pe = Equivalents[i];
-            if (useIpa)
-                sb.Append(pe.GetIpa());
-            else
-                sb.Append(pe.GetSource());
+            sb.Append(useIpa ? pe.GetIpa() : pe.GetSource());
         }
 
         return sb.ToString();

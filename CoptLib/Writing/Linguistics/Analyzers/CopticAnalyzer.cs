@@ -245,7 +245,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             PhoneticEquivalent prevPe = isFirst ? default : word.Equivalents[c - 1];
 
             // Jenkim or "ϯ" (/ti/)
-            if (currPe.Source == '\u0300' || currPe.Source == 'ϯ')
+            if (currPe.Source is '\u0300' or 'ϯ')
                 breaks.Add(c);
             // Long
             else if (currPe.Ipa.Length > 0 && currPe.Ipa[^1] == 'ː')
@@ -259,7 +259,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                     breaks.Add(--c);
             }
             // Prevent splitting of other digraphs
-            else if (!isLast && prevPe.Source == 'ⲓ' && (currPe.Source == 'ⲁ' || currPe.Source == 'ⲉ' || currPe.Source == 'ⲟ'))
+            else if (!isLast && prevPe.Source == 'ⲓ' && currPe.Source is 'ⲁ' or 'ⲉ' or 'ⲟ')
                 continue;
             // CVC
             else if (!isLast && !isFirst && !prevPe.IsVowel && currPe.IsVowel && !nextPe.IsVowel)

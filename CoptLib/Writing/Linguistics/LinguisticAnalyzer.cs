@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public abstract class LinguisticAnalyzer
 {
-    public static readonly char[] Separators = new[] { ' ', ',', ':', ';', '.', '/' };
+    public static readonly char[] Separators = { ' ', ',', ':', ';', '.', '/' };
 
     public LanguageInfo Language { get; }
 
@@ -46,11 +47,17 @@ public abstract class LinguisticAnalyzer
     /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     /// <param name="lang">The script to transliterate to.</param>
     /// <param name="srcTextLength">The number of characters in the original string. Used for optimization.</param>
-    public string Transliterate(PhoneticWord[] srcText, KnownLanguage lang, int srcTextLength = 0)
+    /// <param name="syllableSeparator">
+    /// The <see cref="string"/> to separate syllables with,
+    /// or <see langword="null"/> to not separate syllables.
+    /// </param>
+    public virtual string Transliterate(IEnumerable<PhoneticWord> srcText, KnownLanguage lang,
+        int srcTextLength = 0, string? syllableSeparator = null)
     {
         if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var ipaTable))
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
 
+        bool insertSyllableSeparator = syllableSeparator is not null;
         StringBuilder sb = new(srcTextLength);
         foreach (var word in srcText)
         {
@@ -58,8 +65,9 @@ public abstract class LinguisticAnalyzer
 
             for (int i = 0; i < word.Length; i++)
             {
-                if (syllableBreaks.Contains(i))
-                    sb.Append(ipaTable[PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR.ToString()]);
+                if (insertSyllableSeparator && syllableBreaks.Contains(i))
+                    sb.Append(ipaTable.TryGetValue(syllableSeparator, out var tlSep)
+                        ? tlSep : syllableSeparator);
 
                 var pe = word.Equivalents[i];
 
@@ -82,7 +90,19 @@ public abstract class LinguisticAnalyzer
     /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     /// <param name="lang">The script to transliterate to.</param>
     public string Transliterate(string srcText, KnownLanguage lang)
-        => Transliterate(PhoneticAnalysis(srcText), lang);
+        => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, "\u200B");
+    
+    /// <summary>
+    /// Transliterates text to the specified script.
+    /// </summary>
+    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
+    /// <param name="lang">The script to transliterate to.</param>
+    /// <param name="syllableSeparator">
+    /// The <see cref="string"/> to separate syllables with,
+    /// or <see langword="null"/> to not separate syllables.
+    /// </param>
+    public string Transliterate(string srcText, KnownLanguage lang, string syllableSeparator)
+        => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, syllableSeparator);
 
     /// <summary>
     /// Transcribes text into

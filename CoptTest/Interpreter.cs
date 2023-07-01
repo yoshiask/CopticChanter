@@ -105,7 +105,7 @@ namespace CoptTest
         [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
         public void Transliterate_CopticUnicode(string sample, string expected)
         {
-            var result = _analyzer.Transliterate(sample, KnownLanguage.English);
+            var result = _analyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR);
             _output.WriteLine(result);
             Assert.Equal(expected, result);
         }
