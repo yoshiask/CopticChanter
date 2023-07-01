@@ -1,4 +1,5 @@
 ﻿using CoptLib.Models;
+using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using System.IO;
 using System.Linq;
@@ -91,32 +92,27 @@ namespace CoptLib.IO
         /// <summary>
         /// Serializes a CoptLib object to XML.
         /// </summary>
-        /// <param name="obj">The object from CoptLib.Models to serialize.</param>
-        /// <param name="xName">
+        /// <param name="def">The object from CoptLib.Models to serialize.</param>
+        /// <param name="name">
         /// The name of the XML element. Defaults to the name of
-        /// the type of <paramref name="obj"/>.
+        /// the type of <paramref name="def"/>.
         /// </param>
         /// <returns>
         /// An XML element representing the object.
         /// </returns>
-        public static XElement SerializeObject(object obj, string xName = null)
+        public static XElement SerializeObject(IDefinition def, XName name = null)
         {
-            xName ??= obj.GetType().Name;
-            XElement elem = new(xName);
-            IDefinition parent = null;
+            name ??= def.GetType().Name;
+            XElement elem = new(name);
+            elem.SetAttributeValue(nameof(def.Key), def.Key);
 
-            if (obj is IDefinition def)
-            {
-                elem.SetAttributeValue(nameof(def.Key), def.Key);
-                parent = def.Parent;
-            }
-            if (obj is IContent content)
+            if (def is IContent content)
             {
                 elem.Value = content.SourceText;
             }
-            if (obj is IMultilingual multilingual)
+            if (def is IMultilingual multilingual)
             {
-                var parentMultilingual = parent as IMultilingual;
+                var parentMultilingual = def.Parent as IMultilingual;
                 if (parentMultilingual != null && parentMultilingual?.Language != multilingual.Language
                     && multilingual.Language?.Known != Writing.KnownLanguage.Default)
                     elem.SetAttributeValue(nameof(multilingual.Language), multilingual.Language);
@@ -124,7 +120,7 @@ namespace CoptLib.IO
                 if (parentMultilingual?.Font != multilingual.Font)
                     elem.SetAttributeValue(nameof(multilingual.Font), multilingual.Font);
             }
-            if (obj is IContentCollectionContainer contentCollection)
+            if (def is IContentCollectionContainer contentCollection)
             {
                 foreach (var child in contentCollection.Children)
                     elem.Add(SerializeObject(child));
@@ -133,13 +129,15 @@ namespace CoptLib.IO
             }
 
             // Serialize class-specific properties
-            switch (obj)
+            switch (def)
             {
                 case SimpleContent:
                     elem.Name = "String";
                     break;
 
+                case TranslationCollection:
                 case TranslationCollectionSection:
+                case TranslationRunCollection:
                     elem.Name = "Translations";
                     break;
 
