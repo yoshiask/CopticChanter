@@ -2,6 +2,8 @@
 using CoptLib.Models;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using OwlCore.Storage;
 
 namespace CoptLib.IO
 {
@@ -73,6 +75,17 @@ namespace CoptLib.IO
             var doc = DocReader.ReadDocXml(file, this);
             _loadedDocs.Add(doc);
             return doc;
+        }
+
+        /// <summary>
+        /// Loads a document from a given file.
+        /// </summary>
+        /// <param name="file">The file to parse from.</param>
+        /// <returns>The document that was parsed.</returns>
+        public async Task<Doc> LoadDoc(IFile file)
+        {
+            using var stream = await file.OpenStreamAsync();
+            return LoadDoc(stream);
         }
 
         /// <summary>
