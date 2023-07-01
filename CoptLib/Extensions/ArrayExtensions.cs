@@ -69,13 +69,6 @@ namespace CoptLib.Extensions
                 yield return (elem, i++);
         }
 
-        public static IEnumerable<TTarget> ElementsAs<TTarget>(this IEnumerable source)
-        {
-            foreach (var elem in source)
-                if (elem is TTarget elemTarget)
-                    yield return elemTarget;
-        }
-
         public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
         {
             foreach (T s in source)
