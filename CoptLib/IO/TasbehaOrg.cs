@@ -1,7 +1,9 @@
-﻿using AngleSharp.Dom;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using AngleSharp.Html.Parser;
 using CoptLib.Models;
 using CoptLib.Writing;
-using System.Linq;
 
 namespace CoptLib.IO
 {
@@ -25,69 +27,67 @@ namespace CoptLib.IO
         /// </returns>
         /// <remarks>
         /// This feature is not for scraping the Tasbeha.org website,
-        /// and will not work for such purposes.<br/> The intended use is for users
+        /// and will not work for such purposes.<br/>The intended use is for users
         /// with more technical experience to copy the full HTML of a lyrics page
         /// after first loading it manually in a full web browser.
         /// </remarks>
         public static Doc ConvertLyricsPage(string html, int lyricId)
         {
-            // Parse the HTML from Tasbeha.org
-            var feed = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(html);
-
             Doc doc = new()
             {
                 Key = $"urn:tasbehaorg:{lyricId}",
             };
 
+            // Parse the HTML from Tasbeha.org
+            var feed = new HtmlParser().ParseDocument(html);
+
             // Set document name
             doc.Name = feed.QuerySelector("h1").TextContent;
-
-            // Set English stanzas
-            Section englishTranslation = new(doc.Translations)
+            
+            // Read stanzas
+            int parsedRowCount = 0;
+            foreach (var row in feed.QuerySelectorAll("div#hymntext div.row"))
             {
-                Language = new(KnownLanguage.English),
-                IsExplicitlyDefined = true
-            };
-            AddStanzasToTranslation(feed, englishTranslation);
-            if (englishTranslation.Children.Count > 0)
-                doc.Translations.Children.Add(englishTranslation);
+                var rxLanguageClass = new Regex(@"(?<lang>\w+)text(?:_(?<enc>\w+))?", RegexOptions.Compiled);
+                foreach (var cell in row.Children)
+                {
+                    var languageClassInfo = rxLanguageClass.Match(cell.ClassName!);
+                    if (!languageClassInfo.Success)
+                        continue;
+                    
+                    var knownLang = (KnownLanguage)Enum.Parse(typeof(KnownLanguage), languageClassInfo.Groups["lang"].Value, true);
+                    if (doc.Translations.Children.FirstOrDefault(t => t.Language?.Known == knownLang) is not Section translation)
+                    {
+                        translation = new(null)
+                        {
+                            Language = new LanguageInfo(knownLang),
+                            IsExplicitlyDefined = true
+                        };
 
-            // Set Coptic stanzas
-            Section copticTranslation = new(doc.Translations)
-            {
-                Language = new(KnownLanguage.Coptic),
-                Font = CopticFont.CsAvvaShenouda.Name,
-                IsExplicitlyDefined = true
-            };
-            AddStanzasToTranslation(feed, copticTranslation);
-            if (copticTranslation.Children.Count > 0)
-                doc.Translations.Children.Add(copticTranslation);
+                        if (translation.Language.Language == "cop" && !languageClassInfo.Groups["enc"].Success)
+                            translation.Font = CopticFont.CsAvvaShenouda.Name;
 
-            // Set Arabic stanzas
-            Section arabicTranslation = new(doc.Translations)
-            {
-                Language = new(KnownLanguage.Arabic),
-                IsExplicitlyDefined = true
-            };
-            AddStanzasToTranslation(feed, arabicTranslation);
-            if (arabicTranslation.Children.Count > 0)
-                doc.Translations.Children.Add(arabicTranslation);
+                        if (parsedRowCount != 0)
+                        {
+                            // Add empty stanzas so this translation aligns with the others
+                            Stanza emptyStanza = new(translation);
+                            translation.Children.AddRange(Enumerable.Range(0, parsedRowCount).Select(_ => emptyStanza));
+                        }
+                        
+                        doc.Translations.Children.Add(translation);
+                    }
+
+                    translation.Children.Add(new Stanza(translation)
+                    {
+                        SourceText = cell.TextContent.Trim('\n', '\t', ' ', '+'),
+                        IsExplicitlyDefined = true
+                    });
+                }
+                
+                ++parsedRowCount;
+            }
 
             return doc;
-        }
-
-        private static void AddStanzasToTranslation(IDocument feed, Section translation)
-        {
-            var htmlStanzas = feed.QuerySelectorAll($"div.{translation.Language.ToString().ToLower()}text");
-
-            foreach (var stanzaText in htmlStanzas.Select(m => m.FirstChild?.TextContent))
-            {
-                translation.Children.Add(new Stanza(translation)
-                {
-                    SourceText = stanzaText,
-                    IsExplicitlyDefined = true
-                });
-            }
         }
     }
 }

@@ -3,20 +3,40 @@ using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-
+using Xunit.Abstractions;
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;
 
 namespace CoptTest
 {
     public class Misc
     {
+        private readonly ITestOutputHelper _output;
+
+        public Misc(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+        
         [Theory]
         [InlineData(25)]
-        public void TasbehaOrg_ConvertLyricsPage(int lyricId)
+        [InlineData(25, "utf8")]
+        public void TasbehaOrg_ConvertLyricsPage(int lyricId, string? encoding = null)
         {
-            string html = Resource.ReadAllText($"TasbehaOrg_{lyricId}.html");
+            string fileName = $"TasbehaOrg_{lyricId}";
+            if (encoding is not null)
+                fileName += $"_{encoding}";
+            
+            string html = Resource.ReadAllText(fileName + ".html");
             var doc = TasbehaOrg.ConvertLyricsPage(html, lyricId);
+            
+            Assert.NotNull(doc.Name);
+            Assert.NotNull(doc.Key);
+            Assert.NotEmpty(doc.Translations.Children);
+            Assert.Equal(3, doc.Translations.Children.Count);
+            Assert.All(doc.Translations.Children, t => Assert.True(t.IsExplicitlyDefined));
+            
             string xml = DocWriter.WriteDocXml(doc);
+            _output.WriteLine(xml);
         }
 
         [Theory]
