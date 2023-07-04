@@ -16,8 +16,8 @@ namespace CoptLib.Extensions
                 for (int i = 0; i < defs.Children.Count; i++)
                     defs.Children[i] = defs.Children[i].Select(func) as ContentPart;
 
-            if (newDef is Section section && section.Title != null)
-                section.Title = section.Title.Select(func) as IContent;
+            if (newDef is Section {Title: not null} section)
+                section.SetTitle(section.Title.Select(func) as IContent);
 
             if (newDef is IContent content)
                 for (int i = 0; i < content.Inlines.Count; i++)

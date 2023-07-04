@@ -94,10 +94,10 @@ namespace CoptLib.Models
             if (part is CScript partScript)
                 partScript.Run();
 
-            if (part is ICommandOutput<object> partCmdOut && partCmdOut.Output != null)
+            if (part is ICommandOutput<object> {Output: not null} partCmdOut)
                 part = partCmdOut.Output;
 
-            if (part is IContent partContent && part is IMultilingual partContentMulti)
+            if (part is IContent partContent and IMultilingual partContentMulti)
             {
                 try
                 {
@@ -110,7 +110,7 @@ namespace CoptLib.Models
             if (part is IContentCollectionContainer partCollection)
             {
                 var collSrc = partCollection.Source;
-                if (collSrc != null && !collSrc.CommandsHandled)
+                if (collSrc is {CommandsHandled: false})
                 {
                     // Populate the collection with items from the source.
                     // This is done before commands are parsed, just in
@@ -118,14 +118,19 @@ namespace CoptLib.Models
                     collSrc.HandleCommands();
                     var cmd = collSrc.Commands.LastOrDefault();
 
-                    if (cmd.Output != null)
+                    if (cmd?.Output != null)
                     {
                         bool hasExplicitChildren = partCollection.Children.Count > 0;
 
-                        if (cmd.Output is IContentCollectionContainer cmdOutCollection)
-                            partCollection.Children.AddRange(cmdOutCollection.Children);
-                        else if (cmd.Output is ContentPart cmdOutPart)
-                            partCollection.Children.Add(cmdOutPart);
+                        switch (cmd.Output)
+                        {
+                            case IContentCollectionContainer cmdOutCollection:
+                                partCollection.Children.AddRange(cmdOutCollection.Children);
+                                break;
+                            case ContentPart cmdOutPart:
+                                partCollection.Children.Add(cmdOutPart);
+                                break;
+                        }
 
                         // If the collection doesn't have any explicit elements (in other words,
                         // it's only children came from the source), inherit the command's properties
@@ -138,7 +143,7 @@ namespace CoptLib.Models
                             }
 
                             if (cmd.Output is Section cmdSection && part is Section partSection)
-                                partSection.Title = cmdSection.Title;
+                                partSection.SetTitle(cmdSection.Title);
                         }
                     }
                 }
@@ -150,7 +155,7 @@ namespace CoptLib.Models
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();
 
-            if (part is IDefinition def && def.Key != null && def.DocContext is not null)
+            if (part is IDefinition {Key: not null, DocContext: not null} def)
                 def.DocContext.AddDefinition(def);
         }
     }

@@ -96,10 +96,7 @@ namespace CoptLib.IO
 
                     string title = defElem.Attribute(nameof(section.Title))?.Value;
                     if (title != null)
-                        section.Title = new Stanza(section)
-                        {
-                            SourceText = title,
-                        };
+                        section.SetTitle(title);
 
                     def = section;
                 }
@@ -184,12 +181,6 @@ namespace CoptLib.IO
                 {
                     multilingual.Font ??= parentMultilingual.Font;
                     multilingual.Language ??= parentMultilingual.Language;
-                }
-
-                if (def is Section {Title: IMultilingual sectionTitleMulti} sectionMulti)
-                {
-                    sectionTitleMulti.Font ??= sectionMulti.Font;
-                    sectionTitleMulti.Language ??= sectionMulti.Language;
                 }
             }
             

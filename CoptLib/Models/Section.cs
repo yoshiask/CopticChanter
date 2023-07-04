@@ -9,11 +9,33 @@ namespace CoptLib.Models
         {
         }
 
-        public IContent Title { get; set; }
+        public IContent Title { get; private set; }
 
         public SimpleContent Source { get; set; }
 
         public List<ContentPart> Children { get; } = new();
+
+        public void SetTitle(IContent title)
+        {
+            if (title is IMultilingual titleMulti)
+            {
+                titleMulti.Font ??= Font;
+                titleMulti.Language ??= Language;
+            }
+            
+            title.Parent = this;
+            Title = title;
+        }
+        
+        public void SetTitle(string title)
+        {
+            Title = new Stanza(this)
+            {
+                SourceText = title,
+                Font = Font,
+                Language = Language,
+            };
+        }
 
         public override int CountRows()
         {
