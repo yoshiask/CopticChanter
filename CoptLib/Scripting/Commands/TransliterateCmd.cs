@@ -9,6 +9,8 @@ namespace CoptLib.Scripting.Commands
 {
     public class TransliterateCmd : TextCommandBase
     {
+        private string _syllableSeparator = null;
+        
         public TransliterateCmd(string cmd, InlineCommand inline, IDefinition[] parameters)
             : base(cmd, inline, parameters)
         {       
@@ -23,6 +25,8 @@ namespace CoptLib.Scripting.Commands
         {
             var langParam = Parameters[0].ToString();
             var sourceParam = Parameters[Parameters.Length - 1];
+            
+            _syllableSeparator = Parameters.Length > 2 ? Parameters[1].ToString() : "\u200B\u00B7";
 
             Language = LanguageInfo.Parse(langParam)
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
@@ -36,7 +40,7 @@ namespace CoptLib.Scripting.Commands
         private void Transliterate(IDefinition def)
         {
             if (def is Run run)
-                run.Text = Analyzer.Transliterate(run.Text, Language.Known, "\u200B\u00B7");
+                run.Text = Analyzer.Transliterate(run.Text, Language.Known, _syllableSeparator);
             
             if (def is IMultilingual multi)
             {

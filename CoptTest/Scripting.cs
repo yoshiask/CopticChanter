@@ -170,11 +170,11 @@ namespace CoptTest
 
         [Theory]
         [InlineData("A Coptic word, \\lang{Coptic|CS Avva Shenouda|Wcanna}, and its IPA transcription, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
-                    "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, O\u031Esännä.")]
+                    "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, Oˌsɑnˌnɑ.")]
         [InlineData("IPA transcription of a Coptic word, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
-                    "IPA transcription of a Coptic word, O\u031Esännä.")]
-        [InlineData("English transcription of a Coptic word, \\trslit{English|\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
-                    "English transcription of a Coptic word, Osanna.")]
+                    "IPA transcription of a Coptic word, Oˌsɑnˌnɑ.")]
+        [InlineData("English transcription of a Coptic word, \\trslit{English||\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
+                    "English transcription of a Coptic word, Osănnă.")]
         public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
         {
             expectedResult ??= text;
