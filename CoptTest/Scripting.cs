@@ -27,7 +27,7 @@ namespace CoptTest
 
         [Theory]
         [MemberData(nameof(GetRunScript_Samples))]
-        public void RunCSScript(string script, Func<object> expectedFunc)
+        public void RunCSScript(string script, Func<object?> expectedFunc)
         {
             DateHelper.NowOverride = new(2023, 1, 7, 11, 00, CalendarSystem.Gregorian);
 
@@ -42,7 +42,7 @@ namespace CoptTest
                 // Check if collections are equal
                 if (expected is IEnumerable<object> expectedCollection)
                 {
-                    foreach ((var ex, var ac) in expectedCollection.Zip((IEnumerable<object>)actual))
+                    foreach (var (ex, ac) in expectedCollection.Zip((IEnumerable<object>)actual))
                     {
                         Assert.Equal(ex, ac);
                     }
@@ -50,7 +50,7 @@ namespace CoptTest
 
                 var expectedProps = expected.GetType().GetProperties();
                 var actualProps = actual.GetType().GetProperties();
-                foreach ((var ex, var ac) in expectedProps.Zip(actualProps))
+                foreach (var (ex, ac) in expectedProps.Zip(actualProps))
                 {
                     if (ex.Name == "Item")
                         continue;
