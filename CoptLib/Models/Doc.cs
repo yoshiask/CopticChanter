@@ -142,6 +142,9 @@ namespace CoptLib.Models
             if (part is ISupportsTextCommands suppTextCmds)
                 suppTextCmds.HandleCommands();
 
+            if (part is System.Collections.IEnumerable manyParts)
+                RecursiveTransform(manyParts);
+
             if (part is IMultilingual multilingual)
                 multilingual.HandleFont();
 
