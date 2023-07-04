@@ -12,7 +12,7 @@ namespace CoptLib
         /// Constructs a new <see cref="DatePeriod"/> that
         /// starts and ends on the given dates.
         /// </summary>
-        /// <param name="endDate">The first day of the period.</param>
+        /// <param name="startDate">The first day of the period.</param>
         /// <param name="endDate">The last day of the period.</param>
         public DatePeriod(LocalDate startDate, LocalDate endDate)
         {
