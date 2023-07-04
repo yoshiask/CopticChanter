@@ -2,6 +2,7 @@
 using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Linq;
+using CoptLib.Models;
 using Xunit;
 using Xunit.Abstractions;
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;
@@ -33,7 +34,17 @@ namespace CoptTest
             Assert.NotNull(doc.Key);
             Assert.NotEmpty(doc.Translations.Children);
             Assert.Equal(3, doc.Translations.Children.Count);
-            Assert.All(doc.Translations.Children, t => Assert.True(t.IsExplicitlyDefined));
+            Assert.All(doc.Translations.Children, c =>
+            {
+                Assert.True(c.IsExplicitlyDefined);
+                Assert.NotNull(c.Language);
+                Assert.NotEqual(LanguageInfo.Default, c.Language);
+
+                var t = Assert.IsType<Section>(c);
+                Assert.True(t.Children.Count > 0);
+                if (t.Font is null)
+                    Assert.NotNull(t.Title);
+            });
             
             string xml = DocWriter.WriteDocXml(doc);
             _output.WriteLine(xml);
