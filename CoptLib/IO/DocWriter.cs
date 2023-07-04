@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using CoptLib.Extensions;
+using CoptLib.Writing;
 
 namespace CoptLib.IO
 {
@@ -69,7 +71,7 @@ namespace CoptLib.IO
             XElement transsElem = new(nameof(doc.Translations));
             if (doc.Translations.Source != null)
                 transsElem.SetAttributeValue(nameof(doc.Translations.Source), doc.Translations.Source);
-            foreach (ContentPart translation in doc.Translations.Children.Where(IsExplicitlyDefined))
+            foreach (var translation in doc.Translations.Children.Where(IsExplicitlyDefined))
                 transsElem.Add(SerializeObject(translation, "Translation"));
 
             // Omit Translations element if it doesn't have important data
@@ -112,12 +114,24 @@ namespace CoptLib.IO
             }
             if (def is IMultilingual multilingual)
             {
-                var parentMultilingual = def.Parent as IMultilingual;
-                if (parentMultilingual != null && parentMultilingual?.Language != multilingual.Language
-                    && multilingual.Language?.Known != Writing.KnownLanguage.Default)
+                var elemLanguage = multilingual.Language;
+                var elemFont = multilingual.Font;
+
+                if (def.Parent is not null)
+                {
+                    var parentLanguage = def.Parent.GetLanguage();
+                    if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
+                        elemLanguage = null;
+                    
+                    var parentFont = def.Parent.GetFont();
+                    if (parentFont is not null && parentFont == elemFont)
+                        elemFont = null;
+                }
+                
+                if (elemLanguage is not null)
                     elem.SetAttributeValue(nameof(multilingual.Language), multilingual.Language);
 
-                if (parentMultilingual?.Font != multilingual.Font)
+                if (elemFont is not null)
                     elem.SetAttributeValue(nameof(multilingual.Font), multilingual.Font);
             }
             if (def is IContentCollectionContainer contentCollection)

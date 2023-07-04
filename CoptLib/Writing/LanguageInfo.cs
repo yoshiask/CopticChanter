@@ -188,6 +188,8 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         return a.IsEquivalentTo(b, options);
     }
 
+    public static bool IsNullOrDefault(LanguageInfo languageInfo) => languageInfo is null || languageInfo == Default;
+    
     private static readonly IReadOnlyDictionary<string, KnownLanguage> KnownLanguages = new Dictionary<string, KnownLanguage>
     {
         ["und"]		    = KnownLanguage.Default,

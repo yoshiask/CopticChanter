@@ -34,12 +34,24 @@ namespace CoptLib.Extensions
 
         public static LanguageInfo GetLanguage(this IDefinition def)
         {
-            if (def is IMultilingual multi && LangIsNotNullOrDefault(def))
+            if (def is IMultilingual multi && !LanguageInfo.IsNullOrDefault(multi.Language))
                 return multi.Language;
 
-            var ancestor = def.CrawlBy(d => d.Parent, LangIsNotNullOrDefault);
+            var ancestor = def.CrawlBy(d => d.Parent,
+                d => d is IMultilingual m && !LanguageInfo.IsNullOrDefault(m.Language));
 
             return (ancestor as IMultilingual)?.Language ?? LanguageInfo.Default;
+        }
+        
+        public static string GetFont(this IDefinition def)
+        {
+            if (def is IMultilingual {Font: not null} multi)
+                return multi.Font;
+
+            var ancestor = def.CrawlBy(d => d.Parent,
+                d => d is IMultilingual {Font: not null});
+
+            return (ancestor as IMultilingual)?.Font;
         }
 
         /// <summary>
@@ -49,10 +61,5 @@ namespace CoptLib.Extensions
         /// <param name="referencee">The definition referencing it.</param>
         public static void RegisterReference(this IDefinition def, IDefinition referencee)
             => def.References.Add(referencee);
-
-        private static bool LangIsNotNullOrDefault(IDefinition def)
-            => def is IMultilingual multi
-            && multi?.Language is not null 
-            && multi.Language.Known != KnownLanguage.Default;
     }
 }
