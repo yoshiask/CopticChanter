@@ -50,23 +50,17 @@ public struct PhoneticEquivalent
     public string GetIpa()
     {
         if (!IsUpper || Ipa.Length == 0)
-        {
             return Ipa;
-        }
-        else
-        {
-            if (Ipa.Length == 1)
-                return Ipa.ToUpper();
-            else
-                return char.ToUpper(Ipa[0]) + Ipa[1..];
-        }
+        if (Ipa.Length == 1)
+            return Ipa.ToUpper();
+        return char.ToUpper(Ipa[0]) + Ipa[1..];
     }
 
     public override string ToString() => $"('{GetSource()}', \"{GetIpa()}\")";
 
     /// <summary>
     /// Parses a special format string into a set of <see cref="PhoneticEquivalent"/>s.
-    /// Pairs are split by semicolors, and the Source and IPA string by commas.
+    /// Pairs are split by semicolons, and the Source and IPA string by commas.
     /// <para>Example:<br/><c>"ⲙ,m;ⲁ,ä;ⲣ,ɾ;ⲓ,ⲓ;ⲁ,ä"</c></para>
     /// </summary>
     /// <param name="value">The string to parse.</param>

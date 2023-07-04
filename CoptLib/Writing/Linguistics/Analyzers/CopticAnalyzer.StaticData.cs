@@ -4,20 +4,25 @@ namespace CoptLib.Writing.Linguistics.Analyzers
 {
     partial class CopticAnalyzer
     {
-        public static readonly char[] Vowels = new[] { 'ⲁ', 'ⲉ', 'ⲓ', 'ⲏ', 'ⲟ', 'ⲱ' };
-        public static readonly char[] CopticSpecificLetters = new[] { 'ϣ', 'ϥ', 'ϧ', 'ϫ', 'ϯ', 'ϭ' };
-        public static readonly char[] GreekSpecificLetters = new[] { 'ⲅ', 'ⲇ', 'ⲍ', 'ⲝ', 'ⲯ' };
-        public static readonly string[] GreekSpecificPrefixes = new[] { "ⲡⲣⲟ", "ⲡⲁⲣⲁ", "ⲁⲣⲭ", "ⲟⲙⲟ", "ⲕⲁⲧⲁ", "ⲥⲩⲛ" };
-        public static readonly string[] GreekCommonSuffixes = new[] { "ⲁⲥ", "ⲟⲥ", "ⲏⲥ", "ⲁⲛ", "ⲟⲛ", "ⲏⲛ" };
+        public static readonly char[] Vowels = { 'ⲁ', 'ⲉ', 'ⲓ', 'ⲏ', 'ⲟ', 'ⲱ' };
+        public static readonly char[] CopticSpecificLetters = { 'ϣ', 'ϥ', 'ϧ', 'ϫ', 'ϯ', 'ϭ' };
+        public static readonly char[] GreekSpecificLetters = { 'ⲅ', 'ⲇ', 'ⲍ', 'ⲝ', 'ⲯ' };
+        public static readonly string[] GreekSpecificPrefixes = { "ⲡⲣⲟ", "ⲡⲁⲣⲁ", "ⲁⲣⲭ", "ⲟⲙⲟ", "ⲕⲁⲧⲁ", "ⲥⲩⲛ" };
+        public static readonly string[] GreekCommonSuffixes = { "ⲁⲥ", "ⲟⲥ", "ⲏⲥ", "ⲁⲛ", "ⲟⲛ", "ⲏⲛ" };
 
-        public static readonly IReadOnlyDictionary<string, string> CopticAbbreviations = new Dictionary<string, string>
+        protected static readonly Dictionary<string, (string ex, string sh)> CopticAbbreviations = new()
         {
-            ["=o=c"] = "[oic",
-            ["P=,=c"] = "Pi`,rictoc",
-            ["=e=;=u"] = "e;ouab",
+            ["oc"] = ("ϭⲟⲓⲥ", "⳪"),
+            ["poc"] = ("ⲡ\u0300ϭⲟⲓⲥ", "ⲡ\u0300⳪"),
+            ["pxc"] = ("ⲡⲓⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "ⲡⲓ⳩"),
+            ["xc"] = ("ⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "ⲭ\u035Eⲥ"),
+            ["ethu"] = ("ⲉⲑⲟⲩⲁⲃ", "ⲉ\u035Eⲑ\u035Eⲩ"),
+            ["al"] = ("ⲁⲗⲗⲏⲗⲟⲩⲓⲁ", "ⲁ\u035Eⲗ"),
+            ["mr"] = ("ⲙⲁⲣⲧⲩⲣⲟⲥ", "⳥"),
+            ["ctc"] = ("ⲥⲧⲁⲩⲣⲟⲥ", "⳧"),
         };
 
-        public static readonly IReadOnlyList<string> CopticPrefixes = new string[]
+        public static readonly IReadOnlyList<string> CopticPrefixes = new[]
         {
             /// Unknown
             "ⲛ\u0300ⲛⲓ",

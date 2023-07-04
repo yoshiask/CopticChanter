@@ -97,16 +97,6 @@ namespace CoptLib.Models
             if (part is ICommandOutput<object> {Output: not null} partCmdOut)
                 part = partCmdOut.Output;
 
-            if (part is IContent partContent and IMultilingual partContentMulti)
-            {
-                try
-                {
-                    var analyzer = Writing.Linguistics.LinguisticLanguageService.Default.GetAnalyzerForLanguage(partContentMulti.Language);
-                    partContent.SourceText = analyzer.ExpandAbbreviations(partContent.SourceText);
-                }
-                catch { }
-            }
-
             if (part is IContentCollectionContainer partCollection)
             {
                 var collSrc = partCollection.Source;

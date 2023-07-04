@@ -145,8 +145,21 @@ public abstract class LinguisticAnalyzer
     }
 
     /// <summary>
-    /// Replaces all abbreviations with the full word.
+    /// Gets the abbreviation with the provided <see cref="key"/>.
     /// </summary>
-    /// <param name="srcText">The source text.</param>
-    public virtual string ExpandAbbreviations(string srcText) => srcText;
+    /// <param name="key">The key of the abbreviation to identify.</param>
+    /// <param name="keepAbbreviated">Whether to expand the abbreviation to its full meaning.</param>
+    /// <param name="capitalize">Whether to force the result to be in sentence case.</param>
+    public virtual string ResolveAbbreviation(string key, bool keepAbbreviated, bool? capitalize = null)
+    {
+        var result = ResolveAbbreviationInternal(key.ToLower(), keepAbbreviated);
+        
+        capitalize ??= char.IsUpper(key[0]);
+        
+        return capitalize.Value
+            ? char.ToUpper(result[0]) + result[1..]
+            : result;
+    }
+
+    protected abstract string ResolveAbbreviationInternal(string key, bool keepAbbreviated);
 }

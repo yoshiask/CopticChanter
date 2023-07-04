@@ -17,6 +17,8 @@ namespace CoptLib.Scripting
 
         private static readonly Dictionary<string, Type> _availCmds = new()
         {
+            { "abv", typeof(AbbreviationCmd) },
+            { "abvsh", typeof(AbbreviationCmd) },
             { "def", typeof(DefinitionCmd) },
             { "ipa", typeof(IpaTranscribeCmd) },
             { "language", typeof(LanguageCmd) },

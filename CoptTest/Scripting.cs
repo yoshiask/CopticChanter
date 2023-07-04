@@ -169,6 +169,33 @@ namespace CoptTest
         }
 
         [Theory]
+        [InlineData("Ⲁⲙⲏⲛ {0}.", "al", "ⲁⲗⲗⲏⲗⲟⲩⲓⲁ", "ⲁ\u035Eⲗ", KnownLanguage.Coptic)]
+        [InlineData("Ⲁⲙⲏⲛ {0}.", "Al", "Ⲁⲗⲗⲏⲗⲟⲩⲓⲁ", "Ⲁ\u035Eⲗ", KnownLanguage.Coptic)]
+        [InlineData("{0} ⲁⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.",
+            "Poc", "Ⲡ\u0300ϭⲟⲓⲥ", "Ⲡ\u0300⳪", KnownLanguage.Coptic)]
+        [InlineData("Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ {0}: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ",
+            "Pxc", "Ⲡⲓⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "Ⲡⲓ⳩", KnownLanguage.Coptic)]
+        [InlineData("Ϩⲓⲧⲉⲛ ⲛⲓⲉ̀ⲩⲭⲏ: ⲛ̀ⲧⲉ ⲛⲏ{0} ⲛ̀ⲧⲉ ⲡⲁⲓⲉ̀ϩⲟⲟⲩ",
+            "ethu", "ⲉⲑⲟⲩⲁⲃ", "ⲉ\u035Eⲑ\u035Eⲩ", KnownLanguage.Coptic)]
+        public void ParseTextCommands_AbbreviationCommand(string template, string abvKey, string abvEx, string abvSh,
+            KnownLanguage lang)
+        {
+            Stanza stanza = new(null)
+            {
+                SourceText = string.Format(template, $"\\abv{{{abvKey}}}"),
+                Language = new(lang)
+            };
+            stanza.HandleCommands();
+            Assert.Equal(string.Format(template, abvEx), stanza.ToString());
+            _output.WriteLine($"Expanded: {stanza}");
+            
+            stanza.SourceText = string.Format(template, $"\\abvsh{{{abvKey}}}");
+            stanza.HandleCommands();
+            Assert.Equal(string.Format(template, abvSh), stanza.ToString());
+            _output.WriteLine($"Shortened: {stanza}");
+        }
+        
+        [Theory]
         [InlineData("A Coptic word, \\lang{Coptic|CS Avva Shenouda|Wcanna}, and its IPA transcription, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
                     "A Coptic word, Ⲱⲥⲁⲛⲛⲁ, and its IPA transcription, Oˌsɑnˌnɑ.")]
         [InlineData("IPA transcription of a Coptic word, \\ipa{\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",

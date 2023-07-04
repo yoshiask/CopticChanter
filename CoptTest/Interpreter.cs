@@ -2,6 +2,7 @@
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +18,7 @@ namespace CoptTest
             _output = output;
         }
 
-        public static readonly string[] IpaTranscribe_CopticUnicode_Samples = new[]
+        public static readonly string[] IpaTranscribe_CopticUnicode_Samples =
         {
             // Difficult words
             "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
@@ -41,7 +42,7 @@ namespace CoptTest
             "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
         };
 
-        public static readonly string[] IpaTranscribe_CopticStandard_Samples = new[]
+        public static readonly string[] IpaTranscribe_CopticStandard_Samples =
         {
             "}polic `m'u,on",
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
@@ -121,15 +122,9 @@ namespace CoptTest
         }
 
         public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
-        {
-            foreach (string sample in IpaTranscribe_CopticUnicode_Samples)
-                yield return new object[] { sample };
-        }
+            => IpaTranscribe_CopticUnicode_Samples.Select(sample => new object[] { sample });
 
         public static IEnumerable<object[]> GetIpaTranscribe_CopticStandard_Samples()
-        {
-            foreach (string sample in IpaTranscribe_CopticStandard_Samples)
-                yield return new object[] { sample };
-        }
+            => IpaTranscribe_CopticStandard_Samples.Select(sample => new object[] { sample });
     }
 }

@@ -33,11 +33,10 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
         _knownPrefixes = knownPrefixes;
     }
 
-    public override string ExpandAbbreviations(string srcText)
+    protected override string ResolveAbbreviationInternal(string key, bool keepAbbreviated)
     {
-        foreach (string abbr in CopticAbbreviations.Keys)
-            srcText = srcText.Replace(abbr, CopticAbbreviations[abbr]);
-        return srcText;
+        var (ex, sh) = CopticAbbreviations[key];
+        return keepAbbreviated ? sh : ex;
     }
 
     public override PhoneticWord[] PhoneticAnalysis(string srcText)
