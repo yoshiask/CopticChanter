@@ -279,9 +279,9 @@ namespace CoptTest
                         }
 
                         var res = new TranslationRunCollection("AkiAktonk");
-                        res.AddNew(engText, KnownLanguage.English);
-                        res.AddNew(copText, KnownLanguage.Coptic);
-                        res.AddNew(araText, KnownLanguage.Arabic);
+                        res.AddText(engText, KnownLanguage.English);
+                        res.AddText(copText, KnownLanguage.Coptic);
+                        res.AddText(araText, KnownLanguage.Arabic);
 
                         return res;
                     }
@@ -365,9 +365,9 @@ namespace CoptTest
             }
 
             var res = new TranslationRunCollection("AkiAktonk");
-            res.AddNew(engText, KnownLanguage.English);
-            res.AddNew(copText, KnownLanguage.Coptic);
-            res.AddNew(araText, KnownLanguage.Arabic);
+            res.AddText(engText, KnownLanguage.English);
+            res.AddText(copText, KnownLanguage.Coptic);
+            res.AddText(araText, KnownLanguage.Arabic);
 
             return res;
         }

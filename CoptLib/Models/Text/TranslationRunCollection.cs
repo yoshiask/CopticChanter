@@ -28,14 +28,14 @@ namespace CoptLib.Models.Text
         /// <param name="text">The text content.</param>
         /// <param name="knownLanguage">The language of the content.</param>
         /// <returns>The <see cref="Run"/> that was created.</returns>
-        public Run AddNew(string text, KnownLanguage knownLanguage)
+        public Run AddText(string text, KnownLanguage knownLanguage)
         {
             Run run = new(text, this)
             {
                 Language = new(knownLanguage)
             };
 
-            
+            AddRun(run);
 
             return run;
         }
