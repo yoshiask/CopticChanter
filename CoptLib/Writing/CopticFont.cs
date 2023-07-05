@@ -33,7 +33,7 @@ namespace CoptLib.Writing
             target ??= CopticUnicode;
 
             // No need to convert
-            if (this == target || this.IsCopticStandard == target.IsCopticStandard)
+            if (this == target || (IsCopticStandard && IsCopticStandard == target.IsCopticStandard))
                 return input;
 
             string output = "";
