@@ -19,6 +19,7 @@ public class LinguisticLanguageService
     {
         { new LanguageInfo(KnownLanguage.Coptic), lang => new CopticGrecoBohairicAnalyzer() },
         { new LanguageInfo(KnownLanguage.CopticBohairic), lang => new CopticOldBohairicAnalyzer() },
+        { new LanguageInfo(KnownLanguage.Greek), lang => new GreekAnalyzer() },
     });
 
     /// <summary>

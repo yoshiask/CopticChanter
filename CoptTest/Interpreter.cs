@@ -121,6 +121,16 @@ namespace CoptTest
             _output.WriteLine(result);
         }
 
+        private GreekAnalyzer _elAnalyzer = new();
+        [Theory]
+        [InlineData("σταυρος", "stăv·ros")]
+        public void Transliterate_Greek(string sample, string expected)
+        {
+            var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR);
+            _output.WriteLine(result);
+            Assert.Equal(expected, result);
+        }
+
         public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
             => IpaTranscribe_CopticUnicode_Samples.Select(sample => new object[] { sample });
 

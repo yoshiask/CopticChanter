@@ -25,7 +25,6 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, IReadOnlyList<string> knownPrefixes, Dictionary<int, PhoneticWord> wordCache)
         : base(languageInfo)
     {
-        Guard.IsEqualTo(languageInfo.Language, "cop");
         Guard.IsNotNull(ipaTranscriptions);
 
         _ipaTranscriptions = ipaTranscriptions;
