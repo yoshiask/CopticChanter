@@ -26,10 +26,6 @@ namespace CopticChanter
         public MainPage()
         {
             InitializeComponent();
-
-            media.SetMediaPlayer(new Windows.Media.Playback.MediaPlayer());
-            media.TransportControls.IsCompact = true;
-            media.TransportControls.IsFullWindowButtonVisible = false;
         }
 
         private async Task LoadDocs(bool present = false)
@@ -90,73 +86,14 @@ namespace CopticChanter
             Frame.Navigate(typeof(Layouts.DocumentLayout), new Layouts.DocumentLayoutArgs(vm));
         }
 
-        private async void ListenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            // The string to speak with SSML customizations.
-            //string ipa = "niˌaŋˈgeˌlos";
-            string ipa = inBox.Text.ToLower();// "Tɛn.u.ɔʃt ni.aŋ.ge.los";
-            string ssml =
-                $"<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xml:lang=\"el-GR\">\r\n    <voice name=\"el-GR-NestorasNeural\">\r\n        <s>\r\n            {inBox.Text}</s>\r\n    </voice>\r\n</speak>";
-
-            var analyzer = new CoptLib.Writing.Linguistics.Analyzers.CopticGrecoBohairicAnalyzer();
-            (ssml, ipaOut.Text) = analyzer.GenerateSsml(inBox.Text);
-
-            // The media object for controlling and playing audio.
-            var mediaElement = this.media.MediaPlayer;
-
-            // The object for controlling the speech synthesis engine (voice).
-            var synth = new SpeechSynthesizer();
-            synth.Options.SpeakingRate = 0.7;
-            //synth.Voice = SpeechSynthesizer.AllVoices[new Random().Next() % SpeechSynthesizer.AllVoices.Count];
-
-            try
-            {
-                // Generate the audio stream from plain text.
-                //SpeechSynthesisStream stream = await synth.SynthesizeSsmlToStreamAsync(ssml);
-                SpeechSynthesisStream stream = await synth.SynthesizeSsmlToStreamAsync(ssml);
-
-                // Send the stream to the media object.
-                media.Tag = stream;
-                mediaElement.Source = MediaSource.CreateFromStream(stream, stream.ContentType);
-                mediaElement.Play();
-            }
-            catch (Exception)
-            {
-                
-            }
-        }
-
-        private async void SaveButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            var speechStream = media.Tag as SpeechSynthesisStream;
-            string fileNameNoExt = DateTimeOffset.Now.ToString("yyyy-dd-M_HH-mm-ss");
-
-            var roamingFolder = ApplicationData.Current.RoamingFolder;
-            var synthFolder = await roamingFolder.CreateFolderAsync("synth", CreationCollisionOption.OpenIfExists);
-            var wavFile = await synthFolder.CreateFileAsync(fileNameNoExt + ".wav");
-            var mp3File = await synthFolder.CreateFileAsync(fileNameNoExt + ".mp3");
-
-            using (var reader = new DataReader(speechStream.GetInputStreamAt(0)))
-            {
-                await reader.LoadAsync((uint)speechStream.Size);
-                var buffer = new byte[(int)speechStream.Size];
-                reader.ReadBytes(buffer);
-                await FileIO.WriteBytesAsync(wavFile, buffer);
-            }
-
-            // Convert to MP3
-            var transcoder = new MediaTranscoder();
-            var profile = MediaEncodingProfile.CreateMp3(AudioEncodingQuality.High);
-
-            PrepareTranscodeResult prepareOp = await
-                transcoder.PrepareFileTranscodeAsync(wavFile, mp3File, profile);
-            await prepareOp.TranscodeAsync();
-            await wavFile.DeleteAsync();
-        }
-
         private async void LoadDocsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             await LoadDocs(true);
+        }
+
+        private void TtsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Pages.TextToSpeechPage));
         }
     }
 }

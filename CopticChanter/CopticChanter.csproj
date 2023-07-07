@@ -124,6 +124,9 @@
     <Compile Include="Pages\BluetoothRemoteConnectPage.xaml.cs">
       <DependentUpon>BluetoothRemoteConnectPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TextToSpeechPage.xaml.cs">
+      <DependentUpon>TextToSpeechPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -209,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\BluetoothRemoteConnectPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TextToSpeechPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

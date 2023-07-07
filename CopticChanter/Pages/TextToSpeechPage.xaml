@@ -1,0 +1,39 @@
+﻿<Page
+    x:Class="CopticChanter.Pages.TextToSpeechPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CopticChanter.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Button Click="HomeButton_Click" Grid.Row="0"
+                HorizontalAlignment="Left" VerticalAlignment="Top">
+            <SymbolIcon Symbol="Home"/>
+        </Button>
+
+        <TextBox x:Name="inBox" AcceptsReturn="True" Grid.Row="1"/>
+
+        <StackPanel VerticalAlignment="Center" Grid.Row="2">
+            <Button Content="Listen" Click="ListenButton_Click"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <MediaPlayerElement x:Name="media" AreTransportControlsEnabled="True"/>
+                <Button Content="Save" Click="SaveButton_Click" Grid.Column="1"/>
+            </Grid>
+            <TextBlock x:Name="ipaOut" IsTextSelectionEnabled="True"/>
+        </StackPanel>
+    </Grid>
+    
+</Page>

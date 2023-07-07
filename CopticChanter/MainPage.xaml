@@ -5,25 +5,18 @@
     xmlns:local="using:CopticChanter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ProgressRing IsActive="True" />
-        <StackPanel>
-            <TextBox x:Name="inBox"/>
-            <Button Content="Listen" Click="ListenButton_Click"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <MediaPlayerElement x:Name="media" AreTransportControlsEnabled="True"/>
-                <Button Content="Save" Click="SaveButton_Click" Grid.Column="1"/>
-            </Grid>
-            <TextBlock x:Name="ipaOut" IsTextSelectionEnabled="True"/>
-        </StackPanel>
-
-        <Button Content="Continue to documents" Click="LoadDocsButton_Click"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-    </Grid>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+        <StackPanel.Resources>
+            <Style TargetType="Button" BasedOn="{StaticResource ButtonRevealStyle}">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+        </StackPanel.Resources>
+        
+        <Button Content="Present documents" Click="LoadDocsButton_Click"/>
+        <Button Content="Text-to-speech" Click="TtsButton_Click"/>
+    </StackPanel>
+    
 </Page>
