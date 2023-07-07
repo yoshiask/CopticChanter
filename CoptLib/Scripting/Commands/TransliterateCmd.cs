@@ -26,7 +26,7 @@ namespace CoptLib.Scripting.Commands
             var langParam = Parameters[0].ToString();
             var sourceParam = Parameters[Parameters.Length - 1];
             
-            _syllableSeparator = Parameters.Length > 2 ? Parameters[1].ToString() : "\u200B\u00B7";
+            _syllableSeparator = Parameters.Length > 2 ? Parameters[1].ToString() : "\u00B7\u200B";
 
             Language = LanguageInfo.Parse(langParam)
                 ?? throw new ArgumentException($"Unknown language '{langParam}' in {nameof(TransliterateCmd)}");
