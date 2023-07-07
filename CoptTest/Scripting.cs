@@ -172,9 +172,9 @@ namespace CoptTest
         [InlineData("Ⲁⲙⲏⲛ {0}.", "al", "ⲁⲗⲗⲏⲗⲟⲩⲓⲁ", "ⲁ\u035Eⲗ", KnownLanguage.Coptic)]
         [InlineData("Ⲁⲙⲏⲛ {0}.", "Al", "Ⲁⲗⲗⲏⲗⲟⲩⲓⲁ", "Ⲁ\u035Eⲗ", KnownLanguage.Coptic)]
         [InlineData("{0} ⲁⲣⲓϩ̀ⲙⲟⲧ ⲛⲁⲛ ⲙ̀ⲡⲓⲭⲱ ⲉ̀ⲃⲟⲗ ⲛ̀ⲧⲉ ⲛⲉⲛⲛⲟⲃⲓ.",
-            "Poc", "Ⲡ\u0300ϭⲟⲓⲥ", "Ⲡ\u0300⳪", KnownLanguage.Coptic)]
+            "Poc", "Ⲡ\u0300ϭⲟⲓⲥ", "Ⲡ\u0300ⲟ\u035Eⲥ", KnownLanguage.Coptic)]
         [InlineData("Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ {0}: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ",
-            "Pxc", "Ⲡⲓⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "Ⲡⲓ⳩", KnownLanguage.Coptic)]
+            "Pxc", "Ⲡⲓⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "Ⲡⲓⲭ\u035Eⲥ", KnownLanguage.Coptic)]
         [InlineData("Ϩⲓⲧⲉⲛ ⲛⲓⲉ̀ⲩⲭⲏ: ⲛ̀ⲧⲉ ⲛⲏ{0} ⲛ̀ⲧⲉ ⲡⲁⲓⲉ̀ϩⲟⲟⲩ",
             "ethu", "ⲉⲑⲟⲩⲁⲃ", "ⲉ\u035Eⲑ\u035Eⲩ", KnownLanguage.Coptic)]
         public void ParseTextCommands_AbbreviationCommand(string template, string abvKey, string abvEx, string abvSh,
