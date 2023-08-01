@@ -122,6 +122,7 @@ namespace CopticChanter
 
         #region Styles
         public static FontFamily Segoe = new FontFamily("Segoe UI");
+        public static FontFamily LeagueSpartan = new FontFamily("League Spartan YGA");
         public static FontFamily Coptic1 = new FontFamily("/Assets/Coptic1.ttf#Coptic1");
         private static SolidColorBrush _accentBrush;
         private static Color _accentColor;
@@ -167,7 +168,7 @@ namespace CopticChanter
         {
             string key = $"font-family-{lang}";
             if (!ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
-                ApplicationData.Current.LocalSettings.Values.Add(key, Segoe.Source);
+                ApplicationData.Current.LocalSettings.Values.Add(key, LeagueSpartan.Source);
 
             string familyName = (string)ApplicationData.Current.LocalSettings.Values[key];
             return new FontFamily(familyName);

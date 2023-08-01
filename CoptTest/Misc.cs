@@ -154,6 +154,13 @@ namespace CoptTest
             Assert.Empty(expected);
         }
 
+        [Theory]
+        [InlineData("Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ", "Noto Sans", "Segoe UI")]
+        public void SwapJenkims(string originalText, string originalFont, string targetFont, string expectedText)
+        {
+
+        }
+
         public static readonly string[] LanguageInfo_Parse_Samples = new string[]
         {
             KnownLanguage.English.ToString(), KnownLanguage.Coptic.ToString(),

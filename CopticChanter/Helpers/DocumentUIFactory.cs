@@ -121,9 +121,12 @@ namespace CopticChanter.Helpers
             {
                 case KnownLanguage.Coptic:
                 case KnownLanguage.Greek:
-                    // Font rendering is hard. UWP wants the combining character before,
-                    // while certain HTML renderers can't make up their minds.
-                    contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);
+                    // Font rendering is hard. Some fonts (such as Segoe UI and League Spartan) expect
+                    // the diacritics to be before the base character, while others (Noto Sans) expect
+                    // it after the base character.
+                    //contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);
+
+                    contentBlock.FontFamily = new Windows.UI.Xaml.Media.FontFamily("League Spartan YGA");
 
                     // TextBlock doesn't seem to know where to break Greek or Coptic Unicode
                     // lines, so insert a zero-width space at every space so
@@ -150,7 +153,7 @@ namespace CopticChanter.Helpers
                 default:
                     wuxInline = new Run
                     {
-                        Text = inline.ToString(),
+                        Text = inline.ToString().Normalize(),
                     };
                     break;
             }
