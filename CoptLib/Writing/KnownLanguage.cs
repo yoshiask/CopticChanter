@@ -23,4 +23,9 @@ public enum KnownLanguage
 
     CopticBohairic,
     CopticSahidic,
+    CopticAkhmimic,
+    CopticFayyumic,
+    CopticHermopolitan,
+    CopticLycopolitan,
+    CopticOxyrhynchite,
 }

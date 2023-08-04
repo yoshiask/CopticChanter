@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Writing;
+using CoptLib.Writing.Lexicon;
 using OwlCore.Storage.SharpCompress;
 using OwlCore.Storage.SystemIO;
 using SharpCompress.Archives.Zip;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 
 namespace CoptTest;
@@ -168,5 +170,47 @@ public class Writer
         var outputTextAc = sourceFont.Convert(inputText, targetFont);
         Assert.NotNull(outputTextAc);
         Assert.Equal(outputTextEx, outputTextAc);
+    }
+
+    [Theory]
+    [InlineData("ⲍⲉⲛⲍⲉⲛ", new[] { "ⲍⲉⲛⲍⲉⲛ" }, "lizard, chameleon", 0)]
+    [InlineData("ⲁⲛⲑⲟⲩⲥ", new[] { "ⲁⲛⲑⲟⲩⲥ" }, "(species of) lizard", 0)]
+    [InlineData("ⲁⲣⲭⲓⲉⲣⲉⲩⲥ", new[] { "ⲁⲣⲭⲓⲉⲣⲉⲩⲥ", "ⲁⲣϫⲓⲉⲣⲉⲩⲥ", "ⲁⲣⲭⲓⲉⲣⲉⲩⲉ", "ⲁⲣⲭⲓⲉⲣⲉⲱⲥ", "ⲁⲣϫⲓⲉⲣⲉⲱⲥ", "ⲁⲣⲭⲏⲉⲣⲉⲩⲥ" }, "high priest (of Melchizedek)", 2)]
+    public async Task Lexicon_TeiKellia(string query, string[] orthography, string enDefinitionEx, int senseIndex)
+    {
+        var lexicon = await GetKelliaLexicon();
+            
+        var result = await lexicon.SearchAsync(query, new LanguageInfo(KnownLanguage.Coptic));
+        Assert.NotNull(result);
+
+        HashSet<string> orthSetAc = new(result.Forms.Select(f => f.Orthography));
+        orthSetAc.SymmetricExceptWith(orthography);
+        Assert.Empty(orthSetAc);
+
+        var enDefinitionAc = result.Senses[senseIndex].Translations
+            .GetByLanguage(KnownLanguage.English)?.ToString();
+        Assert.NotNull(enDefinitionAc);
+        Assert.Equal(enDefinitionEx, enDefinitionAc);
+    }
+
+    private ILexicon? _kelliaLexicon;
+    private async Task<ILexicon> GetKelliaLexicon()
+    {
+        if (_kelliaLexicon is null)
+        {
+            XDocument teiDoc;
+            var assembly = typeof(ILexicon).GetTypeInfo().Assembly;
+            await using (var teiStream =
+                         assembly.GetManifestResourceStream(
+                             $"{assembly.GetName().Name}.Resources.Comprehensive_Coptic_Lexicon-v1.2-2020.xml"))
+            {
+                Assert.NotNull(teiStream);
+                teiDoc = await XDocument.LoadAsync(teiStream, LoadOptions.None, default);
+            }
+
+            _kelliaLexicon = new TeiLexicon(new(KnownLanguage.Coptic), teiDoc, null);
+        }
+
+        return _kelliaLexicon;
     }
 }

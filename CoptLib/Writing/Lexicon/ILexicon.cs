@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CoptLib.Writing.Lexicon;
 
@@ -9,5 +9,9 @@ namespace CoptLib.Writing.Lexicon;
 /// </summary>
 public interface ILexicon
 {
-    
+    LanguageInfo Language { get; }
+
+    Task<LexiconEntry?> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null, CancellationToken token = default);
+
+    IAsyncEnumerable<ILexiconEntry> GetEntriesAsync(CancellationToken token = default);
 }
