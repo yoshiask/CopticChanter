@@ -10,14 +10,36 @@ public record GrammarEntry(GrammarType Type, string Text);
 
 public enum PartOfSpeech : byte
 {
-    Subject,    // Subst.
-    Verb,       //Vb.
-    Adjective,  //Adj.
-    Adverb,     //Adv.
-    Preposition,//Präp.
-    Zahlzeichen,//???
-    NominalPrefix,//Nominalpräfix
-    PossessiveArticle,//Possessivartikel
+    Unknown,
+    Substantive,
+    Verb,
+    Adjective,
+    Adverb,
+    Preposition,
+    Pronoun,
+    PossessivePronoun,
+    InterrogativePronoun,
+    DemonstrativePronoun,
+    PersonalPronoun,
+    NumberSign,
+    Numeral,
+    Conjugation,
+    DefiniteArticle,
+    Prefix,
+    NominalPrefix,
+    VerbalPrefix,
+    AdjectivePrefix,
+    PronounPrefixPresent1,
+    OrdinalPrefix,
+    PossessivePrefix,
+    PossessiveArticle,
+    PronounSuffix,
+    Conjunctive,
+    Particle,
+    SentenceConverter,
+    Interjection,
+    Composite,
+    ImpersonalExpression,
 }
 
 public enum Number : byte
@@ -38,4 +60,5 @@ public enum GrammarType : byte
     CollocAdv,
     CollocParticle,
     CollocNoun,
+    CollocConj,
 }

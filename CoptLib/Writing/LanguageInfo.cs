@@ -244,12 +244,11 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
         ["cop-boh"]     = KnownLanguage.CopticBohairic,
         ["cop-sah"]     = KnownLanguage.CopticSahidic,
-        // cop-akh     | Akhmimic
-        // cop-fay     | Fayyumic
-        // cop-her     | Hermopolitan
-        // cop-lyc     | Lycopolitan
-        // cop-oxy     | Oxyrhynchite
-        // cop-boh-EL  | Greco-Bohairic
+        ["cop-akh"]     = KnownLanguage.CopticAkhmimic,
+        ["cop-fay"]     = KnownLanguage.CopticFayyumic,
+        ["cop-her"]     = KnownLanguage.CopticHermopolitan,
+        ["cop-lyc"]     = KnownLanguage.CopticLycopolitan,
+        ["cop-oxy"]     = KnownLanguage.CopticOxyrhynchite,
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);

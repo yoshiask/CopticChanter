@@ -7,7 +7,7 @@ public interface ILexiconEntry
 {
 }
 
-public record LexiconSuperEntry(List<LexiconEntry> Entries) : ILexiconEntry;
+public record LexiconSuperEntry(IEnumerable<LexiconEntry> Entries) : ILexiconEntry;
 
 public record LexiconEntry(EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup GrammarGroup) : ILexiconEntry;
 
