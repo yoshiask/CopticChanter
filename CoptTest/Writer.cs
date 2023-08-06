@@ -108,13 +108,14 @@ namespace CoptTest
         [Theory]
         [InlineData("Hina `ntenhwc `erok@ `nnoytoc nem Dauid@ enws oubyk@ ouoh enjw `mmoc.", "CopticStandard",
             "Ϩⲓⲛⲁ ⲛ\u0300ⲧⲉⲛϩⲱⲥ ⲉ\u0300ⲣⲟⲕ: ⲛ\u0300ⲛⲟⲏⲧⲟⲥ ⲛⲉⲙ Ⲇⲁⲩⲓⲇ: ⲉⲛⲱϣ ⲟⲩⲃⲏⲕ: ⲟⲩⲟϩ ⲉⲛϫⲱ ⲙ\u0300ⲙⲟⲥ.", "Unicode")]
+        [InlineData("Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ", "Unicode", "Ⲡⲓ\u0300ⲡⲛⲉⲩⲙⲁ", "UnicodeB")]
         public void DisplayFont_Convert(string inputText, string sourceMapId, string outputTextEx, string targetMapId)
         {
             if (!DisplayFont.TryFindFontByMapId(sourceMapId, out var sourceFont))
-                Assert.Fail($"No font with supporting the '{sourceMapId}' mapping were found.");
+                Assert.Fail($"No font supporting the '{sourceMapId}' mapping was found.");
             
             if (!DisplayFont.TryFindFontByMapId(targetMapId, out var targetFont))
-                Assert.Fail($"No font with supporting the '{targetMapId}' mapping were found.");
+                Assert.Fail($"No font supporting the '{targetMapId}' mapping was found.");
 
             var outputTextAc = sourceFont.Convert(inputText, targetFont);
             Assert.NotNull(outputTextAc);

@@ -154,14 +154,7 @@ namespace CoptTest
             Assert.Empty(expected);
         }
 
-        [Theory]
-        [InlineData("Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ", "Noto Sans", "Segoe UI", "Ⲡⲓ\u0300ⲡⲛⲉⲩⲙⲁ")]
-        public void SwapJenkims(string originalText, string originalFont, string targetFont, string expectedText)
-        {
-
-        }
-
-        public static readonly string[] LanguageInfo_Parse_Samples = new string[]
+        public static readonly string[] LanguageInfo_Parse_Samples =
         {
             KnownLanguage.English.ToString(), KnownLanguage.Coptic.ToString(),
             KnownLanguage.Arabic.ToString(), KnownLanguage.Default.ToString(),
@@ -170,9 +163,6 @@ namespace CoptTest
         };
 
         public static IEnumerable<object[]> GetLanguageInfo_Parse_Samples()
-        {
-            foreach (string sample in LanguageInfo_Parse_Samples)
-                yield return new object[] { sample };
-        }
+            => LanguageInfo_Parse_Samples.Select(sample => new object[] { sample });
     }
 }
