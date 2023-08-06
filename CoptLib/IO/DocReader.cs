@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using CommunityToolkit.Diagnostics;
 using CoptLib.Models.Text;
 
 namespace CoptLib.IO
@@ -46,10 +47,12 @@ namespace CoptLib.IO
         /// </summary>
         public static Doc ParseDocXml(XDocument xml, LoadContextBase context = null)
         {
+            Guard.IsNotNull(xml.Root);
+            
             // The actual content can't be directly deserialized, so it needs to be manually parsed
             Doc doc = new(context ?? new LoadContext())
             {
-                Name = xml.Root!.Element(nameof(doc.Name))?.Value,
+                Name = xml.Root.Element(nameof(doc.Name))?.Value,
                 Key = xml.Root.Element(nameof(doc.Key))?.Value,
             };
 
@@ -59,7 +62,7 @@ namespace CoptLib.IO
             var defsElem = xml.Root.Element("Definitions");
             if (defsElem != null)
             {
-                var defs = ParseDefinitionCollection(defsElem?.Elements(), doc, null);
+                var defs = ParseDefinitionCollection(defsElem.Elements(), doc, null);
                 doc.DirectDefinitions = defs;
             }
 
@@ -125,11 +128,12 @@ namespace CoptLib.IO
                 }
                 else if (defElemName == nameof(Variable))
                 {
+                    var configurableStr = defElem.Attribute("Configurable")?.Value;
                     Variable variable = new()
                     {
                         Label = defElem.Attribute(nameof(variable.Label))?.Value,
                         DefaultValue = defElem.Attribute(nameof(variable.DefaultValue))?.Value,
-                        Configurable = bool.Parse(defElem.Attribute(nameof(variable.Configurable))?.Value),
+                        Configurable = configurableStr is not null && bool.Parse(configurableStr),
                     };
                     def = variable;
                 }
