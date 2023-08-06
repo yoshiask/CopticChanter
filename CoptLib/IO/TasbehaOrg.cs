@@ -65,7 +65,7 @@ public static class TasbehaOrg
                     };
 
                     if (translation.Language.Language == "cop" && !languageClassInfo.Groups["enc"].Success)
-                        translation.Font = CopticFont.CsAvvaShenouda.Name;
+                        translation.Font = DisplayFont.CopticStandard.DisplayName;
 
                     if (parsedRowCount != 0)
                     {

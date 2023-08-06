@@ -98,7 +98,7 @@ namespace CoptLib.IO
                     {
                         // The jenkims need to be swapped because Segoe UI and League Spartan
                         // expect it before the base letter.
-                        string text = Writing.CopticFont.SwapJenkimPosition(content.GetText(), '\u0300', false);
+                        string text = Writing.DisplayFont.SwapJenkimPosition(content.GetText(), '\u0300', false);
                         text = surround.Insert(insertIdx, text);
                         verse.Add(text);
                     }

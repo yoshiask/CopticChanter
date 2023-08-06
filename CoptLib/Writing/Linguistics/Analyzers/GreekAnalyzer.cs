@@ -12,8 +12,7 @@ public class GreekAnalyzer : CopticGrecoBohairicAnalyzer
     
     public override PhoneticWord[] PhoneticAnalysis(string srcText)
     {
-        string copText = CopticFont.GreekUnicode.Convert(srcText, CopticFont.CopticUnicode);
-        copText = copText.Replace('ϣ', 'ⲥ');
+        string copText = DisplayFont.Unicode.Convert(srcText, DisplayFont.GreekInCopticUnicode);
 
         var text = base.PhoneticAnalysis(copText);
         
@@ -23,10 +22,12 @@ public class GreekAnalyzer : CopticGrecoBohairicAnalyzer
             for (int j = 0; j < word.Equivalents.Count; ++j)
             {
                 var pe = word.Equivalents[j];
-                pe.Source = CopticFont.CopticUnicode.Convert(pe.Source.ToString(), CopticFont.GreekUnicode)[0];
+                pe.Source = DisplayFont.Unicode.Convert(pe.Source, DisplayFont.CopticInGreekUnicode);
 
                 if (j == word.Equivalents.Count - 1 && pe.Source == 'σ')
                     pe.Source = 'ς';
+                
+                word.Equivalents[j] = pe;
             }
         }
 

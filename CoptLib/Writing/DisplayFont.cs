@@ -1,8 +1,7 @@
-﻿using CoptLib.Extensions;
-using CoptLib.Models;
+﻿using CoptLib.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 #if DEBUG
@@ -13,58 +12,54 @@ using Output = System.Console;
 
 namespace CoptLib.Writing
 {
-    public partial class CopticFont
+    public partial class DisplayFont
     {
-        public string Name;
-        public string FontName;
-        public Dictionary<string, string> Charmap = new();
-        public bool IsJenkimBefore = true;
-        public bool IsCopticStandard = true;
+        public string DisplayName { get; set; }
+        public string FontFamily { get; set; }
+        public string CharacterMapId { get; set; }
+        public DoubleDictionary<KnownCharacter, char> Charmap { get; init; }
+        public bool IsJenkimBefore { get; set; } = true;
 
         /// <summary>
-        /// Converts Coptic text to the specified font.
+        /// Converts text to the specified font.
         /// </summary>
         /// <param name="input">The text to convert.</param>
-        /// <param name="target">The font to convert to. Defaults to <see cref="CopticUnicode"/>.</param>
+        /// <param name="target">The font to convert to. Defaults to <see cref="Unicode"/>.</param>
         /// <returns>The source text represented with the target font.</returns>
-        public string Convert(string input, CopticFont target = null)
+        public string Convert(string input, DisplayFont target = null)
         {
             // Default to Unicode target
-            target ??= CopticUnicode;
+            target ??= Unicode;
 
             // No need to convert
-            if (this == target || (IsCopticStandard && IsCopticStandard == target.IsCopticStandard))
+            if (CharacterMapId == target.CharacterMapId)
                 return input;
 
-            string output = "";
-
-            // Generate a dictionary that has the start mapping as keys and the target mapping as values
-            Dictionary<string, string> mergedMap = new();
-            var sourceMap = Charmap.SwitchColumns();
-            foreach (KeyValuePair<string, string> spair in sourceMap)
-            {
-                if (target.Charmap.ContainsKey(spair.Value))
-                {
-                    var targetChar = target.Charmap[spair.Value];
-                    mergedMap.Add(spair.Key, targetChar);
-                }
-            }
-
-            // Apply mapping
-            foreach (char ch in input)
-            {
-                if (!mergedMap.TryGetValue(ch.ToString(), out var targetCh))
-                    targetCh = ch.ToString();
-                output += targetCh;
-            }
+            var newChars = input
+                .Select(ch => Convert(ch, target))
+                .ToArray();
+            string output = new(newChars);
 
             // Swap jenkim position if required
-            if (this.IsJenkimBefore != target.IsJenkimBefore)
-            {
-                output = SwapJenkimPosition(output, target.Charmap["`"][0], this.IsJenkimBefore);
-            }
+            return IsJenkimBefore != target.IsJenkimBefore
+                ? SwapJenkimPosition(output, target.Charmap[KnownCharacter.CombiningGraveAccent], IsJenkimBefore)
+                : output;
+        }
 
-            return output;
+        /// <summary>
+        /// Converts text to the specified font.
+        /// </summary>
+        /// <param name="input">The character to convert.</param>
+        /// <param name="target">The font to convert to. Defaults to <see cref="Unicode"/>.</param>
+        /// <returns>The source text represented with the target font.</returns>
+        public char Convert(char input, DisplayFont target = null)
+        {
+            target ??= Unicode;
+            
+            return Charmap.TryGetLeft(input, out var knownCh) 
+                && target.Charmap.TryGetRight(knownCh, out var targetCh)
+                    ? targetCh
+                    : input;
         }
 
         /// <summary>
@@ -93,26 +88,40 @@ namespace CoptLib.Writing
         /// <summary>
         /// Attempts to find a font with the specific name in <see cref="Fonts"/>.
         /// </summary>
-        /// <param name="fontName">The name of the font to find.</param>
+        /// <param name="characterMapId">The name of the font to find.</param>
         /// <returns>
         /// The font if found, <see langword="null"/> if no match is found.
         /// </returns>
-        public static CopticFont FindFont(string fontName)
+        public static DisplayFont? FindFontByMapId(string characterMapId)
         {
-            return Fonts.Find(f => f.Name.Equals(fontName, StringComparison.OrdinalIgnoreCase));
+            return Fonts.Find(f => f.CharacterMapId.Equals(characterMapId, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
         /// Attempts to find a font with the specific name in <see cref="Fonts"/>.
         /// </summary>
-        /// <param name="fontName">The name of the font to find.</param>
+        /// <param name="characterMapId">The name of the font to find.</param>
+        /// <param name="getDefaultFont">A function that returns the font to use if none is found.</param>
+        /// <returns>
+        /// The font if found, <paramref name="getDefaultFont"/>() if no match is found.
+        /// </returns>
+        public static DisplayFont FindFontByMapId(string characterMapId, Func<DisplayFont> getDefaultFont)
+        {
+            return Fonts.Find(f => f.CharacterMapId.Equals(characterMapId, StringComparison.OrdinalIgnoreCase))
+                ?? getDefaultFont();
+        }
+
+        /// <summary>
+        /// Attempts to find a font with the specific name in <see cref="Fonts"/>.
+        /// </summary>
+        /// <param name="characterMapId">The name of the font to find.</param>
         /// <param name="font">The matching font, if found.</param>
         /// <returns>
         /// <see langword="true"/> if the fond was found, <see langword="false"/> if not.
         /// </returns>
-        public static bool TryFindFont(string fontName, out CopticFont font)
+        public static bool TryFindFontByMapId(string characterMapId, out DisplayFont font)
         {
-            font = FindFont(fontName);
+            font = FindFontByMapId(characterMapId);
             return font != null;
         }
 
@@ -176,19 +185,19 @@ namespace CoptLib.Writing
         /// <remarks>
         /// Note that calling this overload more than once may result in some odd results.
         /// </remarks>
-        public static string SwapJenkimPosition(string text, CopticFont font)
-            => SwapJenkimPosition(text, font.Charmap["`"][0], font.IsJenkimBefore);
+        public static string SwapJenkimPosition(string text, DisplayFont font)
+            => SwapJenkimPosition(text, font.Charmap[KnownCharacter.CombiningGraveAccent], font.IsJenkimBefore);
 
-        /// <inheritdoc cref="SwapJenkimPosition(string, CopticFont)"/>
+        /// <inheritdoc cref="SwapJenkimPosition(string, DisplayFont)"/>
         public static string SwapJenkimPosition(string text, string fontName)
-            => SwapJenkimPosition(text, FindFont(fontName) ?? CopticUnicode);
+            => SwapJenkimPosition(text, FindFontByMapId(fontName) ?? Unicode);
 
         /// <summary>
         /// Reads Font Pack from file. Also adds to imported list of the current instance.
         /// </summary>
         /// <param name="path">File to read</param>
         /// <returns></returns>
-        public static CopticFont ReadFontXml(string path, bool addToList = true)
+        public static DisplayFont ReadFontXml(string path, bool addToList = true)
         {
             try
             {
@@ -204,7 +213,7 @@ namespace CoptLib.Writing
 
                 //Use the Deserialize method to restore the object's state with
                 //data from the XML document.
-                var data = ((Font)serializer.Deserialize(text)).ToCopticFont();
+                var data = ((Font)serializer.Deserialize(text)).ToDisplayFont();
                 if (addToList)
                     Fonts.Add(data);
                 return data;
@@ -221,25 +230,32 @@ namespace CoptLib.Writing
         /// </summary>
         /// <param name="path">File to generate from. Must have comma sparated values.</param>
         /// <returns></returns>
-        public static CopticFont GenerateFromCsv(string path)
+        public static DisplayFont GenerateFromCsv(string path)
         {
-            var font = new CopticFont()
+            var font = new DisplayFont
             {
-                Name = "Imported Font",
-                FontName = "Arial",
-                IsCopticStandard = false
+                DisplayName = "Imported Font",
+                FontFamily = "Arial",
             };
-            string[] lines = File.ReadAllLines(path);
-            foreach (string line in lines)
+            var lines = File.ReadAllLines(path);
+            foreach (var line in lines)
             {
-                string[] columns = line.Split(',');
+                var columns = line.Split(',');
 
-                if (columns[0] == "title")
-                    font.Name = columns[1];
-                else if (columns[0] == "fontName")
-                    font.FontName = columns[1];
-                else
-                    font.Charmap.Add(columns[0], columns[1]);
+                switch (columns[0])
+                {
+                    case "title":
+                        font.DisplayName = columns[1];
+                        break;
+                    case "fontName":
+                        font.FontFamily = columns[1];
+                        break;
+                    default:
+                        font.Charmap.Add(
+                            (KnownCharacter)Enum.Parse(typeof(KnownCharacter), columns[0]),
+                            columns[1][0]);
+                        break;
+                }
             }
 
             return font;

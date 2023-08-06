@@ -20,7 +20,7 @@ namespace CoptLib.Models.Text
 
         public override void HandleFont()
         {
-            if (!FontHandled && CopticFont.TryFindFont(Font, out var font))
+            if (!FontHandled && DisplayFont.TryFindFontByMapId(Font, out var font))
             {
                 Text = font.Convert(Text);
                 FontHandled = true;
