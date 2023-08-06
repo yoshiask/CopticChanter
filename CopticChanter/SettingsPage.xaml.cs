@@ -1,13 +1,11 @@
-﻿using System;
+﻿using CoptLib;
+using NodaTime;
+using System;
+using System.Diagnostics;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI;
-using System.Diagnostics;
-using CoptLib;
-
-using CLLanguage = CoptLib.Writing.KnownLanguage;
-using NodaTime;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -25,6 +23,9 @@ namespace CopticChanter
             FontFamilyBox.Text = Settings.GetFontFamilyName();
             CharacterMapIdBox.Text = Settings.GetCharacterMapId();
             FontSizeBox.Text = Settings.GetFontSize().ToString();
+
+            GregorianDatePicker.Date = DateTime.Now;
+            GregorianDatePicker_DateChanged(null, null);
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -38,39 +39,13 @@ namespace CopticChanter
         }
 
         private void GregorianDatePicker_DateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            CopticDateDisplay.Text = GregorianDatePicker.Date.Date.ToCopticDate().ToString();
-        }
+            => UpdateCopticDateDisplay(GregorianDatePicker.Date.Date);
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void UpdateCopticDateDisplay(DateTime date)
         {
-            // Check version for Fluent Design
-            try
-            {
-                if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
-                {
-					AcrylicBrush backBrush = new AcrylicBrush
-					{
-						BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-						TintColor = Color.FromArgb(255, 246, 246, 246),
-						FallbackColor = Color.FromArgb(255, 246, 246, 246),
-						TintOpacity = 0.6
-					};
-					MainGrid.Background = backBrush;
-                }
-                else
-                {
-                    SolidColorBrush backBrush = new SolidColorBrush(Color.FromArgb(255, 246, 246, 246));
-                    MainGrid.Background = backBrush;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-
-            // Calculate today's date on Coptic calendar
-            CopticDateDisplay.Text = GregorianDatePicker.Date.Date.ToCopticDate().ToString();
+            CopticDateDisplay.Text = date
+                .ToCopticDate()
+                .Format(new CoptLib.Writing.LanguageInfo(CoptLib.Writing.KnownLanguage.Coptic));
         }
     }
 }

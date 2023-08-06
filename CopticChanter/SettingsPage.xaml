@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="Page_Loaded">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid x:Name="MainGrid" RowSpacing="12" ColumnSpacing="8">
+    <Grid x:Name="MainGrid" RowSpacing="12" ColumnSpacing="8" Padding="8">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
@@ -43,6 +43,7 @@
             <Style TargetType="TextBlock">
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Right"/>
             </Style>
         </Grid.Resources>
         
@@ -54,8 +55,10 @@
         <TextBox x:Name="FontSizeBox" Grid.Row="3" Grid.Column="1" InputScope="Number" PlaceholderText="Size"/>
 
         <TextBlock x:Name="DateTodayTitle" Grid.Row="5" Grid.Column="0" Text="Today's Date" />
-        <DatePicker x:Name="GregorianDatePicker" Grid.Row="5" Grid.Column="1" DateChanged="GregorianDatePicker_DateChanged"/>
-        <TextBlock x:Name="CopticDateDisplay" Grid.Row="6" Grid.Column="1" Text="[ⲟⲩⲟϩ Ⲡ̀ϭⲟⲓⲥ ϣⲟⲡ ⲛⲉⲙⲉ]" />
+        <StackPanel Grid.Row="5" Grid.Column="1">
+            <DatePicker x:Name="GregorianDatePicker" DateChanged="GregorianDatePicker_DateChanged"/>
+            <TextBlock x:Name="CopticDateDisplay" Text="[ⲟⲩⲟϩ Ⲡ̀ϭⲟⲓⲥ ϣⲟⲡ ⲛⲉⲙⲉ]" HorizontalAlignment="Left" />
+        </StackPanel>
 
     </Grid>
 </Page>
