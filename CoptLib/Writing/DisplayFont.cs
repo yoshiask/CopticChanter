@@ -145,11 +145,10 @@ namespace CoptLib.Writing
             // Adjust bounds depending on look-ahead or look-behind
             int i = isJenkimBefore ? 0 : 1;
             int endIdx = isJenkimBefore ? text.Length - 1 : text.Length;
-            int look = isJenkimBefore ? 1 : -1;
+            int peek = isJenkimBefore ? 1 : -1;
 
             // Save text to char array
             var chars = text.ToCharArray();
-            string output = text;
 
             for (; i < endIdx; i++)
             {
@@ -158,13 +157,13 @@ namespace CoptLib.Writing
                     continue;
 
                 // Look at the target character
-                char chLook = text[i + look];
+                char chTarget = chars[i + peek];
 
                 // Swap letters
-                chars[i] = chLook;
-                chars[i += look] = ch;
+                chars[i] = chTarget;
+                chars[i + peek] = ch;
 
-                output = new(chars);
+                if (isJenkimBefore) ++i;
             }
 
             return new(chars);

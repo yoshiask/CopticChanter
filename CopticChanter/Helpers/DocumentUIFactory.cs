@@ -101,8 +101,8 @@ namespace CopticChanter.Helpers
                 ?? LanguageInfo.Default;
             KnownLanguage lang = langInfo.Known;
 
-            contentBlock.FontFamily = Common.GetFontFamily(lang);
-            contentBlock.FontSize = Common.GetFontSize(lang);
+            contentBlock.FontFamily = Settings.GetFontFamily();
+            contentBlock.FontSize = Settings.GetFontSize();
 
             if (content is Comment)
             {
@@ -117,17 +117,12 @@ namespace CopticChanter.Helpers
                     ? TextAlignment.Right : TextAlignment.Left;
             }
 
+            contentBlock.Text = DisplayFont.Unicode.Convert(contentBlock.Text, Settings.GetDisplayFont());
+
             switch (lang)
             {
                 case KnownLanguage.Coptic:
                 case KnownLanguage.Greek:
-                    // Font rendering is hard. Some fonts (such as Segoe UI and League Spartan) expect
-                    // the diacritics to be before the base character, while others (Noto Sans) expect
-                    // it after the base character.
-                    //contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);
-
-                    contentBlock.FontFamily = new Windows.UI.Xaml.Media.FontFamily("League Spartan YGA");
-
                     // TextBlock doesn't seem to know where to break Greek or Coptic Unicode
                     // lines, so insert a zero-width space at every space so
                     // word wrap actually works

@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="Page_Loaded">
 
-    <Grid x:Name="MainGrid">
+    <Grid x:Name="MainGrid" RowSpacing="12" ColumnSpacing="8">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
@@ -18,23 +18,44 @@
                     </VisualState.StateTriggers>
 
                     <VisualState.Setters>
-                        <Setter Target="RemoteStatusDisplay.Margin" Value="318,290,0,0"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <TextBox x:Name="EFontSizeBox" HorizontalAlignment="Left" Margin="165,130,0,0" Text="40" VerticalAlignment="Top" InputScope="Number" PlaceholderText="English Display Size" Width="71"/>
-        <Button x:Name="BackButton" Content="Present" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="BackButton_Click"/>
-        <TextBlock x:Name="EFontSizeTitle" HorizontalAlignment="Left" Margin="20,136,0,0" Text="English Display Size" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox x:Name="CFontSizeBox" HorizontalAlignment="Left" Margin="165,172,0,0" Text="45" VerticalAlignment="Top" InputScope="Number" PlaceholderText="English Display Size" Width="71"/>
-        <TextBlock x:Name="CFontSizeTitle" HorizontalAlignment="Left" Margin="20,178,0,0" Text="Coptic Display Size" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <DatePicker x:Name="GregorianDatePicker" HorizontalAlignment="Left" Margin="165,215,0,0" VerticalAlignment="Top" DateChanged="GregorianDatePicker_DateChanged"/>
-        <TextBlock x:Name="CopticDateDisplay" HorizontalAlignment="Left" Margin="165,252,0,0" Text="[Coptic Date]" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Width="295"/>
-        <TextBlock x:Name="DateTodayTitle" HorizontalAlignment="Left" Margin="20,220,0,0" Text="Today's Date" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <Button x:Name="ConnectAsHostButton" Content="Connect as Host" HorizontalAlignment="Left" Margin="165,284,0,0" VerticalAlignment="Top" Width="148" Click="ConnectAsHostButton_Click"/>
-        <Button x:Name="ConnectAsRemoteButton" Content="Connect as Remote" HorizontalAlignment="Left" Margin="323,284,0,0" VerticalAlignment="Top" Width="148" Click="ConnectAsRemoteButton_Click"/>
-        <TextBlock x:Name="RemoteTitle" HorizontalAlignment="Left" Margin="20,290,0,0" Text="Wireless Remote" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock x:Name="RemoteStatusDisplay" HorizontalAlignment="Left" Margin="466,290,0,0" Text="Not Connected" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+        </Grid.Resources>
+        
+        <Button x:Name="BackButton" Content="Back" Margin="8" VerticalAlignment="Top" Click="BackButton_Click"/>
+
+        <TextBlock x:Name="DisplayFontTitle" Grid.Row="1" Grid.Column="0" Text="Font" />
+        <TextBox x:Name="FontFamilyBox" Grid.Row="1" Grid.Column="1" PlaceholderText="Family"/>
+        <TextBox x:Name="CharacterMapIdBox" Grid.Row="2" Grid.Column="1" PlaceholderText="Character Map ID"/>
+        <TextBox x:Name="FontSizeBox" Grid.Row="3" Grid.Column="1" InputScope="Number" PlaceholderText="Size"/>
+
+        <TextBlock x:Name="DateTodayTitle" Grid.Row="5" Grid.Column="0" Text="Today's Date" />
+        <DatePicker x:Name="GregorianDatePicker" Grid.Row="5" Grid.Column="1" DateChanged="GregorianDatePicker_DateChanged"/>
+        <TextBlock x:Name="CopticDateDisplay" Grid.Row="6" Grid.Column="1" Text="[ⲟⲩⲟϩ Ⲡ̀ϭⲟⲓⲥ ϣⲟⲡ ⲛⲉⲙⲉ]" />
 
     </Grid>
 </Page>

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using CoptLib;
 
 using CLLanguage = CoptLib.Writing.KnownLanguage;
+using NodaTime;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -21,14 +22,17 @@ namespace CopticChanter
         {
             this.InitializeComponent();
 
-            EFontSizeBox.Text = Common.GetFontSize(CLLanguage.English).ToString();
-            CFontSizeBox.Text = Common.GetFontSize(CLLanguage.Coptic).ToString();
+            FontFamilyBox.Text = Settings.GetFontFamilyName();
+            CharacterMapIdBox.Text = Settings.GetCharacterMapId();
+            FontSizeBox.Text = Settings.GetFontSize().ToString();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Common.SetFontSize(CLLanguage.English, Convert.ToInt32(EFontSizeBox.Text));
-            Common.SetFontSize(CLLanguage.Coptic, Convert.ToInt32(CFontSizeBox.Text));
+            Settings.SetFontFamily(FontFamilyBox.Text);
+            Settings.SetCharacterMapId(CharacterMapIdBox.Text);
+            Settings.SetFontSize(Convert.ToInt32(FontSizeBox.Text));
+            DateHelper.NowOverride = LocalDateTime.FromDateTime(GregorianDatePicker.Date.LocalDateTime);
 
             Frame.Navigate(typeof(MainPage));
         }
@@ -67,35 +71,6 @@ namespace CopticChanter
 
             // Calculate today's date on Coptic calendar
             CopticDateDisplay.Text = GregorianDatePicker.Date.Date.ToCopticDate().ToString();
-
-            // Set color for RemoteStatusDisplay
-            RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Gray);
-
-            // Check if remote is connected
-            /*if (Common.RemoteSocket == null)
-            {
-                Common.IsConnected = false;
-                RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Gray);
-                RemoteStatusDisplay.Text = "Not Connected";
-                ConnectDeviceButton.Content = "Connect to Device";
-            }
-            else
-            {
-                Common.IsConnected = true;
-                ConnectDeviceButton.Content = "Disconnect";
-                RemoteStatusDisplay.Foreground = new SolidColorBrush(Colors.Green);
-                RemoteStatusDisplay.Text = "Connected to " + Common.RemoteInfo.Name;
-            }*/
-        }
-
-        private void ConnectAsHostButton_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(Pages.BluetoothHostConnectPage));
-        }
-
-        private void ConnectAsRemoteButton_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(Pages.BluetoothRemoteConnectPage));
         }
     }
 }

@@ -6,12 +6,7 @@ using OwlCore.Storage.Uwp;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Windows.Media.Core;
-using Windows.Media.MediaProperties;
-using Windows.Media.SpeechSynthesis;
-using Windows.Media.Transcoding;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -94,6 +89,11 @@ namespace CopticChanter
         private void TtsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             Frame.Navigate(typeof(Pages.TextToSpeechPage));
+        }
+
+        private void SettingsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(SettingsPage));
         }
     }
 }

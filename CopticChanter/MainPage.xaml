@@ -17,6 +17,7 @@
         
         <Button Content="Present documents" Click="LoadDocsButton_Click"/>
         <Button Content="Text-to-speech" Click="TtsButton_Click"/>
+        <Button Content="Settings" Click="SettingsButton_Click"/>
     </StackPanel>
     
 </Page>
