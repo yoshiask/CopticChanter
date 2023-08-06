@@ -70,12 +70,13 @@ namespace CoptLib.IO
             if (transsElem != null)
             {
                 foreach (var def in ParseDefinitionCollection(transsElem.Elements(), doc, null))
-                {
-                    if (def is not ContentPart translation)
-                        continue;
-                    doc.Translations.Children.Add(translation);
-                }
+                    if (def is ContentPart translation)
+                        doc.Translations.Children.Add(translation);
             }
+
+            var authorElem = xml.Root.Element("Author");
+            if (authorElem != null)
+                doc.Author = Author.DeserializeElement(authorElem);
 
             return doc;
         }

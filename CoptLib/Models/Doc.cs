@@ -38,9 +38,6 @@ namespace CoptLib.Models
         [XmlArray("Definitions")]
         public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
 
-        [XmlElement]
-        public string NextScript { get; set; }
-
         [XmlIgnore]
         public LoadContextBase Context
         {
@@ -81,6 +78,7 @@ namespace CoptLib.Models
 
             RecursiveTransform(DirectDefinitions);
             RecursiveTransform(Translations.Children);
+            _transformed = true;
         }
 
         internal static void RecursiveTransform(System.Collections.IEnumerable parts)
