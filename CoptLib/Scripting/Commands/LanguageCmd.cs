@@ -15,23 +15,23 @@ namespace CoptLib.Scripting.Commands
 
         public LanguageInfo Language { get; private set; }
 
-        public CopticFont Font { get; private set; }
+        public DisplayFont Font { get; private set; }
 
         private void Parse()
         {
             var langParam = Parameters[0].ToString();
-            var sourceParam = Parameters[Parameters.Length - 1];
+            var sourceParam = Parameters[^1];
 
             if (!LanguageInfo.TryParse(langParam, out var language))
                 return;
 
             Language = language;
 
-            if (Parameters.Length >= 3 && (language.Known == KnownLanguage.Coptic || language.Known == KnownLanguage.Greek))
+            if (Parameters.Length >= 3 && language.Known is KnownLanguage.Coptic or KnownLanguage.Greek)
             {
                 var fontParam = Parameters[1].ToString();
 
-                Font = CopticFont.FindFont(fontParam) ?? CopticFont.CsAvvaShenouda;
+                Font = DisplayFont.FindFontByMapId(fontParam, () => DisplayFont.CopticStandard);
             }
 
             Output = sourceParam.Select(ConvertFont);

@@ -155,7 +155,7 @@ namespace CoptTest
         }
 
         [Theory]
-        [InlineData("Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ", "Noto Sans", "Segoe UI")]
+        [InlineData("Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ", "Noto Sans", "Segoe UI", "Ⲡⲓ\u0300ⲡⲛⲉⲩⲙⲁ")]
         public void SwapJenkims(string originalText, string originalFont, string targetFont, string expectedText)
         {
 

@@ -1,7 +1,5 @@
 ﻿using CoptLib.Writing;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models
@@ -10,67 +8,60 @@ namespace CoptLib.Models
     public class Font
     {
         [XmlElement]
-        public string Name;
+        public string Name { get; set; }
 
         [XmlElement]
-        public string FontName;
+        public string FontName { get; set; }
 
         [XmlElement]
-        public bool IsJenkimBefore = true;
-
-        [XmlElement]
-        public bool IsCopticStandard = false;
+        public bool IsJenkimBefore  { get; set; }
 
         [XmlArray]
         [XmlArrayItem(ElementName = "Char")]
-        public List<MapXml> Charmap;
+        public List<MapXml> Charmap { get; set; }
 
-        public static Font ToFontXml(CopticFont font)
+        public static Font ToFontXml(DisplayFont font)
         {
-            var xml = new Font()
+            var xml = new Font
             {
-                Name = font.Name,
-                FontName = font.FontName,
+                Name = font.DisplayName,
+                FontName = font.FontFamily,
                 IsJenkimBefore = font.IsJenkimBefore,
-                IsCopticStandard = font.IsCopticStandard,
                 Charmap = new List<MapXml>()
             };
-            foreach (string key in font.Charmap.Keys)
+            foreach (var (knownCh, ch) in font.Charmap)
             {
-                font.Charmap.TryGetValue(key, out string value);
-                var pair = new MapXml()
+                var pair = new MapXml
                 {
-                    BaseCharacter = key,
-                    NewCharacter = value
+                    BaseCharacter = knownCh,
+                    NewCharacter = ch
                 };
                 xml.Charmap.Add(pair);
             }
             return xml;
         }
-        public CopticFont ToCopticFont()
+        public DisplayFont ToDisplayFont()
         {
-            var font = new CopticFont()
+            var font = new DisplayFont
             {
-                Name = Name,
-                FontName = FontName,
+                DisplayName = Name,
+                FontFamily = FontName,
                 IsJenkimBefore = IsJenkimBefore,
-                IsCopticStandard = IsCopticStandard,
-                Charmap = new Dictionary<string, string>()
+                Charmap = new(Charmap.Count)
             };
+            
             foreach (MapXml map in Charmap)
-            {
                 font.Charmap.Add(map.BaseCharacter, map.NewCharacter);
-            }
             return font;
         }
 
         public class MapXml
         {
             [XmlAttribute("Base")]
-            public string BaseCharacter;
+            public KnownCharacter BaseCharacter { get; set; }
 
             [XmlAttribute("New")]
-            public string NewCharacter;
+            public char NewCharacter { get; set; }
         }
     }
 }

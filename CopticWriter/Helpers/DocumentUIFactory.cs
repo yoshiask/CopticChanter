@@ -173,7 +173,7 @@ namespace CopticWriter.Helpers
                 case KnownLanguage.Greek:
                     // Font rendering is hard. UWP wants the combining character before,
                     // while certain HTML renderers can't make up their minds.
-                    contentBlock.Text = CopticFont.SwapJenkimPosition(contentBlock.Text, CopticFont.CopticUnicode);
+                    contentBlock.Text = DisplayFont.SwapJenkimPosition(contentBlock.Text, DisplayFont.Unicode);
 
                     // TextBox doesn't seem to know where to break Greek or Coptic Unicode
                     // lines, so insert a zero-width space at every space so

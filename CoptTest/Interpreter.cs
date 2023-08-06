@@ -100,7 +100,7 @@ namespace CoptTest
         [MemberData(nameof(GetIpaTranscribe_CopticStandard_Samples))]
         public void IpaTranscribe_CopticStandard(string sample)
         {
-            string result = _analyzer.IpaTranscribe(CopticFont.CsAvvaShenouda.Convert(sample));
+            string result = _analyzer.IpaTranscribe(DisplayFont.CopticStandard.Convert(sample));
             _output.WriteLine(result);
         }
 

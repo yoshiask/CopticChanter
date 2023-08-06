@@ -456,7 +456,7 @@ namespace CopticWriter.Views
                         if (CopticSft[index] != null)
                         {
                             btn.Visibility = Visibility.Visible;
-                            btn.Content = CopticFont.CsAvvaShenouda.Convert(EnglishSft[index]);
+                            btn.Content = DisplayFont.CopticStandard.Convert(EnglishSft[index]);
                         }
                         else
                         {
@@ -468,8 +468,8 @@ namespace CopticWriter.Views
                         if (Coptic[index] != null)
                         {
                             btn.Visibility = Visibility.Visible;
-                            var vals = CopticFont.CopticUnicode.Charmap.Values.ToList();
-                            btn.Content = CopticFont.CsAvvaShenouda.Convert(English[index]);
+                            var vals = DisplayFont.Unicode.Charmap.Values.ToList();
+                            btn.Content = DisplayFont.CopticStandard.Convert(English[index]);
                         }
                         else
                         {
@@ -635,7 +635,7 @@ namespace CopticWriter.Views
             switch ((CLLanguage)LanguageOption.SelectedIndex)
             {
                 case CLLanguage.Coptic:
-                    lastFocusedTextBox.Text = CopticFont.CsAvvaShenouda.Convert(lastFocusedTextBox.Text);
+                    lastFocusedTextBox.Text = DisplayFont.CopticStandard.Convert(lastFocusedTextBox.Text);
                     break;
             }
             lastFocusedTextBox.SelectionStart = caret;

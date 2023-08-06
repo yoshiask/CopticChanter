@@ -94,7 +94,7 @@ namespace CoptTest
         [Theory]
         [InlineData("this is also some English", null, null, KnownLanguage.English)]
         [InlineData("Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", null, null, KnownLanguage.Coptic)]
-        [InlineData("Eulogon ton Kurion", "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", "CS Avva Shenouda", KnownLanguage.Coptic)]
+        [InlineData("Eulogon ton Kurion", "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", "Coptic Standard", KnownLanguage.Coptic)]
         public void ParseTextCommands_LanguageCommand(string subtext, string? convSubtext = null, string? font = null, KnownLanguage lang = default)
         {
             convSubtext ??= subtext;
@@ -122,12 +122,12 @@ namespace CoptTest
             Assert.Equal(langDef?.ToString(), convSubtext);
             if (font == null)
                 Assert.Null(langCmd.Font);
-            Assert.Equal(langCmd.Font?.Name, font);
+            Assert.Equal(langCmd.Font?.DisplayName, font);
         }
 
         [Theory]
         [InlineData("engTest", "An English string")]
-        [InlineData("coptCSTest", "Nenio] `n`apoctoloc", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", "CS Copt", KnownLanguage.Coptic)]
+        [InlineData("coptCSTest", "Nenio] `n`apoctoloc", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", "CopticStandard", KnownLanguage.Coptic)]
         [InlineData("coptUniTest", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", null, null, KnownLanguage.Coptic)]
         [InlineData("coptUniTest", "Ⲛⲉⲛⲓⲟϯ ⲛ̀ⲁ̀ⲡⲟⲥⲧⲟⲗⲟⲥ", null, "Coptic Unicode", KnownLanguage.Coptic)]
         public void ParseTextCommands_DefinitionCommand_String(string key, string value, string? parsedValue = null, string? font = null, KnownLanguage lang = default)
