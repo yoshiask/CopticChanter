@@ -54,13 +54,14 @@ namespace CoptLib.IO
             _loadedDocs.Clear();
         }
 
-        public void LoadDoc(Doc doc)
+        public void AddDoc(Doc doc)
         {
             if (_loadedDocs.Contains(doc))
                 return;
 
             _loadedDocs.Add(doc);
 
+            AddDefinition(doc, doc);
             foreach (var def in doc.DirectDefinitions)
                 AddDefinition(def, doc);
         }
@@ -73,7 +74,7 @@ namespace CoptLib.IO
         public Doc LoadDoc(Stream file)
         {
             var doc = DocReader.ReadDocXml(file, this);
-            _loadedDocs.Add(doc);
+            AddDoc(doc);
             return doc;
         }
 
@@ -96,7 +97,7 @@ namespace CoptLib.IO
         public Doc LoadDoc(string path)
         {
             var doc = DocReader.ReadDocXml(path, this);
-            _loadedDocs.Add(doc);
+            AddDoc(doc);
             return doc;
         }
 
@@ -108,7 +109,7 @@ namespace CoptLib.IO
         public Doc LoadDocFromXml(string xml)
         {
             var doc = DocReader.ParseDocXml(xml, this);
-            _loadedDocs.Add(doc);
+            AddDoc(doc);
             return doc;
         }
 
@@ -120,7 +121,7 @@ namespace CoptLib.IO
         public Doc LoadDocFromXml(System.Xml.Linq.XDocument xml)
         {
             var doc = DocReader.ParseDocXml(xml, this);
-            _loadedDocs.Add(doc);
+            AddDoc(doc);
             return doc;
         }
 
