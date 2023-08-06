@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CoptLib.Writing;
 using Xunit;
 
 namespace CoptTest
@@ -102,6 +103,22 @@ namespace CoptTest
             {
                 Tex.WriteTex(doc, texStreamActual);
             }
+        }
+
+        [Theory]
+        [InlineData("Hina `ntenhwc `erok@ `nnoytoc nem Dauid@ enws oubyk@ ouoh enjw `mmoc.", "CopticStandard",
+            "Ϩⲓⲛⲁ ⲛ\u0300ⲧⲉⲛϩⲱⲥ ⲉ\u0300ⲣⲟⲕ: ⲛ\u0300ⲛⲟⲏⲧⲟⲥ ⲛⲉⲙ Ⲇⲁⲩⲓⲇ: ⲉⲛⲱϣ ⲟⲩⲃⲏⲕ: ⲟⲩⲟϩ ⲉⲛϫⲱ ⲙ\u0300ⲙⲟⲥ.", "Unicode")]
+        public void DisplayFont_Convert(string inputText, string sourceMapId, string outputTextEx, string targetMapId)
+        {
+            if (!DisplayFont.TryFindFontByMapId(sourceMapId, out var sourceFont))
+                Assert.Fail($"No font with supporting the '{sourceMapId}' mapping were found.");
+            
+            if (!DisplayFont.TryFindFontByMapId(targetMapId, out var targetFont))
+                Assert.Fail($"No font with supporting the '{targetMapId}' mapping were found.");
+
+            var outputTextAc = sourceFont.Convert(inputText, targetFont);
+            Assert.NotNull(outputTextAc);
+            Assert.Equal(outputTextEx, outputTextAc);
         }
     }
 }
