@@ -5,71 +5,72 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+public class DocSet : IContextualLoad
 {
-    public class DocSet : IContextualLoad
+    private LoadContextBase _context;
+
+    public DocSet(string key, string name, IEnumerable<Doc>? docs = null, LoadContextBase? context = null)
     {
-        private LoadContextBase _context;
+        Key = key;
+        Name = name;
+        IncludedDocs = docs?.ToList() ?? new();
+        _context = context ?? new LoadContext();
+    }
 
-        public DocSet(string key, string name, IEnumerable<Doc> docs = null, LoadContextBase context = null)
+    public string? Key { get; set; }
+
+    public string Name { get; set; }
+
+    public List<Doc> IncludedDocs { get; }
+
+    public Author? Author { get; set; }
+
+    [NotNull]
+    public LoadContextBase? Context
+    {
+        get => _context;
+        set
         {
-            Key = key;
-            Name = name;
-            IncludedDocs = docs?.ToList() ?? new();
-            Context = context ?? new();
+            Guard.IsNotNull(value);
+            _context = value;
+        }
+    }
+
+    public XDocument Serialize()
+    {
+        XDocument xdoc = new();
+
+        XElement setXml = new("Set");
+        setXml.SetAttributeValue(nameof(Key), Key);
+        setXml.SetAttributeValue(nameof(Name), Name);
+
+        if (Author != null)
+        {
+            XElement authorXml = Author.SerializeElement();
+            setXml.Add(authorXml);
         }
 
-        public string Key { get; set; }
+        xdoc.Add(setXml);
+        return xdoc;
+    }
 
-        public string Name { get; set; }
+    public static DocSet Deserialize(XDocument xdoc, LoadContextBase? context = null)
+    {
+        var setXml = xdoc.Root;
+        Guard.IsNotNull(setXml);
 
-        public List<Doc> IncludedDocs { get; }
+        // BACKCOMPAT: Support documents that use the Uuid element name
+        string uuid = (setXml.Attribute(nameof(Key)) ?? setXml.Attribute("Uuid"))?.Value!;
+        string name = setXml.Attribute(nameof(Name))?.Value!;
 
-        public Author Author { get; set; }
+        DocSet set = new(uuid, name, context: context);
 
-        public LoadContextBase Context
-        {
-            get => _context;
-            set
-            {
-                Guard.IsNotNull(value);
-                _context = value;
-            }
-        }
+        var authorXml = setXml.Elements(nameof(Author)).FirstOrDefault();
+        if (authorXml != null)
+            set.Author = Author.DeserializeElement(authorXml);
 
-        public XDocument Serialize()
-        {
-            XDocument xdoc = new();
-
-            XElement setXml = new("Set");
-            setXml.SetAttributeValue(nameof(Key), Key);
-            setXml.SetAttributeValue(nameof(Name), Name);
-
-            if (Author != null)
-            {
-                XElement authorXml = Author.SerializeElement();
-                setXml.Add(authorXml);
-            }
-
-            xdoc.Add(setXml);
-            return xdoc;
-        }
-
-        public static DocSet Deserialize(XDocument xdoc, LoadContextBase context = null)
-        {
-            var setXml = xdoc.Root;
-
-            // BACKCOMPAT: Support documents that use the Uuid element name
-            string uuid = (setXml.Attribute(nameof(Key)) ?? setXml.Attribute("Uuid"))?.Value;
-            string name = setXml.Attribute(nameof(Name))?.Value;
-
-            DocSet set = new(uuid, name, context: context);
-
-            var authorXml = setXml.Elements(nameof(Author)).FirstOrDefault();
-            if (authorXml != null)
-                set.Author = Author.DeserializeElement(authorXml);
-
-            return set;
-        }
+        return set;
     }
 }

@@ -1,8 +1,8 @@
-﻿using CoptLib.Writing;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CoptLib.Writing;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -108,7 +108,7 @@ namespace CoptTest
         [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
         public void Transliterate_CopticUnicode(string sample, string expected)
         {
-            var result = _analyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR);
+            var result = _analyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DefaultSyllableSeparator);
             _output.WriteLine(result);
             Assert.Equal(expected, result);
         }
@@ -127,7 +127,7 @@ namespace CoptTest
         [InlineData("σταυρος", "stăv·ros")]
         public void Transliterate_Greek(string sample, string expected)
         {
-            var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DEFAULT_SYLLABLE_SEPARATOR);
+            var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DefaultSyllableSeparator);
             _output.WriteLine(result);
             Assert.Equal(expected, result);
         }

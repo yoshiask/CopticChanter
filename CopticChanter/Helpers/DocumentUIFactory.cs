@@ -1,7 +1,6 @@
 ﻿using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Writing;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Text;
@@ -23,13 +22,13 @@ namespace CopticChanter.Helpers
         
         public static Grid CreateGridFromTable(List<List<object>> table)
         {
-            Grid MainGrid = new Grid();
-            MainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+            Grid mainGrid = new Grid();
+            mainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             // Create a column for each language
             int columnCount = table.Max(r => r.Count);
             for (int i = 0; i < columnCount; i++)
-                MainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             bool isNewDoc = false;
             for (int r = 0; r < table.Count; r++)
@@ -37,7 +36,7 @@ namespace CopticChanter.Helpers
                 var row = table[r];
 
                 // Create new row definition
-                MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+                mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
                 if (row.Count == 1 && row[0] is Doc)
                 {
@@ -77,14 +76,14 @@ namespace CopticChanter.Helpers
                             // Convert the CoptLib InlineCollection to WUX
                             foreach (CLInline inline in content.Inlines)
                             {
-                                Inline wuxInline = CreateWUXInline(inline);
+                                Inline wuxInline = CreateWuxInline(inline);
                                 block.Inlines.Add(wuxInline);
                             }
                         }
                     }
 
                     HandleLanguage(block, item);
-                    MainGrid.Children.Add(block);
+                    mainGrid.Children.Add(block);
                     Grid.SetRow(block, r);
                     Grid.SetColumn(block, c);
                 }
@@ -92,7 +91,7 @@ namespace CopticChanter.Helpers
                 isNewDoc = false;
             }
 
-            return MainGrid;
+            return mainGrid;
         }
 
         private static void HandleLanguage(TextBlock contentBlock, object content)
@@ -133,7 +132,7 @@ namespace CopticChanter.Helpers
             }
         }
 
-        private static Inline CreateWUXInline(CLInline inline)
+        private static Inline CreateWuxInline(CLInline inline)
         {
             Inline wuxInline = null;
 
@@ -142,7 +141,7 @@ namespace CopticChanter.Helpers
                 case CLSpan span:
                     var wuxSpan = new Span();
                     foreach (CLInline childInline in span.Inlines)
-                        wuxSpan.Inlines.Add(CreateWUXInline(childInline));
+                        wuxSpan.Inlines.Add(CreateWuxInline(childInline));
                     break;
 
                 default:

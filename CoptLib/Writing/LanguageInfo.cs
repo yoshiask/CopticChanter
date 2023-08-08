@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
@@ -50,19 +51,19 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public KnownLanguage Known { get; private set; }
 
-    public string Language { get; }
+    public string? Language { get; }
 
-    public string Region { get; }
+    public string? Region { get; }
 
-    public string Variant { get; }
+    public string? Variant { get; }
 
-    public CultureInfo Culture { get; private set; }
+    public CultureInfo? Culture { get; private set; }
 
     /// <summary>
     /// A secondary content language, typically used for
     /// identifying transliterations or changes in script.
     /// </summary>
-    public LanguageInfo Secondary { get; set; }
+    public LanguageInfo? Secondary { get; set; }
 
     /// <summary>
     /// Parses the given string as a <see cref="KnownLanguage"/> or
@@ -97,7 +98,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     /// <param name="value">The string to parse.</param>
     /// <param name="info">The resulting <see cref="LanguageInfo"/> if parsing succeeded.</param>
     /// <returns></returns>
-    public static bool TryParse(string value, out LanguageInfo info)
+    public static bool TryParse(string value, [NotNullWhen(true)] out LanguageInfo? info)
     {
         try
         {
@@ -129,7 +130,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     /// <see langword="true"/> if the specified language is equivalent to the current info;
     /// otherwise, <see langword="false"/>.
     /// </returns>
-    public bool IsEquivalentTo(LanguageInfo other, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    public bool IsEquivalentTo(LanguageInfo? other, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
     {
         bool isEqual = true;
         bool useWild = options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
@@ -138,7 +139,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
             return useWild;
 
         if (!useWild && options.HasFlag(LanguageEquivalencyOptions.Strict))
-            return ToString().Equals(other?.ToString());
+            return ToString().Equals(other.ToString());
 
         if (options.HasFlag(LanguageEquivalencyOptions.Language) && isEqual)
             isEqual &= (useWild && (Language == null || other.Language == null))
@@ -170,7 +171,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         return isEqual;
     }
 
-    public bool Equals(LanguageInfo other) => IsEquivalentTo(other);
+    public bool Equals(LanguageInfo? other) => IsEquivalentTo(other);
 
     public static bool operator ==(LanguageInfo a, LanguageInfo b) => IsEquivalentTo(a, b);
 
@@ -178,17 +179,19 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public override bool Equals(object obj) => Equals(obj as LanguageInfo);
 
+    public bool IsDefault() => this == Default;
+
     public override int GetHashCode() => ToString().GetHashCode();
 
     /// <inheritdoc cref="IsEquivalentTo(LanguageInfo, LanguageEquivalencyOptions)"/>
-    public static bool IsEquivalentTo(LanguageInfo a, LanguageInfo b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    public static bool IsEquivalentTo(LanguageInfo? a, LanguageInfo? b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
     {
         if (a is null)
             return b is null || options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
         return a.IsEquivalentTo(b, options);
     }
 
-    public static bool IsNullOrDefault(LanguageInfo languageInfo) => languageInfo is null || languageInfo == Default;
+    public static bool IsNullOrDefault(LanguageInfo? languageInfo) => languageInfo is null || languageInfo.IsDefault();
     
     private static readonly IReadOnlyDictionary<string, KnownLanguage> KnownLanguages = new Dictionary<string, KnownLanguage>
     {
@@ -213,12 +216,12 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
         ["cop-boh"]     = KnownLanguage.CopticBohairic,
         ["cop-sah"]     = KnownLanguage.CopticSahidic,
-        /// cop-akh     | Akhmimic
-        /// cop-fay     | Fayyumic
-        /// cop-her     | Hermopolitan
-        /// cop-lyc     | Lycopolitan
-        /// cop-oxy     | Oxyrhynchite
-        /// cop-boh-EL  | Greco-Bohairic
+        // cop-akh     | Akhmimic
+        // cop-fay     | Fayyumic
+        // cop-her     | Hermopolitan
+        // cop-lyc     | Lycopolitan
+        // cop-oxy     | Oxyrhynchite
+        // cop-boh-EL  | Greco-Bohairic
     };
 
     public static readonly LanguageInfo Default = new(KnownLanguage.Default);

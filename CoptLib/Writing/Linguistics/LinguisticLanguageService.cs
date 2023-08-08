@@ -1,6 +1,7 @@
 ﻿using CoptLib.Writing.Linguistics.Analyzers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using AngleSharp.Text;
@@ -15,11 +16,11 @@ public class LinguisticLanguageService
 {
     private readonly Dictionary<LanguageInfo, Func<LanguageInfo, LinguisticAnalyzer>> _factories;
 
-    public static LinguisticLanguageService Default = new(new()
+    public static readonly LinguisticLanguageService Default = new(new Dictionary<LanguageInfo, Func<LanguageInfo, LinguisticAnalyzer>>()
     {
-        { new LanguageInfo(KnownLanguage.Coptic), lang => new CopticGrecoBohairicAnalyzer() },
-        { new LanguageInfo(KnownLanguage.CopticBohairic), lang => new CopticOldBohairicAnalyzer() },
-        { new LanguageInfo(KnownLanguage.Greek), lang => new GreekAnalyzer() },
+        { new LanguageInfo(KnownLanguage.Coptic), lang => new CopticGrecoBohairicAnalyzer(lang) },
+        { new LanguageInfo(KnownLanguage.CopticBohairic), lang => new CopticOldBohairicAnalyzer(lang) },
+        { new LanguageInfo(KnownLanguage.Greek), lang => new GreekAnalyzer(lang) },
     });
 
     /// <summary>
@@ -27,7 +28,7 @@ public class LinguisticLanguageService
     /// analyzers automatically registered.
     /// </summary>
     /// <param name="analyzerFactories">The analyzers to register.</param>
-    public LinguisticLanguageService(Dictionary<LanguageInfo, Func<LanguageInfo, LinguisticAnalyzer>> analyzerFactories)
+    public LinguisticLanguageService(IDictionary<LanguageInfo, Func<LanguageInfo, LinguisticAnalyzer>> analyzerFactories)
     {
         _factories = new(analyzerFactories);
     }
@@ -35,9 +36,8 @@ public class LinguisticLanguageService
     /// <summary>
     /// Creates an empty instance of <see cref="LinguisticLanguageService"/>.
     /// </summary>
-    public LinguisticLanguageService()
+    public LinguisticLanguageService() : this(new Dictionary<LanguageInfo, Func<LanguageInfo, LinguisticAnalyzer>>())
     {
-        _factories = new();
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class LinguisticLanguageService
     /// <param name="text">The text to analyze.</param>
     /// <param name="language">The identified language, if any.</param>
     /// <returns>Whether a language was identified.</returns>
-    public static bool TryIdentifyLanguage(string text, out LanguageInfo language)
+    public static bool TryIdentifyLanguage(string text, [NotNullWhen(true)] out LanguageInfo? language)
     {
         BucketCounter<KnownLanguage> languageCounts = new();
         

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CoptLib.Writing.Linguistics;
+﻿namespace CoptLib.Writing.Linguistics;
 
 /// <summary>
 /// Represents a character and its pronunciation.

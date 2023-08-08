@@ -7,13 +7,13 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 {
-    private static readonly Dictionary<int, PhoneticWord> _grecoBohairicWordCache = new();
+    private static readonly Dictionary<int, PhoneticWord> GrecoBohairicWordCache = new();
 
     public CopticGrecoBohairicAnalyzer() : this(new LanguageInfo(KnownLanguage.Coptic))
     {
     }
 
-    protected CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, GrecoBohairicSimpleIpaTranscriptions, BohairicKnownPrefixes, _grecoBohairicWordCache)
+    public CopticGrecoBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, GrecoBohairicSimpleIpaTranscriptions, BohairicKnownPrefixes, GrecoBohairicWordCache)
     {
     }
 
@@ -34,7 +34,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             char chNext = !isLastChar ? ipaWord[i + 1].Source : '\0';
             bool chPrevVow = !isFirstChar && Vowels.Contains(chPrev);
             bool chNextVow = !isLastChar && Vowels.Contains(chNext);
-            bool chNextEI = chNext == 'ⲉ' || chNext == 'ⲓ';
+            bool chNextEI = chNext is 'ⲉ' or 'ⲓ';
 
             bool isVowel = Vowels.Contains(ch) || ch == 'ⲩ' || (!chNextVow && ch == '\u0300');
 
@@ -63,7 +63,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                         ipaWord[i - 1] = new(chPrev, "u");
                     }
                 }
-                else if (chPrev == 'ⲁ' || chPrev == 'ⲉ')
+                else if (chPrev is 'ⲁ' or 'ⲉ')
                 {
                     ipa = "v";
                     isVowel = false;
@@ -90,7 +90,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 {
                     ipa = "ɪ";
 
-                    if (chPrev == 'ⲟ' || chPrev == 'ⲱ')
+                    if (chPrev is 'ⲟ' or 'ⲱ')
                     {
                         // Digraph /ɔɪ/
                         ipaWord[i - 1] = new(chPrev, "ɔ");
@@ -101,7 +101,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                     ipa = "iː";
                 }
             }
-            else if (ch == 'ⲑ' && (chPrev == 'ⲥ' || chPrev == 'ϣ'))
+            else if (ch == 'ⲑ' && chPrev is 'ⲥ' or 'ϣ')
             {
                 // Becomes /t/ when following ⲥ or ϣ
                 ipa = "t\u032A";
@@ -114,7 +114,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 if (origin == KnownLanguage.Greek)
                 {
                     // If Greek: /ç/ before /e/ or /i/, else /x/
-                    ipa = (chNextEI || chNext == 'ⲏ' || chNext == 'ⲩ') ? "ʃ" : "χ";
+                    ipa = (chNextEI || chNext is 'ⲏ' or 'ⲩ') ? "ʃ" : "χ";
                 }
                 else
                 {
@@ -139,7 +139,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                     ipa = "g";
 
                 // /ŋ/ if followed by /g/ or /k/
-                else if (chNextIpa == "g" || chNextIpa == "k")
+                else if (chNextIpa is "g" or "k")
                     ipa = "ŋ";
 
                 // Otherwise, default to /ɣ/ (see SimpleIpaTranscriptions)
@@ -152,26 +152,31 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
                 if (origin == KnownLanguage.Greek)
                 {
-                    // If Greek: /d/ if preceeded by ⲛ in Greek words
+                    // If Greek: /d/ if preceded by ⲛ in Greek words
                     ipa = "d";
                 }
             }
             else if (chNextVow)
             {
-                // Current letter preceeds a vowel
-                if (ch == '\u0300')
+                switch (ch)
                 {
-                    ipa = string.Empty;
-                    word.SyllableBreaks.Add(i);
+                    // Current letter precedes a vowel
+                    case '\u0300':
+                        ipa = string.Empty;
+                        word.SyllableBreaks.Add(i);
+                        break;
+                    case 'ⲃ':
+                        ipa = "v";
+                        break;
+                    default:
+                        if (chNextEI && ch == 'ϫ')
+                            ipa = "d\u0361ʒ";
+                        break;
                 }
-                else if (ch == 'ⲃ')
-                    ipa = "v";
-                else if (chNextEI && ch == 'ϫ')
-                    ipa = "d\u0361ʒ";
             }
             else
             {
-                // Current letter preceeds a consonant
+                // Current letter precedes a consonant
                 if (ch == 'ⲃ' && chNext == 'ⲩ')
                     ipa = "v";
                 else if (false)// && ch == 'ⲝ' || (!isLastChar && (ch == 'ⲯ' || ch == 'ϭ')))
@@ -179,10 +184,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
                 else if (ch == '\u0300')
                     ipa = "ɛ";
             }
-
-            // Use original character if no IPA equivalent is found
-            ipa ??= ch.ToString();
-
+            
             var equivalent = ipaWord[i];
             equivalent.Ipa = ipa;
             equivalent.IsVowel = isVowel;
@@ -190,7 +192,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         }
     }
 
-    public static IReadOnlyList<string> BohairicKnownPrefixes = new string[]
+    // ReSharper disable InvalidXmlDocComment
+    public static IReadOnlyList<string> BohairicKnownPrefixes = new[]
     {
         /// Unknown
         "ⲛ\u0300ⲛⲓ", "ⲁⲕ",
@@ -247,6 +250,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         /// Perfect/pluperfect/aorist tense
         "ⲁ̀"
     };
+    // ReSharper restore InvalidXmlDocComment
 
     protected static IReadOnlyDictionary<char, string> GrecoBohairicSimpleIpaTranscriptions = new Dictionary<char, string>
     {

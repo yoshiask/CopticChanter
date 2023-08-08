@@ -56,7 +56,7 @@ public static class TasbehaOrg
                     continue;
                     
                 var knownLang = (KnownLanguage)Enum.Parse(typeof(KnownLanguage), languageClassInfo.Groups["lang"].Value, true);
-                if (doc.Translations.Children.FirstOrDefault(t => t.Language?.Known == knownLang) is not Section translation)
+                if (doc.Translations.Children.FirstOrDefault(t => t.Language.Known == knownLang) is not Section translation)
                 {
                     translation = new(null)
                     {

@@ -1,11 +1,13 @@
-﻿using CoptLib;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using CoptLib;
 using CoptLib.Writing;
 using NodaTime;
-using System.Collections.Generic;
 using Xunit;
 
 namespace CoptTest
 {
+    [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
     public class Calendar
     {
         [Theory]
@@ -118,7 +120,7 @@ namespace CoptTest
         /// <summary>
         /// Samples for the Feast of the Resurrection, to test the Computus algorithm.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_Resurrection = new object[][]
+        public static readonly IEnumerable<object[]> Samples_Resurrection = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -141,7 +143,7 @@ namespace CoptTest
         /// Samples for Hosanna Sunday, to test dates that are directly dependent on
         /// the Feast of the Resurrection.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_HosannaSunday = new object[][]
+        public static readonly IEnumerable<object[]> Samples_HosannaSunday = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -164,7 +166,7 @@ namespace CoptTest
         /// Samples for the Apostle's Feast, to test dates that are indirectly dependent
         /// on the Feast of the Resurrection.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_ApostlesFeast = new object[][]
+        public static readonly IEnumerable<object[]> Samples_ApostlesFeast = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -187,7 +189,7 @@ namespace CoptTest
         /// Samples for the Apostle's Fast, to test multi-day events that are indirectly dependent
         /// on the Feast of the Resurrection.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_ApostlesFast = new object[][]
+        public static readonly IEnumerable<object[]> Samples_ApostlesFast = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2023, 1, 1, CalendarSystem.Gregorian),
@@ -219,7 +221,7 @@ namespace CoptTest
         /// Samples for the Lord Christ's Entry in the Land of Egypt, to test dates
         /// that are fixed in the Coptic calendar.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_LordsEntryIntoEgypt = new object[][]
+        public static readonly IEnumerable<object[]> Samples_LordsEntryIntoEgypt = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -241,7 +243,7 @@ namespace CoptTest
         /// <summary>
         /// Samples for the Annunciation Feast, to test dates that are not celebrated every year.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_Annunciation = new object[][]
+        public static readonly IEnumerable<object[]> Samples_Annunciation = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -265,7 +267,7 @@ namespace CoptTest
         /// Samples for Jonah's Fast, to test multi-day events that are defined using an end date
         /// and duration.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_JonahsFast = new object[][]
+        public static readonly IEnumerable<object[]> Samples_JonahsFast = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),
@@ -297,7 +299,7 @@ namespace CoptTest
         /// Samples for Pascha, to test multi-day events that are defined using a start date
         /// and duration.
         /// </summary>
-        public static readonly IEnumerable<object[]> Samples_Pascha = new object[][]
+        public static readonly IEnumerable<object[]> Samples_Pascha = new[]
         {
             // Gregorian year boundary
             new object[] { new LocalDate(2022, 12, 31, CalendarSystem.Gregorian),

@@ -14,7 +14,7 @@ public interface ITranslationLookup<out T> where T : IMultilingual
     /// </summary>
     /// <param name="knownLanguage">The language to search for.</param>
     /// <param name="predicate">An additional results filter.</param>
-    T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool> predicate = null);
+    T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool>? predicate = null);
 
     /// <summary>
     /// Gets the first <typeparamref name="T"/> in the collection of the given language.
@@ -22,7 +22,7 @@ public interface ITranslationLookup<out T> where T : IMultilingual
     /// <param name="language">The language to check equivalency against.</param>
     /// <param name="predicate">An additional results filter.</param>
     /// <param name="options">The rules to compare using.</param>
-    T GetByLanguage(LanguageInfo language, Func<T, bool> predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO);
+    T GetByLanguage(LanguageInfo language, Func<T, bool>? predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO);
 }
 
 /// <inheritdoc />

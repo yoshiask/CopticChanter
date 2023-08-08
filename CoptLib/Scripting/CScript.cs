@@ -1,14 +1,17 @@
 ﻿using CoptLib.Models;
-using System.Xml.Serialization;
-
 namespace CoptLib.Scripting;
 
 public class CScript : Definition, ICommandOutput<IDefinition>
 {
-    [XmlText]
+    public CScript(string scriptBody, IDefinition? parent = null)
+    {
+        ScriptBody = scriptBody;
+        Parent = parent;
+    }
+    
     public string ScriptBody { get; set; }
 
-    public IDefinition Output { get; protected set; }
+    public IDefinition? Output { get; protected set; }
 
     public bool Evaluated { get; protected set; }
 

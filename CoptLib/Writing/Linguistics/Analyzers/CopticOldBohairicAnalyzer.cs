@@ -6,13 +6,13 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticOldBohairicAnalyzer : CopticAnalyzer
 {
-    private static readonly Dictionary<int, PhoneticWord> _oldBohairicWordCache = new();
+    private static readonly Dictionary<int, PhoneticWord> OldBohairicWordCache = new();
  
     public CopticOldBohairicAnalyzer() : this(new LanguageInfo(KnownLanguage.Coptic))
     {
     }
 
-    protected CopticOldBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, OldBohairicSimpleIpaTranscriptions, CopticGrecoBohairicAnalyzer.BohairicKnownPrefixes, _oldBohairicWordCache)
+    public CopticOldBohairicAnalyzer(LanguageInfo languageInfo) : base(languageInfo, OldBohairicSimpleIpaTranscriptions, CopticGrecoBohairicAnalyzer.BohairicKnownPrefixes, OldBohairicWordCache)
     {
     }
 
@@ -89,7 +89,7 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
                     ipa = "g";
 
                 // /ŋ/ if followed by /g/ or /k/
-                else if (chNextIpa == "g" || chNextIpa == "k")
+                else if (chNextIpa is "g" or "k")
                     ipa = "ŋ";
 
                 // Otherwise, default to /ɣ/ (see SimpleIpaTranscriptions)
@@ -103,7 +103,7 @@ public class CopticOldBohairicAnalyzer : CopticAnalyzer
 
             // Use original character if no IPA equivalent is found
             var equivalent = ipaWord[i];
-            equivalent.Ipa = ipa ?? ch.ToString();
+            equivalent.Ipa = ipa;
             ipaWord[i] = equivalent;
         }
     }

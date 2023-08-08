@@ -1,13 +1,13 @@
-﻿using CoptLib.IO;
-using CoptLib.Models;
-using OwlCore.Storage.SharpCompress;
-using SharpCompress.Archives.Zip;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CoptLib.IO;
+using CoptLib.Models;
 using CoptLib.Writing;
+using OwlCore.Storage.SharpCompress;
+using SharpCompress.Archives.Zip;
 using Xunit;
 
 namespace CoptTest

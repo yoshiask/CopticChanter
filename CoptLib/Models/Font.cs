@@ -2,66 +2,61 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+[XmlRoot(ElementName = "CopticFont")]
+public class Font
 {
-    [XmlRoot(ElementName = "CopticFont")]
-    public class Font
+    [XmlElement]
+    public string? Name { get; set; }
+
+    [XmlElement]
+    public string? FontName { get; set; }
+
+    [XmlElement]
+    public bool IsJenkimBefore  { get; set; }
+
+    [XmlArray]
+    [XmlArrayItem(ElementName = "Char")]
+    public List<MapXml>? Charmap { get; set; }
+
+    public static Font ToFontXml(DisplayFont font)
     {
-        [XmlElement]
-        public string Name { get; set; }
-
-        [XmlElement]
-        public string FontName { get; set; }
-
-        [XmlElement]
-        public bool IsJenkimBefore  { get; set; }
-
-        [XmlArray]
-        [XmlArrayItem(ElementName = "Char")]
-        public List<MapXml> Charmap { get; set; }
-
-        public static Font ToFontXml(DisplayFont font)
+        var xml = new Font
         {
-            var xml = new Font
+            Name = font.DisplayName,
+            FontName = font.FontFamily,
+            IsJenkimBefore = font.IsJenkimBefore,
+            Charmap = new List<MapXml>()
+        };
+        foreach (var (knownCh, ch) in font.Charmap)
+        {
+            var pair = new MapXml
             {
-                Name = font.DisplayName,
-                FontName = font.FontFamily,
-                IsJenkimBefore = font.IsJenkimBefore,
-                Charmap = new List<MapXml>()
+                BaseCharacter = knownCh,
+                NewCharacter = ch
             };
-            foreach (var (knownCh, ch) in font.Charmap)
-            {
-                var pair = new MapXml
-                {
-                    BaseCharacter = knownCh,
-                    NewCharacter = ch
-                };
-                xml.Charmap.Add(pair);
-            }
-            return xml;
+            xml.Charmap.Add(pair);
         }
-        public DisplayFont ToDisplayFont()
-        {
-            var font = new DisplayFont
-            {
-                DisplayName = Name,
-                FontFamily = FontName,
-                IsJenkimBefore = IsJenkimBefore,
-                Charmap = new(Charmap.Count)
-            };
+        return xml;
+    }
+    public DisplayFont ToDisplayFont()
+    {
+        var font = new DisplayFont(Name!, FontName!, Name!,
+            new(Charmap!.Count), IsJenkimBefore);
+
+        foreach (MapXml map in Charmap)
+            font.Charmap.Add(map.BaseCharacter, map.NewCharacter);
             
-            foreach (MapXml map in Charmap)
-                font.Charmap.Add(map.BaseCharacter, map.NewCharacter);
-            return font;
-        }
+        return font;
+    }
 
-        public class MapXml
-        {
-            [XmlAttribute("Base")]
-            public KnownCharacter BaseCharacter { get; set; }
+    public class MapXml
+    {
+        [XmlAttribute("Base")]
+        public KnownCharacter BaseCharacter { get; set; }
 
-            [XmlAttribute("New")]
-            public char NewCharacter { get; set; }
-        }
+        [XmlAttribute("New")]
+        public char NewCharacter { get; set; }
     }
 }

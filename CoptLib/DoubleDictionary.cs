@@ -69,7 +69,7 @@ public class DoubleDictionary<TLeft, TRight> : ICollection<(TLeft, TRight)>
     }
 
     public bool Contains((TLeft, TRight) item)
-        => _leftDict.TryGetValue(item.Item1, out TRight r) && r.Equals(item.Item2);
+        => _leftDict.TryGetValue(item.Item1, out var r) && r!.Equals(item.Item2);
 
     public void CopyTo((TLeft, TRight)[] array, int arrayIndex)
     {

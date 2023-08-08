@@ -2,152 +2,149 @@
 using CoptLib.IO;
 using CoptLib.Scripting;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+[XmlRoot("Document")]
+public class Doc : Definition, IContextualLoad
 {
-    [XmlRoot("Document")]
-    public class Doc : Definition, IContextualLoad
+    private LoadContextBase _context;
+    private bool _transformed;
+
+    public Doc(LoadContextBase? context = null)
     {
-        private LoadContextBase _context;
-        private bool _transformed = false;
-
-        public Doc(LoadContextBase context = null)
+        _context = context ?? new LoadContext();
+        Translations = new(null)
         {
-            _context = context ?? new();
-            Translations = new(null)
+            DocContext = this
+        };
+
+        Name ??= Key ?? string.Empty;
+        Parent = null;
+        DocContext = this;
+        IsExplicitlyDefined = true;
+    }
+
+    public string Name { get; set; }
+
+    public Author? Author { get; set; }
+
+    public TranslationCollectionSection Translations { get; set; }
+
+    public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
+
+    [NotNull]
+    public LoadContextBase? Context
+    {
+        get => _context;
+        set
+        {
+            Guard.IsNotNull(value);
+            _context = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the <see cref="IDefinition"/> associated with the given key.
+    /// </summary>
+    /// <param name="key">The key to lookup.</param>
+    public IDefinition? LookupDefinition(string key) => Context.LookupDefinition(key, this);
+
+    /// <summary>
+    /// Adds an <see cref="IDefinition"/> to the current context, scoped to the
+    /// this document if another definition with the same key exists.
+    /// </summary>
+    /// <param name="definition">The definition to add.</param>
+    public void AddDefinition(IDefinition definition) => Context.AddDefinition(definition, this);
+
+    /// <summary>
+    /// Parses text commands and applies font conversions.
+    /// </summary>
+    /// <param name="force">
+    /// When <see langword="true"/>, the transform will be reapplied
+    /// even if the document has already been parsed. Note that this does
+    /// not apply recursively, meaning that commands and font conversions
+    /// that have already been applied and are unchanged will not be duplicated.
+    /// </param>
+    public void ApplyTransforms(bool force = false)
+    {
+        if (_transformed && !force)
+            return;
+
+        RecursiveTransform(DirectDefinitions);
+        RecursiveTransform(Translations.Children);
+        _transformed = true;
+    }
+
+    internal static void RecursiveTransform(System.Collections.IEnumerable parts)
+    {
+        foreach (var part in parts)
+            Transform(part);
+    }
+
+    internal static void Transform(object part)
+    {
+        if (part is CScript partScript)
+            partScript.Run();
+
+        if (part is ICommandOutput<object> {Output: not null} partCmdOut)
+            part = partCmdOut.Output;
+
+        if (part is IContentCollectionContainer partCollection)
+        {
+            var collSrc = partCollection.Source;
+            if (collSrc is {CommandsHandled: false})
             {
-                DocContext = this
-            };
+                // Populate the collection with items from the source.
+                // This is done before commands are parsed, just in
+                // case the generated content contains commands.
+                collSrc.HandleCommands();
+                var cmd = collSrc.Commands.LastOrDefault();
 
-            Parent = null;
-            DocContext = this;
-            IsExplicitlyDefined = true;
-        }
-
-        [XmlElement]
-        public string Name { get; set; }
-
-        [XmlElement]
-        public Author Author { get; set; }
-
-        [XmlArray("Translations")]
-        public TranslationCollectionSection Translations { get; set; }
-
-        [XmlArray("Definitions")]
-        public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
-
-        [XmlIgnore]
-        public LoadContextBase Context
-        {
-            get => _context;
-            set
-            {
-                Guard.IsNotNull(value);
-                _context = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IDefinition"/> associated with the given key.
-        /// </summary>
-        /// <param name="key">The key to lookup.</param>
-        public IDefinition LookupDefinition(string key) => Context.LookupDefinition(key, this);
-
-        /// <summary>
-        /// Adds an <see cref="IDefinition"/> to the current context, scoped to the
-        /// this document if another definition with the same key exists.
-        /// </summary>
-        /// <param name="definition">The definition to add.</param>
-        public void AddDefinition(IDefinition definition) => Context.AddDefinition(definition, this);
-
-        /// <summary>
-        /// Parses text commands and applies font conversions.
-        /// </summary>
-        /// <param name="force">
-        /// When <see langword="true"/>, the transform will be reapplied
-        /// even if the document has already been parsed. Note that this does
-        /// not apply recursively, meaning that commands and font conversions
-        /// that have already been applied and are unchanged will not be duplicated.
-        /// </param>
-        public void ApplyTransforms(bool force = false)
-        {
-            if (_transformed && !force)
-                return;
-
-            RecursiveTransform(DirectDefinitions);
-            RecursiveTransform(Translations.Children);
-            _transformed = true;
-        }
-
-        internal static void RecursiveTransform(System.Collections.IEnumerable parts)
-        {
-            foreach (var part in parts)
-                Transform(part);
-        }
-
-        internal static void Transform(object part)
-        {
-            if (part is CScript partScript)
-                partScript.Run();
-
-            if (part is ICommandOutput<object> {Output: not null} partCmdOut)
-                part = partCmdOut.Output;
-
-            if (part is IContentCollectionContainer partCollection)
-            {
-                var collSrc = partCollection.Source;
-                if (collSrc is {CommandsHandled: false})
+                if (cmd?.Output != null)
                 {
-                    // Populate the collection with items from the source.
-                    // This is done before commands are parsed, just in
-                    // case the generated content contains commands.
-                    collSrc.HandleCommands();
-                    var cmd = collSrc.Commands.LastOrDefault();
+                    bool hasExplicitChildren = partCollection.Children.Count > 0;
 
-                    if (cmd?.Output != null)
+                    switch (cmd.Output)
                     {
-                        bool hasExplicitChildren = partCollection.Children.Count > 0;
+                        case IContentCollectionContainer cmdOutCollection:
+                            partCollection.Children.AddRange(cmdOutCollection.Children);
+                            break;
+                        case ContentPart cmdOutPart:
+                            partCollection.Children.Add(cmdOutPart);
+                            break;
+                    }
 
-                        switch (cmd.Output)
+                    // If the collection doesn't have any explicit elements (in other words,
+                    // it's only children came from the source), inherit the command's properties
+                    if (!hasExplicitChildren)
+                    {
+                        if (cmd.Output is IMultilingual cmdMulti && part is IMultilingual partMulti)
                         {
-                            case IContentCollectionContainer cmdOutCollection:
-                                partCollection.Children.AddRange(cmdOutCollection.Children);
-                                break;
-                            case ContentPart cmdOutPart:
-                                partCollection.Children.Add(cmdOutPart);
-                                break;
+                            partMulti.Language = cmdMulti.Language;
+                            partMulti.Font = cmdMulti.Font;
                         }
 
-                        // If the collection doesn't have any explicit elements (in other words,
-                        // it's only children came from the source), inherit the command's properties
-                        if (!hasExplicitChildren)
-                        {
-                            if (cmd.Output is IMultilingual cmdMulti && part is IMultilingual partMulti)
-                            {
-                                partMulti.Language = cmdMulti.Language;
-                                partMulti.Font = cmdMulti.Font;
-                            }
-
-                            if (cmd.Output is Section cmdSection && part is Section partSection)
-                                partSection.SetTitle(cmdSection.Title);
-                        }
+                        if (cmd.Output is Section cmdSection && part is Section partSection)
+                            partSection.SetTitle(cmdSection.Title);
                     }
                 }
             }
-
-            if (part is ISupportsTextCommands suppTextCmds)
-                suppTextCmds.HandleCommands();
-
-            if (part is System.Collections.IEnumerable manyParts)
-                RecursiveTransform(manyParts);
-
-            if (part is IMultilingual multilingual)
-                multilingual.HandleFont();
-
-            if (part is IDefinition {Key: not null, DocContext: not null} def)
-                def.DocContext.AddDefinition(def);
         }
+
+        if (part is ISupportsTextCommands suppTextCmds)
+            suppTextCmds.HandleCommands();
+
+        if (part is System.Collections.IEnumerable manyParts)
+            RecursiveTransform(manyParts);
+
+        if (part is IMultilingual multilingual)
+            multilingual.HandleFont();
+
+        if (part is IDefinition {Key: not null, DocContext: not null} def)
+            def.DocContext.AddDefinition(def);
     }
 }

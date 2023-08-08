@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CoptLib.Models;
 using System.Collections.Generic;
@@ -15,16 +14,16 @@ public partial class DocViewModel : ObservableObject
 
     public DocViewModel(DocLayout layout)
     {
-        Layout = layout;
-        Doc = layout.Doc;
-        CreateTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
+        _layout = layout;
+        _doc = layout.Doc;
+        _createTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
     }
 
     [ObservableProperty]
     private Doc _doc;
 
     [ObservableProperty]
-    DocLayout _layout;
+    private DocLayout _layout;
 
     [ObservableProperty]
     private IAsyncRelayCommand _createTableCommand;

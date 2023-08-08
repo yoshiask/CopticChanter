@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+/// <summary>
+/// Interface for any model that contains a collection of <see cref="ContentPart"/>s.
+/// </summary>
+public interface IContentCollectionContainer : IDefinition
 {
     /// <summary>
-    /// Interface for any model that contains a collection of <see cref="ContentPart"/>s.
+    /// A command used to populate the collection. May contain nested text commands.
     /// </summary>
-    public interface IContentCollectionContainer : IDefinition
-    {
-        /// <summary>
-        /// A command used to populate the collection. May contain nested text commands.
-        /// </summary>
-        SimpleContent Source { get; set; }
+    SimpleContent? Source { get; set; }
 
-        List<ContentPart> Children { get; }
-    }
+    List<ContentPart> Children { get; }
 }

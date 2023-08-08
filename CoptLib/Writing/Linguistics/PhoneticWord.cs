@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Extensions;
 using OwlCore.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +9,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public class PhoneticWord
 {
-    public const string DEFAULT_SYLLABLE_SEPARATOR = "ˌ";
+    public const string DefaultSyllableSeparator = "ˌ";
 
     public PhoneticWord(IList<PhoneticEquivalent> equivalents, IEnumerable<int> syllableBreaks)
     {
@@ -52,17 +51,11 @@ public class PhoneticWord
 
         // Copy the word itself, making the destination list bigger if necessary
         for (int i = 0; i < Equivalents.Count; i++)
-        {
             destinationWord.Equivalents.ReplaceOrAdd(i + offset, Equivalents[i]);
-        }
 
-        // Copy the syllable breaks, adjusting the indexes for the offset
-        int syllableIndex = 0;
-        foreach (int syllableBreak in SyllableBreaks)
-        {
+            // Copy the syllable breaks, adjusting the indexes for the offset
+        foreach (var syllableBreak in SyllableBreaks)
             destinationWord.SyllableBreaks.Add(syllableBreak + offset);
-            syllableIndex++;
-        }
     }
 
     public PhoneticWord Substring(int startIndex) => Substring(startIndex, Length - startIndex);
@@ -84,7 +77,7 @@ public class PhoneticWord
     public override string ToString()
     {
         string ogStr = ToString(false);
-        string ipaStr = ToString(true, DEFAULT_SYLLABLE_SEPARATOR);
+        string ipaStr = ToString(true, DefaultSyllableSeparator);
         return $"({ogStr}, {ipaStr})";
     }
 
@@ -120,5 +113,5 @@ public class PhoneticWord
     /// Returns a string that represents the IPA transcription of
     /// the source word, using the original casing.
     /// </summary>
-    public string ToIpaString() => ToString(true, DEFAULT_SYLLABLE_SEPARATOR);
+    public string ToIpaString() => ToString(true, DefaultSyllableSeparator);
 }

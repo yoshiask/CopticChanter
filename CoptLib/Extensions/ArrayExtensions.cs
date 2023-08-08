@@ -1,126 +1,116 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CoptLib.Extensions
+namespace CoptLib.Extensions;
+
+public static class ArrayExtensions
 {
-    public static class ArrayExtensions
+    public static void ForEach(this Array array, Action<Array, int[]> action)
     {
-        public static void ForEach(this Array array, Action<Array, int[]> action)
-        {
-            if (array.LongLength == 0) return;
-            ArrayTraverse walker = new(array);
-            do action(array, walker.Position);
-            while (walker.Step());
-        }
+        if (array.LongLength == 0) return;
+        ArrayTraverse walker = new(array);
+        do action(array, walker.Position);
+        while (walker.Step());
+    }
 
-        /// <summary>
-        /// Flattens the given enumerable using a pre-order depth-first traversal.
-        /// </summary>
-        /// <typeparam name="T">The item type.</typeparam>
-        /// <param name="topNode">The item to begin flattening from.</param>
-        /// <param name="elementSelector">A function that returns the children of the current node.</param>
-        public static IEnumerable<T> Flatten<T>(this T topNode, Func<T, IEnumerable<T>> elementSelector)
-        {
-            // https://stackoverflow.com/a/31881243
-            Stack<IEnumerator<T>> stack = new();
-            var e = elementSelector(topNode).GetEnumerator();
-            yield return topNode;
+    /// <summary>
+    /// Flattens the given enumerable using a pre-order depth-first traversal.
+    /// </summary>
+    /// <typeparam name="T">The item type.</typeparam>
+    /// <param name="topNode">The item to begin flattening from.</param>
+    /// <param name="elementSelector">A function that returns the children of the current node.</param>
+    public static IEnumerable<T> Flatten<T>(this T topNode, Func<T, IEnumerable<T>?> elementSelector)
+    {
+        // https://stackoverflow.com/a/31881243
+        Stack<IEnumerator<T>> stack = new();
+        var e = elementSelector(topNode)?.GetEnumerator();
+        yield return topNode;
 
-            try
+        try
+        {
+            while (true)
             {
-
-                while (true)
+                while (e?.MoveNext() ?? false)
                 {
-                    while (e.MoveNext())
-                    {
-                        var item = e.Current;
-                        yield return item;
+                    var item = e.Current;
+                    yield return item;
 
-                        var elements = elementSelector(item);
-                        if (elements == null)
-                            continue;
+                    var elements = elementSelector(item);
+                    if (elements == null)
+                        continue;
 
-                        stack.Push(e);
-                        e = elements.GetEnumerator();
-                    }
-
-                    if (stack.Count == 0)
-                        break;
-
-                    e.Dispose();
-                    e = stack.Pop();
+                    stack.Push(e);
+                    e = elements.GetEnumerator();
                 }
-            }
-            finally
-            {
-                e.Dispose();
 
-                while (stack.Count != 0)
-                    stack.Pop().Dispose();
+                if (stack.Count == 0)
+                    break;
+
+                e?.Dispose();
+                e = stack.Pop();
             }
         }
-
-        public static IEnumerable<(T elem, int index)> WithIndex<T>(this IEnumerable<T> source, int start = 0)
+        finally
         {
-            int i = start;
-            foreach (var elem in source)
-                yield return (elem, i++);
-        }
+            e?.Dispose();
 
-        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
-        {
-            foreach (T s in source)
-                if (values.Contains(s))
-                    return true;
-            return false;
-        }
-
-        public static IList<T> Slice<T>(this IEnumerable<T> collection, int startIndex, int length)
-        {
-            if (collection is Array)
-            {
-                var array = (T[])collection;
-                return new ArraySegment<T>(array, startIndex, length);
-            }
-            else
-            {
-                return collection.Skip(startIndex).Take(length).ToArray();
-            }
+            while (stack.Count != 0)
+                stack.Pop().Dispose();
         }
     }
 
-    internal class ArrayTraverse
+    public static IEnumerable<(T elem, int index)> WithIndex<T>(this IEnumerable<T> source, int start = 0)
     {
-        public int[] Position;
-        private int[] maxLengths;
+        int i = start;
+        foreach (var elem in source)
+            yield return (elem, i++);
+    }
 
-        public ArrayTraverse(Array array)
+    public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
+    {
+        var enumeratedValues = values.ToArray();
+        return source.Any(s => enumeratedValues.Contains(s));
+    }
+
+    public static IList<T> Slice<T>(this IEnumerable<T> collection, int startIndex, int length)
+    {
+        if (collection is T[] array)
+            return new ArraySegment<T>(array, startIndex, length);
+            
+        return collection.Skip(startIndex).Take(length).ToArray();
+    }
+}
+
+internal class ArrayTraverse
+{
+    public int[] Position;
+    private int[] _maxLengths;
+
+    public ArrayTraverse(Array array)
+    {
+        _maxLengths = new int[array.Rank];
+        for (int i = 0; i < array.Rank; ++i)
         {
-            maxLengths = new int[array.Rank];
-            for (int i = 0; i < array.Rank; ++i)
-            {
-                maxLengths[i] = array.GetLength(i) - 1;
-            }
-            Position = new int[array.Rank];
+            _maxLengths[i] = array.GetLength(i) - 1;
         }
+        Position = new int[array.Rank];
+    }
 
-        public bool Step()
+    public bool Step()
+    {
+        for (int i = 0; i < Position.Length; ++i)
         {
-            for (int i = 0; i < Position.Length; ++i)
+            if (Position[i] < _maxLengths[i])
             {
-                if (Position[i] < maxLengths[i])
+                Position[i]++;
+                for (int j = 0; j < i; j++)
                 {
-                    Position[i]++;
-                    for (int j = 0; j < i; j++)
-                    {
-                        Position[j] = 0;
-                    }
-                    return true;
+                    Position[j] = 0;
                 }
+                return true;
             }
-            return false;
         }
+        return false;
     }
 }
