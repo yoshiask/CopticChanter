@@ -2,7 +2,7 @@
 
 public class Comment : Paragraph
 {
-    public Comment(IDefinition? parent) : base(parent)
+    public Comment(IDefinition? parent) : this(CommentType.Other, parent)
     {
     }
 
