@@ -32,7 +32,7 @@ public class RoleInfo
         new Run(null) { Text = "Pope", Language = new(Writing.KnownLanguage.English) },
         new Run(null) { Text = "Ⲡⲁⲡⲁ", Language = new(Writing.KnownLanguage.Coptic) },
         new Run(null) { Text = "بابا", Language = new(Writing.KnownLanguage.Arabic) },
-        new Run(null) { Text = "Παρὰ", Language = new(Writing.KnownLanguage.Greek) },
+        new Run(null) { Text = "Παπὰ", Language = new(Writing.KnownLanguage.Greek) },
         new Run(null) { Text = "Papa", Language = new(Writing.KnownLanguage.Italian) },
         new Run(null) { Text = "Papa", Language = new(Writing.KnownLanguage.Latin) },
         new Run(null) { Text = "Papa", Language = new(Writing.KnownLanguage.Spanish) },
