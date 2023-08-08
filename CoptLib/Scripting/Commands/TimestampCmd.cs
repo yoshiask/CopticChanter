@@ -9,7 +9,7 @@ public class TimestampCmd : TextCommandBase
     public TimestampCmd(string cmd, InlineCommand inline, IDefinition[] parameters)
         : base(cmd, inline, parameters)
     {
-        var timePart = (Parameters[0] as IContent)?.SourceText;
+        var timePart = Parameters[0].ToString();
         if (timePart is null || !TimeSpan.TryParse(timePart, out var timeOffset))
             return;
 

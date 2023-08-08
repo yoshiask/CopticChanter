@@ -15,13 +15,13 @@ partial class DisplayFont
         Athanasius, CopticInGreekUnicode
     };
 
-    public static DisplayFont CopticStandard => new("CopticStandard", "CS Avva Shenouda",
+    public static DisplayFont CopticStandard => new("Coptic Standard", "CS Avva Shenouda",
         CopticStandardMapId, CreateMapping(ConvertToCopticStandard), true);
 
     public static DisplayFont Unicode => new("Unicode", "Noto Sans",
         UnicodeMapId, CreateMapping(ConvertToUnicode), false);
 
-    public static DisplayFont UnicodeB => new("Unicode B", "Seoge UI",
+    public static DisplayFont UnicodeB => new("Unicode B", "Segoe UI",
         UnicodeBMapId, CreateMapping(ConvertToUnicode), true);
 
     public static DisplayFont Athanasius => new("Athanasius", "Athanasius Plain",
@@ -30,7 +30,7 @@ partial class DisplayFont
     public static DisplayFont CopticInGreekUnicode => new("Coptic-Greek Unicode", Unicode.FontFamily,
         nameof(CopticInGreekUnicode), CreateMapping(ConvertToCopticInGreekUnicode), false);
 
-    public static DisplayFont GreekInCopticUnicode => new("Greek Unicode B", Unicode.FontFamily,
+    public static DisplayFont GreekInCopticUnicode => new("Greek-Coptic Unicode", Unicode.FontFamily,
         nameof(GreekInCopticUnicode), CreateMapping(ConvertToGreekInCopticUnicode), false);
 
     private static DoubleDictionary<KnownCharacter, char> CreateMapping(Func<KnownCharacter, char> mapper)

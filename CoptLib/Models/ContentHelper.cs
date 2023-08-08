@@ -10,7 +10,7 @@ namespace CoptLib.Models;
 public static class ContentHelper
 {
     public static string GetText(IContent content)
-        => content.CommandsHandled ? content.SourceText : content.Inlines.ToString();
+        => content.CommandsHandled ? content.Inlines.ToString() : content.SourceText;
 
     public static void HandleCommands(IContent content)
     {

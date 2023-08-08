@@ -46,13 +46,13 @@ public class InlineCommand : Inline
 
     public override string ToString()
     {
-        if (Command?.Output is null)
+        if (!Command?.Evaluated ?? true)
         {
             return Parameters is not null
                 ? $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}"
                 : CommandName;
         }
             
-        return Command.Output.ToString();
+        return Command?.Output?.ToString() ?? string.Empty;
     }
 }
