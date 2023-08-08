@@ -18,7 +18,7 @@ public class TranslationCollection<T> : List<T>, ITranslationLookup<T>, IDefinit
     public Doc? DocContext { get; set; }
     public IDefinition? Parent { get; set; }
     public bool IsExplicitlyDefined { get; set; }
-    public IList<IDefinition> References { get; } = new List<IDefinition>();
+    public ICollection<IDefinition> References { get; } = new List<IDefinition>();
     
     public virtual T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool>? predicate = null)
     {

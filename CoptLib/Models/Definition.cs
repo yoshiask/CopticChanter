@@ -32,7 +32,7 @@ public interface IDefinition
     /// <summary>
     /// Gets all definitions that reference this definition.
     /// </summary>
-    IList<IDefinition> References { get; }
+    ICollection<IDefinition> References { get; }
 }
 
 /// <summary>
@@ -48,7 +48,7 @@ public abstract class Definition : IDefinition
 
     public bool IsExplicitlyDefined { get; set; }
 
-    public IList<IDefinition> References { get; } = new List<IDefinition>();
+    public ICollection<IDefinition> References { get; } = new List<IDefinition>();
 }
 
 public class Variable : Definition
