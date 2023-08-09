@@ -1,12 +1,12 @@
 ﻿using CoptLib.Models;
 using CoptLib.Models.Text;
-using CoptLib.Scripting;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using CoptLib.Extensions;
+using CoptLib.Scripting.Typed;
 using CoptLib.Writing;
 
 namespace CoptLib.IO;

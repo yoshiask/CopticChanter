@@ -1,6 +1,5 @@
 ﻿using System;
 using CoptLib.Models;
-using CoptLib.Scripting;
 using CoptLib.Writing;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Xml.Linq;
 using CommunityToolkit.Diagnostics;
 using CoptLib.Models.Text;
+using CoptLib.Scripting.Typed;
 
 namespace CoptLib.IO;
 

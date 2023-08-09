@@ -41,18 +41,3 @@ public class DotNetScript<TImpl, TOut> : Definition, ICommandOutput<TOut>
     protected virtual TImpl GetImplementation(string code)
         => CSScript.Evaluator.LoadMethod<TImpl>(CommonUsings + code);
 }
-
-public class DotNetDefinitionScript : DotNetScript<DefinitionScriptBase, IDefinition>
-{
-    public DotNetDefinitionScript(string scriptBody, IDefinition? parent = null) : base(scriptBody, parent)
-    {
-    }
-
-    protected override IDefinition ExecuteInternal(LoadContextBase? context)
-    {
-        var output = Implementation!.Execute(DocContext?.Context);
-        output.DocContext = DocContext;
-        output.Parent = this;
-        return output;
-    }
-}

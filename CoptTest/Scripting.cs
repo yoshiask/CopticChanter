@@ -8,6 +8,7 @@ using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Scripting.Commands;
+using CoptLib.Scripting.Typed;
 using CoptLib.Writing;
 using NodaTime;
 using Xunit;
