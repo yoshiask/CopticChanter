@@ -1,4 +1,6 @@
-﻿using CoptLib.Extensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using CoptLib.Extensions;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
@@ -14,19 +16,16 @@ public class IpaTranscribeCmd : TextCommandBase
         : base(name, inline, parameters)
     {
         Source = Parameters[0];
-        Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
-        Output = Source.Select(Transcribe);
-        Evaluated = true;
     }
 
     public IDefinition Source { get; }
 
-    public LinguisticAnalyzer Analyzer { get; }
+    public LinguisticAnalyzer? Analyzer { get; protected set; }
 
     private void Transcribe(IDefinition def)
     {
         if (def is Run run)
-            run.Text = Analyzer.IpaTranscribe(run.Text);
+            run.Text = Analyzer!.IpaTranscribe(run.Text);
 
         if (def is IMultilingual multi)
         {
@@ -43,5 +42,13 @@ public class IpaTranscribeCmd : TextCommandBase
         // Make sure referenced elements are also transliterated
         if (def is InlineCommand {Command.Output: { }} inCmd)
             inCmd.Command.Output = inCmd.Command.Output.Select(Transcribe);
+    }
+
+    [MemberNotNull(nameof(Analyzer))]
+    protected override void ExecuteInternal(LoadContextBase? context)
+    {
+        Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
+        Output = Source.Select(Transcribe);
+        Evaluated = true;
     }
 }

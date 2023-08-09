@@ -3,33 +3,32 @@ using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using System.Linq;
+using CoptLib.IO;
 
 namespace CoptLib.Scripting.Commands;
 
 public class DefinitionCmd : TextCommandBase
 {
+    private readonly string _definitionKey;
+    
     public DefinitionCmd(string name, InlineCommand inline, IDefinition[] parameters)
         : base(name, inline, parameters)
     {
-        Parse();
+        _definitionKey = Parameters.FirstOrDefault()!.ToString();
     }
 
-    private void Parse()
+    protected override void ExecuteInternal(LoadContextBase? context)
     {
-        if (DocContext is null)
-            throw new NullReferenceException($"A `{nameof(DocContext)}` must be present.");
-        
-        var defKey = Parameters.FirstOrDefault()!.ToString();
-        Output = DocContext.LookupDefinition(defKey);
+        if (context is null)
+            throw new ArgumentNullException(nameof(context));
 
+        Output = context.LookupDefinition(_definitionKey);
         if (Output is null)
-            throw new Exception($"No definition with key '{defKey}' was found.");
+            throw new Exception($"No definition with key '{_definitionKey}' was found.");
 
-        HandleOutput();
+        ApplyNecessaryTransforms();
 
         // Register the current inline with the referenced definition
-        Output?.RegisterReference(Inline);
-
-        Evaluated = true;
+        Output.RegisterReference(Inline);
     }
 }

@@ -58,7 +58,7 @@ public class Section : ContentPart, IContentCollectionContainer
         if (CommandsHandled)
             return;
             
-        Doc.RecursiveTransform(Children);
+        Doc.RecursiveTransform(Children, DocContext?.Context);
         Title?.HandleCommands();
             
         CommandsHandled = true;

@@ -6,16 +6,12 @@ using CommunityToolkit.Diagnostics;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
-using CoptLib.Scripting.Typed;
-using CSScriptLib;
 using OwlCore.Extensions;
 
 namespace CoptLib.Scripting;
 
 public class ScriptingEngine
 {
-    private const string CommonUsings = "using CoptLib;\r\nusing CoptLib.Models;\r\nusing CoptLib.Models.Text;\r\nusing CoptLib.Writing;\r\nusing NodaTime;\r\n";
-
     private static readonly Dictionary<string, Type> AvailableCmds = new()
     {
         { "abv", typeof(AbbreviationCmd) },
@@ -27,42 +23,6 @@ public class ScriptingEngine
         { "ms", typeof(TimestampCmd) },
         { "trslit", typeof(TransliterateCmd) },
     };
-
-    /// <summary>
-    /// Wraps the given script body in a <see cref="DefinitionScriptBase"/>
-    /// and executes it.
-    /// </summary>
-    /// <param name="scriptBody"></param>
-    /// <returns></returns>
-    public static IDefinition RunScript(string scriptBody)
-    {
-        // Add common usings
-        scriptBody = CommonUsings + scriptBody;
-
-        var script = CreateScript<DefinitionScriptBase>(new(scriptBody));
-        return script.GetDefinition();
-    }
-
-    /// <summary>
-    /// Creates a new script implementation of the specified type,
-    /// without invoking the script.
-    /// </summary>
-    /// <typeparam name="TScript">The script type to use.</typeparam>
-    /// <param name="ctx">The script definition containing the body.</param>
-    public static TScript CreateScript<TScript>(CScript ctx)
-        where TScript : class
-    {
-        // Add common usings
-        ctx.ScriptBody = CommonUsings + ctx.ScriptBody;
-
-        var script = CSScript.Evaluator.LoadMethod<TScript>(ctx.ScriptBody);
-
-        // Set inherited members
-        if (script is IDefinitionScript<IDefinition> defScript)
-            defScript.Parent = ctx;
-
-        return script;
-    }
 
     /// <summary>
     /// Parses inline text commands from an <see cref="InlineCollection"/>.
@@ -278,11 +238,12 @@ public class ScriptingEngine
                             parameters[i] = param;
                     }
 
+                    // Get command object
                     inCmd.Command = GetCommand(inCmd, parameters);
-                    
-                    // Ensure command was found
                     if (inCmd.Command is null)
                         break;
+                    
+                    inCmd.Command.Execute(inCmd.DocContext?.Context);
                 }
                 
                 cmds.Add(inCmd.Command);

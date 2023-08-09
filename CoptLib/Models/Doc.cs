@@ -74,24 +74,27 @@ public class Doc : Definition, IContextualLoad
         if (_transformed && !force)
             return;
 
-        RecursiveTransform(DirectDefinitions);
-        RecursiveTransform(Translations.Children);
+        RecursiveTransform(DirectDefinitions, Context);
+        RecursiveTransform(Translations.Children, Context);
+        
         _transformed = true;
     }
 
-    internal static void RecursiveTransform(System.Collections.IEnumerable parts)
+    internal static void RecursiveTransform(System.Collections.IEnumerable parts, LoadContextBase? context)
     {
         foreach (var part in parts)
-            Transform(part);
+            Transform(part, context);
     }
 
-    internal static void Transform(object part)
+    internal static void Transform(object part, LoadContextBase? context)
     {
-        if (part is CScript partScript)
-            partScript.Run();
-
-        if (part is ICommandOutput<object> {Output: not null} partCmdOut)
-            part = partCmdOut.Output;
+        if (part is ICommandOutput<object> partScript)
+        {
+            partScript.Execute(context);
+            
+            if (partScript.Output is not null)
+                part = partScript.Output;
+        }
 
         if (part is IContentCollectionContainer partCollection)
         {
@@ -139,7 +142,7 @@ public class Doc : Definition, IContextualLoad
             suppTextCmds.HandleCommands();
 
         if (part is System.Collections.IEnumerable manyParts)
-            RecursiveTransform(manyParts);
+            RecursiveTransform(manyParts, context);
 
         if (part is IMultilingual multilingual)
             multilingual.HandleFont();

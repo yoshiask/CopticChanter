@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using CoptLib.IO;
 using CoptLib.Models;
 
 namespace CoptLib.Scripting;
@@ -23,4 +24,9 @@ public interface ICommandOutput<out TReturn>
     /// </summary>
     [MemberNotNullWhen(true, nameof(Output))]
     public bool Evaluated { get; }
+
+    /// <summary>
+    /// Executes the command.
+    /// </summary>
+    public void Execute(LoadContextBase? context);
 }

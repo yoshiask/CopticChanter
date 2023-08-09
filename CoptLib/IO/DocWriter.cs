@@ -159,7 +159,7 @@ public static class DocWriter
                 elem.SetAttributeValue(nameof(section.Title), section.Title);
                 break;
 
-            case CScript script:
+            case DotNetDefinitionScript script:
                 elem.Name = "Script";
                 elem.Add(new XCData(script.ScriptBody));
                 break;

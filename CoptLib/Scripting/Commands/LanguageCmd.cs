@@ -1,4 +1,5 @@
 ﻿using CoptLib.Extensions;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
@@ -11,24 +12,28 @@ public class LanguageCmd : TextCommandBase
         : base(cmd, inline, parameters)
     {
         var langParam = Parameters[0].ToString();
-        var sourceParam = Parameters[^1];
+        Source = Parameters[^1];
 
         Language = LanguageInfo.Parse(langParam);
 
         if (Parameters.Length >= 3 && Language.Known is KnownLanguage.Coptic or KnownLanguage.Greek)
         {
             var fontParam = Parameters[1].ToString();
-
             Font = DisplayFont.FindFontByMapId(fontParam, () => DisplayFont.CopticStandard);
         }
-
-        Output = sourceParam.Select(ConvertFont);
-        Evaluated = true;
     }
+    
+    public IDefinition Source { get; }
 
     public LanguageInfo Language { get; }
 
     public DisplayFont? Font { get; }
+
+    protected override void ExecuteInternal(LoadContextBase? context)
+    {
+        Output = Source.Select(ConvertFont);
+        Evaluated = true;
+    }
 
     private void ConvertFont(IDefinition def)
     {

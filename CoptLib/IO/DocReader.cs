@@ -122,7 +122,7 @@ public static class DocReader
             }
             else if (defElemName == "Script")
             {
-                CScript script = new(defElem.Value);
+                DotNetDefinitionScript script = new(defElem.Value);
                 def = script;
             }
             else if (defElemName == nameof(Variable))
