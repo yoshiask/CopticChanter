@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sequence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Key>test-sequence</Key>
+    <Name>Test Sequence</Name>
+    <RootNodeId>0</RootNodeId>
+
+    <Nodes>
+        <Const Id="0" DocumentKey="28c70071-ce5e-4add-aa5c-d093acfb2787">1</Const>
+        <Const Id="6" DocumentKey="urn:tasbehaorg-cr:471">{end}</Const>
+        <Const Id="7" DocumentKey="urn:tasbehaorg-cr:146">{end}</Const>
+        <Script Id="1" DocumentKey="urn:tasbehaorg-cr:1929">
+<![CDATA[
+public override int? Execute(LoadContextBase? context) =>
+    (int) DateHelper.NowCoptic().DayOfWeek + 2;
+// Node IDs of the Theotokia are purposely grouped together
+// in order, starting at ID 2 for Monday.
+]]>
+        </Script>
+    </Nodes>
+</Sequence>
