@@ -39,7 +39,7 @@ public class Sequences
     }
 
     [Fact]
-    public async Task TraverseSequence()
+    public async Task LoadAndTraverseSequence()
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
         
@@ -58,12 +58,16 @@ public class Sequences
 
         var morningDoxologyNode = nodes[0];
         Assert.Equal(0, morningDoxologyNode.Id);
+        Assert.IsType<DelegateSequenceNode>(morningDoxologyNode);
 
-        var adamTheotokiaConclusion = nodes[1];
-        Assert.Equal(1, adamTheotokiaConclusion.Id);
+        var adamTheotokiaConclusionNode = nodes[1];
+        Assert.Equal(1, adamTheotokiaConclusionNode.Id);
+        Assert.IsType<ScriptedSequenceNode>(adamTheotokiaConclusionNode);
 
-        var theotokia = nodes[2];
-        Assert.Equal((int)testDate.DayOfWeek + 2, theotokia.Id);
+        var theotokiaNode = nodes[2];
+        Assert.Equal((int)testDate.DayOfWeek + 2, theotokiaNode.Id);
+        Assert.IsType<DelegateSequenceNode>(theotokiaNode);
+        Assert.Null(theotokiaNode.NextNode(context));
 
         var theotokiaKeyEx = testDate.DayOfWeek switch
         {
@@ -71,6 +75,6 @@ public class Sequences
             IsoDayOfWeek.Friday => "urn:tasbehaorg-cr:146",
             _ => throw new ArgumentOutOfRangeException()
         };
-        Assert.Equal(theotokiaKeyEx, theotokia.DocumentKey);
+        Assert.Equal(theotokiaKeyEx, theotokiaNode.DocumentKey);
     }
 }
