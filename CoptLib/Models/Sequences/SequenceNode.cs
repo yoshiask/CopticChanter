@@ -22,7 +22,7 @@ public sealed record DelegateSequenceNode(int Id, string DocumentKey, Func<int, 
     public override int? NextNode(LoadContextBase context) => ToNextNode(Id, context);
 }
 
-public record ScriptedSequenceNode<T>(int Id, string DocumentKey, ICommandOutput<int?> NextDocCommand)
+public record ScriptedSequenceNode(int Id, string DocumentKey, ICommandOutput<int?> NextDocCommand)
     : SequenceNode(Id, DocumentKey)
 {
     public override int? NextNode(LoadContextBase context)
