@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Linq;
+using CommunityToolkit.Diagnostics;
+using CoptLib.Extensions;
 using CoptLib.Models.Sequences;
 using CoptLib.Scripting;
 using CoptLib.Scripting.Typed;
@@ -9,6 +11,13 @@ namespace CoptLib.IO;
 
 public static class SequenceReader
 {
+    /// <inheritdoc cref="ParseSequenceXml(System.Xml.Linq.XElement,CoptLib.IO.LoadContextBase)"/>/>
+    public static Sequence ParseSequenceXml(XDocument xdoc, LoadContextBase context)
+    {
+        Guard.IsNotNull(xdoc.Root);
+        return ParseSequenceXml(xdoc.Root, context);
+    }
+    
     public static Sequence ParseSequenceXml(XElement rootElem, LoadContextBase context)
     {
         var rootNodeIdStr = rootElem.Element(nameof(Sequence.RootNodeId))?.Value;
@@ -43,12 +52,12 @@ public static class SequenceReader
         if (documentKey is null)
             throw new InvalidDataException("A document key must be specified.");
 
-        var nodeType = elem.Name.LocalName.ToLowerInvariant();
+        var nodeType = EnumExtensions.Parse<SequenceNodeType>(elem.Name.LocalName.ToLowerInvariant(), true);
         return nodeType switch
         {
-            "end" => new DelegateSequenceNode(id, documentKey, (_, _) => null),
-            "script" => CreateScriptedSequenceNode(id, documentKey, elem.Value),
-            "const" => new DelegateSequenceNode(id, documentKey, (_, _) => ParseConstantNodeId(elem.Value)),
+            SequenceNodeType.End => new EndSequenceNode(id, documentKey),
+            SequenceNodeType.Const => new ConstantSequenceNode(id, documentKey, ParseConstantNodeId(elem.Value)),
+            SequenceNodeType.Script => CreateScriptedSequenceNode(id, documentKey, elem.Value),
             _ => throw new ArgumentOutOfRangeException(string.Empty, $"Unknown sequence node type '{nodeType}'")
         };
     }
@@ -60,4 +69,9 @@ public static class SequenceReader
     }
 
     private static int? ParseConstantNodeId(string value) => value is "" or "{end}" ? null : int.Parse(value);
+}
+
+internal enum SequenceNodeType : byte
+{
+    End, Const, Script,
 }

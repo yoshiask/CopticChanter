@@ -39,7 +39,7 @@ public class Sequences
     }
 
     [Fact]
-    public async Task LoadAndTraverseSequence()
+    public async Task ReadAndTraverseSequence()
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
         
@@ -58,7 +58,7 @@ public class Sequences
 
         var morningDoxologyNode = nodes[0];
         Assert.Equal(0, morningDoxologyNode.Id);
-        Assert.IsType<DelegateSequenceNode>(morningDoxologyNode);
+        Assert.IsType<ConstantSequenceNode>(morningDoxologyNode);
 
         var adamTheotokiaConclusionNode = nodes[1];
         Assert.Equal(1, adamTheotokiaConclusionNode.Id);
@@ -66,7 +66,7 @@ public class Sequences
 
         var theotokiaNode = nodes[2];
         Assert.Equal((int)testDate.DayOfWeek + 2, theotokiaNode.Id);
-        Assert.IsType<DelegateSequenceNode>(theotokiaNode);
+        Assert.IsType<EndSequenceNode>(theotokiaNode);
         Assert.Null(theotokiaNode.NextNode(context));
 
         var theotokiaKeyEx = testDate.DayOfWeek switch
