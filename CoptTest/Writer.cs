@@ -64,7 +64,7 @@ public class Writer
                 Website = "https://github.com/yoshiask"
             };
 
-            await setWriter.Write(setFolderNew);
+            await setWriter.WriteAsync(setFolderNew);
 
             await using var setFileStream = await setFileNew.OpenStreamAsync(FileAccess.Write);
             archive.SaveTo(setFileStream);
@@ -112,7 +112,7 @@ public class Writer
                 Website = "https://github.com/yoshiask"
             };
 
-            await setWriter.Write(setFolderNew);
+            await setWriter.WriteAsync(setFolderNew);
         }
 
         DocSet setActual;

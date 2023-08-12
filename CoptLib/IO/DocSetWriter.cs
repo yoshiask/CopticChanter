@@ -27,7 +27,7 @@ public class DocSetWriter
         Set = new(key, name, docs);
     }
 
-    public async Task Write(IModifiableFolder rootFolder)
+    public async Task WriteAsync(IModifiableFolder rootFolder)
     {
         // Begin building index
         StringBuilder sb = new();
@@ -54,7 +54,7 @@ public class DocSetWriter
         using (var indexFileStream = await indexFile.OpenStreamAsync(FileAccess.Write))
         using (StreamWriter sw = new(indexFileStream))
         {
-            sw.Write(sb.ToString());
+            await sw.WriteAsync(sb.ToString());
         }
 
         // Write additional metadata
