@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using CoptLib.Extensions;
 
 #if DEBUG
 using Output = System.Diagnostics.Debug;
@@ -248,9 +249,7 @@ namespace CoptLib.Writing
                         font.FontFamily = columns[1];
                         break;
                     default:
-                        font.Charmap.Add(
-                            (KnownCharacter)Enum.Parse(typeof(KnownCharacter), columns[0]),
-                            columns[1][0]);
+                        font.Charmap.Add(EnumExtensions.Parse<KnownCharacter>(columns[0]), columns[1][0]);
                         break;
                 }
             }
