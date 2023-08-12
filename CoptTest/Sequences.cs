@@ -77,4 +77,34 @@ public class Sequences
         };
         Assert.Equal(theotokiaKeyEx, theotokiaNode.DocumentKey);
     }
+    
+    [Theory]
+    [InlineData("test_sequence.xml")]
+    public void SequenceWriter_OpenAndWriteNoChanges(string file)
+    {
+        LoadContext context = new();
+        
+        var xmlEx = Resource.ReadAllText(file);
+        var sequenceEx = SequenceReader.ParseSequenceXml(XDocument.Parse(xmlEx), context);
+
+        SequenceWriter writer = new(sequenceEx);
+        var xmlAc = writer.SerializeToXml().ToString();
+        var sequenceAc = SequenceReader.ParseSequenceXml(XDocument.Parse(xmlAc), context);
+
+        Assert.Equal(sequenceEx.Name, sequenceAc.Name);
+        Assert.Equal(sequenceEx.Key, sequenceAc.Key);
+        Assert.Equal(sequenceEx.RootNodeId, sequenceAc.RootNodeId);
+        Assert.Equal(sequenceEx.Nodes.Count, sequenceAc.Nodes.Count);
+
+        foreach (var nodeEx in sequenceEx.Nodes.Values)
+        {
+            var nodeAc = sequenceAc.Nodes[nodeEx.Id];
+            
+            // DO NOT use simple equality: complex nodes
+            // (e.g. Scripted) will always fail.
+            Assert.Equal(nodeEx.Id, nodeAc.Id);
+            Assert.Equal(nodeEx.DocumentKey, nodeAc.DocumentKey);
+            Assert.Equal(nodeEx.GetType(), nodeAc.GetType());
+        }
+    }
 }
