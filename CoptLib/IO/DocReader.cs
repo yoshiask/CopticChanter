@@ -48,9 +48,11 @@ public static class DocReader
     public static Doc ParseDocXml(XDocument xml, LoadContextBase? context = null)
     {
         Guard.IsNotNull(xml.Root);
+
+        context ??= new LoadContext();
             
         // The actual content can't be directly deserialized, so it needs to be manually parsed
-        Doc doc = new(context ?? new LoadContext())
+        Doc doc = new(context)
         {
             Name = xml.Root.Element(nameof(doc.Name))!.Value,
             Key = xml.Root.Element(nameof(doc.Key))?.Value,
@@ -77,6 +79,8 @@ public static class DocReader
         var authorElem = xml.Root.Element("Author");
         if (authorElem != null)
             doc.Author = Author.DeserializeElement(authorElem);
+        
+        context.AddDoc(doc);
 
         return doc;
     }
