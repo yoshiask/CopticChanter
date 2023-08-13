@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CoptLib;
 using CoptLib.IO;
+using CoptLib.Models;
 using CoptLib.Models.Sequences;
 using NodaTime;
 using Xunit;
@@ -13,7 +14,7 @@ namespace CoptTest;
 public class Sequences
 {
     [Fact]
-    public async Task SequenceEnumerable_Loop()
+    public async Task SequenceEnumerable_WithDelegateNodes()
     {
         const int nodeCount = 10;
         
@@ -39,7 +40,7 @@ public class Sequences
     }
 
     [Fact]
-    public async Task ReadAndTraverseSequence()
+    public async Task SequenceEnumerable_WithSpecialNodeTypes()
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
         
@@ -76,6 +77,45 @@ public class Sequences
             _ => throw new ArgumentOutOfRangeException()
         };
         Assert.Equal(theotokiaKeyEx, theotokiaNode.DocumentKey);
+    }
+
+    [Fact]
+    public async Task SequenceEnumerable_WithDocs()
+    {
+        var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
+        
+        DateHelper.NowOverride = new(2023, 8, 24, 6, 50);
+        var testDate = DateHelper.NowCoptic();
+        
+        LoadContext context = new();
+        var sequence = SequenceReader.ParseSequenceXml(xdoc.Root!, context);
+        
+        // Load dependent documents
+        var docFileNames = new[]
+        {
+            "The Morning Doxology.xml", "The Conclusion of the Watos Theotokia.xml",
+            "The Friday Theotokia.xml", "The Thursday Theotokia.xml"
+        };
+        foreach (var docFileName in docFileNames)
+            context.LoadDocFromXml(Resource.ReadAllText(docFileName));
+
+        await foreach (var node in sequence.EnumerateNodes())
+        {
+            var def = context.LookupDefinition(node.DocumentKey);
+            Assert.NotNull(def);
+            Assert.IsType<Doc>(def);
+            var doc = (Doc) def;
+
+            var documentKeyEx = node.Id switch
+            {
+                0 => "28c70071-ce5e-4add-aa5c-d093acfb2787",
+                1 => "urn:tasbehaorg-cr:1929",
+                6 => "urn:tasbehaorg-cr:471",
+                7 => "urn:tasbehaorg-cr:146",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            Assert.Equal(documentKeyEx, doc.Key);
+        }
     }
     
     [Theory]
