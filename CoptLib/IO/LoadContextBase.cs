@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
+using NodaTime;
 using OwlCore.Storage;
 
 namespace CoptLib.IO;
@@ -13,10 +14,26 @@ public abstract class LoadContextBase
 {
     private readonly Dictionary<string, IDefinition> _definitions = new();
     private readonly List<Doc> _loadedDocs = new();
+    private LocalDate? _nowOverride;
 
     public IReadOnlyDictionary<string, IDefinition> Definitions => _definitions;
 
     public IReadOnlyList<Doc> LoadedDocs => _loadedDocs;
+        
+    /// <summary>
+    /// Gets the current date. Can be overridden using <see cref="SetDate"/>.
+    /// </summary>
+    public LocalDate CurrentDate => _nowOverride ?? DateHelper.TodayCoptic();
+
+    /// <summary>
+    /// Overrides <see cref="CurrentDate"/> to the given time, taking into
+    /// account the <see cref="CopticCalendar.TransitionTime"/>.
+    /// <para>Set to <see langword="null"/> to use current date and time.</para>
+    /// </summary>
+    /// <param name="nowOverride">
+    /// The date and time to override with.
+    /// </param>
+    public void SetDate(LocalDateTime? nowOverride) => _nowOverride = nowOverride?.ToCopticDate();
 
     private static string BuildScopedKey(string key, IContextualLoad ctxItem)
     {

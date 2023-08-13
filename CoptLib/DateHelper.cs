@@ -8,26 +8,19 @@ namespace CoptLib;
 
 public static partial class DateHelper
 {
-    private static LocalDateTime? _nowOverride;
+    /// <summary>
+    /// The current date in the Coptic calendar, taking into account the <see cref="CopticCalendar.TransitionTime"/>
+    /// but ignoring any overrides.
+    /// </summary>
+    public static LocalDate TodayCoptic() => DateTime.Now.ToLocalDateTime().ToCopticDate();
 
     /// <summary>
-    /// Allows the date and time used by <see cref="NowCoptic"/> to be
-    /// set separate from the system.
-    /// <para>Set to <see langword="null"/> to use current date and time.</para>
+    /// Uses the <see cref="CopticCalendar.TransitionTime"/> to convert the given <paramref name="dateTime"/>
+    /// to a <see cref="LocalDate"/>.
     /// </summary>
-    public static LocalDateTime? NowOverride
+    public static LocalDate ToCopticDate(this LocalDateTime dateTime)
     {
-        get => _nowOverride;
-        set => _nowOverride = value?.WithCoptic();
-    }
-
-    /// <summary>
-    /// The current date in the Coptic calendar, taking into account the <see cref="CopticCalendar.TransitionTime"/>.
-    /// </summary>
-    public static LocalDate NowCoptic()
-    {
-        LocalDateTime copticDateTime = NowOverride
-                                       ?? DateTime.Now.ToLocalDateTime().WithCoptic();
+        var copticDateTime = dateTime.WithCoptic();
 
         // If it's already after the transition time, snap to the next day.
         if (copticDateTime.TimeOfDay >= CopticCalendar.TransitionTime)
@@ -44,7 +37,7 @@ public static partial class DateHelper
 
     /// <summary>
     /// Creates a new <see cref="LocalDate"/> with the given year, month, and day
-    /// using the Coptic calendar and Anno Maryrum era.
+    /// using the Coptic calendar and Anno Martyrum era.
     /// </summary>
     public static LocalDate NewCopticDate(int copticYear, int month, int day)
         => new(NodaTime.Calendars.Era.AnnoMartyrum, copticYear, month, day, CalendarSystem.Coptic);
@@ -124,7 +117,7 @@ public static partial class DateHelper
     /// </param>
     public static bool IsToday(Func<int, LocalDate> dateCalc)
     {
-        var today = NowCoptic();
+        var today = TodayCoptic();
         return today == dateCalc(today.YearOfEra);
     }
 
@@ -136,7 +129,7 @@ public static partial class DateHelper
     /// </param>
     public static bool IsToday(Func<int, DatePeriod> dateCalc)
     {
-        var today = NowCoptic();
+        var today = TodayCoptic();
         return dateCalc(today.YearOfEra).IsDuring(today);
     }
 
