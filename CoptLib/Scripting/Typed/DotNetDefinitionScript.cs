@@ -11,7 +11,7 @@ public class DotNetDefinitionScript : DotNetScript<DefinitionScriptImplementatio
 
     protected override IDefinition ExecuteInternal(LoadContextBase? context)
     {
-        var output = Implementation!.Execute(DocContext?.Context);
+        var output = Implementation!.Execute(context ?? DocContext?.Context);
         output.DocContext = DocContext;
         output.Parent = this;
         return output;
