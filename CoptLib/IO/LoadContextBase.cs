@@ -2,6 +2,7 @@
 using CommunityToolkit.Diagnostics;
 using CoptLib.Models;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using OwlCore.Storage;
@@ -148,5 +149,24 @@ public abstract class LoadContextBase
             return def;
 
         return _definitions.TryGetValue(key, out def) ? def : null;
+    }
+
+    /// <summary>
+    /// Tries to get the <see cref="IDefinition"/> associated with the given key,
+    /// optionally scoped to the provided <see cref="Doc"/> or <see cref="DocSet"/>.
+    /// </summary>
+    /// <param name="key">The key to lookup.</param>
+    /// <param name="contextualItem">
+    /// The document or set to scope to.
+    /// Pass <see langword="null"/> to search only global entries.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if a definition was found,
+    /// <see langword="false"/> if not.
+    /// </returns>
+    public bool TryLookupDefinition(string key, [NotNullWhen(true)] out IDefinition? def, IContextualLoad? contextualItem = null)
+    {
+        def = LookupDefinition(key);
+        return def is not null;
     }
 }
