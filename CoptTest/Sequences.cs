@@ -43,11 +43,9 @@ public class Sequences
     public async Task SequenceEnumerable_WithSpecialNodeTypes()
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
-        
-        DateHelper.NowOverride = new(2023, 8, 24, 6, 50);
-        var testDate = DateHelper.NowCoptic();
-        
+
         LoadContext context = new();
+        context.SetDate(new(2023, 8, 24, 6, 50));
         var sequence = SequenceReader.ParseSequenceXml(xdoc.Root!, context);
 
         var nodes = await sequence.EnumerateNodes().ToListAsync();
@@ -66,11 +64,11 @@ public class Sequences
         Assert.IsType<ScriptedSequenceNode>(adamTheotokiaConclusionNode);
 
         var theotokiaNode = nodes[2];
-        Assert.Equal((int)testDate.DayOfWeek + 2, theotokiaNode.Id);
+        Assert.Equal((int)context.CurrentDate.DayOfWeek + 2, theotokiaNode.Id);
         Assert.IsType<EndSequenceNode>(theotokiaNode);
         Assert.Null(theotokiaNode.NextNode(context));
 
-        var theotokiaKeyEx = testDate.DayOfWeek switch
+        var theotokiaKeyEx = context.CurrentDate.DayOfWeek switch
         {
             IsoDayOfWeek.Thursday => "urn:tasbehaorg-cr:471",
             IsoDayOfWeek.Friday => "urn:tasbehaorg-cr:146",
@@ -84,10 +82,8 @@ public class Sequences
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
         
-        DateHelper.NowOverride = new(2023, 8, 24, 6, 50);
-        var testDate = DateHelper.NowCoptic();
-        
         LoadContext context = new();
+        context.SetDate(new(2023, 8, 24, 6, 50));
         var sequence = SequenceReader.ParseSequenceXml(xdoc.Root!, context);
         
         // Load dependent documents

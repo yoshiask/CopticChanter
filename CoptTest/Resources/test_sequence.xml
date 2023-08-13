@@ -11,7 +11,7 @@
         <Script Id="1" DocumentKey="urn:tasbehaorg-cr:1929">
 <![CDATA[
 public override int? Execute(LoadContextBase? context) =>
-    (int) DateHelper.NowCoptic().DayOfWeek + 2;
+    (int) context!.CurrentDate.DayOfWeek + 2;
 // Node IDs of the Theotokia are purposely grouped together
 // in order, starting at ID 2 for Monday.
 ]]>
