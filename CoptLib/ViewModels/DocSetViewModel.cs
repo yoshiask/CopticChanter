@@ -12,23 +12,20 @@ namespace CoptLib.ViewModels;
 
 public partial class DocSetViewModel : ObservableObject
 {
-    private DocSetViewModel()
-    {
-        CreateTablesCommand = new AsyncRelayCommand(() => Task.Run(CreateTables));
-    }
 
     public DocSetViewModel(DocSet set) : this(set.IncludedDocs)
     {
         Set = set;
     }
 
-    public DocSetViewModel(IEnumerable<Doc> docs) : this()
+    public DocSetViewModel(IEnumerable<Doc> docs)
     {
-        Docs = new(docs.Select(d => new DocViewModel(d)));
+        _createTablesCommand = new AsyncRelayCommand(() => Task.Run(CreateTables));
+        _docs = new(docs.Select(d => new DocViewModel(d)));
     }
 
     [ObservableProperty]
-    private DocSet _set;
+    private DocSet? _set;
 
     [ObservableProperty]
     private ObservableCollection<List<List<object>>> _tables = new();
@@ -45,10 +42,11 @@ public partial class DocSetViewModel : ObservableObject
     /// <param name="folder">
     /// The root folder of the doc set.
     /// </param>
+    /// <param name="context"></param>
     /// <returns>
     /// A <see cref="DocSetViewModel"/> representing the set.
     /// </returns>
-    public static async Task<DocSetViewModel> LoadFromFolder(IFolder folder, LoadContextBase context = null)
+    public static async Task<DocSetViewModel> LoadFromFolder(IFolder folder, LoadContextBase? context = null)
     {
         DocSetReader reader = new(folder, context);
         await reader.ReadDocs();

@@ -1,32 +1,34 @@
-﻿using CommunityToolkit.Diagnostics;
+﻿using System;
 using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using System.Linq;
+using CoptLib.IO;
 
-namespace CoptLib.Scripting.Commands
+namespace CoptLib.Scripting.Commands;
+
+public class DefinitionCmd : TextCommandBase
 {
-    public class DefinitionCmd : TextCommandBase
+    private readonly string _definitionKey;
+    
+    public DefinitionCmd(string name, InlineCommand inline, IDefinition[] parameters)
+        : base(name, inline, parameters)
     {
-        public DefinitionCmd(string name, InlineCommand inline, IDefinition[] parameters)
-            : base(name, inline, parameters)
-        {
-            Parse();
-        }
+        _definitionKey = Parameters.FirstOrDefault()!.ToString();
+    }
 
-        private void Parse()
-        {
-            string defId = Parameters.FirstOrDefault()?.ToString();
-            Guard.IsNotNull(defId);
+    protected override void ExecuteInternal(LoadContextBase? context)
+    {
+        if (context is null)
+            throw new ArgumentNullException(nameof(context));
 
-            Output = Inline.DocContext.LookupDefinition(defId);
+        Output = context.LookupDefinition(_definitionKey);
+        if (Output is null)
+            throw new Exception($"No definition with key '{_definitionKey}' was found.");
 
-            HandleOutput();
+        ApplyNecessaryTransforms();
 
-            // Register the current inline with the referenced definition
-            Output.RegisterReference(Inline);
-
-            Evaluated = true;
-        }
+        // Register the current inline with the referenced definition
+        Output.RegisterReference(Inline);
     }
 }

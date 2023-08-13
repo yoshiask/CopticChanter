@@ -1,34 +1,33 @@
 ﻿using CoptLib.Models.Text;
 using CoptLib.Scripting;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+/// <summary>
+/// A helper class to reduce duplicate code in classes implementing
+/// <see cref="IContent"/>.
+/// </summary>
+public static class ContentHelper
 {
-    /// <summary>
-    /// A helper class to reduce duplicate code in classes implementing
-    /// <see cref="IContent"/>.
-    /// </summary>
-    public static class ContentHelper
+    public static string GetText(IContent content)
+        => content.CommandsHandled ? content.Inlines.ToString() : content.SourceText;
+
+    public static void HandleCommands(IContent content)
     {
-        public static string GetText(IContent content)
-            => content.Inlines == null ? content.SourceText : content.Inlines.ToString();
+        if (content.CommandsHandled)
+            return;
 
-        public static void HandleCommands(IContent content)
-        {
-            if (content.CommandsHandled)
-                return;
+        var parsed = ScriptingEngine.ParseTextCommands(content.Inlines);
+        var cmds = ScriptingEngine.RunTextCommands(parsed);
 
-            var parsed = ScriptingEngine.ParseTextCommands(content.Inlines);
-            var cmds = ScriptingEngine.RunTextCommands(parsed);
+        content.Inlines = parsed;
+        content.Commands = cmds;
+        content.CommandsHandled = true;
+    }
 
-            content.Inlines = parsed;
-            content.Commands = cmds;
-            content.CommandsHandled = true;
-        }
-
-        public static void HandleFont(InlineCollection inlines)
-        {
-            foreach (Inline inline in inlines)
-                inline.HandleFont();
-        }
+    public static void HandleFont(InlineCollection inlines)
+    {
+        foreach (Inline inline in inlines)
+            inline.HandleFont();
     }
 }

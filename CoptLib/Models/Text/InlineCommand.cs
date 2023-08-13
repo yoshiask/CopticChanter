@@ -1,56 +1,58 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Scripting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-namespace CoptLib.Models.Text
+namespace CoptLib.Models.Text;
+
+public class InlineCommand : Inline
 {
-    public class InlineCommand : Inline
+    public InlineCommand(string cmdName, IDefinition? parent) : base(parent)
     {
-        public InlineCommand(string cmdName, IDefinition parent) : base(parent)
+        CommandName = cmdName;
+    }
+
+    public InlineCommand(ReadOnlySpan<char> cmdName, IDefinition? parent) : this(new string(cmdName.ToArray()), parent)
+    {
+    }
+
+    /// <summary>
+    /// The name of the command.
+    /// </summary>
+    public string CommandName { get; set; }
+
+    /// <summary>
+    /// The <see cref="Inline"/>s passed as parameters to the command.
+    /// </summary>
+    public InlineCollection? Parameters { get; set; }
+
+    /// <summary>
+    /// The <see cref="TextCommandBase"/> that was run.
+    /// </summary>
+    public TextCommandBase? Command { get; set; }
+
+    public override void HandleFont()
+    {
+        if (FontHandled)
+            return;
+
+        Guard.IsNotNull(Parameters);
+
+        foreach (Inline inline in Parameters)
+            inline.HandleFont();
+
+        FontHandled = true;
+    }
+
+    public override string ToString()
+    {
+        if (!Command?.Evaluated ?? true)
         {
-            CommandName = cmdName;
+            return Parameters is not null
+                ? $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}"
+                : CommandName;
         }
-
-        public InlineCommand(ReadOnlySpan<char> cmdName, IDefinition parent) : this(new string(cmdName.ToArray()), parent)
-        {
-        }
-
-        /// <summary>
-        /// The name of the command.
-        /// </summary>
-        public string CommandName { get; set; }
-
-        /// <summary>
-        /// The <see cref="Inline"/>s passed as parameters to the command.
-        /// </summary>
-        public InlineCollection Parameters { get; set; }
-
-        /// <summary>
-        /// The <see cref="TextCommandBase"/> that was run.
-        /// </summary>
-        public TextCommandBase Command { get; set; }
-
-        public override void HandleFont()
-        {
-            if (FontHandled)
-                return;
-
-            Guard.IsNotNull(Parameters);
-
-            foreach (Inline inline in Parameters)
-                inline.HandleFont();
-
-            FontHandled = true;
-        }
-
-        public override string ToString()
-        {
-            if (Command == null)
-                return $"\\{CommandName}{{{string.Join("|", Parameters.Select(i => i.ToString()))}}}";
-            else
-                return Command.Output?.ToString() ?? string.Empty;
-        }
+            
+        return Command?.Output?.ToString() ?? string.Empty;
     }
 }

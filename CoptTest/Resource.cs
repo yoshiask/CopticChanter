@@ -15,7 +15,7 @@ namespace CoptTest
         {
             var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().Location);
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var dirPath = System.IO.Path.GetDirectoryName(codeBasePath);
+            var dirPath = System.IO.Path.GetDirectoryName(codeBasePath)!;
             _resPrefix = System.IO.Path.Combine(dirPath, @"Resources\");
 
             _trPrefix = System.IO.Path.Combine(dirPath, @"Output\");

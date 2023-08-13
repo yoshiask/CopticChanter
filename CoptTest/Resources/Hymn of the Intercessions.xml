@@ -69,7 +69,7 @@
             <Stanza Language="Arabic">تواضروس</Stanza>
         </Translations>
 
-        <Script>
+        <Script Key="AkiAktonkScript">
 <![CDATA[
 public override IDefinition GetDefinition()
 {

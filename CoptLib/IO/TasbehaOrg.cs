@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using AngleSharp.Html.Parser;
+using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Writing;
 using CoptLib.Writing.Linguistics;
@@ -55,8 +56,8 @@ public static class TasbehaOrg
                 if (!languageClassInfo.Success)
                     continue;
                     
-                var knownLang = (KnownLanguage)Enum.Parse(typeof(KnownLanguage), languageClassInfo.Groups["lang"].Value, true);
-                if (doc.Translations.Children.FirstOrDefault(t => t.Language?.Known == knownLang) is not Section translation)
+                var knownLang = EnumExtensions.Parse<KnownLanguage>(languageClassInfo.Groups["lang"].Value, true);
+                if (doc.Translations.Children.FirstOrDefault(t => t.Language.Known == knownLang) is not Section translation)
                 {
                     translation = new(null)
                     {

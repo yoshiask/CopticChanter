@@ -36,7 +36,7 @@
         </Translations>
         <Stanza Key="TestStanza" Language="English">This is a test stanza.</Stanza>
         <Variable Key="useAvenMajor" Configurable="True" Label="Use Major version of Aven" DefaultValue="bool:False"/>
-        <Script>
+        <Script Key="TestScript">
 <![CDATA[
     if true then
         return SimpleContent("Howdy from Lua!", nil)

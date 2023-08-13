@@ -5,8 +5,8 @@ namespace CoptLib;
 
 public class BucketCounter<TBucket>
 {
-    private int? totalCount = null;
-    private Dictionary<TBucket, int> _dict = new();
+    private int? totalCount;
+    private readonly Dictionary<TBucket, int> _dict = new();
 
     public ICollection<TBucket> Buckets => _dict.Keys;
 

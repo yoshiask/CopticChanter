@@ -1,15 +1,16 @@
-﻿using CoptLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using CoptLib;
 using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Scripting.Commands;
+using CoptLib.Scripting.Typed;
 using CoptLib.Writing;
 using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,17 +28,24 @@ namespace CoptTest
 
         [Theory]
         [MemberData(nameof(GetRunScript_Samples))]
-        public void RunCSScript(string script, Func<object?> expectedFunc)
+        public void RunDotNetDefinitionScript(string scriptBody, Func<IDefinition?> expectedFunc)
         {
             DateHelper.NowOverride = new(2023, 1, 7, 11, 00, CalendarSystem.Gregorian);
 
-            var actual = ScriptingEngine.RunScript(script);
+            DotNetDefinitionScript script = new(scriptBody);
+            script.Execute(null);
+            
+            var actual = script.Output;
+            
             var expected = expectedFunc();
 
             // Memberwise comparison
             if (expected is not null)
             {
                 Assert.IsType(expected.GetType(), actual);
+
+                expected.DocContext = script.DocContext;
+                expected.Parent = script;
 
                 // Check if collections are equal
                 if (expected is IEnumerable<object> expectedCollection)
@@ -118,8 +126,8 @@ namespace CoptTest
             var langCmd = Assert.IsType<LanguageCmd>(cmd);
             var langDef = Assert.IsAssignableFrom<Run>(cmd.Output);
 
-            Assert.Equal(langCmd.Language?.Known, lang);
-            Assert.Equal(langDef?.ToString(), convSubtext);
+            Assert.Equal(langCmd.Language.Known, lang);
+            Assert.Equal(langDef.ToString(), convSubtext);
             if (font == null)
                 Assert.Null(langCmd.Font);
             Assert.Equal(langCmd.Font?.DisplayName, font);
@@ -136,7 +144,7 @@ namespace CoptTest
             const string postText = "'.\r\nAlong with some text after.";
             parsedValue ??= value;
 
-            _doc.DirectDefinitions = new List<IDefinition>()
+            _doc.DirectDefinitions = new List<IDefinition>
             {
                 new Stanza(null)
                 {
@@ -163,8 +171,8 @@ namespace CoptTest
             var defContent = Assert.IsAssignableFrom<IContent>(defCmd.Output);
             var defMulti = Assert.IsAssignableFrom<IMultilingual>(defCmd.Output);
 
-            Assert.Equal(defContent?.ToString(), parsedValue);
-            Assert.Equal(defMulti.Language?.Known, lang);
+            Assert.Equal(defContent.ToString(), parsedValue);
+            Assert.Equal(defMulti.Language.Known, lang);
             Assert.Equal(defMulti.Font, font);
         }
 
@@ -208,25 +216,25 @@ namespace CoptTest
             Run run = new(text, null);
 
             var parsedInlines = ScriptingEngine.ParseTextCommands(run);
-            Assert.Equal(text, parsedInlines?.ToString());
+            Assert.Equal(text, parsedInlines.ToString());
 
-            var cmds = ScriptingEngine.RunTextCommands(parsedInlines);
-            Assert.Equal(expectedResult, parsedInlines?.ToString());
+            _ = ScriptingEngine.RunTextCommands(parsedInlines);
+            Assert.Equal(expectedResult, parsedInlines.ToString());
         }
 
         public static IEnumerable<object[]> GetRunScript_Samples()
         {
-            return new object[][]
+            return new[]
             {
                 new object[]
                 {
-                    "public override IDefinition GetDefinition() => new SimpleContent(\"Test content\", null);",
+                    "public override IDefinition Execute(LoadContextBase? context) => new SimpleContent(\"Test content\", null);",
                     () => new SimpleContent("Test content", null)
                 },
                 new object[]
                 {
                     """
-                    public override IDefinition GetDefinition()
+                    public override IDefinition Execute(LoadContextBase? context)
                     {
                         // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
                         var Today = DateHelper.NowCoptic();
@@ -291,7 +299,7 @@ namespace CoptTest
                 new object[]
                 {
                     """
-                    public override IDefinition GetDefinition()
+                    public override IDefinition Execute(LoadContextBase? context)
                     {
                         var today = DateHelper.NowCoptic();
                         if (today == CopticCalendar.Resurrection(today.YearOfEra))
@@ -305,8 +313,7 @@ namespace CoptTest
                         var today = DateHelper.NowCoptic();
                         if (today == CopticCalendar.Resurrection(today.YearOfEra))
                             return new SimpleContent("aktonk", null);
-                        else
-                            return new SimpleContent("aki", null);
+                        return new SimpleContent("aki", null);
                     }
                 },
             };

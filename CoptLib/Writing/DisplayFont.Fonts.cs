@@ -15,68 +15,23 @@ partial class DisplayFont
         Athanasius, CopticInGreekUnicode
     };
 
-    public static DisplayFont CopticStandard => new()
-    {
-        DisplayName = "Coptic Standard",
-        FontFamily = "CS Avva Shenouda",
-        CharacterMapId = CopticStandardMapId,
-        IsJenkimBefore = true,
-        Charmap = CreateMapping(ConvertToCopticStandard)
-    };
+    public static DisplayFont CopticStandard => new("Coptic Standard", "CS Avva Shenouda",
+        CopticStandardMapId, CreateMapping(ConvertToCopticStandard), true);
 
-    public static DisplayFont Unicode => new()
-    {
-        DisplayName = "Unicode",
-        FontFamily = "Noto Sans",
-        CharacterMapId = UnicodeMapId,
-        IsJenkimBefore = false,
-        Charmap = CreateMapping(ConvertToUnicode)
-    };
+    public static DisplayFont Unicode => new("Unicode", "Noto Sans",
+        UnicodeMapId, CreateMapping(ConvertToUnicode), false);
 
-    public static DisplayFont UnicodeB => new()
-    {
-        DisplayName = "Unicode B",
-        FontFamily = "Segoe UI",
-        IsJenkimBefore = true,
-        CharacterMapId = UnicodeBMapId,
-        Charmap = CreateMapping(ConvertToUnicode)
-    };
+    public static DisplayFont UnicodeB => new("Unicode B", "Segoe UI",
+        UnicodeBMapId, CreateMapping(ConvertToUnicode), true);
 
-    public static DisplayFont Athanasius => new()
-    {
-        DisplayName = "Athanasius",
-        FontFamily = "Athanasius Plain",
-        CharacterMapId = nameof(Athanasius),
-        IsJenkimBefore = true,
-        Charmap = CreateMapping(ConvertToAthanasius)
-    };
+    public static DisplayFont Athanasius => new("Athanasius", "Athanasius Plain",
+        nameof(Athanasius), CreateMapping(ConvertToAthanasius), true);
 
-    public static DisplayFont CopticInGreekUnicode => new()
-    {
-        DisplayName = "Greek Unicode",
-        FontFamily = "Noto Sans",
-        CharacterMapId = nameof(CopticInGreekUnicode),
-        IsJenkimBefore = false,
-        Charmap = CreateMapping(ConvertToCopticInGreekUnicode)
-    };
+    public static DisplayFont CopticInGreekUnicode => new("Coptic-Greek Unicode", Unicode.FontFamily,
+        nameof(CopticInGreekUnicode), CreateMapping(ConvertToCopticInGreekUnicode), false);
 
-    public static DisplayFont CopticInGreekUnicodeB => new()
-    {
-        DisplayName = "Greek Unicode B",
-        FontFamily = "Segoe UI",
-        CharacterMapId = nameof(CopticInGreekUnicodeB),
-        IsJenkimBefore = true,
-        Charmap = CreateMapping(ConvertToCopticInGreekUnicode)
-    };
-
-    public static DisplayFont GreekInCopticUnicode => new()
-    {
-        DisplayName = "Greek Unicode B",
-        FontFamily = "Noto Sans",
-        CharacterMapId = nameof(GreekInCopticUnicode),
-        IsJenkimBefore = false,
-        Charmap = CreateMapping(ConvertToGreekInCopticUnicode)
-    };
+    public static DisplayFont GreekInCopticUnicode => new("Greek-Coptic Unicode", Unicode.FontFamily,
+        nameof(GreekInCopticUnicode), CreateMapping(ConvertToGreekInCopticUnicode), false);
 
     private static DoubleDictionary<KnownCharacter, char> CreateMapping(Func<KnownCharacter, char> mapper)
     {

@@ -1,104 +1,108 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Models;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using OwlCore.Storage;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace CoptLib.IO
+namespace CoptLib.IO;
+
+public class DocSetReader
 {
-    public class DocSetReader
+    private IFolder RootFolder { get; }
+
+    private LoadContextBase Context { get; }
+
+    public Dictionary<string, string>? Index { get; private set; }
+
+    public DocSet? Set { get; private set; }
+
+    public DocSetReader(IFolder folder, LoadContextBase? context = null)
     {
-        private IFolder RootFolder { get; }
+        Guard.IsNotNull(folder);
 
-        private LoadContextBase Context { get; }
+        RootFolder = folder;
+        Context = context ?? new LoadContext();
+    }
 
-        public Dictionary<string, string> Index { get; private set; }
-
-        public DocSet Set { get; private set; }
-
-        public DocSetReader(IFolder folder, LoadContextBase context = null)
-        {
-            Guard.IsNotNull(folder);
-
-            RootFolder = folder;
-            Context = context ?? new();
-        }
-
-        /// <summary>
-        /// Reads the set metadata (such as ID and author).
-        /// </summary>
-        /// <returns></returns>
-        public async Task ReadMetadata()
-        {
-            if (Set is not null)
-                return;
+    /// <summary>
+    /// Reads the set metadata (such as ID and author).
+    /// </summary>
+    /// <returns></returns>
+    [MemberNotNull(nameof(Set))]
+    public async Task ReadMetadata()
+    {
+        if (Set is not null)
+            return;
             
-            var meta = await RootFolder.GetFirstByNameAsync(DocSetWriter.META_ENTRY);
-            if (meta is not IFile metaEntry)
-                throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
-            if (meta is null)
-                throw new InvalidDataException($"Metadata does not exist at '{DocSetWriter.META_ENTRY}'");
+        var meta = await RootFolder.GetFirstByNameAsync(DocSetWriter.MetaEntry);
+        if (meta is not IFile metaEntry)
+            throw new InvalidDataException($"Expected '{meta.Id}' to be a file, got '{meta.GetType()}'");
+        if (meta is null)
+            throw new InvalidDataException($"Metadata does not exist at '{DocSetWriter.MetaEntry}'");
 
-            using var metaEntryStream = await metaEntry.OpenStreamAsync();
-            Set = DocSet.Deserialize(XDocument.Load(metaEntryStream), Context);
-        }
+        using var metaEntryStream = await metaEntry.OpenStreamAsync();
+        Set = DocSet.Deserialize(XDocument.Load(metaEntryStream), Context);
+    }
 
-        /// <summary>
-        /// Reads the set information without parsing any documents.
-        /// </summary>
-        public async Task ReadIndex()
-        {
-            if (Index is not null)
-                return;
+    /// <summary>
+    /// Reads the set information without parsing any documents.
+    /// </summary>
+    [MemberNotNull(nameof(Index))]
+    public async Task ReadIndex()
+    {
+        if (Index is not null)
+            return;
             
-            var index = await RootFolder.GetFirstByNameAsync(DocSetWriter.INDEX_ENTRY);
-            if (index is not IFile indexEntry)
-                throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
-            if (index is null)
-                throw new InvalidDataException($"Index does not exist at '{DocSetWriter.INDEX_ENTRY}'");
+        var index = await RootFolder.GetFirstByNameAsync(DocSetWriter.IndexEntry);
+        if (index is not IFile indexEntry)
+            throw new InvalidDataException($"Expected '{index.Id}' to be a file, got '{index.GetType()}'");
+        if (index is null)
+            throw new InvalidDataException($"Index does not exist at '{DocSetWriter.IndexEntry}'");
 
-            using var indexEntryStream = await indexEntry.OpenStreamAsync();
-            using StreamReader indexReader = new(indexEntryStream);
+        using var indexEntryStream = await indexEntry.OpenStreamAsync();
+        using StreamReader indexReader = new(indexEntryStream);
 
-            // Read doc list
-            Index = new();
-            while (!indexReader.EndOfStream)
-            {
-                string relativePath = await indexReader.ReadLineAsync();
-                string name = await indexReader.ReadLineAsync();
-                Index.Add(relativePath, name);
-            }
-        }
-
-        /// <summary>
-        /// Reads and parses all <see cref="Doc"/>s in the set.
-        /// </summary>
-        public async Task ReadDocs()
+        // Read doc list
+        Index = new();
+        while (!indexReader.EndOfStream)
         {
-            await ReadMetadata();
-            await ReadIndex();
+            string relativePath = await indexReader.ReadLineAsync();
+            string name = await indexReader.ReadLineAsync();
+            Index.Add(relativePath, name);
+        }
+    }
 
-            var docs = await RootFolder.GetFirstByNameAsync(DocSetWriter.DOCS_DIRECTORY);
-            if (docs is not IFolder docsDir)
-                throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
-            if (docs is null)
-                throw new InvalidDataException($"Docs directory does not exist at '{DocSetWriter.DOCS_DIRECTORY}'");
+    /// <summary>
+    /// Reads and parses all <see cref="Doc"/>s in the set.
+    /// </summary>
+    [MemberNotNull(nameof(Set))]
+    [MemberNotNull(nameof(Index))]
+    public async Task ReadDocs()
+    {
+        await ReadMetadata();
+        await ReadIndex();
 
-            foreach (string relativePath in Index.Keys)
-            {
-                // Open entry for doc
-                var docItem = await docsDir.GetItemByRelativePathAsync(relativePath);
-                if (docItem is not IFile docFile)
-                    throw new InvalidDataException($"Expected '{relativePath}' to be a file, got '{docItem.GetType()}'");
+        var docs = await RootFolder.GetFirstByNameAsync(DocSetWriter.DocsDirectory);
+        if (docs is not IFolder docsDir)
+            throw new InvalidDataException($"Expected '{docs.Id}' to be a folder, got '{docs.GetType()}'");
+        if (docs is null)
+            throw new InvalidDataException($"Docs directory does not exist at '{DocSetWriter.DocsDirectory}'");
 
-                // Read XML
-                var doc = await Set.Context.LoadDoc(docFile);
+        foreach (string relativePath in Index.Keys)
+        {
+            // Open entry for doc
+            var docItem = await docsDir.GetItemByRelativePathAsync(relativePath);
+            if (docItem is not IFile docFile)
+                throw new InvalidDataException($"Expected '{relativePath}' to be a file, got '{docItem.GetType()}'");
 
-                // Add to Set
-                Set.IncludedDocs.Add(doc);
-            }
+            // Read XML
+            var doc = await Set.Context.LoadDoc(docFile);
+
+            // Add to Set
+            Set.IncludedDocs.Add(doc);
         }
     }
 }

@@ -107,7 +107,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Helpers\DocumentUIFactory.cs" />
     <Compile Include="Helpers\OwlCore.Storage.Uwp\WindowsStorageFile.cs" />
     <Compile Include="Helpers\OwlCore.Storage.Uwp\WindowsStorageFolder.cs" />
@@ -121,12 +121,6 @@
     <Compile Include="Layouts\DocumentLayoutArgs.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\BluetoothHostConnectPage.xaml.cs">
-      <DependentUpon>BluetoothHostConnectPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\BluetoothRemoteConnectPage.xaml.cs">
-      <DependentUpon>BluetoothRemoteConnectPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\TextToSpeechPage.xaml.cs">
       <DependentUpon>TextToSpeechPage.xaml</DependentUpon>
@@ -210,14 +204,6 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Pages\BluetoothHostConnectPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\BluetoothRemoteConnectPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TextToSpeechPage.xaml">
       <SubType>Designer</SubType>

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using CommunityToolkit.Diagnostics;
 using CoptLib.Extensions;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing.Linguistics;
@@ -12,19 +12,19 @@ public class AbbreviationCmd : TextCommandBase
     public AbbreviationCmd(string name, InlineCommand inline, IDefinition[] parameters)
         : base(name, inline, parameters)
     {
-        Parse(name == "abvsh");
+        AbbreviationKey = Parameters.FirstOrDefault()!.ToString();
+        KeepAbbreviated = name == "abvsh";
     }
-
-    private void Parse(bool keepAbbreviated)
+    
+    public string AbbreviationKey { get; }
+    
+    public bool KeepAbbreviated { get; }
+    
+    protected override void ExecuteInternal(LoadContextBase? context)
     {
-        var abvKey = Parameters.FirstOrDefault()?.ToString();
-        Guard.IsNotNull(abvKey);
-
         var analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Inline.GetLanguage());
-        var abbreviation = analyzer.ResolveAbbreviation(abvKey, keepAbbreviated);
+        var abbreviation = analyzer.ResolveAbbreviation(AbbreviationKey, KeepAbbreviated);
         
         Output = new Run(abbreviation, Inline);
-
-        Evaluated = true;
     }
 }

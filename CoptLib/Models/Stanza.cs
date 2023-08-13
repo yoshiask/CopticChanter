@@ -1,9 +1,8 @@
-﻿namespace CoptLib.Models
+﻿namespace CoptLib.Models;
+
+public class Stanza : Paragraph
 {
-    public class Stanza : Paragraph
+    public Stanza(IDefinition? parent) : base(parent)
     {
-        public Stanza(IDefinition parent) : base(parent)
-        {
-        }
     }
 }

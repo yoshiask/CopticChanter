@@ -12,24 +12,25 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 {
-    private static Dictionary<string, KnownLanguage> _loanWords;
+    private static Dictionary<string, KnownLanguage>? _loanWords;
+    
     /// <summary>
     /// A dictionary of Coptic words loaned from other languages.
     /// </summary>
     public static Dictionary<string, KnownLanguage> LoanWords => _loanWords ?? GetLoanWords();
 
-    protected readonly IReadOnlyDictionary<char, string> _ipaTranscriptions;
-    protected readonly Dictionary<int, PhoneticWord> _wordCache;
-    protected readonly IReadOnlyList<string> _knownPrefixes;
+    protected readonly IReadOnlyDictionary<char, string> IpaTranscriptions;
+    protected readonly Dictionary<int, PhoneticWord> WordCache;
+    protected readonly IReadOnlyList<string> KnownPrefixes;
 
     public CopticAnalyzer(LanguageInfo languageInfo, IReadOnlyDictionary<char, string> ipaTranscriptions, IReadOnlyList<string> knownPrefixes, Dictionary<int, PhoneticWord> wordCache)
         : base(languageInfo)
     {
         Guard.IsNotNull(ipaTranscriptions);
 
-        _ipaTranscriptions = ipaTranscriptions;
-        _wordCache = wordCache;
-        _knownPrefixes = knownPrefixes;
+        IpaTranscriptions = ipaTranscriptions;
+        WordCache = wordCache;
+        KnownPrefixes = knownPrefixes;
     }
 
     protected override string ResolveAbbreviationInternal(string key, bool keepAbbreviated)
@@ -58,7 +59,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                 goto finished;
 
             // Check if word is in cache
-            if (useCache && _wordCache.TryGetValue(srcWordInitHash, out word))
+            if (useCache && WordCache.TryGetValue(srcWordInitHash, out word))
                 goto finished;
 
             string srcWord = srcWordInit;
@@ -67,7 +68,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             if (checkPrefixes)
             {
                 // Separate prefixes
-                srcWord = srcWordInit.StripAnyFromStart(_knownPrefixes, out prefixStr, StringComparison.OrdinalIgnoreCase);
+                srcWord = srcWordInit.StripAnyFromStart(KnownPrefixes, out prefixStr, StringComparison.OrdinalIgnoreCase);
                 srcWordStartIdx = prefixStr?.Length ?? 0;
             }
 
@@ -100,7 +101,8 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             {
                 char ch = srcWord[c];
                 char? chPrev = (c - 1) >= 0 ? srcWord[c - 1] : null;
-                _ipaTranscriptions.TryGetValue(char.ToLower(ch), out var ipa);
+                if (!IpaTranscriptions.TryGetValue(char.ToLower(ch), out var ipa))
+                    ipa = ch.ToString();
 
                 // Handle jenkim
                 if (ch == '\u0300' && chPrev != null)
@@ -113,7 +115,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
                     srcWord = new(srcChars);
                 }
 
-                word.Equivalents[c + srcWordStartIdx] = new(ch, ipa!);
+                word.Equivalents[c + srcWordStartIdx] = new(ch, ipa);
             }
 
             var morph = word.Substring(srcWordStartIdx);
@@ -127,8 +129,8 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             ipaWords[w] = CopyCasing(srcWordInit, word);
 
             // Add word to cache
-            if (useCache && !_wordCache.ContainsKey(srcWordInitHash))
-                _wordCache.Add(srcWordInitHash, word);
+            if (useCache && !WordCache.ContainsKey(srcWordInitHash))
+                WordCache.Add(srcWordInitHash, word);
         }
 
         return ipaWords;
@@ -227,7 +229,6 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     /// </summary>
     private static void MarkSyllables(PhoneticWord word)
     {
-#nullable enable
         // Start the list with 0, then later end it with the length of the word.
         // This allows the second pass to 
         List<int> breaks = new()
@@ -293,8 +294,8 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
             {
                 // Maximal onset principle, add the consonants to the next syllable
                 // so it has as longer onset, but only if allowed
-                bool isTi() => start < word.Length - 2 && word.Equivalents[start + 1].Source == 'ϯ';
-                bool isOu()
+                bool IsTi() => start < word.Length - 2 && word.Equivalents[start + 1].Source == 'ϯ';
+                bool IsOu()
                 {
                     if (start < word.Length - 3 && word.Equivalents[start + 1].Source == 'ⲟ' && word.Equivalents[start + 2].Source == 'ⲩ')
                     {
@@ -305,9 +306,9 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
 
                     return false;
                 }
-                bool isJenkim() => start < word.Length - 2 && word.Equivalents[start + 1].Source == '\u0300';
+                bool IsJenkim() => start < word.Length - 2 && word.Equivalents[start + 1].Source == '\u0300';
 
-                if (isOu() || isTi() || isJenkim())
+                if (IsOu() || IsTi() || IsJenkim())
                 {
                     breaks.Remove(start);
                     --i;
@@ -322,7 +323,6 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
         word.SyllableBreaks = new(breaks);
         word.SyllableBreaks.Remove(0);
         word.SyllableBreaks.Remove(word.Length);
-#nullable disable
     }
 
     /// <summary>
@@ -356,18 +356,18 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     private static Dictionary<string, KnownLanguage> GetLoanWords(Version? ver = null)
     {
         string tsv;
-        if (ver == null || (ver.Major == 1 && ver.Minor == 4 && ver.Build == 1))
+        if (ver == null || ver is {Major: 1, Minor: 4, Build: 1})
         {
             // v1.4.1 is the default and is included in CoptLib's embedded resources
             var assembly = typeof(CopticAnalyzer).GetTypeInfo().Assembly;
-            using Stream resource = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.lexicon.tsv");
+            using var resource = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.lexicon.tsv")!;
             using StreamReader sr = new(resource);
             tsv = sr.ReadToEnd();
         }
         else
         {
             // Different version was specified, fetch from GitHub
-            string url = $"https://raw.githubusercontent.com/CopticScriptorium/lexical-taggers/v{ver}/language-tagger/lexicon.txt";
+            var url = $"https://raw.githubusercontent.com/CopticScriptorium/lexical-taggers/v{ver}/language-tagger/lexicon.txt";
             System.Net.Http.HttpClient client = new();
             tsv = client.GetStringAsync(url).Result;
         }

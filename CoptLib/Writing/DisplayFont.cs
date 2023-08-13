@@ -1,8 +1,10 @@
 ﻿using CoptLib.Models;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using CoptLib.Extensions;
 
 #if DEBUG
 using Output = System.Diagnostics.Debug;
@@ -14,11 +16,20 @@ namespace CoptLib.Writing
 {
     public partial class DisplayFont
     {
+        public DisplayFont(string displayName, string fontFamily, string characterMapId, DoubleDictionary<KnownCharacter, char> charmap, bool isJenkimBefore)
+        {
+            DisplayName = displayName;
+            FontFamily = fontFamily;
+            CharacterMapId = characterMapId;
+            Charmap = charmap;
+            IsJenkimBefore = isJenkimBefore;
+        }
+
         public string DisplayName { get; set; }
         public string FontFamily { get; set; }
-        public string CharacterMapId { get; set; }
-        public DoubleDictionary<KnownCharacter, char> Charmap { get; init; }
-        public bool IsJenkimBefore { get; set; } = true;
+        public string CharacterMapId { get; }
+        public DoubleDictionary<KnownCharacter, char> Charmap { get; }
+        public bool IsJenkimBefore { get; set; }
 
         /// <summary>
         /// Converts text to the specified font.
@@ -26,7 +37,7 @@ namespace CoptLib.Writing
         /// <param name="input">The text to convert.</param>
         /// <param name="target">The font to convert to. Defaults to <see cref="Unicode"/>.</param>
         /// <returns>The source text represented with the target font.</returns>
-        public string Convert(string input, DisplayFont target = null)
+        public string Convert(string input, DisplayFont? target = null)
         {
             // Default to Unicode target
             target ??= Unicode;
@@ -52,7 +63,7 @@ namespace CoptLib.Writing
         /// <param name="input">The character to convert.</param>
         /// <param name="target">The font to convert to. Defaults to <see cref="Unicode"/>.</param>
         /// <returns>The source text represented with the target font.</returns>
-        public char Convert(char input, DisplayFont target = null)
+        public char Convert(char input, DisplayFont? target = null)
         {
             target ??= Unicode;
             
@@ -66,8 +77,9 @@ namespace CoptLib.Writing
         /// Save Font Pack to file. Also adds to imported list of the current instance.
         /// </summary>
         /// <param name="path">Location to save file</param>
+        /// <param name="addToList">Whether to add the created font to the current <see cref="Fonts"/> list.</param>
         /// <returns></returns>
-        public bool SaveFontXml(string path, bool addToList)
+        public bool TrySaveFontXml(string path, bool addToList)
         {
             try
             {
@@ -119,7 +131,7 @@ namespace CoptLib.Writing
         /// <returns>
         /// <see langword="true"/> if the fond was found, <see langword="false"/> if not.
         /// </returns>
-        public static bool TryFindFontByMapId(string characterMapId, out DisplayFont font)
+        public static bool TryFindFontByMapId(string characterMapId, [NotNullWhen(true)] out DisplayFont? font)
         {
             font = FindFontByMapId(characterMapId);
             return font != null;
@@ -195,47 +207,34 @@ namespace CoptLib.Writing
         /// Reads Font Pack from file. Also adds to imported list of the current instance.
         /// </summary>
         /// <param name="path">File to read</param>
+        /// <param name="addToList">Whether to add the created font to the current <see cref="Fonts"/> list.</param>
         /// <returns></returns>
         public static DisplayFont ReadFontXml(string path, bool addToList = true)
         {
-            try
-            {
-                // Create an instance of the XmlSerializer class;
-                // specify the type of object to be deserialized.
-                XmlSerializer serializer = new XmlSerializer(typeof(Font));
-                //If the XML document has been altered with unknown 
-                //nodes or attributes, handle them with the 
-                //UnknownNode and UnknownAttribute events.
+            // Create an instance of the XmlSerializer class;
+            // specify the type of object to be deserialized.
+            XmlSerializer serializer = new XmlSerializer(typeof(Font));
 
-                // A FileStream is needed to read the XML document.
-                var text = File.OpenRead(path);
+            // A FileStream is needed to read the XML document.
+            var text = File.OpenRead(path);
 
-                //Use the Deserialize method to restore the object's state with
-                //data from the XML document.
-                var data = ((Font)serializer.Deserialize(text)).ToDisplayFont();
-                if (addToList)
-                    Fonts.Add(data);
-                return data;
-            }
-            catch (Exception ex)
-            {
-                Output.WriteLine(ex.Message);
-                return null;
-            }
+            // Use the Deserialize method to restore the object's state with
+            // data from the XML document.
+            var data = ((Font)serializer.Deserialize(text)).ToDisplayFont();
+            if (addToList)
+                Fonts.Add(data);
+            return data;
         }
 
         /// <summary>
-        /// Generates Font Pack from CSV. Does not import generated pack. 
+        /// Generates a <see cref="DisplayFont"/> from a CSV file. Does not import generated font. 
         /// </summary>
-        /// <param name="path">File to generate from. Must have comma sparated values.</param>
+        /// <param name="path">File to generate from. Must have comma separated values.</param>
         /// <returns></returns>
-        public static DisplayFont GenerateFromCsv(string path)
+        public static DisplayFont GenerateFromCsv(string path, string displayName, string fontFamily, string charMapId)
         {
-            var font = new DisplayFont
-            {
-                DisplayName = "Imported Font",
-                FontFamily = "Arial",
-            };
+            var font = new DisplayFont(displayName, fontFamily, charMapId, new DoubleDictionary<KnownCharacter, char>(), false);
+            
             var lines = File.ReadAllLines(path);
             foreach (var line in lines)
             {
@@ -250,9 +249,7 @@ namespace CoptLib.Writing
                         font.FontFamily = columns[1];
                         break;
                     default:
-                        font.Charmap.Add(
-                            (KnownCharacter)Enum.Parse(typeof(KnownCharacter), columns[0]),
-                            columns[1][0]);
+                        font.Charmap.Add(EnumExtensions.Parse<KnownCharacter>(columns[0]), columns[1][0]);
                         break;
                 }
             }

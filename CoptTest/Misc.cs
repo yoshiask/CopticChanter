@@ -1,8 +1,8 @@
-﻿using CoptLib.IO;
-using CoptLib.Writing;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CoptLib.IO;
 using CoptLib.Models;
+using CoptLib.Writing;
 using Xunit;
 using Xunit.Abstractions;
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;

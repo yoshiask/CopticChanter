@@ -4,6 +4,7 @@ using CoptLib.Writing;
 using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace CoptLib.Models;
@@ -12,14 +13,15 @@ public class DocLayout
 {
     private DocLayoutOptions _options;
     private bool _isInvalidated = true;
-    private List<List<object>> _table;
+    private List<List<object>>? _table;
     private readonly List<object> _docIntoList;
 
     /// <summary>
     /// Creates a new <see cref="DocLayout"/> for the specified document.
     /// </summary>
     /// <param name="doc"></param>
-    public DocLayout(Doc doc, DocLayoutOptions options = null)
+    /// <param name="options"></param>
+    public DocLayout(Doc doc, DocLayoutOptions? options = null)
     {
         Guard.IsNotNull(doc);
 
@@ -48,8 +50,9 @@ public class DocLayout
     }
 
     /// <summary>
-    /// Whether <see cref="Table"/> needs to be updated.
+    /// Whether the layout needs to be updated.
     /// </summary>
+    [MemberNotNullWhen(false, nameof(_table))]
     public bool IsInvalidated
     {
         get => _isInvalidated;
@@ -58,13 +61,15 @@ public class DocLayout
             _isInvalidated = value;
             if (value)
                 Invalidated?.Invoke(this, null);
+            else
+                _table = null;
         }
     }
 
     /// <summary>
-    /// An event fired when <see cref="Table"/> needs to be updated.
+    /// An event fired when the layout needs to be updated.
     /// </summary>
-    public event EventHandler Invalidated;
+    public event EventHandler? Invalidated;
 
     /// <summary>
     /// A row-first flattened representation of the document contents.
@@ -124,7 +129,7 @@ public class DocLayoutOptions
     /// <summary>
     /// A collection of languages to include in the layout.
     /// </summary>
-    public IEnumerable<LanguageInfo> IncludedLanguages { get; set; }
+    public IEnumerable<LanguageInfo>? IncludedLanguages { get; set; }
 
     /// <summary>
     /// A collection of languages to exclude from the layout,

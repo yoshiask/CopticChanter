@@ -2,11 +2,13 @@
 using CoptLib.Writing.Linguistics.Analyzers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace CoptBench;
 
 [MemoryDiagnoser]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class Interpreter
 {
     public IEnumerable<object[]> IpaTranscribe_CopticUnicode_Samples { get; }

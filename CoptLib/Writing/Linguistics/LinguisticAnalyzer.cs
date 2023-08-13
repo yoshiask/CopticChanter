@@ -56,7 +56,6 @@ public abstract class LinguisticAnalyzer
         if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var ipaTable))
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
 
-        bool insertSyllableSeparator = syllableSeparator is not null;
         StringBuilder sb = new(srcTextLength);
         foreach (var word in srcText)
         {
@@ -64,7 +63,7 @@ public abstract class LinguisticAnalyzer
 
             for (int i = 0; i < word.Length; i++)
             {
-                if (insertSyllableSeparator && syllableBreaks.Contains(i))
+                if (syllableSeparator is not null && syllableBreaks.Contains(i))
                     sb.Append(ipaTable.TryGetValue(syllableSeparator, out var tlSep)
                         ? tlSep : syllableSeparator);
 

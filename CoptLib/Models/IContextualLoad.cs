@@ -10,10 +10,10 @@ public interface IContextualLoad
     /// <summary>
     /// The unique identifier of the current item.
     /// </summary>
-    string Key { get; set; }
+    string? Key { get; set; }
 
     /// <summary>
     /// The context this item was loaded in.
     /// </summary>
-    LoadContextBase Context { get; set; }
+    LoadContextBase? Context { get; set; }
 }

@@ -1,53 +1,50 @@
 ﻿using CoptLib.Scripting;
 using CoptLib.Writing;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
-namespace CoptLib.Models
+namespace CoptLib.Models;
+
+/// <summary>
+/// A base class for anything that can be placed inside the content of a <see cref="IContentCollectionContainer"/>.
+/// </summary>
+public abstract class ContentPart : Definition, IMultilingual, ISupportsTextCommands
 {
-    /// <summary>
-    /// A base class for anything that can be placed inside the content of a <see cref="Translation"/>.
-    /// </summary>
-    public abstract class ContentPart : Definition, IMultilingual, ISupportsTextCommands
+    public ContentPart(IDefinition? parent)
     {
-        public ContentPart(IDefinition parent)
+        Parent = parent;
+        DocContext = parent?.DocContext;
+        Commands = new List<TextCommandBase>();
+
+        if (parent is IMultilingual multiParent)
         {
-            Parent = parent;
-            DocContext = parent?.DocContext;
-
-            if (parent is IMultilingual multiParent)
-            {
-                Language = multiParent.Language;
-                Font = multiParent.Font;
-            }
+            Language = multiParent.Language;
+            Font = multiParent.Font;
         }
-
-        [XmlAttribute]
-        public LanguageInfo Language { get; set; }
-
-        [XmlAttribute]
-        public string Font { get; set; }
-
-        [XmlAttribute]
-        public RoleInfo Role { get; set; }
-
-        [XmlIgnore]
-        public bool FontHandled { get; protected set; }
-
-        [XmlIgnore]
-        public bool CommandsHandled { get; set; }
-
-        [XmlIgnore]
-        public List<TextCommandBase> Commands { get; set; }
-
-        /// <summary>
-        /// Returns the number of rows this part requires to display
-        /// all its content, including section headers and stanzas
-        /// </summary>
-        public virtual int CountRows() => 1;
-
-        public abstract void HandleFont();
-
-        public abstract void HandleCommands();
+        else
+        {
+            Language = LanguageInfo.Default;
+        }
     }
+
+    public LanguageInfo Language { get; set; }
+
+    public string? Font { get; set; }
+
+    public RoleInfo? Role { get; set; }
+
+    public bool FontHandled { get; protected set; }
+
+    public bool CommandsHandled { get; set; }
+
+    public List<TextCommandBase> Commands { get; set; }
+
+    /// <summary>
+    /// Returns the number of rows this part requires to display
+    /// all its content, including section headers and stanzas
+    /// </summary>
+    public virtual int CountRows() => 1;
+
+    public abstract void HandleFont();
+
+    public abstract void HandleCommands();
 }
