@@ -13,7 +13,7 @@ partial class CopticAnalyzer
 
     protected static readonly Dictionary<string, (string ex, string sh)> CopticAbbreviations = new()
     {
-        ["oc"] = ("ϭⲟⲓⲥ", "ⲟ\u035Eⲥ"), // ⳪
+        ["oc"] = ("ϭⲟⲓⲥ", "⳪"),
         ["poc"] = ("ⲡ\u0300ϭⲟⲓⲥ", "ⲡ\u0300ⲟ\u035Eⲥ"),
         ["xc"] = ("ⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "ⲭ\u035Eⲥ"), // ⳩
         ["pxc"] = ("ⲡⲓⲭ\u0300ⲣⲓⲥⲧⲟⲥ", "ⲡⲓⲭ\u035Eⲥ"),
