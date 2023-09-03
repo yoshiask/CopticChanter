@@ -20,7 +20,7 @@
             <Stanza>Through their prayers, keep the life of our honored father the high priest, Papa Abba \def{PopeName}, \def{Refrain}</Stanza>
             <Stanza>We worship You O Christ, with Your good Father, and the Holy Spirit, for you have \def{AkiAktonk} and saved us. Have mercy on us.</Stanza>
         </Translation>
-        <Translation Title="Ϩⲓⲧⲉⲛ ⲛⲓ̀ⲡⲣⲉⲥⲃⲓ̀ⲁ" Key="CopticTranslation" Language="Coptic" Font="CS Avva Shenouda">
+        <Translation Title="Ϩⲓⲧⲉⲛ ⲛⲓ̀ⲡⲣⲉⲥⲃⲓ̀ⲁ" Key="CopticTranslation" Language="Coptic" Font="CopticStandard">
             <Stanza>Hiten ni`precbia@ `nte ];e`otokoc =e=;=u Maria@ \def{Refrain}</Stanza>
             <Stanza>Hiten ni`precbia@ `nte `pi`ar,y`aggeloc =e=;=u@ Mi,ayl `p`ar,wn `nna nivyou`i@ \def{Refrain}</Stanza>
             <Stanza>Hiten ni`precbia@ `nte pisasf `n`ar,y`aggeloc@ nem nitagma  `n`epouranion@ \def{Refrain}</Stanza>
@@ -37,7 +37,6 @@
             <Stanza>Hiten nou`eu,y@ `areh `e`pwnq `mpeniwt ettaiyout `n`ar,y`ereuc@ papa abba \def{PopeName}@ \def{Refrain}</Stanza>
             <Stanza>Tenouwst `mmok `w Pi`,rictoc@ nem Pekiwt `n`aga;oc@ nem pi`Pneuma e;ouab@ je \def{AkiAktonk} akcw] `mmon nai nan.</Stanza>
         </Translation>
-        <Translation Source="\trslit{English|\def{CopticTranslation}}" Title="\trslit{English|Ϩⲓⲧⲉⲛ ⲛⲓ̀ⲡⲣⲉⲥⲃⲓ̀ⲁ}"/>
         <Translation Title="الهيتينيات" Language="Arabic">
             <Stanza>بشفاعات والدة الإله القديسة مريم, \def{Refrain}</Stanza>
             <Stanza>بشفاعات رئيس الملائكة الطاهر ميخائيل رئيس السمائين, \def{Refrain}</Stanza>
@@ -60,7 +59,7 @@
     <Definitions>
         <Translations Key="Refrain">
             <Stanza Language="English">O Lord, grant us the forgiveness of our sins.</Stanza>
-            <Stanza Language="Coptic" Font="CS Avva Shenouda">`P[oic ari`hmot nan `mpi,w `ebol `nte nennobi.</Stanza>
+            <Stanza Language="Coptic" Font="CopticStandard">`P[oic ari`hmot nan `mpi,w `ebol `nte nennobi.</Stanza>
             <Stanza Language="Arabic">ياربُّ أنعم علينا بمغفرة خطايانا.</Stanza>
         </Translations>
         <Translations Key="PopeName">

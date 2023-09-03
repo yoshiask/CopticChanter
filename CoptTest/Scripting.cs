@@ -78,10 +78,16 @@ namespace CoptTest
         [InlineData("Hymn of the Intercessions.xml")]
         public void RunScriptInDoc(string file)
         {
-            string xmlAc = Resource.ReadAllText(file);
-            Doc docAc = DocReader.ParseDocXml(XDocument.Parse(xmlAc));
-
+            var xmlAc = Resource.ReadAllText(file);
+            var docAc = DocReader.ParseDocXml(XDocument.Parse(xmlAc));
+            docAc.ApplyTransforms();
+            
             Assert.Equal(3, docAc.DirectDefinitions.Count);
+
+            var englishTranslation = (Section) docAc.Translations[KnownLanguage.English];
+            foreach (var content in englishTranslation.Children.OfType<IContent>())
+                if (content.SourceText.EndsWith(@"\def{Refrain}"))
+                    Assert.EndsWith("grant us the forgiveness of our sins.", content.ToString());
         }
 
         [Theory]
