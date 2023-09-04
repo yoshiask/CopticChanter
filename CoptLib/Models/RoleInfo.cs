@@ -2,7 +2,7 @@
 
 namespace CoptLib.Models;
 
-public class RoleInfo
+public class RoleInfo : Definition
 {
     /// <summary>
     /// Creates a new <see cref="RoleInfo"/>.
@@ -11,14 +11,14 @@ public class RoleInfo
     /// <param name="names">Translations of the title or rank's name.</param>
     public RoleInfo(string titleId, TranslationRunCollection names)
     {
-        TitleId = titleId;
+        Key = titleId;
         Names = names;
     }
 
     /// <summary>
     /// The common ID of the title or rank.
     /// </summary>
-    public string TitleId { get; }
+    public string TitleId => Key!;
 
     /// <summary>
     /// Translations of the title or rank's name.
@@ -121,4 +121,9 @@ public class RoleInfo
         new Run(null) { Text = "אֲנָשִׁים", Language = new(Writing.KnownLanguage.Hebrew) },
         new Run(null) { Text = "Homines", Language = new(Writing.KnownLanguage.Latin) },
     });
+
+    public static readonly RoleInfo[] KnownRoles =
+    {
+        Pope, Priest, Reader, Deacon, People
+    };
 }
