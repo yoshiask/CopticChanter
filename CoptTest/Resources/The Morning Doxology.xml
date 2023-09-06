@@ -3,7 +3,7 @@
     <Name>The Morning Doxology</Name>
     <Uuid>28c70071-ce5e-4add-aa5c-d093acfb2787</Uuid>
     <Translations>
-        <Translation Title="The Morning Doxology" Language="English">
+        <Translation Title="The Morning Doxology" Language="English" Role="People">
             <Stanza>We worship the Father and the Son, and the Holy Spirit, hail to the church, the house of the angels.</Stanza>
             <Stanza>Hail to the Virgin, who gave birth to our Savior, hail to Gabriel, who announced to her the good news.</Stanza>
             <Stanza>Hail to Michael, the archangel, hail to the twenty four, presbyters.</Stanza>
@@ -83,7 +83,7 @@
                 <Stanza>Through their prayers, O God grant us, the forgiveness of our sins, and give us peace.</Stanza>
             </Section>
         </Translation>
-        <Translation Key="CopticTranslation" Title="Ϯⲇⲟⲝⲟⲗⲟⲅⲓⲁ ̀ⲛⲧⲉ Ϣⲱⲣⲡ" Language="Coptic" Font="CS Avva Shenouda">
+        <Translation Key="CopticTranslation" Title="Ϯⲇⲟⲝⲟⲗⲟⲅⲓⲁ ̀ⲛⲧⲉ Ϣⲱⲣⲡ" Language="Coptic" Font="CopticStandard" Role="People">
             <Stanza>Tenouwst `m`Viwt nem `Psyri@ nem Pi`pneuma e;ouab@ ,ere ]ekklycia@ `pyi `nte niaggeloc.</Stanza>
             <Stanza>&lt;ere \}par;enoc@ `etacmec Pencwtyr@ ,ere Gabriyl@ `etafhisennoufi nac.</Stanza>
             <Stanza>&lt;ere Mi,ayl@ piar,yaggeloc@ ,ere pijout `ftoou@ `m`precbuteroc.</Stanza>
