@@ -14,59 +14,6 @@ public static class ArrayExtensions
         while (walker.Step());
     }
 
-    /// <summary>
-    /// Flattens the given enumerable using a pre-order depth-first traversal.
-    /// </summary>
-    /// <typeparam name="T">The item type.</typeparam>
-    /// <param name="topNode">The item to begin flattening from.</param>
-    /// <param name="elementSelector">A function that returns the children of the current node.</param>
-    public static IEnumerable<T> Flatten<T>(this T topNode, Func<T, IEnumerable<T>?> elementSelector)
-    {
-        // https://stackoverflow.com/a/31881243
-        Stack<IEnumerator<T>> stack = new();
-        var e = elementSelector(topNode)?.GetEnumerator();
-        yield return topNode;
-
-        try
-        {
-            while (true)
-            {
-                while (e?.MoveNext() ?? false)
-                {
-                    var item = e.Current;
-                    yield return item;
-
-                    var elements = elementSelector(item);
-                    if (elements == null)
-                        continue;
-
-                    stack.Push(e);
-                    e = elements.GetEnumerator();
-                }
-
-                if (stack.Count == 0)
-                    break;
-
-                e?.Dispose();
-                e = stack.Pop();
-            }
-        }
-        finally
-        {
-            e?.Dispose();
-
-            while (stack.Count != 0)
-                stack.Pop().Dispose();
-        }
-    }
-
-    public static IEnumerable<(T elem, int index)> WithIndex<T>(this IEnumerable<T> source, int start = 0)
-    {
-        int i = start;
-        foreach (var elem in source)
-            yield return (elem, i++);
-    }
-
     public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
     {
         var enumeratedValues = values.ToArray();

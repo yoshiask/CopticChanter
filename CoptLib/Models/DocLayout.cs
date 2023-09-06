@@ -12,6 +12,7 @@ namespace CoptLib.Models;
 public class DocLayout
 {
     private DocLayoutOptions _options;
+    private DocLayoutOptions? _lastOptions;
     private bool _isInvalidated = true;
     private List<List<object>>? _table;
     private readonly List<object> _docIntoList;
@@ -43,9 +44,11 @@ public class DocLayout
         get => _options;
         set
         {
-            if (_options != value)
-                _isInvalidated = true;
+            _lastOptions = _options;
             _options = value;
+
+            if (_options != _lastOptions)
+                IsInvalidated = true;
         }
     }
 
@@ -60,9 +63,15 @@ public class DocLayout
         {
             _isInvalidated = value;
             if (value)
+            {
                 Invalidated?.Invoke(this, null);
-            else
                 _table = null;
+            }
+            else
+            {
+                // Ensure the table actually was generated
+                Guard.IsNotNull(_table);
+            }
         }
     }
 
@@ -82,12 +91,14 @@ public class DocLayout
         Guard.IsNotNull(Doc.Translations);
 
         var allTranslations = Doc.Translations.Children.Select(t => t.Language);
-        LanguageInfo[] finalTranslations = (Options.IncludedLanguages ?? allTranslations)
+        var finalTranslations = (Options.IncludedLanguages ?? allTranslations)
             .Except(Options.ExcludedLanguages, LanguageInfoEqualityComparer.Strict)
             .ToArray();
 
+        var transliterations = Options.Transliterations.ToArray();
+
         // Get the number of translations to display
-        int translationCount = finalTranslations.Length;
+        int translationCount = finalTranslations.Length + transliterations.Length;
 
         // Create rows for each stanza
         int numRows = Doc.Translations.CountRows();
@@ -109,31 +120,41 @@ public class DocLayout
             if (!finalTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
                 continue;
 
-            var flattenedTranslation = translation
-                .Flatten(p => p is IContentCollectionContainer coll ? coll.Children : null)
-                // The row count excludes sections without headers,
-                // so we have to do the same here.
-                .Where(p => p is Section section ? section.Title != null : p != null)
-                .ToList<object>();
+            var flattenedTranslation = translation.Flatten().ToList<object>();
 
-            foreach (var (elem, i) in flattenedTranslation.WithIndex())
-                _table[i + 1].Add(elem);
+            for (int i = 0; i < flattenedTranslation.Count; i++)
+                _table[i + 1].Add(flattenedTranslation[i]);
         }
+
+        IsInvalidated = false;
 
         return _table;
     }
 }
 
-public class DocLayoutOptions
+public record DocLayoutOptions
 {
+    public DocLayoutOptions(IEnumerable<LanguageInfo>? includedLanguages = null, IEnumerable<LanguageInfo>? excludedLanguages = null, IEnumerable<LanguageInfo> transliterations = null)
+    {
+        IncludedLanguages = includedLanguages;
+        ExcludedLanguages = excludedLanguages ?? Enumerable.Empty<LanguageInfo>();
+        Transliterations = transliterations ?? Enumerable.Empty<LanguageInfo>();
+    }
+
     /// <summary>
     /// A collection of languages to include in the layout.
     /// </summary>
-    public IEnumerable<LanguageInfo>? IncludedLanguages { get; set; }
+    public IEnumerable<LanguageInfo>? IncludedLanguages { get; init; }
 
     /// <summary>
     /// A collection of languages to exclude from the layout,
     /// after the inclusion filter is applied.
     /// </summary>
-    public IEnumerable<LanguageInfo> ExcludedLanguages { get; set; } = Array.Empty<LanguageInfo>();
+    public IEnumerable<LanguageInfo> ExcludedLanguages { get; init; }
+
+    /// <summary>
+    /// A collection of languages to transliterate. Use <c>LanguageInfo.Primary</c>
+    /// for the source language, and <c>Secondary</c> for the target.
+    /// </summary>
+    public IEnumerable<LanguageInfo> Transliterations { get; init; }
 }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.IO;
+using CoptLib.Models.Sequences;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -72,5 +73,25 @@ public class DocSet : IContextualLoad
             set.Author = Author.DeserializeElement(authorXml);
 
         return set;
+    }
+
+    /// <summary>
+    /// Creates a sequence using <see cref="IncludedDocs"/>, in
+    /// the order they appear in the list.
+    /// </summary>
+    public Sequence AsSequence(string? sequenceId = null)
+    {
+        Sequence seq = new(0, Context, sequenceId);
+        
+        for (int d = 0; d < IncludedDocs.Count; d++)
+        {
+            int? nextNodeId = d == IncludedDocs.Count - 1
+                ? null : d + 1;
+
+            var doc = IncludedDocs[d];
+            seq.Nodes.Add(new ConstantSequenceNode(d, doc.Key!, nextNodeId));
+        }
+
+        return seq;
     }
 }

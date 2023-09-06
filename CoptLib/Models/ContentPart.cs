@@ -40,9 +40,28 @@ public abstract class ContentPart : Definition, IMultilingual, ISupportsTextComm
 
     /// <summary>
     /// Returns the number of rows this part requires to display
-    /// all its content, including section headers and stanzas
+    /// all its content, including section headers and stanzas.
     /// </summary>
-    public virtual int CountRows() => 1;
+    public virtual int CountRows()
+    {
+        int count = 1;
+
+        if (Role is not null)
+            ++count;
+
+        return count;
+    }
+
+    /// <summary>
+    /// Enumerates all content, flattening the document tree.
+    /// </summary>
+    public virtual IEnumerable<IDefinition> Flatten()
+    {
+        if (Role is not null)
+            yield return Role;
+
+        yield return this;
+    }
 
     public abstract void HandleFont();
 

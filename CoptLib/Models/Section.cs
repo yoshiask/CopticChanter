@@ -43,12 +43,13 @@ public class Section : ContentPart, IContentCollectionContainer
 
     public override int CountRows()
     {
-        int count = Children.Sum(p => p.CountRows());
+        int count = Children.Sum(c => c.CountRows());
+
+        if (Role is not null)
+            ++count;
 
         if (Title is not null)
-            count++;
-        if (Role is not null)
-            count++;
+            ++count;
 
         return count;
     }
@@ -80,5 +81,18 @@ public class Section : ContentPart, IContentCollectionContainer
                 roleName.HandleFont();
             
         FontHandled = true;
+    }
+
+    public override IEnumerable<IDefinition> Flatten()
+    {
+        if (Title is not null)
+            yield return this;
+
+        if (Role is not null)
+            yield return Role;
+
+        foreach (var child in Children)
+            foreach (var subChild in child.Flatten())
+                yield return subChild;
     }
 }
