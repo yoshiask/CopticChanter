@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CoptLib.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoptLib.ViewModels;
@@ -16,7 +17,7 @@ public partial class DocViewModel : ObservableObject
     {
         _layout = layout;
         _doc = layout.Doc;
-        _createTableCommand = new AsyncRelayCommand(() => Task.Run(CreateTable));
+        _createTableCommand = new AsyncRelayCommand(CreateTableAsync);
     }
 
     [ObservableProperty]
@@ -35,4 +36,6 @@ public partial class DocViewModel : ObservableObject
 
         return Layout.CreateTable();
     }
+
+    public Task<List<List<object>>> CreateTableAsync(CancellationToken token = default) => Task.Run(CreateTable, token);
 }

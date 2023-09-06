@@ -2,30 +2,36 @@
 using CommunityToolkit.Mvvm.Input;
 using CoptLib.IO;
 using CoptLib.Models;
+using CoptLib.Models.Sequences;
 using OwlCore.Storage;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoptLib.ViewModels;
 
 public partial class DocSetViewModel : ObservableObject
 {
-
-    public DocSetViewModel(DocSet set) : this(set.IncludedDocs)
+    public DocSetViewModel(string? name, IEnumerable<Doc> docs)
     {
-        Set = set;
+        _createTablesCommand = new AsyncRelayCommand(CreateTablesAync);
+        _docs = new(docs.Select(d => new DocViewModel(d)));
+        Name = name;
     }
 
-    public DocSetViewModel(IEnumerable<Doc> docs)
+    public DocSetViewModel(DocSet set) : this(set.Name, set.IncludedDocs)
     {
-        _createTablesCommand = new AsyncRelayCommand(() => Task.Run(CreateTables));
-        _docs = new(docs.Select(d => new DocViewModel(d)));
+    }
+
+    public DocSetViewModel(Sequence sequence) : this(sequence.Name, sequence.EnumerateDocs().ToEnumerable())
+    {
+
     }
 
     [ObservableProperty]
-    private DocSet? _set;
+    private string? _name;
 
     [ObservableProperty]
     private ObservableCollection<List<List<object>>> _tables = new();
@@ -53,12 +59,15 @@ public partial class DocSetViewModel : ObservableObject
         return new(reader.Set);
     }
 
-    public void CreateTables()
+    public async Task CreateTablesAync(CancellationToken token = default)
     {
         Tables.Clear();
 
-        foreach (var table in Docs.Select(dvm => dvm.CreateTable()))
+        foreach (var dvm in Docs)
         {
+            var table = await dvm.CreateTableAsync(token);
+            token.ThrowIfCancellationRequested();
+
             // Ignore layouts that are empty (or just a Doc with no content)
             if (table.Count <= 1)
                 continue;
