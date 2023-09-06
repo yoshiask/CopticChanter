@@ -16,7 +16,7 @@ namespace CoptLib.Writing.Lexicon;
 public class TeiLexicon : ILexicon
 {
     private XDocument _teiDoc;
-    private List<ILexiconEntry> _entries;
+    private List<ILexiconEntry>? _entries;
     private Dictionary<string, LanguageInfo> _usageMappings;
 
     public TeiLexicon(LanguageInfo language, XDocument teiDoc, Dictionary<string, LanguageInfo> usageMappings)
@@ -35,7 +35,13 @@ public class TeiLexicon : ILexicon
         {
             _entries = new();
 
-            foreach (var iLexEnElem in _teiDoc.Root!.ElementLocal("text")!.ElementLocal("body")!.Elements())
+            var elements = _teiDoc.Root!
+                .ElementLocal("text")!
+                .ElementLocal("body")!
+                .Elements()
+                .ToAsyncEnumerable();
+
+            await foreach (var iLexEnElem in elements.WithCancellation(token))
             {
                 ILexiconEntry entry;
                 if (iLexEnElem.Name.LocalName == "superEntry")
