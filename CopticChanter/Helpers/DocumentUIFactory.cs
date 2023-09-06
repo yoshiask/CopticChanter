@@ -30,21 +30,12 @@ namespace CopticChanter.Helpers
             for (int i = 0; i < columnCount; i++)
                 mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-            bool isNewDoc = false;
             for (int r = 0; r < table.Count; r++)
             {
                 var row = table[r];
 
                 // Create new row definition
                 mainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-
-                if (row.Count == 1 && row[0] is Doc)
-                {
-                    // Set flag so the title of the translations
-                    // can be displayed in bold font
-                    isNewDoc = true;
-                    continue;
-                }
 
                 for (int c = 0; c < row.Count; c++)
                 {
@@ -54,22 +45,39 @@ namespace CopticChanter.Helpers
                         TextWrapping = TextWrapping.Wrap,
                     };
 
+                    if (item is Doc) continue;
+
                     if (item is Section section)
                     {
-                        item = section.Title;
-
-                        if (isNewDoc)
+                        if (section.Parent is null)
                             block.FontWeight = FontWeights.Bold;
                         else
                             block.FontWeight = FontWeights.SemiBold;
+
+                        item = section.Title;
                     }
 
-                    if (item is IContent content)
+                    if (item is Comment)
+                    {
+                        block.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Yellow);
+                        block.FontSize *= 0.75;
+                    }
+
+                    if (item is RoleInfo role)
+                    {
+                        var previousItem = (IDefinition)table[r - 1][c];
+                        item = role.Names.GetByLanguage(previousItem.GetLanguage());
+
+                        block.FontWeight = FontWeights.Medium;
+                        block.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0x8C, 0x00));
+                    }
+
+                    if (false && item is IContent content)
                     {
                         if (content.Inlines.Count == 1 && content.Inlines[0] is CLRun singleRun)
                         {
                             // Avoid using InlineCollection when Text can be used directly
-                            block.Text = singleRun.Text;
+                            item = singleRun;
                         }
                         else
                         {
@@ -81,14 +89,14 @@ namespace CopticChanter.Helpers
                             }
                         }
                     }
+                    
+                    block.Text = item.ToString();
 
                     HandleLanguage(block, item);
                     mainGrid.Children.Add(block);
                     Grid.SetRow(block, r);
                     Grid.SetColumn(block, c);
                 }
-
-                isNewDoc = false;
             }
 
             return mainGrid;
@@ -102,12 +110,6 @@ namespace CopticChanter.Helpers
 
             contentBlock.FontFamily = Settings.GetFontFamily();
             contentBlock.FontSize = Settings.GetFontSize();
-
-            if (content is Comment)
-            {
-                contentBlock.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Yellow);
-                contentBlock.FontSize *= 0.75;
-            }
 
             var culture = langInfo.Secondary?.Culture ?? langInfo.Culture;
             if (culture != null)

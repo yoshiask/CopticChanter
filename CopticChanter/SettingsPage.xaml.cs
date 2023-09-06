@@ -33,7 +33,7 @@ namespace CopticChanter
             Settings.SetFontFamily(FontFamilyBox.Text);
             Settings.SetCharacterMapId(CharacterMapIdBox.Text);
             Settings.SetFontSize(Convert.ToInt32(FontSizeBox.Text));
-            DateHelper.NowOverride = LocalDateTime.FromDateTime(GregorianDatePicker.Date.LocalDateTime);
+            MainPage.Context.SetDate(LocalDateTime.FromDateTime(GregorianDatePicker.Date.LocalDateTime));
 
             Frame.Navigate(typeof(MainPage));
         }

@@ -1,4 +1,5 @@
-﻿using CoptLib.Models;
+﻿using CoptLib.IO;
+using CoptLib.Models;
 using CoptLib.ViewModels;
 using OwlCore.Storage;
 using OwlCore.Storage.SharpCompress;
@@ -18,6 +19,8 @@ namespace CopticChanter
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static LoadContextBase Context { get; } = new LoadContext();
+
         public MainPage()
         {
             InitializeComponent();
@@ -34,7 +37,7 @@ namespace CopticChanter
                 var meta = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("meta.xml");
                 if (meta != null)
                 {
-                    setVm = await DocSetViewModel.LoadFromFolder(roamingFolder);
+                    setVm = await DocSetViewModel.LoadFromFolder(roamingFolder, Context);
                 }
                 else
                 {
@@ -43,11 +46,11 @@ namespace CopticChanter
                     {
                         var setZipFile = new WindowsStorageFile(setZipStorageFile);
                         var setZipFolder = new ReadOnlyArchiveFolder(setZipFile);
-                        setVm = await DocSetViewModel.LoadFromFolder(setZipFolder);
+                        setVm = await DocSetViewModel.LoadFromFolder(setZipFolder, Context);
                     }
                     else
                     {
-                        var set = new DocSet("adhoc", "Coptic Chanter");
+                        var set = new DocSet("adhoc", "Coptic Chanter", context: Context);
                         await foreach (var file in roamingFolder.GetFilesAsync())
                         {
                             using var fileStream = await file.OpenStreamAsync();
