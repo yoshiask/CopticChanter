@@ -173,7 +173,7 @@ public static class DocReader
         {
             content.SourceText = elem.Value;
         }
-            
+        
         if (def is IMultilingual multilingual)
         {
             multilingual.Font = elem.Attribute(nameof(multilingual.Font))?.Value;
@@ -187,6 +187,18 @@ public static class DocReader
                 multilingual.Font ??= parentMultilingual.Font;
                 if (multilingual.Language.IsDefault())
                     multilingual.Language = parentMultilingual.Language;
+            }
+        }
+
+        if (def is ContentPart contentPart)
+        {
+            var roleId = elem.Attribute(nameof(contentPart.Role))?.Value;
+            if (roleId != null
+                && (contentPart.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
+                && roleDef is RoleInfo role)
+            {
+                contentPart.Role = role;
+                role.References.Add(contentPart);
             }
         }
             
