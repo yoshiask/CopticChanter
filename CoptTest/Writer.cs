@@ -12,11 +12,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace CoptTest;
 
 public class Writer
 {
+    private readonly ITestOutputHelper _output;
     private const string TestSetId = "test_set";
     private readonly string[] _testSetFileNames =
     {
@@ -24,6 +26,11 @@ public class Writer
         "The First Hoos Lobsh.xml",
         "Watos Hymn for the Three Saintly Children.xml"
     };
+    
+    public Writer(ITestOutputHelper output)
+    {
+        _output = output;
+    }
         
     [Theory]
     [InlineData("Let Us Praise the Lord.xml")]
@@ -184,17 +191,19 @@ public class Writer
         Assert.NotNull(result);
 
         HashSet<string> orthSetAc = new(result.Forms.Select(f => f.Orthography));
+        _output.WriteLine($"Orthography: {string.Join(',', orthSetAc)}");
         orthSetAc.SymmetricExceptWith(orthography);
         Assert.Empty(orthSetAc);
 
         var enDefinitionAc = result.Senses[senseIndex].Translations
             .GetByLanguage(KnownLanguage.English)?.ToString();
+        _output.WriteLine($"Definition: {enDefinitionAc}");
         Assert.NotNull(enDefinitionAc);
         Assert.Equal(enDefinitionEx, enDefinitionAc);
     }
 
-    private ILexicon? _kelliaLexicon;
-    private async Task<ILexicon> GetKelliaLexicon()
+    private static ILexicon? _kelliaLexicon;
+    public static async Task<ILexicon> GetKelliaLexicon()
     {
         if (_kelliaLexicon is null)
         {
