@@ -132,7 +132,9 @@ public class DocLayout
             Guard.IsNotNull(source);
 
             var transliteration = LinguisticLanguageService.Default.Transliterate(source, targetLanguage, sourceLanguage);
-            translations.Add((ContentPart)transliteration);
+
+            // Place the transliteration right after the source
+            translations.Insert(translations.IndexOf(source) + 1, (ContentPart)transliteration);
         }
 
         // Flatten each translations
