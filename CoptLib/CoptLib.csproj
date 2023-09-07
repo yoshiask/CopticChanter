@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>2.6.1</Version>
+        <Version>2.8.0</Version>
         <Authors>Joshua Askharoun</Authors>
         <Company>Joshua Askharoun</Company>
         <Product>Coptic Chanter</Product>
@@ -13,11 +13,11 @@
         </Description>
         <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageTags>Coptic, Bohairic</PackageTags>
+        <PackageTags>Coptic, Bohairic, Orthodox</PackageTags>
         <Copyright>2017-2023</Copyright>
 
         <!-- SourceLink and NuGet symbols -->
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PublishRepositoryUrl>https://github.com/yoshiask/CopticChanter</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -40,7 +40,7 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
         <PackageReference Include="PolySharp" Version="1.13.2">
             <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+            <IncludeAssets>runtime;build;native;contentfiles;analyzers</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
