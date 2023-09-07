@@ -14,6 +14,8 @@ namespace CoptLib.ViewModels;
 
 public partial class DocSetViewModel : ObservableObject
 {
+    private DocLayoutOptions? _layoutOptions;
+
     public DocSetViewModel(string? name, IEnumerable<Doc> docs)
     {
         _createTablesCommand = new AsyncRelayCommand(CreateTablesAync);
@@ -28,6 +30,18 @@ public partial class DocSetViewModel : ObservableObject
     public DocSetViewModel(Sequence sequence) : this(sequence.Name, sequence.EnumerateDocs().ToEnumerable())
     {
 
+    }
+
+    public DocLayoutOptions? LayoutOptions
+    {
+        get => _layoutOptions;
+        set
+        {
+            foreach (var dvm in Docs)
+                dvm.Layout.Options = value!;
+
+            _layoutOptions = value;
+        }
     }
 
     [ObservableProperty]
