@@ -1,10 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CopticChanter.Helpers;
+using CoptLib.Models;
 using CoptLib.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -62,7 +61,7 @@ namespace CopticChanter.Layouts
                 {
                     foreach (var item in e.NewItems)
                     {
-                        var table = (List<List<object>>)item;
+                        var table = (List<List<IDefinition>>)item;
                         var grid = DocumentUIFactory.CreateGridFromTable(table);
                         MainPanel.Children.Add(grid);
                     }

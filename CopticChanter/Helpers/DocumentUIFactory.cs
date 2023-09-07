@@ -20,9 +20,9 @@ namespace CopticChanter.Helpers
 
         public static Grid CreateGridFromLayout(DocLayout layout) => CreateGridFromTable(layout.CreateTable());
         
-        public static Grid CreateGridFromTable(List<List<object>> table)
+        public static Grid CreateGridFromTable(List<List<IDefinition>> table)
         {
-            Grid mainGrid = new Grid();
+            var mainGrid = new Grid();
             mainGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             // Create a column for each language
@@ -63,11 +63,8 @@ namespace CopticChanter.Helpers
                         block.FontSize *= 0.75;
                     }
 
-                    if (item is RoleInfo role)
+                    if (item is { Parent: RoleInfo _ })
                     {
-                        var previousItem = (IDefinition)table[r - 1][c];
-                        item = role.Names.GetByLanguage(previousItem.GetLanguage());
-
                         block.FontWeight = FontWeights.Medium;
                         block.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0x8C, 0x00));
                     }
