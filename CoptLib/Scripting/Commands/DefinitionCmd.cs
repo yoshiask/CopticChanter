@@ -22,7 +22,7 @@ public class DefinitionCmd : TextCommandBase
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        Output = context.LookupDefinition(_definitionKey);
+        Output = context.LookupDefinition(_definitionKey, Inline.DocContext);
         if (Output is null)
             throw new Exception($"No definition with key '{_definitionKey}' was found.");
 

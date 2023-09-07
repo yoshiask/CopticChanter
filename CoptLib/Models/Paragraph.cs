@@ -14,20 +14,7 @@ public abstract class Paragraph : ContentPart, IContent
     public string SourceText
     {
         get => _sourceText;
-        set
-        {
-            if (_sourceText != value)
-            {
-                FontHandled = false;
-                CommandsHandled = false;
-                Inlines = new()
-                {
-                    new Run(value, this)
-                };
-            }
-
-            _sourceText = value;
-        }
+        set => _sourceText = ContentHelper.UpdateSourceText(this, value);
     }
 
     public InlineCollection Inlines { get; set; } = InlineCollection.Empty;

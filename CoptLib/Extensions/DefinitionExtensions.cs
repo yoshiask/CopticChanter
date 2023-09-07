@@ -14,10 +14,13 @@ public static class DefinitionExtensions
 
         if (newDef is IContentCollectionContainer defs)
             for (int i = 0; i < defs.Children.Count; i++)
-                defs.Children[i] = (ContentPart) defs.Children[i].Select(func);
+                defs.Children[i] = (ContentPart)defs.Children[i].Select(func);
 
-        if (newDef is Section {Title: not null} section)
-            section.SetTitle(section.Title.Select(func) as IContent);
+        if (newDef is Section {Title: IContent title} section)
+            section.SetTitle((IContent)title.Select(func));
+
+        if (newDef is ContentPart { RoleName: Run roleName } contentPart)
+            contentPart.RoleName = (Run)roleName.Select(func);
 
         if (newDef is IContent content)
             for (int i = 0; i < content.Inlines.Count; i++)
@@ -26,6 +29,9 @@ public static class DefinitionExtensions
         if (newDef is Span span)
             for (int i = 0; i < span.Inlines.Count; i++)
                 span.Inlines[i] = (Inline)span.Inlines[i].Select(func);
+
+        if (newDef is InlineCommand { Command.Output: { } } inCmd)
+            inCmd.Command.Output = inCmd.Command.Output.Select(func);
 
         func(newDef);
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace CoptLib.Writing;
 
@@ -44,6 +46,30 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     {
     }
 
+    public LanguageInfo(string language, string? region, string? variant, LanguageInfo? secondary = null)
+    {
+        Language = language;
+        Region = region;
+        Variant = variant;
+        Secondary = secondary;
+
+        StringBuilder sb = new(language);
+        if (region is not null)
+        {
+            sb.Append('-');
+            sb.Append(region);
+
+            if (variant is not null)
+            {
+                sb.Append('-');
+                sb.Append(variant);
+            }
+        }
+        Tag = sb.ToString();
+
+        UpdateKnownFromSubtag(Tag);
+    }
+
     /// <summary>
     /// The RFC 5646 language tag.
     /// </summary>
@@ -64,6 +90,8 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     /// identifying transliterations or changes in script.
     /// </summary>
     public LanguageInfo? Secondary { get; set; }
+
+    public LanguageInfo GetPrimary() => new(Language!, Region, Variant);
 
     /// <summary>
     /// Parses the given string as a <see cref="KnownLanguage"/> or

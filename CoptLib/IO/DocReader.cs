@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using CommunityToolkit.Diagnostics;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Typed;
+using CoptLib.Extensions;
 
 namespace CoptLib.IO;
 
@@ -192,12 +193,12 @@ public static class DocReader
 
         if (def is ContentPart contentPart)
         {
-            var roleId = elem.Attribute(nameof(contentPart.Role))?.Value;
+            var roleId = elem.Attribute("Role")?.Value;
             if (roleId != null
                 && (contentPart.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
                 && roleDef is RoleInfo role)
             {
-                contentPart.Role = role;
+                contentPart.RoleName = role.GetByLanguage(contentPart.GetLanguage());
                 role.References.Add(contentPart);
             }
         }

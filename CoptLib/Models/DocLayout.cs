@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Diagnostics;
 using CoptLib.Extensions;
 using CoptLib.Writing;
+using CoptLib.Writing.Linguistics;
 using OwlCore.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,8 @@ public class DocLayout
     private DocLayoutOptions _options;
     private DocLayoutOptions? _lastOptions;
     private bool _isInvalidated = true;
-    private List<List<object>>? _table;
-    private readonly List<object> _docIntoList;
+    private List<List<IDefinition>>? _table;
+    private readonly List<IDefinition> _docIntoList;
 
     /// <summary>
     /// Creates a new <see cref="DocLayout"/> for the specified document.
@@ -28,7 +29,7 @@ public class DocLayout
 
         Doc = doc;
         _options = options ?? new();
-        _docIntoList = doc.IntoList<object>();
+        _docIntoList = doc.IntoList<IDefinition>();
     }
 
     /// <summary>
@@ -83,45 +84,61 @@ public class DocLayout
     /// <summary>
     /// A row-first flattened representation of the document contents.
     /// </summary>
-    public List<List<object>> CreateTable()
+    public List<List<IDefinition>> CreateTable()
     {
         if (!IsInvalidated)
             return _table;
 
         Guard.IsNotNull(Doc.Translations);
 
-        var allTranslations = Doc.Translations.Children.Select(t => t.Language);
-        var finalTranslations = (Options.IncludedLanguages ?? allTranslations)
+        var allLanguages = Doc.Translations.Children.Select(t => t.Language);
+        var finalLanguages = (Options.IncludedLanguages ?? allLanguages)
             .Except(Options.ExcludedLanguages, LanguageInfoEqualityComparer.Strict)
             .ToArray();
 
         var transliterations = Options.Transliterations.ToArray();
 
         // Get the number of translations to display
-        int translationCount = finalTranslations.Length + transliterations.Length;
+        int translationCount = finalLanguages.Length + transliterations.Length;
 
         // Create rows for each stanza
-        int numRows = Doc.Translations.CountRows();
-        _table = new(numRows + 1)
+        int rowCount = Doc.Translations.CountRows();
+        _table = new(rowCount + 1)
         {
             // Add Doc to row so consumer can decide whether to show
             // the document name
             _docIntoList
         };
 
-        for (int i = 0; i < numRows; i++)
+        // Pre-allocate rows
+        for (int i = 0; i < rowCount; i++)
             _table.Add(new(translationCount));
 
-        for (int t = 0; t < Doc.Translations.Children.Count; t++)
-        {
-            var translation = Doc.Translations.Children[t];
-
+        // Create final list of translations
+        List<ContentPart> translations = new(translationCount);
+        foreach (var translation in Doc.Translations.Children)
             // Ignore translation if it's in the exclusion list but not the inclusion list
-            if (!finalTranslations.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
-                continue;
+            if (finalLanguages.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
+                translations.Add(translation);
 
-            var flattenedTranslation = translation.Flatten().ToList<object>();
+        // Perform any requested transliterations
+        foreach (var transliterationLanguage in transliterations)
+        {
+            var sourceLanguage = transliterationLanguage.GetPrimary();
+            var targetLanguage = transliterationLanguage.Secondary
+                ?? throw new ArgumentException("A target language must be specified for transliteration.");
 
+            var source = Doc.Translations.GetByLanguage(sourceLanguage);
+            Guard.IsNotNull(source);
+
+            var transliteration = LinguisticLanguageService.Default.Transliterate(source, targetLanguage, sourceLanguage);
+            translations.Add((ContentPart)transliteration);
+        }
+
+        // Flatten each translations
+        foreach (var translation in translations)
+        {
+            var flattenedTranslation = translation.Flatten().ToList();
             for (int i = 0; i < flattenedTranslation.Count; i++)
                 _table[i + 1].Add(flattenedTranslation[i]);
         }

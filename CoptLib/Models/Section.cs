@@ -30,7 +30,7 @@ public class Section : ContentPart, IContentCollectionContainer
             
         Title = title;
     }
-        
+    
     public void SetTitle(string title)
     {
         Title = new Stanza(this)
@@ -45,7 +45,7 @@ public class Section : ContentPart, IContentCollectionContainer
     {
         int count = Children.Sum(c => c.CountRows());
 
-        if (Role is not null)
+        if (RoleName is not null)
             ++count;
 
         if (Title is not null)
@@ -59,7 +59,7 @@ public class Section : ContentPart, IContentCollectionContainer
         if (CommandsHandled)
             return;
             
-        Doc.RecursiveTransform(Children, DocContext?.Context);
+        Doc.Transform(Children, DocContext?.Context);
         Title?.HandleCommands();
             
         CommandsHandled = true;
@@ -76,9 +76,8 @@ public class Section : ContentPart, IContentCollectionContainer
         if (Title is IMultilingual multiTitle)
             multiTitle.HandleFont();
         
-        if (Role is not null)
-            foreach (var roleName in Role.Names)
-                roleName.HandleFont();
+        if (RoleName is not null)
+            RoleName.HandleFont();
             
         FontHandled = true;
     }
@@ -88,8 +87,8 @@ public class Section : ContentPart, IContentCollectionContainer
         if (Title is not null)
             yield return this;
 
-        if (Role is not null)
-            yield return Role;
+        if (RoleName is not null)
+            yield return RoleName;
 
         foreach (var child in Children)
             foreach (var subChild in child.Flatten())

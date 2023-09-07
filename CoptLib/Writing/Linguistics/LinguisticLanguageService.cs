@@ -1,10 +1,13 @@
-﻿using CoptLib.Writing.Linguistics.Analyzers;
+﻿using AngleSharp.Text;
+using CoptLib.Extensions;
+using CoptLib.Models;
+using CoptLib.Models.Text;
+using CoptLib.Writing.Linguistics.Analyzers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using AngleSharp.Text;
 
 namespace CoptLib.Writing.Linguistics;
 
@@ -59,6 +62,42 @@ public class LinguisticLanguageService
         }
 
         return factory(languageInfo);
+    }
+
+    /// <summary>
+    /// Transliterates an <see cref="IDefinition"/> to the specified script.
+    /// </summary>
+    /// <param name="source">The content to transliterate.</param>
+    /// <param name="targetLanguage">The script to write the transliteration using.</param>
+    /// <param name="sourceLanguage">
+    /// The language of the source content.
+    /// <para>Pass <see langword="null"/> to attempt to infer the language.</para>
+    /// </param>
+    /// <returns>A transliteration of the <paramref name="source"/>.</returns>
+    public IDefinition Transliterate(IDefinition source, LanguageInfo targetLanguage, LanguageInfo? sourceLanguage = null, string? syllableSeparator = null)
+    {
+        var analyzer = GetAnalyzerForLanguage(sourceLanguage ?? source.GetLanguage());
+        return source.Select(Transliterate);
+
+        void Transliterate(IDefinition def)
+        {
+            if (def is Run run)
+                run.Text = analyzer.Transliterate(run.Text, targetLanguage.Known, syllableSeparator);
+
+            if (def is IMultilingual multi)
+            {
+                // Ensure that the language and font are set.
+                // Set secondary language to indicate transliteration.
+                if (!multi.Language.IsDefault())
+                    multi.Language.Secondary = targetLanguage;
+                else
+                    multi.Language = targetLanguage;
+
+                multi.Font = null;
+            }
+
+            def.IsExplicitlyDefined = false;
+        }
     }
 
     /// <summary>

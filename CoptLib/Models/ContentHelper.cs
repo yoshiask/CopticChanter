@@ -9,6 +9,30 @@ namespace CoptLib.Models;
 /// </summary>
 public static class ContentHelper
 {
+    public static string UpdateSourceText(IContent content, string sourceText)
+    {
+        if (sourceText != content.SourceText)
+        {
+            content.Commands = new();
+
+            if (sourceText == string.Empty)
+            {
+                content.CommandsHandled = true;
+                content.Inlines = InlineCollection.Empty;
+            }
+            else
+            {
+                content.CommandsHandled = false;
+                content.Inlines = new()
+                {
+                    new Run(sourceText, content)
+                };
+            }
+        }
+
+        return sourceText;
+    }
+
     public static string GetText(IContent content)
         => content.CommandsHandled ? content.Inlines.ToString() : content.SourceText;
 

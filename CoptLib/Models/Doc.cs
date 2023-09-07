@@ -74,16 +74,10 @@ public class Doc : Definition, IContextualLoad
         if (_transformed && !force)
             return;
 
-        RecursiveTransform(DirectDefinitions, Context);
-        RecursiveTransform(Translations.Children, Context);
+        Transform(DirectDefinitions, Context);
+        Transform(Translations.Children, Context);
         
         _transformed = true;
-    }
-
-    internal static void RecursiveTransform(System.Collections.IEnumerable parts, LoadContextBase? context)
-    {
-        foreach (var part in parts)
-            Transform(part, context);
     }
 
     internal static void Transform(object part, LoadContextBase? context)
@@ -133,6 +127,9 @@ public class Doc : Definition, IContextualLoad
 
                         if (cmd.Output is Section cmdSection && part is Section partSection)
                             partSection.SetTitle(cmdSection.Title);
+
+                        if (cmd.Output is ContentPart cmdContentPart && part is ContentPart partContentPart)
+                            partContentPart.RoleName = cmdContentPart.RoleName;
                     }
                 }
             }
@@ -142,7 +139,8 @@ public class Doc : Definition, IContextualLoad
             suppTextCmds.HandleCommands();
 
         if (part is System.Collections.IEnumerable manyParts)
-            RecursiveTransform(manyParts, context);
+            foreach (var childPart in manyParts)
+                Transform(childPart, context);
 
         if (part is IMultilingual multilingual)
             multilingual.HandleFont();

@@ -29,7 +29,7 @@ public partial class DocViewModel : ObservableObject
     [ObservableProperty]
     private IAsyncRelayCommand _createTableCommand;
 
-    public List<List<object>> CreateTable()
+    public List<List<IDefinition>> CreateTable()
     {
         // Apply transforms before display
         Doc.ApplyTransforms();
@@ -37,5 +37,5 @@ public partial class DocViewModel : ObservableObject
         return Layout.CreateTable();
     }
 
-    public Task<List<List<object>>> CreateTableAsync(CancellationToken token = default) => Task.Run(CreateTable, token);
+    public Task<List<List<IDefinition>>> CreateTableAsync(CancellationToken token = default) => Task.Run(CreateTable, token);
 }

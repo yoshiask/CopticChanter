@@ -30,7 +30,7 @@ public abstract class ContentPart : Definition, IMultilingual, ISupportsTextComm
 
     public string? Font { get; set; }
 
-    public RoleInfo? Role { get; set; }
+    public Text.Run? RoleName { get; set; }
 
     public bool FontHandled { get; protected set; }
 
@@ -46,7 +46,7 @@ public abstract class ContentPart : Definition, IMultilingual, ISupportsTextComm
     {
         int count = 1;
 
-        if (Role is not null)
+        if (RoleName is not null)
             ++count;
 
         return count;
@@ -57,8 +57,8 @@ public abstract class ContentPart : Definition, IMultilingual, ISupportsTextComm
     /// </summary>
     public virtual IEnumerable<IDefinition> Flatten()
     {
-        if (Role is not null)
-            yield return Role;
+        if (RoleName is not null)
+            yield return RoleName;
 
         yield return this;
     }

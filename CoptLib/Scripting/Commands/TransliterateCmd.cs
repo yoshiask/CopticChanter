@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CoptLib.Extensions;
-using CoptLib.IO;
+﻿using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing;
@@ -27,35 +25,8 @@ public class TransliterateCmd : TextCommandBase
 
     public LanguageInfo Language { get; }
 
-    public LinguisticAnalyzer? Analyzer { get; private set; }
-
-    private void Transliterate(IDefinition def)
-    {
-        if (def is Run run)
-            run.Text = Analyzer!.Transliterate(run.Text, Language.Known, _syllableSeparator);
-            
-        if (def is IMultilingual multi)
-        {
-            // Ensure that the language and font are set.
-            // Set secondary language to indicate transliteration.
-            if (!multi.Language.IsDefault())
-                multi.Language.Secondary = Language;
-            else
-                multi.Language = Language;
-
-            multi.Font = null;
-        }
-
-        // Make sure referenced elements are also transliterated
-        if (def is InlineCommand {Command.Output: { }} inCmd)
-            inCmd.Command.Output = inCmd.Command.Output.Select(Transliterate);
-    }
-
-    [MemberNotNull(nameof(Analyzer))]
     protected override void ExecuteInternal(LoadContextBase? context)
     {
-        Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
-        Output = Source.Select(Transliterate);
-        Evaluated = true;
+        Output = LinguisticLanguageService.Default.Transliterate(Source, Language, syllableSeparator: _syllableSeparator);
     }
 }

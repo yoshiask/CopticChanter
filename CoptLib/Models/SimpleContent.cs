@@ -10,31 +10,19 @@ public class SimpleContent : Definition, IContent
 {
     private string _sourceText;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public SimpleContent(string? sourceText, IDefinition? parent)
     {
-        _sourceText = sourceText ?? string.Empty;
+        SourceText = sourceText ?? string.Empty;
         Parent = parent;
         DocContext = parent?.DocContext;
-        Inlines = InlineCollection.Empty;
-        Commands = new();
     }
+#pragma warning restore CS8618
 
     public string SourceText
     {
         get => _sourceText;
-        set
-        {
-            if (_sourceText != value)
-            {
-                CommandsHandled = false;
-                Inlines = new()
-                {
-                    new Run(value, this)
-                };
-            }
-
-            _sourceText = value;
-        }
+        set => _sourceText = ContentHelper.UpdateSourceText(this, value);
     }
 
     public bool CommandsHandled { get; set; }

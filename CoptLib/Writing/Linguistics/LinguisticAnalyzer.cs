@@ -81,14 +81,6 @@ public abstract class LinguisticAnalyzer
 
         return sb.ToString();
     }
-
-    /// <summary>
-    /// Transliterates text to the specified script.
-    /// </summary>
-    /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
-    /// <param name="lang">The script to transliterate to.</param>
-    public string Transliterate(string srcText, KnownLanguage lang)
-        => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, "\u200B");
     
     /// <summary>
     /// Transliterates text to the specified script.
@@ -99,7 +91,7 @@ public abstract class LinguisticAnalyzer
     /// The <see cref="string"/> to separate syllables with,
     /// or <see langword="null"/> to not separate syllables.
     /// </param>
-    public string Transliterate(string srcText, KnownLanguage lang, string syllableSeparator)
+    public string Transliterate(string srcText, KnownLanguage lang, string? syllableSeparator = null)
         => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, syllableSeparator);
 
     /// <summary>

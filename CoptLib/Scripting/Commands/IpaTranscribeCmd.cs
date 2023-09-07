@@ -38,10 +38,6 @@ public class IpaTranscribeCmd : TextCommandBase
 
             multi.Font = null;
         }
-
-        // Make sure referenced elements are also transliterated
-        if (def is InlineCommand {Command.Output: { }} inCmd)
-            inCmd.Command.Output = inCmd.Command.Output.Select(Transcribe);
     }
 
     [MemberNotNull(nameof(Analyzer))]

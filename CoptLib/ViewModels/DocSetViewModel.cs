@@ -34,7 +34,7 @@ public partial class DocSetViewModel : ObservableObject
     private string? _name;
 
     [ObservableProperty]
-    private ObservableCollection<List<List<object>>> _tables = new();
+    private ObservableCollection<List<List<IDefinition>>> _tables = new();
 
     [ObservableProperty]
     private ObservableCollection<DocViewModel> _docs;
