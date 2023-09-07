@@ -23,6 +23,5 @@ public class TimestampCmd : TextCommandBase
             return;
 
         TimeOffset = timeOffset;
-        Evaluated = true;
     }
 }

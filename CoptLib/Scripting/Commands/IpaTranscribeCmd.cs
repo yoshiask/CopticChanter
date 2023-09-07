@@ -45,6 +45,5 @@ public class IpaTranscribeCmd : TextCommandBase
     {
         Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
         Output = Source.Select(Transcribe);
-        Evaluated = true;
     }
 }

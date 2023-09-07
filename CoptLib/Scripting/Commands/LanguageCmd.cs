@@ -32,7 +32,6 @@ public class LanguageCmd : TextCommandBase
     protected override void ExecuteInternal(LoadContextBase? context)
     {
         Output = Source.Select(ConvertFont);
-        Evaluated = true;
     }
 
     private void ConvertFont(IDefinition def)
