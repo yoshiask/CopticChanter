@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Serialization;
+using CoptLib.Extensions;
 
 namespace CoptLib.Models;
 
@@ -109,9 +110,30 @@ public class Doc : Definition, IContextualLoad
                     {
                         case IContentCollectionContainer cmdOutCollection:
                             partCollection.Children.AddRange(cmdOutCollection.Children);
+                            cmd.Output.RegisterReference(partCollection);
                             break;
                         case ContentPart cmdOutPart:
                             partCollection.Children.Add(cmdOutPart);
+                            cmd.Output.RegisterReference(partCollection);
+                            break;
+                        case Text.Run cmdOutRun:
+                            Stanza stanza1 = new(partCollection)
+                            {
+                                Inlines = new() { cmdOutRun },
+                                CommandsHandled = true
+                            };
+                            cmd.Output.RegisterReference(stanza1);
+                            partCollection.Children.Add(stanza1);
+                            break;
+                        case Text.Span cmdOutSpan:
+                            Stanza stanza2 = new(partCollection)
+                            {
+                                Inlines = cmdOutSpan.Inlines,
+                                CommandsHandled = cmdOutSpan.Inlines
+                                    .All(i => i is not Text.InlineCommand c || c.Command is null || c.Command.Evaluated)
+                            };
+                            cmd.Output.RegisterReference(stanza2);
+                            partCollection.Children.Add(stanza2);
                             break;
                     }
 
