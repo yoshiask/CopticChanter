@@ -14,6 +14,7 @@ public class DocOps
 {
     [Theory]
     [InlineData("The Morning Doxology.xml", 74, 2)]
+    [InlineData("Concluding Hymn.xml", 12, 2)]
     public async Task DocLayout_Generate(string file, int rowCountEx, int colCountEx)
     {
         string xml = Resource.ReadAllText(file);
