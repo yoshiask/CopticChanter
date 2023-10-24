@@ -45,7 +45,8 @@ public class Sequence : IContextualLoad
     /// documents in the sequence in order.
     /// </summary>
     public virtual IAsyncEnumerable<Doc> EnumerateDocs() => EnumerateNodes()
-        .Select(n => Context.LookupDefinition(n.DocumentKey))
+        .Select(n => n.DocumentKey is not null ? Context.LookupDefinition(n.DocumentKey): null)
+        .Where(d => d is not null)
         .OfType<Doc>();
 
     protected virtual Task<SequenceNode> ResolveNodeAsync(int nodeId) => Task.FromResult(Nodes[nodeId]);
