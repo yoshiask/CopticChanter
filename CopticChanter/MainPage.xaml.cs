@@ -94,6 +94,11 @@ namespace CopticChanter
             Frame.Navigate(typeof(Pages.TextToSpeechPage));
         }
 
+        private void DictionaryButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Pages.DictionaryPage));
+        }
+
         private void SettingsButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             Frame.Navigate(typeof(SettingsPage));
