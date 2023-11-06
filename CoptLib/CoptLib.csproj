@@ -46,10 +46,8 @@
     </ItemGroup>
 
     <ItemGroup>
-		<None Remove="Resources\Comprehensive_Coptic_Lexicon-v1.2-2020.xml" />
-        <None Remove="Resources\lexicon.tsv" />
-        <EmbeddedResource Include="Resources\lexicon.tsv" />
-		<EmbeddedResource Include="Resources\Comprehensive_Coptic_Lexicon-v1.2-2020.xml" />
+		<None Remove="Resources\**" />
+        <EmbeddedResource Include="Resources\**" />
 
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
