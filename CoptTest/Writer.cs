@@ -206,25 +206,4 @@ public class Writer
         Assert.NotNull(enDefinitionAc);
         Assert.Equal(enDefinitionEx, enDefinitionAc);
     }
-
-    private static ILexicon? _kelliaLexicon;
-    public static async Task<ILexicon> GetKelliaLexicon()
-    {
-        if (_kelliaLexicon is null)
-        {
-            XDocument teiDoc;
-            var assembly = typeof(ILexicon).GetTypeInfo().Assembly;
-            await using (var teiStream =
-                         assembly.GetManifestResourceStream(
-                             $"{assembly.GetName().Name}.Resources.Comprehensive_Coptic_Lexicon-v1.2-2020.xml"))
-            {
-                Assert.NotNull(teiStream);
-                teiDoc = await XDocument.LoadAsync(teiStream, LoadOptions.None, default);
-            }
-
-            _kelliaLexicon = new TeiLexicon(new(KnownLanguage.Coptic), teiDoc, null);
-        }
-
-        return _kelliaLexicon;
-    }
 }
