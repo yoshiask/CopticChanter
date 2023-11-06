@@ -27,7 +27,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         _db = new SqliteConnection($"Data Source={_dbPath}");
     }
 
-    public LanguageInfo Language { get; } = new(KnownLanguage.CopticSahidic);
+    public LanguageInfo Language { get; } = new(KnownLanguage.Coptic);
     
     public bool IsInitialized { get; private set; }
 
@@ -46,7 +46,15 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         while (await reader.ReadAsync(token))
         {
             token.ThrowIfCancellationRequested();
-            yield return ReadLexiconEntry(reader);
+            var entry =  ReadLexiconEntry(reader);
+
+            Lazy<bool> matchesPos = new(() =>
+                partOfSpeech == null || entry.GrammarGroup.PartOfSpeech == partOfSpeech);
+            Lazy<bool> matchesUsage = new(() =>
+                entry.Forms.Any(f => f.Usage.IsEquivalentTo(usage, LanguageEquivalencyOptions.StrictWithWild)));
+            
+            if (matchesPos.Value && matchesUsage.Value)
+                yield return entry;
         }
     }
 
