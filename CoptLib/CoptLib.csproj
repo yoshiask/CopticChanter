@@ -28,6 +28,7 @@
         <PackageReference Include="OwlCore.Storage" Version="0.8.6" />
         <PackageReference Include="CS-Script" Version="4.8.1" />
         <PackageReference Include="AngleSharp" Version="1.0.4" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.13" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
         <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
         <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
