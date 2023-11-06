@@ -53,7 +53,10 @@ public abstract class LinguisticAnalyzer
     public virtual string Transliterate(IEnumerable<PhoneticWord> srcText, KnownLanguage lang,
         int srcTextLength = 0, string? syllableSeparator = null)
     {
-        if (!IpaTables.IpaToLanguage.TryGetValue(lang, out var ipaTable))
+        IReadOnlyDictionary<string, string> ipaTable;
+        if (lang == KnownLanguage.IPA)
+            ipaTable = new NothingDictionary<string>();
+        else if (!IpaTables.IpaToLanguage.TryGetValue(lang, out ipaTable))
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
 
         StringBuilder sb = new(srcTextLength);
