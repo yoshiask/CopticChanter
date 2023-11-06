@@ -9,7 +9,7 @@ public interface ILexiconEntry
 
 public record LexiconSuperEntry(IEnumerable<LexiconEntry> Entries) : ILexiconEntry;
 
-public record LexiconEntry(EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup GrammarGroup) : ILexiconEntry;
+public record LexiconEntry(string Id, EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup GrammarGroup) : ILexiconEntry;
 
 public enum EntryType : byte
 {
@@ -35,6 +35,6 @@ public enum FormType : byte
     Compound,
 }
 
-public record Sense(TranslationCollection Translations, string Bibliography)
+public record Sense(TranslationCollection Translations, string Bibliography = "")
 {
 }
