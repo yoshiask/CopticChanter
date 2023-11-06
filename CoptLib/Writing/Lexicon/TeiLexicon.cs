@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -15,7 +14,7 @@ namespace CoptLib.Writing.Lexicon;
 
 public class TeiLexicon : ILexicon
 {
-    private XDocument _teiDoc;
+    private readonly XDocument _teiDoc;
     private List<ILexiconEntry>? _entries;
     private Dictionary<string, LanguageInfo> _usageMappings;
 
@@ -60,10 +59,10 @@ public class TeiLexicon : ILexicon
         }
     }
 
-    public async Task<LexiconEntry?> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null,
+    public IAsyncEnumerable<LexiconEntry> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null,
         CancellationToken token = default)
     {
-        return await GetEntriesAsync(token)
+        return GetEntriesAsync(token)
             .SelectMany(e =>
             {
                 return e switch
@@ -73,7 +72,7 @@ public class TeiLexicon : ILexicon
                     _ => throw new ArgumentException(nameof(e))
                 };
             })
-            .FirstOrDefaultAsync(IsMatch, token);
+            .Where(IsMatch);
 
         bool IsMatch(LexiconEntry entry)
         {
@@ -90,6 +89,8 @@ public class TeiLexicon : ILexicon
 
     private LexiconEntry ParseSingleEntry(XElement entryElem)
     {
+        var id = entryElem.AttributeLocal("id")?.Value;
+        
         var typeStr = entryElem.AttributeLocal("type")?.Value;
         var type = typeStr is null
             ? EntryType.Hom
@@ -111,21 +112,7 @@ public class TeiLexicon : ILexicon
                         ? FormType.Lemma
                         : (FormType) Enum.Parse(typeof(FormType), formTypeStr, true);
 
-                    var usg = elem.ElementLocal("usg")?.Value switch
-                    {
-                        "S" => new LanguageInfo(KnownLanguage.CopticSahidic),
-                        "B" => new LanguageInfo(KnownLanguage.CopticBohairic),
-                        "A" => new LanguageInfo(KnownLanguage.CopticAkhmimic),
-                        "L" => new LanguageInfo(KnownLanguage.CopticLycopolitan),
-                        "F" => new LanguageInfo(KnownLanguage.CopticFayyumic),
-                        "M" => new LanguageInfo(KnownLanguage.CopticOxyrhynchite),
-                        "Ak" => new LanguageInfo(KnownLanguage.Akkadian), // FIXME: Probably wrong
-                        "P" => new LanguageInfo("cop-dp"),
-                        "V" => new LanguageInfo("cop-dv"),
-                        "W" => new LanguageInfo("cop-dw"),
-                        "?" or null => new LanguageInfo(KnownLanguage.Default),
-                        _ => throw new ArgumentOutOfRangeException(),
-                    };
+                    var usg = MapDialectCode(elem.ElementLocal("usg")?.Value);
 
                     forms.Add(new Form(formType, usg, orth));
                     break;
@@ -221,6 +208,24 @@ public class TeiLexicon : ILexicon
             }
         }
 
-        return new(type, forms, senses, grammarGroup);
+        return new(id!, type, forms, senses, grammarGroup!);
     }
+    
+    public static LanguageInfo MapDialectCode(string? dialectCode) => dialectCode switch
+    {
+        "S" => new LanguageInfo(KnownLanguage.CopticSahidic),
+        "B" => new LanguageInfo(KnownLanguage.CopticBohairic),
+        "A" => new LanguageInfo(KnownLanguage.CopticAkhmimic),
+        "L" => new LanguageInfo(KnownLanguage.CopticLycopolitan),
+        "F" => new LanguageInfo(KnownLanguage.CopticFayyumic),
+        "M" => new LanguageInfo(KnownLanguage.CopticOxyrhynchite),
+        "Ak" => new LanguageInfo(KnownLanguage.Akkadian), // FIXME: Probably wrong
+        "J" => new LanguageInfo("cop-jjj"),
+        "K" => new LanguageInfo("cop-kkk"),
+        "P" => new LanguageInfo("cop-ppp"),
+        "V" => new LanguageInfo("cop-vvv"),
+        "W" => new LanguageInfo("cop-www"),
+        "?" or null => new LanguageInfo(KnownLanguage.Default),
+        _ => throw new ArgumentOutOfRangeException(nameof(dialectCode), dialectCode, null),
+    }; 
 }
