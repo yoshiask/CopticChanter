@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CoptLib.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -182,21 +183,25 @@ public class Writer
     [Theory]
     [InlineData("ⲍⲉⲛⲍⲉⲛ", new[] { "ⲍⲉⲛⲍⲉⲛ" }, "lizard, chameleon", 0)]
     [InlineData("ⲁⲛⲑⲟⲩⲥ", new[] { "ⲁⲛⲑⲟⲩⲥ" }, "(species of) lizard", 0)]
+    [InlineData("species of lizard", new[] { "ⲁⲛⲑⲟⲩⲥ" }, "(species of) lizard", 0)]
     [InlineData("ⲁⲣⲭⲓⲉⲣⲉⲩⲥ", new[] { "ⲁⲣⲭⲓⲉⲣⲉⲩⲥ", "ⲁⲣϫⲓⲉⲣⲉⲩⲥ", "ⲁⲣⲭⲓⲉⲣⲉⲩⲉ", "ⲁⲣⲭⲓⲉⲣⲉⲱⲥ", "ⲁⲣϫⲓⲉⲣⲉⲱⲥ", "ⲁⲣⲭⲏⲉⲣⲉⲩⲥ" }, "high priest (of Melchizedek)", 2)]
-    public async Task Lexicon_TeiKellia(string query, string[] orthography, string enDefinitionEx, int senseIndex)
+    public async Task Lexicon_SqlKellia(string query, string[] orthEx, string enDefinitionEx, int senseIndex)
     {
-        var lexicon = await GetKelliaLexicon();
-            
-        var result = await lexicon.SearchAsync(query, new LanguageInfo(KnownLanguage.Coptic));
-        Assert.NotNull(result);
+        CopticScriptoriumLexicon lexicon = new();
 
+        await lexicon.InitAsync();
+        var results = await lexicon.SearchAsync(query, new LanguageInfo(KnownLanguage.Coptic)).ToListAsync();
+        
+        var result = results
+            .First(e => e.Forms.Select(f => f.Orthography).ContainsAny(orthEx));
+        
         HashSet<string> orthSetAc = new(result.Forms.Select(f => f.Orthography));
         _output.WriteLine($"Orthography: {string.Join(',', orthSetAc)}");
-        orthSetAc.SymmetricExceptWith(orthography);
+        orthSetAc.SymmetricExceptWith(orthEx);
         Assert.Empty(orthSetAc);
 
         var enDefinitionAc = result.Senses[senseIndex].Translations
-            .GetByLanguage(KnownLanguage.English)?.ToString();
+            .GetByLanguage(KnownLanguage.English).ToString();
         _output.WriteLine($"Definition: {enDefinitionAc}");
         Assert.NotNull(enDefinitionAc);
         Assert.Equal(enDefinitionEx, enDefinitionAc);
