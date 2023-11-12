@@ -49,8 +49,6 @@ public static class SequenceReader
             throw new InvalidDataException($"'{idStr}' is not a valid sequence node ID.");
 
         var documentKey = elem.Attribute(nameof(SequenceNode.DocumentKey))?.Value;
-        if (documentKey is null)
-            throw new InvalidDataException("A document key must be specified.");
 
         var nodeType = EnumExtensions.Parse<SequenceNodeType>(elem.Name.LocalName.ToLowerInvariant(), true);
         return nodeType switch
@@ -62,7 +60,7 @@ public static class SequenceReader
         };
     }
 
-    private static ScriptedSequenceNode CreateScriptedSequenceNode(int id, string documentKey, string scriptBody)
+    private static ScriptedSequenceNode CreateScriptedSequenceNode(int id, string? documentKey, string scriptBody)
     {
         DotNetScript<NullableIntScriptImplementation, int?> script = new(scriptBody);
         return new ScriptedSequenceNode(id, documentKey, script);
