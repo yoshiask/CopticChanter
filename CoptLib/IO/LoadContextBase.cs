@@ -10,7 +10,7 @@ using OwlCore.Storage;
 
 namespace CoptLib.IO;
 
-public abstract class LoadContextBase
+public abstract class LoadContextBase : ILoadContext
 {
     private readonly Dictionary<string, IDefinition> _definitions = new();
     private readonly List<Doc> _loadedDocs = new();
@@ -19,20 +19,9 @@ public abstract class LoadContextBase
     public IReadOnlyDictionary<string, IDefinition> Definitions => _definitions;
 
     public IReadOnlyList<Doc> LoadedDocs => _loadedDocs;
-        
-    /// <summary>
-    /// Gets the current date. Can be overridden using <see cref="SetDate"/>.
-    /// </summary>
+
     public LocalDate CurrentDate => _nowOverride ?? DateHelper.TodayCoptic();
 
-    /// <summary>
-    /// Overrides <see cref="CurrentDate"/> to the given time, taking into
-    /// account the <see cref="CopticCalendar.TransitionTime"/>.
-    /// <para>Set to <see langword="null"/> to use current date and time.</para>
-    /// </summary>
-    /// <param name="nowOverride">
-    /// The date and time to override with.
-    /// </param>
     public void SetDate(LocalDateTime? nowOverride) => _nowOverride = nowOverride?.ToCopticDate();
 
     private static string BuildScopedKey(string key, IContextualLoad ctxItem)
@@ -43,16 +32,6 @@ public abstract class LoadContextBase
         return $"{key};Scope='{ctxItem.Key}'";
     }
 
-    /// <summary>
-    /// Adds an <see cref="IDefinition"/> to the context, scoped to the
-    /// given <see cref="Doc"/> or <see cref="DocSet"/> if another
-    /// definition with the same key exists.
-    /// </summary>
-    /// <param name="definition">The definition to add.</param>
-    /// <param name="contextualItem">
-    /// The document or set to scope to.
-    /// Pass <see langword="null"/> to override existing global entries.
-    /// </param>
     public void AddDefinition(IDefinition definition, IContextualLoad? contextualItem)
     {
         var key = definition.Key
@@ -65,9 +44,6 @@ public abstract class LoadContextBase
         _definitions[key] = definition;
     }
 
-    /// <summary>
-    /// Clears the lists of loaded documents and definitions.
-    /// </summary>
     public void Clear()
     {
         _definitions.Clear();
@@ -86,11 +62,6 @@ public abstract class LoadContextBase
             AddDefinition(def, doc);
     }
 
-    /// <summary>
-    /// Loads a document from a given DocXML stream.
-    /// </summary>
-    /// <param name="file">The path to parse from.</param>
-    /// <returns>The document that was parsed.</returns>
     public Doc LoadDoc(Stream file)
     {
         var doc = DocReader.ReadDocXml(file, this);
@@ -98,22 +69,12 @@ public abstract class LoadContextBase
         return doc;
     }
 
-    /// <summary>
-    /// Loads a document from a given file.
-    /// </summary>
-    /// <param name="file">The file to parse from.</param>
-    /// <returns>The document that was parsed.</returns>
     public async Task<Doc> LoadDoc(IFile file)
     {
         using var stream = await file.OpenStreamAsync();
         return LoadDoc(stream);
     }
 
-    /// <summary>
-    /// Loads a document from a given path path.
-    /// </summary>
-    /// <param name="path">The path to parse from.</param>
-    /// <returns>The document that was parsed.</returns>
     public Doc LoadDoc(string path)
     {
         var doc = DocReader.ReadDocXml(path, this);
@@ -121,11 +82,6 @@ public abstract class LoadContextBase
         return doc;
     }
 
-    /// <summary>
-    /// Loads a document from a DocXMl string.
-    /// </summary>
-    /// <param name="xml">The XML source string.</param>
-    /// <returns>The document that was parsed.</returns>
     public Doc LoadDocFromXml(string xml)
     {
         var doc = DocReader.ParseDocXml(xml, this);
@@ -133,11 +89,6 @@ public abstract class LoadContextBase
         return doc;
     }
 
-    /// <summary>
-    /// Loads a document from an XML document tree.
-    /// </summary>
-    /// <param name="xml">The XML to deserialize.</param>
-    /// <returns>The document that was parsed.</returns>
     public Doc LoadDocFromXml(System.Xml.Linq.XDocument xml)
     {
         var doc = DocReader.ParseDocXml(xml, this);
@@ -145,18 +96,6 @@ public abstract class LoadContextBase
         return doc;
     }
 
-    /// <summary>
-    /// Gets the <see cref="IDefinition"/> associated with the given key,
-    /// optionally scoped to the provided <see cref="Doc"/> or <see cref="DocSet"/>.
-    /// </summary>
-    /// <param name="key">The key to lookup.</param>
-    /// <param name="contextualItem">
-    /// The document or set to scope to.
-    /// Pass <see langword="null"/> to search only global entries.
-    /// </param>
-    /// <returns>
-    /// An <see cref="IDefinition"/> with the given key, or <see langword="null"/> if none was found.
-    /// </returns>
     public virtual IDefinition? LookupDefinition(string key, IContextualLoad? contextualItem = null)
     {
         Guard.IsNotNullOrEmpty(key, nameof(key));
@@ -168,19 +107,6 @@ public abstract class LoadContextBase
         return _definitions.TryGetValue(key, out def) ? def : null;
     }
 
-    /// <summary>
-    /// Tries to get the <see cref="IDefinition"/> associated with the given key,
-    /// optionally scoped to the provided <see cref="Doc"/> or <see cref="DocSet"/>.
-    /// </summary>
-    /// <param name="key">The key to lookup.</param>
-    /// <param name="contextualItem">
-    /// The document or set to scope to.
-    /// Pass <see langword="null"/> to search only global entries.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if a definition was found,
-    /// <see langword="false"/> if not.
-    /// </returns>
     public bool TryLookupDefinition(string key, [NotNullWhen(true)] out IDefinition? def, IContextualLoad? contextualItem = null)
     {
         def = LookupDefinition(key);
