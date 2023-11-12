@@ -17,7 +17,7 @@ public class DefinitionCmd : TextCommandBase
         _definitionKey = Parameters.FirstOrDefault()!.ToString();
     }
 
-    protected override void ExecuteInternal(LoadContextBase? context)
+    protected override void ExecuteInternal(ILoadContext? context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));

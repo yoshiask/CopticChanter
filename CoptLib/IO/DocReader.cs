@@ -23,9 +23,9 @@ public static class DocReader
     /// <returns></returns>
     /// <remarks>
     /// Do not use when broad filesystem access is not available.
-    /// Instead, load the file manually and use <see cref="ReadDocXml(string,CoptLib.IO.LoadContextBase)"/>. 
+    /// Instead, load the file manually and use <see cref="ReadDocXml(string, ILoadContext)"/>. 
     /// </remarks>
-    public static Doc ReadDocXml(string path, LoadContextBase? context = null)
+    public static Doc ReadDocXml(string path, ILoadContext? context = null)
         => ParseDocXml(XDocument.Load(path), context);
 
     /// <summary>
@@ -34,19 +34,19 @@ public static class DocReader
     /// <param name="file">A Stream of the XML file</param>
     /// <param name="context">The context to load the document into.</param>
     /// <returns></returns>
-    public static Doc ReadDocXml(Stream file, LoadContextBase? context = null)
+    public static Doc ReadDocXml(Stream file, ILoadContext? context = null)
         => ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
 
     /// <summary>
     /// Parses the XML string into a <see cref="Doc"/>.
     /// </summary>
-    public static Doc ParseDocXml(string xml, LoadContextBase? context = null)
+    public static Doc ParseDocXml(string xml, ILoadContext? context = null)
         => ParseDocXml(XDocument.Parse(xml), context);
 
     /// <summary>
     /// Parses the XML document tree into a <see cref="Doc"/>.
     /// </summary>
-    public static Doc ParseDocXml(XDocument xml, LoadContextBase? context = null)
+    public static Doc ParseDocXml(XDocument xml, ILoadContext? context = null)
     {
         Guard.IsNotNull(xml.Root);
 

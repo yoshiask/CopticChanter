@@ -9,7 +9,7 @@ public class DotNetDefinitionScript : DotNetScript<DefinitionScriptImplementatio
     {
     }
 
-    protected override IDefinition ExecuteInternal(LoadContextBase? context)
+    protected override IDefinition ExecuteInternal(ILoadContext? context)
     {
         var output = Implementation!.Execute(context ?? DocContext?.Context);
         output.DocContext = DocContext;

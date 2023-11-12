@@ -20,7 +20,7 @@ public class AbbreviationCmd : TextCommandBase
     
     public bool KeepAbbreviated { get; }
     
-    protected override void ExecuteInternal(LoadContextBase? context)
+    protected override void ExecuteInternal(ILoadContext? context)
     {
         var analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Inline.GetLanguage());
         var abbreviation = analyzer.ResolveAbbreviation(AbbreviationKey, KeepAbbreviated);

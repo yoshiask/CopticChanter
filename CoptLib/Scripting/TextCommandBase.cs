@@ -36,7 +36,7 @@ public abstract class TextCommandBase : ICommandOutput<IDefinition>
 
     public bool Evaluated { get; protected set; }
 
-    public void Execute(LoadContextBase? context)
+    public void Execute(ILoadContext? context)
     {
         if (Evaluated)
             return;
@@ -45,7 +45,7 @@ public abstract class TextCommandBase : ICommandOutput<IDefinition>
         Evaluated = true;
     }
     
-    protected abstract void ExecuteInternal(LoadContextBase? context);
+    protected abstract void ExecuteInternal(ILoadContext? context);
 
     /// <summary>
     /// Ensures that all necessary transforms are applied to the <see cref="Output"/>.
