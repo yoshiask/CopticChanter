@@ -19,7 +19,7 @@ namespace CopticChanter
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static LoadContextBase Context { get; } = new LoadContext();
+        public static ILoadContext Context { get; } = new LoadContext();
 
         public MainPage()
         {

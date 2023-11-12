@@ -24,7 +24,7 @@ public class DotNetScript<TImpl, TOut> : Definition, ICommandOutput<TOut>
     
     protected TImpl? Implementation { get; set; }
 
-    public virtual void Execute(LoadContextBase? context)
+    public virtual void Execute(ILoadContext? context)
     {
         if (Evaluated)
             return;
@@ -35,7 +35,7 @@ public class DotNetScript<TImpl, TOut> : Definition, ICommandOutput<TOut>
         Evaluated = true;
     }
 
-    protected virtual TOut ExecuteInternal(LoadContextBase? context)
+    protected virtual TOut ExecuteInternal(ILoadContext? context)
         => Implementation!.Execute(context);
 
     protected virtual TImpl GetImplementation(string code)

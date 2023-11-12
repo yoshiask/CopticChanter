@@ -17,7 +17,7 @@ public class TimestampCmd : TextCommandBase
 
     public TimeSpan TimeOffset { get; private set; }
     
-    protected override void ExecuteInternal(LoadContextBase? context)
+    protected override void ExecuteInternal(ILoadContext? context)
     {
         if (!TimeSpan.TryParse(_timePart, out var timeOffset))
             return;

@@ -41,7 +41,7 @@ public class IpaTranscribeCmd : TextCommandBase
     }
 
     [MemberNotNull(nameof(Analyzer))]
-    protected override void ExecuteInternal(LoadContextBase? context)
+    protected override void ExecuteInternal(ILoadContext? context)
     {
         Analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Source.GetLanguage());
         Output = Source.Select(Transcribe);

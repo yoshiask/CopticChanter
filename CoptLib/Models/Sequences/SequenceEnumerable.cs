@@ -9,10 +9,10 @@ namespace CoptLib.Models.Sequences;
 public class SequenceEnumerable : IAsyncEnumerable<SequenceNode>
 {
     private readonly SequenceNode _rootNode;
-    private readonly LoadContextBase _context;
+    private readonly ILoadContext _context;
     private readonly Func<int, Task<SequenceNode>> _resolver;
 
-    public SequenceEnumerable(SequenceNode rootNode, LoadContextBase context, Func<int, Task<SequenceNode>> resolver)
+    public SequenceEnumerable(SequenceNode rootNode, ILoadContext context, Func<int, Task<SequenceNode>> resolver)
     {
         _rootNode = rootNode;
         _context = context;
@@ -25,12 +25,12 @@ public class SequenceEnumerable : IAsyncEnumerable<SequenceNode>
     private class SequenceEnumerator : IAsyncEnumerator<SequenceNode>
     {
         private readonly SequenceNode _rootNode;
-        private readonly LoadContextBase _context;
+        private readonly ILoadContext _context;
         private readonly Func<int, Task<SequenceNode>> _resolver;
         
         private bool _isFirstIteration = true;
 
-        public SequenceEnumerator(SequenceNode rootNode, LoadContextBase context, Func<int, Task<SequenceNode>> resolver)
+        public SequenceEnumerator(SequenceNode rootNode, ILoadContext context, Func<int, Task<SequenceNode>> resolver)
         {
             _rootNode = rootNode;
             _context = context;

@@ -18,7 +18,7 @@ public class Sequences
     {
         const int nodeCount = 10;
         
-        int? ToNextNode(int currentId, LoadContextBase context)
+        int? ToNextNode(int currentId, ILoadContext context)
             => currentId + 1 == nodeCount ? null : currentId + 1;
 
         var nodes = Enumerable.Range(0, nodeCount)

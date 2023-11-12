@@ -15,5 +15,5 @@ public abstract class DefinitionScriptImplementationBase : IDefinitionScriptImpl
 {
     public ICommandOutput<IDefinition>? Parent { get; set; }
 
-    public abstract IDefinition Execute(LoadContextBase? context);
+    public abstract IDefinition Execute(ILoadContext? context);
 }

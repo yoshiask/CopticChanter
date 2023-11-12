@@ -6,12 +6,12 @@ namespace CoptLib.Models.Sequences;
 
 public abstract record SequenceNode(int Id, string? DocumentKey)
 {
-    public abstract int? NextNode(LoadContextBase context);
+    public abstract int? NextNode(ILoadContext context);
 }
 
 public record ConstantSequenceNode(int Id, string? DocumentKey, int? NextNodeId) : SequenceNode(Id, DocumentKey)
 {
-    public override int? NextNode(LoadContextBase context) => NextNodeId;
+    public override int? NextNode(ILoadContext context) => NextNodeId;
 }
 
 public sealed record NullSequenceNode() : ConstantSequenceNode(-1, null, null)
@@ -21,16 +21,16 @@ public sealed record NullSequenceNode() : ConstantSequenceNode(-1, null, null)
 
 public sealed record EndSequenceNode(int Id, string? DocumentKey) : ConstantSequenceNode(Id, DocumentKey, null);
 
-public sealed record DelegateSequenceNode(int Id, string? DocumentKey, Func<int, LoadContextBase, int?> ToNextNode)
+public sealed record DelegateSequenceNode(int Id, string? DocumentKey, Func<int, ILoadContext, int?> ToNextNode)
     : SequenceNode(Id, DocumentKey)
 {
-    public override int? NextNode(LoadContextBase context) => ToNextNode(Id, context);
+    public override int? NextNode(ILoadContext context) => ToNextNode(Id, context);
 }
 
 public record ScriptedSequenceNode(int Id, string? DocumentKey, ICommandOutput<int?> NextDocCommand)
     : SequenceNode(Id, DocumentKey)
 {
-    public override int? NextNode(LoadContextBase context)
+    public override int? NextNode(ILoadContext context)
     {
         NextDocCommand.Execute(context);
         return NextDocCommand.Output;

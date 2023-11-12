@@ -28,5 +28,5 @@ public interface ICommandOutput<out TReturn>
     /// <summary>
     /// Executes the command.
     /// </summary>
-    public void Execute(LoadContextBase? context);
+    public void Execute(ILoadContext? context);
 }

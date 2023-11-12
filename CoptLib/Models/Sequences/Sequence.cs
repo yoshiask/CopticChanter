@@ -8,7 +8,7 @@ namespace CoptLib.Models.Sequences;
 
 public class Sequence : IContextualLoad
 {
-    public Sequence(int rootNodeId, LoadContextBase context, string? key = null)
+    public Sequence(int rootNodeId, ILoadContext context, string? key = null)
     {
         RootNodeId = rootNodeId;
         Context = context;
@@ -21,7 +21,7 @@ public class Sequence : IContextualLoad
     public string? Name { get; set; }
 
     [NotNull]
-    public LoadContextBase? Context { get; set; }
+    public ILoadContext? Context { get; set; }
 
     /// <summary>
     /// The identifier of the node to always start at.

@@ -15,5 +15,5 @@ public interface IContextualLoad
     /// <summary>
     /// The context this item was loaded in.
     /// </summary>
-    LoadContextBase? Context { get; set; }
+    ILoadContext? Context { get; set; }
 }
