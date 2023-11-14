@@ -115,11 +115,13 @@ public static class DocReader
             }
             else if (defElemName == nameof(Comment))
             {
-                def = new Comment(parent);
+                Comment comment = new(parent);
 
                 var commentTypeStr = defElem.Attribute("Type")?.Value;
                 if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
-                    ((Comment) def).Type = commentType;
+                    comment.Type = commentType;
+
+                def = comment;
             }
             else if (defElemName == "String")
             {
@@ -127,8 +129,20 @@ public static class DocReader
             }
             else if (defElemName == "Script")
             {
-                DotNetDefinitionScript script = new(defElem.Value);
-                def = script;
+                // Default to csharp-def (DotNetDefinitionScript) for backward-compatibility.
+                // Since it's the default, make sure it's always registered.
+                DotNetDefinitionScript.Register();
+                
+                var scriptTypeId = defElem.Attribute("Type")?.Value ?? "csharp-def";
+
+                var script = Scripting.ScriptingEngine.CreateScript(
+                    scriptTypeId, defElem.Value);
+
+                if (script is not IDefinition)
+                    throw new InvalidDataException($"Script of type '{scriptTypeId}' must implement " +
+                                                   $"{nameof(IDefinition)} to be defined directly in a document.");
+                    
+                def = (IDefinition)script;
             }
             else if (defElemName == nameof(Variable))
             {

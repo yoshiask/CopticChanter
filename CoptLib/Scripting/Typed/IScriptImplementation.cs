@@ -5,7 +5,7 @@ namespace CoptLib.Scripting.Typed;
 /// <summary>
 /// Represents a script implementation that outputs any <see cref="object"/>.
 /// </summary>
-public interface IScriptImplementation<out TOut>
+public interface IScriptImplementation
 {
-    TOut Execute(ILoadContext? context);
+    object Execute(ILoadContext? context);
 }

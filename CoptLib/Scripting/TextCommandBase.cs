@@ -36,7 +36,7 @@ public abstract class TextCommandBase : ICommandOutput<IDefinition>
 
     public bool Evaluated { get; protected set; }
 
-    public void Execute(ILoadContext? context)
+    public IDefinition Execute(ILoadContext? context)
     {
         if (Evaluated)
             return;
