@@ -51,19 +51,20 @@ public static class SequenceReader
         var documentKey = elem.Attribute(nameof(SequenceNode.DocumentKey))?.Value;
 
         var nodeType = EnumExtensions.Parse<SequenceNodeType>(elem.Name.LocalName.ToLowerInvariant(), true);
-        return nodeType switch
+        switch (nodeType)
         {
-            SequenceNodeType.End => new EndSequenceNode(id, documentKey),
-            SequenceNodeType.Const => new ConstantSequenceNode(id, documentKey, ParseConstantNodeId(elem.Value)),
-            SequenceNodeType.Script => CreateScriptedSequenceNode(id, documentKey, elem.Value),
-            _ => throw new ArgumentOutOfRangeException(string.Empty, $"Unknown sequence node type '{nodeType}'")
-        };
-    }
-
-    private static ScriptedSequenceNode CreateScriptedSequenceNode(int id, string? documentKey, string scriptBody)
-    {
-        DotNetScript<NullableIntScriptImplementation, int?> script = new(scriptBody);
-        return new ScriptedSequenceNode(id, documentKey, script);
+            case SequenceNodeType.End:
+                return new EndSequenceNode(id, documentKey);
+            case SequenceNodeType.Const:
+                return new ConstantSequenceNode(id, documentKey, ParseConstantNodeId(elem.Value));
+            case SequenceNodeType.Script:
+                var genericScript = ScriptingEngine.CreateScript("csharp", elem.Value)
+                    as ICommandOutput<int?>;
+                
+                return new ScriptedSequenceNode(id, documentKey, script);
+            default:
+                throw new ArgumentOutOfRangeException(string.Empty, $"Unknown sequence node type '{nodeType}'");
+        }
     }
 
     private static int? ParseConstantNodeId(string value) => value is "" or "{end}" ? null : int.Parse(value);
