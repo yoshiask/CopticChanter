@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using CoptLib;
 using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Sequences;
+using CoptLib.Scripting;
 using NodaTime;
 using Xunit;
 
@@ -42,6 +42,7 @@ public class Sequences
     [Fact]
     public async Task SequenceEnumerable_WithSpecialNodeTypes()
     {
+        DotNetScript.Register();
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
 
         LoadContext context = new();
@@ -81,6 +82,7 @@ public class Sequences
     public async Task SequenceEnumerable_WithDocs()
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
+        DotNetScript.Register();
         
         LoadContext context = new();
         context.SetDate(new(2023, 8, 24, 6, 50));
@@ -119,6 +121,7 @@ public class Sequences
     public void SequenceWriter_OpenAndWriteNoChanges(string file)
     {
         LoadContext context = new();
+        DotNetScript.Register();
         
         var xmlEx = Resource.ReadAllText(file);
         var sequenceEx = SequenceReader.ParseSequenceXml(XDocument.Parse(xmlEx), context);

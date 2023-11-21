@@ -234,87 +234,81 @@ namespace CoptTest
             {
                 new object[]
                 {
-                    "public override IDefinition Execute(LoadContextBase? context) => new SimpleContent(\"Test content\", null);",
-                    (LoadContextBase? _) => new SimpleContent("Test content", null)
+                    "return new SimpleContent(\"Test content\", null);",
+                    (ILoadContext? _) => new SimpleContent("Test content", null)
                 },
                 new object[]
                 {
                     """
-                    public override IDefinition Execute(LoadContextBase? context)
+                    // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
+                    var today = context!.CurrentDate;
+                    int year = today.YearOfEra;
+
+                    string engText, copText, araText;
+
+                    if (today == CopticCalendar.Nativity(year))
                     {
-                        // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
-                        var today = context!.CurrentDate;
-                        int year = today.YearOfEra;
+                        engText = "were born";
+                        copText = "ⲁⲩⲙⲁⲥⲕ";
+                        araText = "TODO";
+                    }
+                    else if (today == CopticCalendar.Theophany(year))
+                    {
+                        engText = "were baptised";
+                        copText = "ⲁⲕϭⲓⲱⲙⲥ";
+                        araText = "TODO";
+                    }
+                    else if (today == CopticCalendar.FirstFeastCross(year)
+                        || today == CopticCalendar.SecondFeastCross(year)
+                        || CopticCalendar.PaschalPeriod(year).IsDuring(today))
+                    {
+                        engText = "were crucified";
+                        copText = "ⲁⲩⲁϣⲕ";
+                        araText = "TODO";
+                    }
+                    else
+                    {
+                        var resur = CopticCalendar.Resurrection(year);
+                        var holyFiftyDays = Period.DaysBetween(resur, today);
+                        bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
 
-                        string engText, copText, araText;
+                        var pentecost = CopticCalendar.Pentecost(year);
+                        var koiahk = DateHelper.NewCopticDate(year, 4, 1);
+                        bool isPentecostKiahk = today >= pentecost && today < koiahk;
 
-                        if (today == CopticCalendar.Nativity(year))
+                        if (isHolyFiftyDays || isPentecostKiahk || today.Day == 29)
                         {
-                            engText = "were born";
-                            copText = "ⲁⲩⲙⲁⲥⲕ";
-                            araText = "TODO";
-                        }
-                        else if (today == CopticCalendar.Theophany(year))
-                        {
-                            engText = "were baptised";
-                            copText = "ⲁⲕϭⲓⲱⲙⲥ";
-                            araText = "TODO";
-                        }
-                        else if (today == CopticCalendar.FirstFeastCross(year)
-                            || today == CopticCalendar.SecondFeastCross(year)
-                            || CopticCalendar.PaschalPeriod(year).IsDuring(today))
-                        {
-                            engText = "were crucified";
-                            copText = "ⲁⲩⲁϣⲕ";
-                            araText = "TODO";
+                            engText = "have risen";
+                            copText = "ⲁⲕⲧⲱⲛⲕ";
+                            araText = "قمت";
                         }
                         else
                         {
-                            var resur = CopticCalendar.Resurrection(year);
-                            var holyFiftyDays = Period.DaysBetween(resur, today);
-                            bool isHolyFiftyDays = holyFiftyDays > 0 && holyFiftyDays <= 50;
-
-                            var pentecost = CopticCalendar.Pentecost(year);
-                            var koiahk = DateHelper.NewCopticDate(year, 4, 1);
-                            bool isPentecostKiahk = today >= pentecost && today < koiahk;
-
-                            if (isHolyFiftyDays || isPentecostKiahk || today.Day == 29)
-                            {
-                                engText = "have risen";
-                                copText = "ⲁⲕⲧⲱⲛⲕ";
-                                araText = "قمت";
-                            }
-                            else
-                            {
-                                engText = "have come";
-                                copText = "ⲁⲕⲓ\u0300";
-                                araText = "اتيت";
-                            }
+                            engText = "have come";
+                            copText = "ⲁⲕⲓ\u0300";
+                            araText = "اتيت";
                         }
-
-                        var res = new TranslationRunCollection("AkiAktonk");
-                        res.AddText(engText, KnownLanguage.English);
-                        res.AddText(copText, KnownLanguage.Coptic);
-                        res.AddText(araText, KnownLanguage.Arabic);
-
-                        return res;
                     }
+
+                    var res = new TranslationRunCollection("AkiAktonk");
+                    res.AddText(engText, KnownLanguage.English);
+                    res.AddText(copText, KnownLanguage.Coptic);
+                    res.AddText(araText, KnownLanguage.Arabic);
+
+                    return res;
                     """,
                     GetAkiAktonk
                 },
                 new object[]
                 {
                     """
-                    public override IDefinition Execute(LoadContextBase? context)
-                    {
-                        var today = context!.CurrentDate;
-                        if (today == CopticCalendar.Resurrection(today.YearOfEra))
-                            return new SimpleContent("aktonk", null);
-                        else
-                            return new SimpleContent("aki", null);
-                    }
+                    var today = context!.CurrentDate;
+                    if (today == CopticCalendar.Resurrection(today.YearOfEra))
+                        return new SimpleContent("aktonk", null);
+                    else
+                        return new SimpleContent("aki", null);
                     """,
-                    (LoadContextBase? context) =>
+                    (ILoadContext? context) =>
                     {
                         var today = context!.CurrentDate;
                         if (today == CopticCalendar.Resurrection(today.YearOfEra))
@@ -325,7 +319,7 @@ namespace CoptTest
             };
         }
 
-        private static IDefinition GetAkiAktonk(LoadContextBase? context)
+        private static IDefinition? GetAkiAktonk(ILoadContext? context)
         {
             // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
             var today = context!.CurrentDate;
