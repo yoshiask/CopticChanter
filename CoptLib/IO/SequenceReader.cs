@@ -5,7 +5,6 @@ using CommunityToolkit.Diagnostics;
 using CoptLib.Extensions;
 using CoptLib.Models.Sequences;
 using CoptLib.Scripting;
-using CoptLib.Scripting.Typed;
 
 namespace CoptLib.IO;
 
@@ -58,10 +57,12 @@ public static class SequenceReader
             case SequenceNodeType.Const:
                 return new ConstantSequenceNode(id, documentKey, ParseConstantNodeId(elem.Value));
             case SequenceNodeType.Script:
-                var genericScript = ScriptingEngine.CreateScript("csharp", elem.Value)
-                    as ICommandOutput<int?>;
+                var scriptTypeId = elem.Attribute("TypeId")?.Value ?? "csharp";
                 
-                return new ScriptedSequenceNode(id, documentKey, script);
+                var genericScript = ScriptingEngine.CreateScript(scriptTypeId, elem.Value);
+                Guard.IsNotNull(genericScript);
+                
+                return new ScriptedSequenceNode(id, documentKey, genericScript);
             default:
                 throw new ArgumentOutOfRangeException(string.Empty, $"Unknown sequence node type '{nodeType}'");
         }
