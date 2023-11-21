@@ -17,18 +17,18 @@ public class DefinitionCmd : TextCommandBase
         _definitionKey = Parameters.FirstOrDefault()!.ToString();
     }
 
-    protected override void ExecuteInternal(ILoadContext? context)
+    protected override IDefinition ExecuteInternal(ILoadContext? context)
     {
         if (context is null)
             throw new ArgumentNullException(nameof(context));
 
-        Output = context.LookupDefinition(_definitionKey, Inline.DocContext);
-        if (Output is null)
+        var def = context.LookupDefinition(_definitionKey, Inline.DocContext);
+        if (def is null)
             throw new Exception($"No definition with key '{_definitionKey}' was found.");
 
-        ApplyNecessaryTransforms();
-
         // Register the current inline with the referenced definition
-        Output.RegisterReference(Inline);
+        def.RegisterReference(Inline);
+
+        return def;
     }
 }
