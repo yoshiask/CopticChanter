@@ -44,163 +44,160 @@
     <Definitions>
         <Script Key="ProclamationScript">
 <![CDATA[
-public override CoptLib.Models.IDefinition Execute(LoadContextBase? context)
+var today = context!.CurrentDate;
+int year = today.Year;
+
+LocalDate NewDate(int month, int day, int? y = null)
 {
-    var today = context!.CurrentDate;
-    int year = today.Year;
+    return new LocalDate(y ?? year, month, day, CalendarSystem.Coptic);
+}
 
-    LocalDate NewDate(int month, int day, int? y = null)
-    {
-        return new LocalDate(y ?? year, month, day, CalendarSystem.Coptic);
-    }
+string? engText, copText;//, araText;
+engText = copText = null;
 
-    string? engText, copText;//, araText;
-    engText = copText = null;
+const string seasonEndEng = "May your mercy and peace be fortress unto Your people.";
+const string seasonEndCop = "ⲙⲁⲣⲉ ⲡⲉⲕⲛⲁⲓ ⲛⲉⲙ ⲧⲉⲕϩⲓⲣⲏⲛⲏ ⲟⲓ ⲛ\u0300ⲥⲟⲃⲧ ⲙ\u0300ⲡⲉⲕⲗⲁⲟⲥ:";
+if (new DatePeriod(NewDate(5, 11), NewDate(10, 11)).IsDuring(today))
+{
+    engText = $"Bless the air of heaven. {seasonEndEng}";
+    copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲁ\u0300ⲏⲣ ⲛ\u0300ⲧⲉ ⲧ\u0300ⲫⲉ: {seasonEndCop}";
+}
+else if (new DatePeriod(NewDate(10, 12), NewDate(2, 9, year + 1)).IsDuring(today))
+{
+    engText = $"Bless the water of the rivers. {seasonEndEng}";
+    copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲙⲱⲟⲩ ⲙ\u0300ⲫ\u0300ⲓⲁⲣⲟⲩ: {seasonEndCop}";
+}
+else if (new DatePeriod(NewDate(2, 10), NewDate(5, 10)).IsDuring(today))
+{
+    engText = $"Bless the seed and the herbs. {seasonEndEng}";
+    copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲥⲓϯ ⲛⲉⲙ ⲛⲓⲥⲓⲙ: {seasonEndCop}";
+}
+else
+{
+    // ?? What
+}
 
-    const string seasonEndEng = "May your mercy and peace be fortress unto Your people.";
-    const string seasonEndCop = "ⲙⲁⲣⲉ ⲡⲉⲕⲛⲁⲓ ⲛⲉⲙ ⲧⲉⲕϩⲓⲣⲏⲛⲏ ⲟⲓ ⲛ\u0300ⲥⲟⲃⲧ ⲙ\u0300ⲡⲉⲕⲗⲁⲟⲥ:";
-    if (new DatePeriod(NewDate(5, 11), NewDate(10, 11)).IsDuring(today))
+var firstFeastCross = CopticCalendar.FirstFeastCross(year);
+if (today.Month == 1 && today < firstFeastCross)
+{
+    engText = "Bless the crown of the year with Your goodness, O Lord: the rivers, the springs, the plants and the fruits.";
+    copText = "Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲡⲓⲭ\u0300ⲗⲟⲙ ⲛ\u0300ⲧⲉ ϯⲣⲟⲙⲡⲓ ϩⲓⲧⲉⲛ ⲧⲉⲕⲙⲉⲧⲭ\u0300ⲣⲏⲥⲧⲟⲥ Ⲡ\u0300ϭⲟⲓⲥ: ⲛⲓⲓⲁⲣⲱⲟⲩ ⲛⲉⲙ ⲛⲓⲙⲟⲩⲙⲓ ⲛⲉⲙ ⲛⲓⲥⲓϯ ⲛⲉⲙ ⲛⲓⲕⲁⲣⲡⲟⲥ:";
+    goto done;
+}
+
+var nativity = CopticCalendar.Nativity(year);
+DatePeriod nativityFast = new(CopticCalendar.NativityFast(year), nativity.PlusDays(-1));
+if (nativityFast.IsDuring(today))
+{
+    engText = "The begotten of the Father before all the ages.";
+    copText = "Ⲡⲓⲙⲓⲥⲓ ⲉ\u0300ⲃⲟⲗϧⲉⲛ Ⲫ\u0300ⲓⲱⲧ ϧⲁϫⲱⲟⲩ ⲛ\u0300ⲛⲓⲉⲱⲛ ⲧⲏⲣⲟⲩ:";
+    goto done;
+}
+
+var circumcision = CopticCalendar.Circumcision(year);
+if (today == circumcision)
+{
+    engText = "The Son of God accepted to Himself the circumcision.";
+    copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥϣⲱⲡ ⲉ\u0300ⲣⲟϥ ⲙ\u0300ⲡⲓⲥⲉⲃⲓ:";
+    goto done;
+}
+else if (new DatePeriod(nativity, circumcision).IsDuring(today))
+{
+    engText = "who was born in Bethlehem, according to the prophetic voices.";
+    copText = "ⲫⲏⲉⲧⲁⲩⲁϣϥ ϧⲉⲛ Ⲃⲏⲑⲗⲉⲉⲙ: ⲕⲁⲧⲁ ⲛⲓⲥ\u0300ⲙⲏ ⲙ\u0300ⲡ\u0300ⲣⲟⲫⲏⲧⲏⲕⲟⲛ:";
+    goto done;
+}
+
+var baptismPeriod = new DatePeriod(CopticCalendar.Theophany(year), NewDate(5, 12));
+if (baptismPeriod.IsDuring(today))
+{
+    engText = "who was baptized in the Jordan.";
+    copText = "Ⲫⲏⲉ\u0300ⲧⲁϥϭⲓⲟⲙⲥ ϧⲉⲛ Ⲡⲓⲓⲟⲣⲇⲁⲛⲏⲥ:";
+    goto done;
+}
+else if (today == CopticCalendar.WeddingAtCanaOfGalilee(year))
+{
+    engText = "The Son of God blessed the waters and made them wine.";
+    copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲙⲱⲟⲩ ⲁϥⲁⲓⲧⲟⲩ ⲛ\u0300ⲏⲣⲡ:";
+    goto done;
+}
+else if (today == CopticCalendar.PresentationLordChristTemple(year))
+{
+    engText = "The Son of God entered into the temple.";
+    copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥϣⲉ ⲉ\u0300ϧⲟⲩⲛ ⲉ\u0300ⲡⲓⲉⲣⲫⲉⲓ:";
+    goto done;
+}
+else if (today == CopticCalendar.Annunciation(year))
+{
+    engText = "who was incarnate of the Virgin.";
+    copText = "Ⲫⲏⲉ\u0300ⲧⲁϥϭⲓⲥⲁⲣⲝ ϧⲉⲛ ϯⲡⲁⲣⲑⲉⲛⲟⲥ.";
+    goto done;
+}
+else if (CopticCalendar.GreatFast(year).IsDuring(today))
+{
+    // Lazarus Saturday isn't included in this?
+    if (today.DayOfWeek is IsoDayOfWeek.Sunday or IsoDayOfWeek.Saturday)
     {
-        engText = $"Bless the air of heaven. {seasonEndEng}";
-        copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲁ\u0300ⲏⲣ ⲛ\u0300ⲧⲉ ⲧ\u0300ⲫⲉ: {seasonEndCop}";
-    }
-    else if (new DatePeriod(NewDate(10, 12), NewDate(2, 9, year + 1)).IsDuring(today))
-    {
-        engText = $"Bless the water of the rivers. {seasonEndEng}";
-        copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲙⲱⲟⲩ ⲙ\u0300ⲫ\u0300ⲓⲁⲣⲟⲩ: {seasonEndCop}";
-    }
-    else if (new DatePeriod(NewDate(2, 10), NewDate(5, 10)).IsDuring(today))
-    {
-        engText = $"Bless the seed and the herbs. {seasonEndEng}";
-        copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲥⲓϯ ⲛⲉⲙ ⲛⲓⲥⲓⲙ: {seasonEndCop}";
+        engText = "O You who fasted for us forty days and forty nights to save us from our sins.";
+        copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩϥⲉⲣⲛⲏⲥⲧⲉⲩⲓⲛ ⲉ\u0300ϩ\u0300ⲣⲏⲓ ⲉ\u0300ϫⲱⲛ ⲛ\u0300ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϩⲟⲟⲩ ⲛⲉⲙ ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϫⲱⲣϩ: ϣⲁ ⲛ\u0300ⲧⲉϥⲥⲟⲧⲧⲉⲛ ϧⲉⲛ ⲛⲉⲛⲛⲟⲃⲓ:";
     }
     else
     {
-        // ?? What
+        // Weekdays of the Great Lent have a completely different hymn. This is just here for thoroughness.
+        engText = "The Body and Blood of the only-begotten God; having partaken, let us give thanks to him.";
+        copText = "Ⲥⲱⲙⲁⲧⲟⲥ ⲕⲉ ⲏ\u0300ⲙⲁⲧⲟⲥ ⲙⲟⲛⲟⲅⲉⲛⲏⲥ Ⲑⲉⲟⲩ ⲙⲁⲧⲁ\u0300ⲗⲁⲃⲟⲛⲧⲟⲥ ⲁⲩⲧⲱ ⲉⲩⲭⲁⲣⲓⲥⲧⲏⲥⲱⲙⲉⲛ.";
     }
+    goto done;
+}
 
-    var firstFeastCross = CopticCalendar.FirstFeastCross(year);
-    if (today.Month == 1 && today < firstFeastCross)
-    {
-        engText = "Bless the crown of the year with Your goodness, O Lord: the rivers, the springs, the plants and the fruits.";
-        copText = "Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲡⲓⲭ\u0300ⲗⲟⲙ ⲛ\u0300ⲧⲉ ϯⲣⲟⲙⲡⲓ ϩⲓⲧⲉⲛ ⲧⲉⲕⲙⲉⲧⲭ\u0300ⲣⲏⲥⲧⲟⲥ Ⲡ\u0300ϭⲟⲓⲥ: ⲛⲓⲓⲁⲣⲱⲟⲩ ⲛⲉⲙ ⲛⲓⲙⲟⲩⲙⲓ ⲛⲉⲙ ⲛⲓⲥⲓϯ ⲛⲉⲙ ⲛⲓⲕⲁⲣⲡⲟⲥ:";
-        goto done;
-    }
-    
-    var nativity = CopticCalendar.Nativity(year);
-    DatePeriod nativityFast = new(CopticCalendar.NativityFast(year), nativity.PlusDays(-1));
-    if (nativityFast.IsDuring(today))
-    {
-        engText = "The begotten of the Father before all the ages.";
-        copText = "Ⲡⲓⲙⲓⲥⲓ ⲉ\u0300ⲃⲟⲗϧⲉⲛ Ⲫ\u0300ⲓⲱⲧ ϧⲁϫⲱⲟⲩ ⲛ\u0300ⲛⲓⲉⲱⲛ ⲧⲏⲣⲟⲩ:";
-        goto done;
-    }
-    
-    var circumcision = CopticCalendar.Circumcision(year);
-    if (today == circumcision)
-    {
-        engText = "The Son of God accepted to Himself the circumcision.";
-        copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥϣⲱⲡ ⲉ\u0300ⲣⲟϥ ⲙ\u0300ⲡⲓⲥⲉⲃⲓ:";
-        goto done;
-    }
-    else if (new DatePeriod(nativity, circumcision).IsDuring(today))
-    {
-        engText = "who was born in Bethlehem, according to the prophetic voices.";
-        copText = "ⲫⲏⲉⲧⲁⲩⲁϣϥ ϧⲉⲛ Ⲃⲏⲑⲗⲉⲉⲙ: ⲕⲁⲧⲁ ⲛⲓⲥ\u0300ⲙⲏ ⲙ\u0300ⲡ\u0300ⲣⲟⲫⲏⲧⲏⲕⲟⲛ:";
-        goto done;
-    }
+var ressurection = CopticCalendar.Resurrection(year);
+var ascension = CopticCalendar.Ascension(year);
+var pentecost = CopticCalendar.Pentecost(year);
+DatePeriod paschaWeek = new(ressurection.PlusDays(-6), Period.FromDays(6));
+if (paschaWeek.IsDuring(today)
+    || new DatePeriod(firstFeastCross, Period.FromDays(2)).IsDuring(today)
+    || today == CopticCalendar.SecondFeastCross(year))
+{
+    engText = "who was crucified on the Cross, trample Satan under our feet.";
+    copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩⲁϣϥ ⲉ\u0300ⲡⲓⲥ\u0300ⲧⲁⲩⲣⲟⲥ ⲉⲕⲉ\u0300ϧⲟⲙϧⲉⲙ ⲙ\u0300ⲡ\u0300ⲥⲁⲧⲁⲛⲁⲥ ⲥⲁⲡⲉⲥⲏⲧ ⲛ\u0300ⲛⲉⲛϭⲁⲗⲁⲩϫ:";
+    goto done;
+}
+else if (new DatePeriod(ressurection, ascension.PlusDays(-1)).IsDuring(today))
+{
+    var isEntryIntoEgypt = today == CopticCalendar.LordsEntryIntoEgypt(year);
+    engText = "The King of Glory who rose from the dead on the third day"
+        + (isEntryIntoEgypt ? ", entered into the land of Egypt." : ".");
 
-    var baptismPeriod = new DatePeriod(CopticCalendar.Theophany(year), NewDate(5, 12));
-    if (baptismPeriod.IsDuring(today))
-    {
-        engText = "who was baptized in the Jordan.";
-        copText = "Ⲫⲏⲉ\u0300ⲧⲁϥϭⲓⲟⲙⲥ ϧⲉⲛ Ⲡⲓⲓⲟⲣⲇⲁⲛⲏⲥ:";
-        goto done;
-    }
-    else if (today == CopticCalendar.WeddingAtCanaOfGalilee(year))
-    {
-        engText = "The Son of God blessed the waters and made them wine.";
-        copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲙⲱⲟⲩ ⲁϥⲁⲓⲧⲟⲩ ⲛ\u0300ⲏⲣⲡ:";
-        goto done;
-    }
-    else if (today == CopticCalendar.PresentationLordChristTemple(year))
-    {
-        engText = "The Son of God entered into the temple.";
-        copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫ\u0300ⲛⲟⲩϯ ⲁϥϣⲉ ⲉ\u0300ϧⲟⲩⲛ ⲉ\u0300ⲡⲓⲉⲣⲫⲉⲓ:";
-        goto done;
-    }
-    else if (today == CopticCalendar.Annunciation(year))
-    {
-        engText = "who was incarnate of the Virgin.";
-        copText = "Ⲫⲏⲉ\u0300ⲧⲁϥϭⲓⲥⲁⲣⲝ ϧⲉⲛ ϯⲡⲁⲣⲑⲉⲛⲟⲥ.";
-        goto done;
-    }
-    else if (CopticCalendar.GreatFast(year).IsDuring(today))
-    {
-        // Lazarus Saturday isn't included in this?
-        if (today.DayOfWeek is IsoDayOfWeek.Sunday or IsoDayOfWeek.Saturday)
-        {
-            engText = "O You who fasted for us forty days and forty nights to save us from our sins.";
-            copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩϥⲉⲣⲛⲏⲥⲧⲉⲩⲓⲛ ⲉ\u0300ϩ\u0300ⲣⲏⲓ ⲉ\u0300ϫⲱⲛ ⲛ\u0300ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϩⲟⲟⲩ ⲛⲉⲙ ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϫⲱⲣϩ: ϣⲁ ⲛ\u0300ⲧⲉϥⲥⲟⲧⲧⲉⲛ ϧⲉⲛ ⲛⲉⲛⲛⲟⲃⲓ:";
-        }
-        else
-        {
-            // Weekdays of the Great Lent have a completely different hymn. This is just here for thoroughness.
-            engText = "The Body and Blood of the only-begotten God; having partaken, let us give thanks to him.";
-            copText = "Ⲥⲱⲙⲁⲧⲟⲥ ⲕⲉ ⲏ\u0300ⲙⲁⲧⲟⲥ ⲙⲟⲛⲟⲅⲉⲛⲏⲥ Ⲑⲉⲟⲩ ⲙⲁⲧⲁ\u0300ⲗⲁⲃⲟⲛⲧⲟⲥ ⲁⲩⲧⲱ ⲉⲩⲭⲁⲣⲓⲥⲧⲏⲥⲱⲙⲉⲛ.";
-        }
-        goto done;
-    }
+    copText = "Ⲡ\u0300ⲟⲩⲣⲟ ⲛ\u0300ⲧⲉ ⲡ\u0300ⲱ\u0300ⲟⲩ ⲁϥⲧⲱⲛϥ ⲉ\u0300ⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ ϧⲉⲛ ⲡⲓⲉ\u0300ϩⲟⲟⲩ ⲙ\u0300ⲙⲁϩϣⲟⲙⲧ:";
+    if (isEntryIntoEgypt)
+        copText += " ⲁϥⲓ\u0300 ⲉ\u0300ϧⲟⲩⲛ ⲉ\u0300ⲧⲭⲱⲣⲁ ⲛ\u0300ⲭⲏⲙⲓ:";
 
-    var ressurection = CopticCalendar.Resurrection(year);
-    var ascension = CopticCalendar.Ascension(year);
-    var pentecost = CopticCalendar.Pentecost(year);
-    DatePeriod paschaWeek = new(ressurection.PlusDays(-6), Period.FromDays(6));
-    if (paschaWeek.IsDuring(today)
-        || new DatePeriod(firstFeastCross, Period.FromDays(2)).IsDuring(today)
-        || today == CopticCalendar.SecondFeastCross(year))
-    {
-        engText = "who was crucified on the Cross, trample Satan under our feet.";
-        copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩⲁϣϥ ⲉ\u0300ⲡⲓⲥ\u0300ⲧⲁⲩⲣⲟⲥ ⲉⲕⲉ\u0300ϧⲟⲙϧⲉⲙ ⲙ\u0300ⲡ\u0300ⲥⲁⲧⲁⲛⲁⲥ ⲥⲁⲡⲉⲥⲏⲧ ⲛ\u0300ⲛⲉⲛϭⲁⲗⲁⲩϫ:";
-        goto done;
-    }
-    else if (new DatePeriod(ressurection, ascension.PlusDays(-1)).IsDuring(today))
-    {
-        var isEntryIntoEgypt = today == CopticCalendar.LordsEntryIntoEgypt(year);
-        engText = "The King of Glory who rose from the dead on the third day"
-            + (isEntryIntoEgypt ? ", entered into the land of Egypt." : ".");
+    goto done;
+}
+else if (new DatePeriod(ascension, pentecost.PlusDays(-1)).IsDuring(today))
+{
+    engText = "Who rose from the dead and has ascended into the heavens and sat at the right hand of His Father.";
+    copText = "Ⲫⲏⲉ\u0300ⲧⲁϥⲧⲱⲛϥ ⲟⲩⲟϩ ⲁϥϣⲉⲛⲁϥ ⲁϥⲟⲩⲱⲣⲡ ⲛⲁⲛ ⲙ\u0300ⲡⲓⲡⲁⲣⲁⲕⲗⲏⲧⲟⲛ Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ ⲛ\u0300ⲧⲉ ϯⲙⲉⲑⲙⲏⲓ:";
+    goto done;
+}
 
-        copText = "Ⲡ\u0300ⲟⲩⲣⲟ ⲛ\u0300ⲧⲉ ⲡ\u0300ⲱ\u0300ⲟⲩ ⲁϥⲧⲱⲛϥ ⲉ\u0300ⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ ϧⲉⲛ ⲡⲓⲉ\u0300ϩⲟⲟⲩ ⲙ\u0300ⲙⲁϩϣⲟⲙⲧ:";
-        if (isEntryIntoEgypt)
-            copText += " ⲁϥⲓ\u0300 ⲉ\u0300ϧⲟⲩⲛ ⲉ\u0300ⲧⲭⲱⲣⲁ ⲛ\u0300ⲭⲏⲙⲓ:";
-
-        goto done;
-    }
-    else if (new DatePeriod(ascension, pentecost.PlusDays(-1)).IsDuring(today))
-    {
-        engText = "Who rose from the dead and has ascended into the heavens and sat at the right hand of His Father.";
-        copText = "Ⲫⲏⲉ\u0300ⲧⲁϥⲧⲱⲛϥ ⲟⲩⲟϩ ⲁϥϣⲉⲛⲁϥ ⲁϥⲟⲩⲱⲣⲡ ⲛⲁⲛ ⲙ\u0300ⲡⲓⲡⲁⲣⲁⲕⲗⲏⲧⲟⲛ Ⲡⲓⲡ\u0300ⲛⲉⲩⲙⲁ ⲛ\u0300ⲧⲉ ϯⲙⲉⲑⲙⲏⲓ:";
-        goto done;
-    }
-
-    if (today == CopticCalendar.Transfiguration(year))
-    {
-        engText = "The Son of God, was transfigured on Mount Tabor.";
-        copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫⲛⲟⲩϯ: ⲁϥϣⲟⲃⲧϥ ⲉ\u0300ϫⲉⲛ ⲡⲓⲧⲱⲟⲩ ⲛ\u0300Ⲑⲁⲃⲱⲣ:";
-        goto done;
-    }
+if (today == CopticCalendar.Transfiguration(year))
+{
+    engText = "The Son of God, was transfigured on Mount Tabor.";
+    copText = "Ⲡ\u0300ϣⲏⲣⲓ ⲙ\u0300Ⲫⲛⲟⲩϯ: ⲁϥϣⲟⲃⲧϥ ⲉ\u0300ϫⲉⲛ ⲡⲓⲧⲱⲟⲩ ⲛ\u0300Ⲑⲁⲃⲱⲣ:";
+    goto done;
+}
 
 done:
-    if (engText is null || copText is null)
-        throw new Exception("Not all translations were provided.");
+if (engText is null || copText is null)
+    throw new Exception("Not all translations were provided.");
 
-    var res = new TranslationRunCollection("Proclamation");
-    res.AddText(engText, KnownLanguage.English);
-    res.AddText(copText, KnownLanguage.Coptic);
-    //res.AddText(araText, KnownLanguage.Arabic);
+var res = new TranslationRunCollection("Proclamation");
+res.AddText(engText, KnownLanguage.English);
+res.AddText(copText, KnownLanguage.Coptic);
+//res.AddText(araText, KnownLanguage.Arabic);
 
-    return res;
-}
+return res;
 ]]>
         </Script>
     </Definitions>
