@@ -7,5 +7,5 @@ namespace CoptLib.Scripting.Typed;
 /// </summary>
 public interface IScriptImplementation
 {
-    object Execute(ILoadContext? context);
+    object? Execute(ILoadContext? context);
 }
