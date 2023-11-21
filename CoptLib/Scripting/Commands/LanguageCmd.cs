@@ -29,10 +29,7 @@ public class LanguageCmd : TextCommandBase
 
     public DisplayFont? Font { get; }
 
-    protected override void ExecuteInternal(ILoadContext? context)
-    {
-        Output = Source.Select(ConvertFont);
-    }
+    protected override IDefinition ExecuteInternal(ILoadContext? context) => Source.Select(ConvertFont);
 
     private void ConvertFont(IDefinition def)
     {

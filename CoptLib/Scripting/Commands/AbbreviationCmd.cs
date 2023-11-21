@@ -20,11 +20,11 @@ public class AbbreviationCmd : TextCommandBase
     
     public bool KeepAbbreviated { get; }
     
-    protected override void ExecuteInternal(ILoadContext? context)
+    protected override IDefinition ExecuteInternal(ILoadContext? context)
     {
         var analyzer = LinguisticLanguageService.Default.GetAnalyzerForLanguage(Inline.GetLanguage());
         var abbreviation = analyzer.ResolveAbbreviation(AbbreviationKey, KeepAbbreviated);
         
-        Output = new Run(abbreviation, Inline);
+        return new Run(abbreviation, Inline);
     }
 }
