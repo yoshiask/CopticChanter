@@ -42,7 +42,7 @@ public class DotNetScript : Definition, IScript<object?>
         => Implementation!.Execute(context);
 
     protected virtual IScriptImplementation GetImplementation(string code)
-        => CSScript.Evaluator.LoadMethod<IScriptImplementation>(CommonUsings + code);
+        => CSScript.Evaluator.LoadMethod<IScriptImplementation>(GetSourceCode(code));
 
     /// <summary>
     /// Registers built-in implementations of <see cref="DotNetScript"/> with <see cref="ScriptingEngine"/>.
@@ -76,6 +76,14 @@ public class DotNetScript : Definition, IScript<object?>
             });
         }
     }
+
+    private static string GetSourceCode(string code)
+    {
+        return CommonUsings
+           + "public object? Execute(ILoadContext? context) {\r\n"
+           + code
+           + "\r\n}";
+    }
 }
 
 public class DotNetScript<TOut> : DotNetScript, ICommandOutput<TOut?>
@@ -90,7 +98,7 @@ public class DotNetScript<TOut> : DotNetScript, ICommandOutput<TOut?>
     {
         var output = base.Execute(context);
         if (output is null)
-            return null;
+            return default;
         
         return Output = (TOut)output;
     }

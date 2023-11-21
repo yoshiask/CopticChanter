@@ -36,16 +36,19 @@ public abstract class TextCommandBase : ICommandOutput<IDefinition>
 
     public bool Evaluated { get; protected set; }
 
-    public IDefinition Execute(ILoadContext? context)
+    public IDefinition? Execute(ILoadContext? context)
     {
         if (Evaluated)
-            return;
+            return default;
 
-        ExecuteInternal(context ?? Inline.DocContext?.Context);
+        Output = ExecuteInternal(context ?? Inline.DocContext?.Context);
+        ApplyNecessaryTransforms();
+        
         Evaluated = true;
+        return Output;
     }
     
-    protected abstract void ExecuteInternal(ILoadContext? context);
+    protected abstract IDefinition? ExecuteInternal(ILoadContext? context);
 
     /// <summary>
     /// Ensures that all necessary transforms are applied to the <see cref="Output"/>.

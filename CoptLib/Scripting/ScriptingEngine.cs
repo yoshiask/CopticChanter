@@ -11,7 +11,7 @@ using OwlCore.Extensions;
 
 namespace CoptLib.Scripting;
 
-public delegate ICommandOutput<object> ScriptFactory(string body, string? subtype,
+public delegate ICommandOutput<object?> ScriptFactory(string body, string? subtype,
     IReadOnlyDictionary<string, object>? additional);
 
 public static class ScriptingEngine
@@ -30,7 +30,7 @@ public static class ScriptingEngine
 
     public static readonly Dictionary<string, ScriptFactory> ScriptFactories = new();
 
-    public static ICommandOutput<object> CreateScript(string typeId, string body,
+    public static ICommandOutput<object?> CreateScript(string typeId, string body,
         IReadOnlyDictionary<string, object>? additionalParameters = null)
     {
         var (type, subtype) = typeId.SplitAtChar(':');
