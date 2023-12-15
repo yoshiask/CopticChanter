@@ -66,7 +66,10 @@ public class TranslationRunCollection : TranslationCollection<Run>
     public override Run GetByLanguage(KnownLanguage knownLanguage, Func<Run, bool>? predicate = null)
     {
         if (!_known.TryGetValue(knownLanguage, out Run run) || (predicate is not null && !predicate(run)))
-            run = base.GetByLanguage(knownLanguage, predicate);
+        {
+            if (!_known.TryGetValue(KnownLanguage.Default, out run) || (predicate is not null && !predicate(run)))
+                run = base.GetByLanguage(knownLanguage, predicate);
+        }
 
         return run;
     }

@@ -22,20 +22,20 @@ public class TranslationCollection<T> : List<T>, ITranslationLookup<T>, IDefinit
     
     public virtual T GetByLanguage(KnownLanguage knownLanguage, Func<T, bool>? predicate = null)
     {
-        IEnumerable<T> items = predicate is null
-            ? this : this.Where(predicate);
+        var items = predicate is null
+            ? this : this.Where(predicate).ToList();
 
-        return items
-            .First(t => t.Language.Known == knownLanguage);
+        var match = items.FirstOrDefault(t => t.Language.Known == knownLanguage);
+        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default);
     }
 
     public virtual T GetByLanguage(LanguageInfo language, Func<T, bool>? predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO)
     {
         IEnumerable<T> items = predicate is null
-            ? this : this.Where(predicate);
+            ? this : this.Where(predicate).ToList();
 
-        return items
-            .First(t => t.Language.IsEquivalentTo(language, options));
+        var match = items.FirstOrDefault(t => t.Language.IsEquivalentTo(language, options));
+        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default);
     }
 }
 
