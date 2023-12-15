@@ -27,7 +27,7 @@ namespace CoptTest
         }
 
         [Theory]
-        [MemberData(nameof(GetRunScript_Samples))]
+        [MemberData(nameof(GetRunDotNetScript_Samples))]
         public void RunDotNetDefinitionScript(string scriptBody, Func<LoadContextBase?, IDefinition?> expectedFunc)
         {
             LoadContext context = new();
@@ -39,37 +39,30 @@ namespace CoptTest
             var actual = script.Output;
             var expected = expectedFunc(context);
 
-            // Memberwise comparison
-            if (expected is not null)
+            if (actual is not null && expected is not null)
             {
-                Assert.IsType(expected.GetType(), actual);
-
-                expected.DocContext = script.DocContext;
-                expected.Parent = script;
-
-                // Check if collections are equal
-                if (expected is IEnumerable<object> expectedCollection)
-                {
-                    foreach (var (ex, ac) in expectedCollection.Zip((IEnumerable<object>)actual))
-                    {
-                        Assert.Equal(ex, ac);
-                    }
-                }
-
-                var expectedProps = expected.GetType().GetProperties();
-                var actualProps = actual.GetType().GetProperties();
-                foreach (var (ex, ac) in expectedProps.Zip(actualProps))
-                {
-                    if (ex.Name == "Item")
-                        continue;
-
-                    Assert.Equal(ex.GetValue(expected), ac.GetValue(actual));
-                }
+                expected.Parent = actual.Parent;
+                expected.DocContext = actual.DocContext;
             }
-            else
-            {
-                Assert.Equal(expected, actual);
-            }
+
+            MemberwiseAssertEqual(expected, actual);
+
+            _output.WriteLine(actual?.ToString() ?? "{x:Null}");
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRunLuaScript_Samples))]
+        public void RunLuaScript(string scriptBody, Func<LoadContextBase?, IDefinition?> expectedFunc)
+        {
+            LoadContext context = new();
+            context.SetDate(new(2023, 1, 7, 11, 00, CalendarSystem.Gregorian));
+
+            LuaScript script = new(scriptBody);
+            script.Execute(context);
+
+            var actual = script.Output;
+            var expected = expectedFunc(context);
+            MemberwiseAssertEqual(expected, actual);
 
             _output.WriteLine(actual?.ToString() ?? "{x:Null}");
         }
@@ -228,7 +221,7 @@ namespace CoptTest
             Assert.Equal(expectedResult, parsedInlines.ToString());
         }
 
-        public static IEnumerable<object[]> GetRunScript_Samples()
+        public static IEnumerable<object[]> GetRunDotNetScript_Samples()
         {
             return new[]
             {
@@ -319,6 +312,36 @@ namespace CoptTest
             };
         }
 
+        public static IEnumerable<object[]> GetRunLuaScript_Samples()
+        {
+            return new[]
+            {
+                new object[]
+                {
+                    "return SimpleContent('Test content', nil)",
+                    (ILoadContext? _) => new SimpleContent("Test content", null)
+                },
+                new object[]
+                {
+                    """
+                    local today = context.CurrentDate
+                    if today == CopticCalendar.Resurrection(today.YearOfEra) then
+                        return SimpleContent("aktonk", nil)
+                    else
+                        return SimpleContent("aki", nil)
+                    end
+                    """,
+                    (ILoadContext? context) =>
+                    {
+                        var today = context!.CurrentDate;
+                        if (today == CopticCalendar.Resurrection(today.YearOfEra))
+                            return new SimpleContent("aktonk", null);
+                        return new SimpleContent("aki", null);
+                    }
+                },
+            };
+        }
+
         private static IDefinition? GetAkiAktonk(ILoadContext? context)
         {
             // https://tasbeha.org/community/discussion/13753/aki-or-aktonk-etc
@@ -377,6 +400,37 @@ namespace CoptTest
             res.AddText(araText, KnownLanguage.Arabic);
 
             return res;
+        }
+
+        private static void MemberwiseAssertEqual(object? expected, object? actual)
+        {
+            if (expected is not null)
+            {
+                Assert.IsType(expected.GetType(), actual);
+
+                // Check if collections are equal
+                if (expected is IEnumerable<object> expectedCollection)
+                {
+                    foreach (var (ex, ac) in expectedCollection.Zip((IEnumerable<object>)actual))
+                    {
+                        Assert.Equal(ex, ac);
+                    }
+                }
+
+                var expectedProps = expected.GetType().GetProperties();
+                var actualProps = actual.GetType().GetProperties();
+                foreach (var (ex, ac) in expectedProps.Zip(actualProps))
+                {
+                    if (ex.Name == "Item")
+                        continue;
+
+                    Assert.Equal(ex.GetValue(expected), ac.GetValue(actual));
+                }
+            }
+            else
+            {
+                Assert.Equal(expected, actual);
+            }
         }
     }
 }
