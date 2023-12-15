@@ -43,6 +43,7 @@ public class Sequences
     public async Task SequenceEnumerable_WithSpecialNodeTypes()
     {
         DotNetScript.Register();
+        LuaScript.Register();
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
 
         LoadContext context = new();

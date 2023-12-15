@@ -24,19 +24,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AngleSharp" Version="1.0.4" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="CS-Script" Version="4.8.1" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.13" />
+        <PackageReference Include="NLua" Version="1.6.3" />
+        <PackageReference Include="NodaTime" Version="3.1.9" />
         <PackageReference Include="OwlCore" Version="0.4.0" />
         <PackageReference Include="OwlCore.Storage" Version="0.8.6" />
-        <PackageReference Include="CS-Script" Version="4.8.1" />
-        <PackageReference Include="AngleSharp" Version="1.0.4" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.13" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
         <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
         <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
         <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
         <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
         <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
-        <PackageReference Include="NodaTime" Version="3.1.9" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
 
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
         <PackageReference Include="PolySharp" Version="1.13.2">
@@ -46,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-		<None Remove="Resources\**" />
+        <None Remove="Resources\**" />
         <EmbeddedResource Include="Resources\**" />
 
         <None Include="README.md" Pack="true" PackagePath="\" />

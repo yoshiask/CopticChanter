@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
 
+        <IsTestProject>true</IsTestProject>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -12,9 +13,9 @@
         <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
         <PackageReference Include="OwlCore.Storage.SharpCompress" Version="0.0.0" />
 
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
-        <PackageReference Include="xunit" Version="2.5.0" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+        <PackageReference Include="xunit" Version="2.6.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>

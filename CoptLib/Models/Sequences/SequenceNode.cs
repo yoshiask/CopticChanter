@@ -33,6 +33,9 @@ public record ScriptedSequenceNode(int Id, string? DocumentKey, ICommandOutput<o
     public override int? NextNode(ILoadContext context)
     {
         NextDocCommand.Execute(context);
-        return NextDocCommand.Output as int?;
+
+        return NextDocCommand.Output is null
+            ? null
+            : Convert.ToInt32(NextDocCommand.Output);
     }
 }
