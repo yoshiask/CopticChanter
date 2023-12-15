@@ -99,6 +99,32 @@ namespace CoptTest
         }
 
         [Theory]
+        [InlineData("en", "\r\n|The Wise Men learned that a star|which shone brighter than the sun|Had been born and taken flesh|By the Word of the Father")]
+        [InlineData("en", "|In the name of the Father,|and of the Son,|and of the Holy Spirit,|one true God.")]
+        [InlineData("el", "|Ἐν εἰρήνῃ τοῦ Κυρίου δεηθῶμεν.|Κύριε, ἐλέησον.|Ὑπὲρ τῆς ἄνωθεν εἰρήνης καὶ τῆς σωτηρίας τῶν ψυχῶν ἡμῶν τοῦ Κυρίου δεηθῶμεν.")]
+        [InlineData("cop", "|Ⲁⲓⲛⲁϩϯ ⲉⲑⲃⲉ ⲫⲁⲓ|ⲁⲓⲥⲁϫⲓ ϧⲉⲛ ⲟⲩϫⲟⲙ|ⲉⲑⲃⲉ ⲡⲉⲕⲛⲓϣϯ ⲛ̀ⲛⲁⲓ|Ⲡ̀ϭⲟⲓⲥ ⲛ̀ⲧⲉ ⲛⲓϫⲟⲙ.")]
+        public void ParseTextCommands_LinesCommand(string lang, string text)
+        {
+            TranslationRunCollection defaultLineSeparator = new("defaultLineSeparator");
+            defaultLineSeparator.AddText(" / ", KnownLanguage.Default);
+            defaultLineSeparator.AddText(": ", KnownLanguage.Coptic);
+            defaultLineSeparator.AddText("\r\n", KnownLanguage.Greek);
+
+            if (!_doc.Context.Definitions.ContainsKey(defaultLineSeparator.Key!))
+                _doc.Context.AddDefinition(defaultLineSeparator, null);
+
+            Stanza stanza = new(_doc)
+            {
+                SourceText = $"\\lines{{{text}}}",
+                Language = LanguageInfo.Parse(lang),
+            };
+            stanza.HandleCommands();
+
+            _output.WriteLine(stanza.GetText());
+            Assert.True(stanza.Commands.Any());
+        }
+
+        [Theory]
         [InlineData("this is also some English", null, null, KnownLanguage.English)]
         [InlineData("Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", null, null, KnownLanguage.Coptic)]
         [InlineData("Eulogon ton Kurion", "Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", "Coptic Standard", KnownLanguage.Coptic)]
