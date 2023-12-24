@@ -46,6 +46,7 @@ public class RoleInfo : TranslationRunCollection
         .FluentAddText("Priest", KnownLanguage.English)
         .FluentAddText("Ⲡⲓⲟⲩⲏⲃ", KnownLanguage.Coptic)
         .FluentAddText("الكاهنُ", KnownLanguage.Arabic)
+        .FluentAddText("Ιερεύς", KnownLanguage.Greek)
         // TODO: Verify the following translations
         .FluentAddText("ቄስ", KnownLanguage.Amharic)
         .FluentAddText("Քահանա", KnownLanguage.Armenian)
@@ -53,7 +54,6 @@ public class RoleInfo : TranslationRunCollection
         .FluentAddText("Prêtre", KnownLanguage.French)
         .FluentAddText("Sacerdote", KnownLanguage.Italian)
         .FluentAddText("Priester", KnownLanguage.German)
-        .FluentAddText("Ιερεύς", KnownLanguage.Greek)
         .FluentAddText("כּוֹמֶר", KnownLanguage.Hebrew)
         .FluentAddText("Sacerdos", KnownLanguage.Latin)
         .FluentAddText("Sacerdote", KnownLanguage.Spanish);
@@ -94,6 +94,7 @@ public class RoleInfo : TranslationRunCollection
         .FluentAddText("People", KnownLanguage.English)
         .FluentAddText("Ⲡⲓⲗⲁⲟⲥ", KnownLanguage.Coptic)
         .FluentAddText("الشعبُ", KnownLanguage.Arabic)
+        .FluentAddText("Χορός", KnownLanguage.Greek)
         // TODO: Verify the following translations
         .FluentAddText("ሰዎች", KnownLanguage.Amharic)
         .FluentAddText("Ժողովուրդ", KnownLanguage.Armenian)
@@ -101,7 +102,6 @@ public class RoleInfo : TranslationRunCollection
         .FluentAddText("Gens", KnownLanguage.French)
         .FluentAddText("Persone", KnownLanguage.Italian)
         .FluentAddText("Menschen", KnownLanguage.German)
-        .FluentAddText("Λαός", KnownLanguage.Greek)
         .FluentAddText("Personas", KnownLanguage.Spanish)
         .FluentAddText("אֲנָשִׁים", KnownLanguage.Hebrew)
         .FluentAddText("Homines", KnownLanguage.Latin);
