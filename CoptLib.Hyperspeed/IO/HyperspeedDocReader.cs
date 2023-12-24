@@ -1,40 +1,38 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using MessagePack;
 using OwlCore.Extensions;
 
 namespace CoptLib.Hyperspeed.IO;
 
 public static class HyperspeedDocReader
 {
-    public static IDefinition DeserializeDefinition(Stream stream)
+    public static IDefinition DeserializeDefinition(Stream stream, ILoadContext? context = null)
     {
-        var bytes = stream.ToBytes();
-        MessagePackReader msg = new(bytes);
-        return DeserializeDefinition(msg);
+        BinaryReader reader = new(stream);
+        return DeserializeDefinition(reader);
     }
     
-    public static IDefinition DeserializeDefinition(MessagePackReader msg)
+    public static IDefinition DeserializeDefinition(BinaryReader reader,
+        ILoadContext? context = null, IDefinition? parent = null)
     {
-        var defCode = (HyperspeedDefinitionCode)msg.ReadUInt16();
-        var key = msg.ReadString();
+        var defCode = (HyperspeedDefinitionCode)reader.ReadUInt16();
+        var key = reader.ReadNullableString();
         
         IDefinition def = defCode switch
         {
-            HyperspeedDefinitionCode.Doc => new Doc(),
-            HyperspeedDefinitionCode.Stanza => new Stanza(null),
-            HyperspeedDefinitionCode.Section => new Section(null),
-            HyperspeedDefinitionCode.Run => new Run(null),
-            HyperspeedDefinitionCode.Comment => new Comment(null),
-            HyperspeedDefinitionCode.SimpleContent => new SimpleContent(null, null),
-            HyperspeedDefinitionCode.Script => ReadScript(msg),
+            HyperspeedDefinitionCode.Doc => new Doc(context),
+            HyperspeedDefinitionCode.Stanza => new Stanza(parent),
+            HyperspeedDefinitionCode.Section => new Section(parent),
+            HyperspeedDefinitionCode.Run => new Run(parent),
+            HyperspeedDefinitionCode.Comment => new Comment(parent),
+            HyperspeedDefinitionCode.SimpleContent => new SimpleContent(null, parent),
+            HyperspeedDefinitionCode.Script => ReadScript(reader),
             HyperspeedDefinitionCode.Variable => new Variable(),
             HyperspeedDefinitionCode.Translations => new TranslationCollection(),
             
@@ -42,58 +40,59 @@ public static class HyperspeedDocReader
         };
 
         def.Key = key;
+        def.Parent = parent;
         
         if (def is Doc doc)
         {
-            doc.Name = msg.ReadEncodedString()!;
+            doc.Name = reader.ReadEncodedString()!;
 
-            if (msg.ReadBoolean())
+            if (reader.ReadBoolean())
             {
                 doc.Author = new()
                 {
-                    FullName = msg.ReadEncodedString(),
-                    PhoneNumber = msg.ReadString(),
-                    Email = msg.ReadString(),
-                    Website = msg.ReadString(),
+                    FullName = reader.ReadEncodedString(),
+                    PhoneNumber = reader.ReadNullableString(),
+                    Email = reader.ReadNullableString(),
+                    Website = reader.ReadNullableString(),
                 };
             }
             
-            var translationCount = msg.ReadArrayHeader();
+            var translationCount = reader.ReadInt32();
             for (int t = 0; t < translationCount; t++)
             {
-                var translation = (ContentPart)DeserializeDefinition(msg);
+                var translation = (ContentPart)DeserializeDefinition(reader, context, def);
                 doc.Translations.Children.Add(translation);
             }
             
-            var definitionCount = msg.ReadArrayHeader();
+            var definitionCount = reader.ReadInt32();
             for (int d = 0; d < definitionCount; d++)
             {
-                doc.AddDefinition(DeserializeDefinition(msg));
+                doc.AddDefinition(DeserializeDefinition(reader, context, def));
             }
         }
         if (def is IMultilingual multilingual)
         {
-            var language = msg.ReadString();
+            var language = reader.ReadNullableString();
             if (language is not null)
                 multilingual.Language = LanguageInfo.Parse(language);
 
-            multilingual.Font = msg.ReadString();
+            multilingual.Font = reader.ReadNullableString();
         }
         if (def is IContent content)
         {
             // TODO: Optimize inlines
-            content.SourceText = msg.ReadEncodedString()!;
+            content.SourceText = reader.ReadEncodedString()!;
         }
         if (def is IContentCollectionContainer contentCollection)
         {
-            var sectionSource = msg.ReadEncodedString();
+            var sectionSource = reader.ReadEncodedString();
             if (sectionSource is not null)
                 contentCollection.Source = new SimpleContent(sectionSource, contentCollection);
             
-            var contentCollectionCount = msg.ReadArrayHeader();
+            var contentCollectionCount = reader.ReadInt32();
             for (int p = 0; p < contentCollectionCount; p++)
             {
-                var part = (ContentPart)DeserializeDefinition(msg);
+                var part = (ContentPart)DeserializeDefinition(reader, context, contentCollection);
                 contentCollection.Children.Add(part);
             }
         }
@@ -102,35 +101,55 @@ public static class HyperspeedDocReader
         switch (def)
         {
             case Section section:
-                var sectionTitle = msg.ReadEncodedString();
+                var sectionTitle = reader.ReadEncodedString();
                 if (sectionTitle is not null)
                     section.SetTitle(sectionTitle);
                 break;
 
             case Variable variable:
-                variable.Label = msg.ReadString();
-                variable.DefaultValue = msg.ReadEncodedString();
-                variable.Configurable = msg.ReadBoolean();
+                variable.Label = reader.ReadString();
+                variable.DefaultValue = reader.ReadEncodedString();
+                variable.Configurable = reader.ReadBoolean();
                 break;
         }
 
         return def;
     }
 
-    private static IDefinition ReadScript(this MessagePackReader msg)
+    private static IDefinition ReadScript(this BinaryReader reader)
     {
-        var typeId = msg.ReadString()!;
-        var scriptBody = msg.ReadEncodedString()!;
+        var typeId = reader.ReadString()!;
+        var scriptBody = reader.ReadEncodedString()!;
         return (IDefinition)ScriptingEngine.CreateScript(typeId, scriptBody);
     }
     
-    private static string? ReadEncodedString(this MessagePackReader msg)
+    private static string? ReadEncodedString(this BinaryReader reader)
     {
-        if (msg.TryReadNil())
+        if (reader.PeekChar() == 0)
+        {
+            ++reader.BaseStream.Position;
             return null;
+        }
 
-        var encoding = Encoding.GetEncoding(msg.ReadInt32());
-        var bytes = msg.ReadBytes()!.Value.ToArray();
+        var encoding = Encoding.GetEncoding(reader.ReadInt32());
+        var bytes = reader.ReadBytes();
         return encoding.GetString(bytes);
+    }
+
+    private static byte[] ReadBytes(this BinaryReader reader)
+    {
+        var length = reader.ReadInt32();
+        return reader.ReadBytes(length);
+    }
+
+    private static string? ReadNullableString(this BinaryReader reader)
+    {
+        if (reader.PeekChar() == 0)
+        {
+            ++reader.BaseStream.Position;
+            return null;
+        }
+
+        return reader.ReadString();
     }
 }

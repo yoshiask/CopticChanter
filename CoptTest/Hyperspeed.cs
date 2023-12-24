@@ -82,7 +82,7 @@ public class Hyperspeed
             },
             {
                 "translations",
-                new TranslationCollectionSection(null)
+                new Section(null)
                 {
                     Children =
                     {

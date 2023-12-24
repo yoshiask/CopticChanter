@@ -25,7 +25,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
-        <PackageReference Include="MessagePack" Version="2.5.140" />
     </ItemGroup>
 
 </Project>

@@ -2,12 +2,10 @@
 using System.IO;
 using System.Text;
 using CoptLib.Extensions;
-using CoptLib.Hyperspeed.Memory;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using MessagePack;
 
 namespace CoptLib.Hyperspeed.IO;
 
@@ -15,13 +13,11 @@ public static class HyperspeedDocWriter
 {
     public static void SerializeDefinition(Stream stream, IDefinition def)
     {
-        StreamBufferWriter buffer = new(stream);
-
-        MessagePackWriter writer = new(buffer);
+        BinaryWriter writer = new(stream);
         SerializeDefinition(writer, def);
     }
     
-    public static void SerializeDefinition(MessagePackWriter msg, IDefinition def)
+    public static void SerializeDefinition(BinaryWriter writer, IDefinition def)
     {
         var defCode = def switch
         {
@@ -38,42 +34,42 @@ public static class HyperspeedDocWriter
             _ => throw new ArgumentOutOfRangeException(nameof(def))
         };
         
-        msg.Write((uint)defCode);
-        msg.Write(def.Key);
+        writer.Write((ushort)defCode);
+        writer.WriteNullable(def.Key);
 
         if (def is Doc doc)
         {
-            msg.WriteEncodedString(doc.Name);
+            writer.WriteEncodedString(doc.Name);
 
             if (doc.Author is null)
             {
-                msg.Write(false);
+                writer.Write(false);
             }
             else
             {
-                msg.Write(true);
-                msg.WriteEncodedString(doc.Author.FullName);
-                msg.Write(doc.Author.PhoneNumber);
-                msg.Write(doc.Author.Email);
-                msg.Write(doc.Author.Website);
+                writer.Write(true);
+                writer.WriteEncodedString(doc.Author.FullName);
+                writer.WriteNullable(doc.Author.PhoneNumber);
+                writer.WriteNullable(doc.Author.Email);
+                writer.WriteNullable(doc.Author.Website);
             }
 
             doc.ApplyTransforms();
             
-            msg.WriteArrayHeader(doc.Translations.Children.Count);
+            writer.Write(doc.Translations.Children.Count);
             foreach (var translation in doc.Translations.Children)
-                SerializeDefinition(msg, translation);
+                SerializeDefinition(writer, translation);
             
             // TODO: Optimize direct definitions, only keep scripts and variables
-            msg.WriteArrayHeader(doc.DirectDefinitions.Count);
+            writer.Write(doc.DirectDefinitions.Count);
             foreach (var directDefinitions in doc.DirectDefinitions)
-                SerializeDefinition(msg, directDefinitions);
+                SerializeDefinition(writer, directDefinitions);
         }
 
         if (def is IScript<object> script)
         {
-            msg.Write(script.TypeId);
-            msg.WriteEncodedString(script.ScriptBody);
+            writer.Write(script.TypeId);
+            writer.WriteEncodedString(script.ScriptBody);
         }
         if (def is IMultilingual multilingual)
         {
@@ -93,54 +89,72 @@ public static class HyperspeedDocWriter
             
             multilingual.HandleFont();
             
-            msg.Write(elemLanguage?.ToString());
-            msg.Write(elemFont);
+            writer.WriteNullable(elemLanguage?.ToString());
+            writer.WriteNullable(elemFont);
         }
         if (def is IContent content)
         {
             content.HandleCommands();
             
             // TODO: Optimize inlines
-            msg.WriteEncodedString(content.GetText());
+            writer.WriteEncodedString(content.GetText());
         }
         if (def is IContentCollectionContainer contentCollection)
         {
-            msg.WriteEncodedString(contentCollection.Source?.ToString());
+            writer.WriteEncodedString(contentCollection.Source?.ToString());
             
-            msg.WriteArrayHeader(contentCollection.Children.Count);
+            writer.Write(contentCollection.Children.Count);
             foreach (var child in contentCollection.Children)
-                SerializeDefinition(msg, child);
+                SerializeDefinition(writer, child);
         }
 
         // Serialize class-specific properties
         switch (def)
         {
             case Section section:
-                msg.WriteEncodedString(section.Title?.ToString());
+                writer.WriteEncodedString(section.Title?.ToString());
                 break;
 
             case Variable variable:
-                msg.Write(variable.Label);
-                msg.WriteEncodedString(variable.DefaultValue?.ToString());
-                msg.Write(variable.Configurable);
+                writer.Write(variable.Label);
+                writer.WriteEncodedString(variable.DefaultValue?.ToString());
+                writer.Write(variable.Configurable);
                 break;
         }
         
-        msg.Flush();
+        writer.Flush();
     }
 
-    private static void WriteEncodedString(this MessagePackWriter msg, string? str, Encoding? encoding = null)
+    private static void WriteEncodedString(this BinaryWriter writer, string? str, Encoding? encoding = null)
     {
         if (str is null)
         {
-            msg.WriteNil();
+            writer.WriteNull();
             return;
         }
 
         encoding ??= Encoding.Unicode;
         
-        msg.Write(encoding.CodePage);
-        msg.Write(encoding.GetBytes(str));
-        msg.Flush();
+        writer.Write(encoding.CodePage);
+        writer.WriteBytes(encoding.GetBytes(str));
+    }
+
+    private static void WriteNull(this BinaryWriter writer) => writer.Write((byte)0);
+
+    private static void WriteBytes(this BinaryWriter writer, byte[] array)
+    {
+        writer.Write(array.Length);
+        writer.Write(array);
+    }
+
+    private static void WriteNullable(this BinaryWriter writer, string? str)
+    {
+        if (str is null)
+        {
+            writer.WriteNull();
+            return;
+        }
+        
+        writer.Write(str);
     }
 }
