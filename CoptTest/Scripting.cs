@@ -124,6 +124,23 @@ namespace CoptTest
             Assert.True(stanza.Commands.Any());
         }
 
+        [Fact]
+        public void ParseTextCommands_FontLinesCommand()
+        {
+            Doc doc = new();
+            Stanza stanza = new(doc)
+            {
+                SourceText = @"\lines{|Pi`sbwt `nte `A`arwn|`etafviri `ebol|,wric [o nem `tco|`foi `ntupoc ne.}",
+                Font = "CopticStandard",
+                Language = new(KnownLanguage.Coptic)
+            };
+            
+            doc.Translations.Children.Add(stanza);
+            doc.ApplyTransforms();
+            
+            _output.WriteLine(stanza.ToString());
+        }
+
         [Theory]
         [InlineData("this is also some English", null, null, KnownLanguage.English)]
         [InlineData("Ⲉⲩⲗⲟⲅⲟⲛ ⲧⲟⲛ Ⲕⲩⲣⲓⲟⲛ", null, null, KnownLanguage.Coptic)]
@@ -235,16 +252,21 @@ namespace CoptTest
                     "IPA transcription of a Coptic word, Oˌsɑnˌnɑ.")]
         [InlineData("English transcription of a Coptic word, \\trslit{English||\\lang{Coptic|CS Avva Shenouda|Wcanna}}.",
                     "English transcription of a Coptic word, Osănnă.")]
+        [InlineData("\\lines{|Seven times everyday,|I will praise Your Name|with all my heart,|O God of everyone.}",
+                    "Seven times everyday, / I will praise Your Name / with all my heart, / O God of everyone.")]
         public void ParseTextCommands_NestedCommands(string text, string? expectedResult = null)
         {
             expectedResult ??= text;
             Run run = new(text, null);
 
             var parsedInlines = ScriptingEngine.ParseTextCommands(run);
-            Assert.Equal(text, parsedInlines.ToString());
+            var actual = parsedInlines.ToString();
+            Assert.Equal(text, actual);
 
             _ = ScriptingEngine.RunTextCommands(parsedInlines);
-            Assert.Equal(expectedResult, parsedInlines.ToString());
+            actual = parsedInlines.ToString();
+            _output.WriteLine(actual);
+            Assert.Equal(expectedResult, actual);
         }
 
         public static IEnumerable<object[]> GetRunDotNetScript_Samples()

@@ -1,4 +1,5 @@
-﻿using CoptLib.IO;
+﻿using System.Collections.Generic;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using System.Linq;
@@ -30,7 +31,28 @@ public class LinesCmd : TextCommandBase
             }
         }
 
-        var lines = string.Join(lineSeparator, Parameters.Skip(1).Select(d => d.ToString()));
-        return new Run(lines!, Inline);
+        return GenerateLines(lineSeparator, Parameters.Skip(1));
+    }
+
+    private Span GenerateLines(string lineSeparator, IEnumerable<IDefinition> fragments)
+    {
+        Span lines = new(new InlineCollection(), Inline);
+        
+        Run separator = new(lineSeparator, Inline);
+        var defs = fragments.ToList();
+
+        for (int i = 0; i < defs.Count; i++)
+        {
+            var def = defs[i];
+            if (def is Inline defInline)
+                lines.Inlines.Add(defInline);
+            else
+                lines.Inlines.Add(new Run(def.ToString(), null));
+
+            if (i < defs.Count - 1)
+                lines.Inlines.Add(separator);
+        }
+
+        return lines;
     }
 }
