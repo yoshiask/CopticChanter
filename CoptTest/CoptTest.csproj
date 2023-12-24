@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CoptLib.Hyperspeed\CoptLib.Hyperspeed.csproj" />
         <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
         <PackageReference Include="OwlCore.Storage.SharpCompress" Version="0.0.0" />
 

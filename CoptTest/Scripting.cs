@@ -45,7 +45,7 @@ namespace CoptTest
                 expected.DocContext = actual.DocContext;
             }
 
-            MemberwiseAssertEqual(expected, actual);
+            Helpers.MemberwiseAssertEqual(expected, actual);
 
             _output.WriteLine(actual?.ToString() ?? "{x:Null}");
         }
@@ -62,7 +62,7 @@ namespace CoptTest
 
             var actual = script.Output;
             var expected = expectedFunc(context);
-            MemberwiseAssertEqual(expected, actual);
+            Helpers.MemberwiseAssertEqual(expected, actual);
 
             _output.WriteLine(actual?.ToString() ?? "{x:Null}");
         }
@@ -448,37 +448,6 @@ namespace CoptTest
             res.AddText(araText, KnownLanguage.Arabic);
 
             return res;
-        }
-
-        private static void MemberwiseAssertEqual(object? expected, object? actual)
-        {
-            if (expected is not null)
-            {
-                Assert.IsType(expected.GetType(), actual);
-
-                // Check if collections are equal
-                if (expected is IEnumerable<object> expectedCollection)
-                {
-                    foreach (var (ex, ac) in expectedCollection.Zip((IEnumerable<object>)actual))
-                    {
-                        Assert.Equal(ex, ac);
-                    }
-                }
-
-                var expectedProps = expected.GetType().GetProperties();
-                var actualProps = actual.GetType().GetProperties();
-                foreach (var (ex, ac) in expectedProps.Zip(actualProps))
-                {
-                    if (ex.Name == "Item")
-                        continue;
-
-                    Assert.Equal(ex.GetValue(expected), ac.GetValue(actual));
-                }
-            }
-            else
-            {
-                Assert.Equal(expected, actual);
-            }
         }
     }
 }

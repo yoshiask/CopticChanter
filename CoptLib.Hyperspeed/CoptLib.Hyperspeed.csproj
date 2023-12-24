@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <Version>2.9.0</Version>
+        <Authors>Joshua Askharoun</Authors>
+        <Company>Joshua Askharoun</Company>
+        <Product>Coptic Chanter</Product>
+        <Description>
+            A .NET Standard 2.0 library made to handle scenarios involving documents with interdependencies and multilingual content.
+        </Description>
+        <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>Coptic, Bohairic, Orthodox</PackageTags>
+        <Copyright>2017-2023</Copyright>
+
+        <!-- SourceLink and NuGet symbols -->
+        <PublishRepositoryUrl>https://github.com/yoshiask/CopticChanter</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
+        <PackageReference Include="MessagePack" Version="2.5.140" />
+    </ItemGroup>
+
+</Project>
