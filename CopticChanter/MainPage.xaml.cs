@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
+using CoptLib.Hyperspeed.IO;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -54,7 +55,25 @@ namespace CopticChanter
                         await foreach (var file in roamingFolder.GetFilesAsync())
                         {
                             using var fileStream = await file.OpenStreamAsync();
-                            set.IncludedDocs.Add(set.Context.LoadDoc(fileStream));
+
+                            Doc doc;
+                            if (System.IO.Path.GetExtension(file.Id) == ".bin")
+                            {
+                                try
+                                {
+                                    doc = (Doc) HyperspeedDocReader.ReadDefinition(fileStream, set.Context);
+                                }
+                                catch
+                                {
+                                    throw;
+                                }
+                            }
+                            else
+                            {
+                                doc = set.Context.LoadDoc(fileStream);
+                            }
+                            
+                            set.IncludedDocs.Add(doc);
                         }
 
                         setVm = new DocSetViewModel(set);

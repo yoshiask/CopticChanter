@@ -233,6 +233,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoptLib.Hyperspeed\CoptLib.Hyperspeed.csproj">
+      <Project>{a344a34d-0e93-480b-a81b-736f5e37e9f2}</Project>
+      <Name>CoptLib.Hyperspeed</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CoptLib\CoptLib.csproj">
       <Project>{08002024-111a-4e16-a32e-4e4cb175d685}</Project>
       <Name>CoptLib</Name>
