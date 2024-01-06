@@ -1,6 +1,6 @@
 ﻿namespace CoptLib.Hyperspeed.IO;
 
-public enum HyperspeedDefinitionCode : ushort
+public enum HyperspeedObjectCode : ushort
 {
     Null,
     Doc,

@@ -25,7 +25,8 @@ internal class Program
                 using (var docBinStream = File.OpenWrite(docBinPath))
                 {
                     var doc = DocReader.ReadDocXml(docXmlStream);
-                    HyperspeedDocWriter.WriteDefinition(docBinStream, doc);
+                    HyperspeedBinaryWriter writer = new(docBinStream);
+                    writer.WriteObject(doc);
                 }
 
                 File.Delete(docXmlPath);

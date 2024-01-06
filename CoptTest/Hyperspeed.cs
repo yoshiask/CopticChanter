@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CoptLib.Hyperspeed.IO;
 using CoptLib.Models;
 using CoptLib.Writing;
@@ -18,106 +19,112 @@ public class Hyperspeed
 
     [Theory]
     [MemberData(nameof(HyperspeedDefinitionSamples))]
-    public void WriteHyperspeedDefinition(string id, IDefinition def)
+    public void WriteHyperspeedDefinition(string id, Func<IDefinition> defFact)
     {
         using var outStream = Resource.OpenTestResult($"hyperspeed_{id}.bin");
-        HyperspeedDocWriter.WriteDefinition(outStream, def);
+        HyperspeedBinaryWriter writer = new(outStream);
+        writer.WriteObject(defFact());
     }
 
     [Theory]
     [MemberData(nameof(HyperspeedDefinitionSamples))]
-    public void ReadHyperspeedDefinition(string id, IDefinition defEx)
+    public void ReadHyperspeedDefinition(string id, Func<IDefinition> defExFact)
     {
         using var inStream = Resource.OpenTestResult($"hyperspeed_{id}.bin", FileMode.Open);
-
-        var defAc = HyperspeedDocReader.ReadDefinition(inStream);
-        Helpers.MemberwiseAssertEqual(defEx, defAc);
+        HyperspeedBinaryReader reader = new(inStream);
+        
+        var defAc = reader.ReadDefinition();
+        _output.WriteLine(defAc?.ToString());
+        Helpers.MemberwiseAssertEqual(defExFact(), defAc);
     }
 
-    public static TheoryData<string, IDefinition> HyperspeedDefinitionSamples()
+    public static TheoryData<string, Func<IDefinition>> HyperspeedDefinitionSamples()
     {
         return new()
         {
             {
                 "stanza",
-                new Stanza(null)
+                () => new Stanza(null)
                 {
                     SourceText = "howdy!",
                 }
             },
             {
                 "section_en",
-                new Section(null)
+                () =>
                 {
-                    Children =
+                    Section root = new(null);
+                    
+                    root.Children.Add(new Stanza(root)
                     {
-                        new Stanza(null)
-                        {
-                            SourceText = "Glory to the Father and to the Son and to the Holy Spirit."
-                        },
-                        new Stanza(null)
-                        {
-                            SourceText = "Now and ever and unto the ages of the ages. Amen."
-                        },
-                    }
+                        SourceText = "Glory to the Father and to the Son and to the Holy Spirit."
+                    });
+                    root.Children.Add(new Stanza(root)
+                    {
+                        SourceText = "Now and ever and unto the ages of the ages. Amen."
+                    });
+                    
+                    return root;
                 }
             },
             {
                 "section_cop",
-                new Section(null)
+                () =>
                 {
-                    Language = new(KnownLanguage.Coptic),
-                    Children =
+                    Section root = new(null)
                     {
-                        new Stanza(null)
-                        {
-                            SourceText = "Ⲁⲙⲏⲛ: ⲁⲗⲗⲏⲗⲟⲩⲓⲁ. Ⲇⲟⲝⲁ Ⲡⲁⲧⲣⲓ ⲕⲉ Ⲩ\u0300ⲓⲱ ⲕⲉ ⲁ\u0300ⲅⲓⲱ Ⲡ\u0300ⲛⲉⲩⲙⲁⲧⲓ."
-                        },
-                        new Stanza(null)
-                        {
-                            SourceText = "Ⲕⲉ ⲛⲩⲛ ⲕⲉ ⲁ\u0300ⲓ\u0300 ⲕⲉ ⲓⲥ ⲧⲟⲩⲥ ⲉ\u0300ⲱ\u0300ⲛⲁⲥ ⲧⲱⲛ ⲉ\u0300ⲱ\u0300ⲛⲱⲛ: ⲁ\u0300ⲙⲏⲛ."
-                        },
-                    }
+                        Language = new(KnownLanguage.Coptic)
+                    };
+                    
+                    root.Children.Add(new Stanza(root)
+                    {
+                        SourceText = "Ⲁⲙⲏⲛ: ⲁⲗⲗⲏⲗⲟⲩⲓⲁ. Ⲇⲟⲝⲁ Ⲡⲁⲧⲣⲓ ⲕⲉ Ⲩ\u0300ⲓⲱ ⲕⲉ ⲁ\u0300ⲅⲓⲱ Ⲡ\u0300ⲛⲉⲩⲙⲁⲧⲓ."
+                    });
+                    root.Children.Add(new Stanza(root)
+                    {
+                        SourceText = "Ⲕⲉ ⲛⲩⲛ ⲕⲉ ⲁ\u0300ⲓ\u0300 ⲕⲉ ⲓⲥ ⲧⲟⲩⲥ ⲉ\u0300ⲱ\u0300ⲛⲁⲥ ⲧⲱⲛ ⲉ\u0300ⲱ\u0300ⲛⲱⲛ: ⲁ\u0300ⲙⲏⲛ."
+                    });
+                    
+                    return root;
                 }
             },
             {
                 "translations",
-                new Section(null)
+                () =>
                 {
-                    Children =
+                    Section translations = new(null);
+
+                    Section en = new(translations)
                     {
-                        new Section(null)
-                        {
-                            Language = new(KnownLanguage.English),
-                            Children =
-                            {
-                                new Stanza(null)
-                                {
-                                    SourceText = "Blessed are you among women, and blessed is your Fruit, O Mary the Mother of God, the undefiled Virgin."
-                                },
-                                new Stanza(null)
-                                {
-                                    SourceText = "For the Sun of Righteousness, shone unto us from you, with healing under His wings, for He is the Creator."
-                                },
-                            }
-                        },
-                        new Section(null)
-                        {
-                            Language = new(KnownLanguage.Coptic),
-                            Font = "CopticStandard",
-                            Children =
-                            {
-                                new Stanza(null)
-                                {
-                                    SourceText = @"Te`cmarwout qen nihiomi@ `f`cmarwout `nje Pekarpoc@ `w Maria `:mau `m`Vnou]@ \}par;enoc `nat;wleb."
-                                },
-                                new Stanza(null)
-                                {
-                                    SourceText = @"Je afsai nan `ebol `nqy]@ `nje Piry `nte ]me;myi@ `ere pital[o ,y qa neftenh@ je `n;of pe Piref;amio."
-                                },
-                            }
-                        }
-                    }
+                        Language = new(KnownLanguage.English)
+                    };
+                    en.Children.Add(new Stanza(en)
+                    {
+                        SourceText = "Blessed are you among women, and blessed is your Fruit, O Mary the Mother of God, the undefiled Virgin."
+                    });
+                    en.Children.Add(new Stanza(en)
+                    {
+                        SourceText = "For the Sun of Righteousness, shone unto us from you, with healing under His wings, for He is the Creator."
+                    });
+                    translations.Children.Add(en);
+
+                    Section cop = new(translations)
+                    {
+                        Language = new(KnownLanguage.Coptic),
+                        Font = "CopticStandard"
+                    };
+                    cop.Children.Add(new Stanza(cop)
+                    {
+                        SourceText = @"Te`cmarwout qen nihiomi@ `f`cmarwout `nje Pekarpoc@ `w Maria `:mau `m`Vnou]@ \}par;enoc `nat;wleb."
+                    });
+                    cop.Children.Add(new Stanza(cop)
+                    {
+                        SourceText = @"Je afsai nan `ebol `nqy]@ `nje Piry `nte ]me;myi@ `ere pital[o ,y qa neftenh@ je `n;of pe Piref;amio."
+                    });
+                    translations.Children.Add(cop);
+
+                    translations.HandleFont();
+                    return translations;
                 }
             },
         };
