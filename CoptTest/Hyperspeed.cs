@@ -21,7 +21,7 @@ public class Hyperspeed
     public void WriteHyperspeedDefinition(string id, IDefinition def)
     {
         using var outStream = Resource.OpenTestResult($"hyperspeed_{id}.bin");
-        HyperspeedDocWriter.SerializeDefinition(outStream, def);
+        HyperspeedDocWriter.WriteDefinition(outStream, def);
     }
 
     [Theory]
@@ -30,7 +30,7 @@ public class Hyperspeed
     {
         using var inStream = Resource.OpenTestResult($"hyperspeed_{id}.bin", FileMode.Open);
 
-        var defAc = HyperspeedDocReader.DeserializeDefinition(inStream);
+        var defAc = HyperspeedDocReader.ReadDefinition(inStream);
         Helpers.MemberwiseAssertEqual(defEx, defAc);
     }
 
