@@ -25,6 +25,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CoptLib\CoptLib.csproj" />
+
+        <PackageReference Include="PolySharp" Version="1.13.2"
+                          Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime;build;native;contentfiles;analyzers</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>

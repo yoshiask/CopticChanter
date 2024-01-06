@@ -6,22 +6,30 @@ using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
-using OwlCore.Extensions;
 
 namespace CoptLib.Hyperspeed.IO;
 
 public static class HyperspeedDocReader
 {
-    public static IDefinition DeserializeDefinition(Stream stream, ILoadContext? context = null)
+    public static IDefinition? ReadDefinition(Stream stream, ILoadContext? context = null, IDefinition? parent = null)
     {
         BinaryReader reader = new(stream);
-        return DeserializeDefinition(reader);
+        return ReadObject<IDefinition>(reader, context, parent);
+    }
+
+    public static T? ReadObject<T>(this BinaryReader reader, ILoadContext? context = null, IDefinition? parent = null)
+    {
+        var obj = reader.ReadObject(context, parent);
+        return obj is null ? default : (T)obj;
     }
     
-    public static IDefinition DeserializeDefinition(BinaryReader reader,
+    public static object? ReadObject(this BinaryReader reader,
         ILoadContext? context = null, IDefinition? parent = null)
     {
         var defCode = (HyperspeedDefinitionCode)reader.ReadUInt16();
+        if (defCode is HyperspeedDefinitionCode.Null)
+            return null;
+        
         var key = reader.ReadNullableString();
         
         IDefinition def = defCode switch
@@ -60,14 +68,14 @@ public static class HyperspeedDocReader
             var translationCount = reader.ReadInt32();
             for (int t = 0; t < translationCount; t++)
             {
-                var translation = (ContentPart)DeserializeDefinition(reader, context, def);
+                var translation = ReadObject<ContentPart>(reader, context, def)!;
                 doc.Translations.Children.Add(translation);
             }
             
             var definitionCount = reader.ReadInt32();
             for (int d = 0; d < definitionCount; d++)
             {
-                doc.AddDefinition(DeserializeDefinition(reader, context, def));
+                doc.AddDefinition(ReadObject<IDefinition>(reader, context, def)!);
             }
         }
         if (def is IMultilingual multilingual)
@@ -85,14 +93,12 @@ public static class HyperspeedDocReader
         }
         if (def is IContentCollectionContainer contentCollection)
         {
-            var sectionSource = reader.ReadEncodedString();
-            if (sectionSource is not null)
-                contentCollection.Source = new SimpleContent(sectionSource, contentCollection);
+            contentCollection.Source = reader.ReadObject<SimpleContent>(context, contentCollection);
             
             var contentCollectionCount = reader.ReadInt32();
             for (int p = 0; p < contentCollectionCount; p++)
             {
-                var part = (ContentPart)DeserializeDefinition(reader, context, contentCollection);
+                var part = ReadObject<ContentPart>(reader, context, contentCollection)!;
                 contentCollection.Children.Add(part);
             }
         }
@@ -101,14 +107,26 @@ public static class HyperspeedDocReader
         switch (def)
         {
             case Section section:
-                var sectionTitle = reader.ReadEncodedString();
-                if (sectionTitle is not null)
-                    section.SetTitle(sectionTitle);
+                var sectionTitle = reader.ReadObject<IContent>(context, section);
+                section.SetTitle(sectionTitle);
                 break;
 
+            case Run run:
+                run.Text = reader.ReadEncodedString()!;
+                break;
+            
+            case TranslationRunCollection runCollection:
+                var runCollectionCount = reader.ReadInt32();
+                for (int p = 0; p < runCollectionCount; p++)
+                {
+                    var translationRun = ReadObject<Run>(reader, context, runCollection)!;
+                    runCollection.AddRun(translationRun);
+                }
+                break;
+            
             case Variable variable:
                 variable.Label = reader.ReadString();
-                variable.DefaultValue = reader.ReadEncodedString();
+                variable.DefaultValue = reader.ReadObject(context, variable);
                 variable.Configurable = reader.ReadBoolean();
                 break;
         }

@@ -11,16 +11,17 @@ namespace CoptLib.Hyperspeed.IO;
 
 public static class HyperspeedDocWriter
 {
-    public static void SerializeDefinition(Stream stream, IDefinition def)
+    public static void WriteDefinition(Stream stream, IDefinition obj)
     {
         BinaryWriter writer = new(stream);
-        SerializeDefinition(writer, def);
+        WriteObject(writer, obj);
     }
     
-    public static void SerializeDefinition(BinaryWriter writer, IDefinition def)
+    public static void WriteObject(this BinaryWriter writer, object? obj)
     {
-        var defCode = def switch
+        var defCode = obj switch
         {
+            null                        => HyperspeedDefinitionCode.Null,
             Doc _                       => HyperspeedDefinitionCode.Doc,
             Stanza _                    => HyperspeedDefinitionCode.Stanza,
             Section _                   => HyperspeedDefinitionCode.Section,
@@ -30,14 +31,20 @@ public static class HyperspeedDocWriter
             IScript<object> _           => HyperspeedDefinitionCode.Script,
             Variable _                  => HyperspeedDefinitionCode.Variable,
             TranslationCollection _     => HyperspeedDefinitionCode.Translations,
+            TranslationRunCollection _  => HyperspeedDefinitionCode.TranslationRuns,
             
-            _ => throw new ArgumentOutOfRangeException(nameof(def))
+            _ => throw new ArgumentOutOfRangeException(nameof(obj), obj.GetType().Name, "")
         };
         
         writer.Write((ushort)defCode);
-        writer.WriteNullable(def.Key);
+        if (obj is null)
+            return;
 
-        if (def is Doc doc)
+        if (obj is IDefinition def)
+        {
+            writer.WriteNullable(def.Key);
+        }
+        if (obj is Doc doc)
         {
             writer.WriteEncodedString(doc.Name);
 
@@ -58,31 +65,32 @@ public static class HyperspeedDocWriter
             
             writer.Write(doc.Translations.Children.Count);
             foreach (var translation in doc.Translations.Children)
-                SerializeDefinition(writer, translation);
+                writer.WriteObject(translation);
             
             // TODO: Optimize direct definitions, only keep scripts and variables
             writer.Write(doc.DirectDefinitions.Count);
             foreach (var directDefinitions in doc.DirectDefinitions)
-                SerializeDefinition(writer, directDefinitions);
+                writer.WriteObject(directDefinitions);
         }
 
-        if (def is IScript<object> script)
+        if (obj is IScript<object> script)
         {
             writer.Write(script.TypeId);
             writer.WriteEncodedString(script.ScriptBody);
         }
-        if (def is IMultilingual multilingual)
+        if (obj is IMultilingual multilingual)
         {
             var elemLanguage = multilingual.Language;
             var elemFont = multilingual.Font;
 
-            if (def.Parent is not null)
+            var multiDef = (IDefinition)obj;
+            if (multiDef.Parent is not null)
             {
-                var parentLanguage = def.Parent.GetLanguage();
+                var parentLanguage = multiDef.Parent.GetLanguage();
                 if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
                     elemLanguage = null;
                     
-                var parentFont = def.Parent.GetFont();
+                var parentFont = multiDef.Parent.GetFont();
                 if (parentFont is not null && parentFont == elemFont)
                     elemFont = null;
             }
@@ -92,32 +100,43 @@ public static class HyperspeedDocWriter
             writer.WriteNullable(elemLanguage?.ToString());
             writer.WriteNullable(elemFont);
         }
-        if (def is IContent content)
+        if (obj is IContent content)
         {
             content.HandleCommands();
             
             // TODO: Optimize inlines
             writer.WriteEncodedString(content.GetText());
         }
-        if (def is IContentCollectionContainer contentCollection)
+        if (obj is IContentCollectionContainer contentCollection)
         {
-            writer.WriteEncodedString(contentCollection.Source?.ToString());
+            writer.WriteObject(contentCollection.Source);
             
             writer.Write(contentCollection.Children.Count);
             foreach (var child in contentCollection.Children)
-                SerializeDefinition(writer, child);
+                writer.WriteObject(child);
         }
 
         // Serialize class-specific properties
-        switch (def)
+        switch (obj)
         {
             case Section section:
-                writer.WriteEncodedString(section.Title?.ToString());
+                writer.WriteObject(section.Title);
+                writer.WriteEncodedString(section.Title?.GetText());
+                break;
+            
+            case Run run:
+                writer.WriteEncodedString(run.Text);
+                break;
+            
+            case TranslationRunCollection runCollection:
+                writer.Write(runCollection.Count);
+                foreach (var translationRun in runCollection)
+                    writer.WriteObject(translationRun);
                 break;
 
             case Variable variable:
                 writer.Write(variable.Label);
-                writer.WriteEncodedString(variable.DefaultValue?.ToString());
+                writer.WriteObject(variable.DefaultValue);
                 writer.Write(variable.Configurable);
                 break;
         }

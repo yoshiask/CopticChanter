@@ -2,6 +2,7 @@
 
 public enum HyperspeedDefinitionCode : ushort
 {
+    Null,
     Doc,
     Stanza,
     Section,
@@ -10,5 +11,6 @@ public enum HyperspeedDefinitionCode : ushort
     SimpleContent,
     Script,
     Variable,
-    Translations
+    Translations,
+    TranslationRuns,
 }
