@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CoptLib.Hyperspeed.IO;
+using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Writing;
 using Xunit;
@@ -11,6 +14,12 @@ namespace CoptTest;
 public class Hyperspeed
 {
     private readonly ITestOutputHelper _output;
+    private readonly string[] _testSetFileNames =
+    {
+        "Let Us Praise the Lord.xml",
+        "The First Hoos Lobsh.xml",
+        "The Friday Theotokia.xml"
+    };
 
     public Hyperspeed(ITestOutputHelper output)
     {
@@ -36,6 +45,26 @@ public class Hyperspeed
         var defAc = reader.ReadDefinition();
         _output.WriteLine(defAc?.ToString());
         Helpers.MemberwiseAssertEqual(defExFact(), defAc);
+    }
+
+    [Fact]
+    public void WriteHyperspeedSet()
+    {
+        List<Doc> docs = new(_testSetFileNames
+            .Select(Resource.ReadAllText)
+            .Select(x => DocReader.ParseDocXml(x)));
+
+        DocSet set = new("urn:coptlib-hyper:test-set", "Test Set", docs);
+        set.Author = new()
+        {
+            FullName = "Yoshi Askharoun",
+            Email = "jjask7@gmail.com",
+            Website = "https://github.com/yoshiask"
+        };
+        
+        using var outStream = Resource.OpenTestResult("hyperspeed_set.bin");
+        HyperspeedBinaryWriter writer = new(outStream);
+        writer.Write(set);
     }
 
     public static TheoryData<string, Func<IDefinition>> HyperspeedDefinitionSamples()

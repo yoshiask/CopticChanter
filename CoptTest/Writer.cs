@@ -25,7 +25,7 @@ public class Writer
     {
         "Let Us Praise the Lord.xml",
         "The First Hoos Lobsh.xml",
-        "Watos Hymn for the Three Saintly Children.xml"
+        "The Friday Theotokia.xml"
     };
     
     public Writer(ITestOutputHelper output)

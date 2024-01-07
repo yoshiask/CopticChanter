@@ -13,4 +13,7 @@ public enum HyperspeedObjectCode : ushort
     Variable,
     Translations,
     TranslationRuns,
+    Set,
+    Sequence,
+    Author,
 }

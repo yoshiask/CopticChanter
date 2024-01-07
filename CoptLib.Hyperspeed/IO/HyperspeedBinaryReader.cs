@@ -39,7 +39,7 @@ public class HyperspeedBinaryReader : BinaryReader
         
         var key = ReadNullableString();
         
-        IDefinition def = objCode switch
+        object obj = objCode switch
         {
             HyperspeedObjectCode.Doc => new Doc(Context),
             HyperspeedObjectCode.Stanza => new Stanza(parent),
@@ -55,23 +55,17 @@ public class HyperspeedBinaryReader : BinaryReader
             _ => throw new ArgumentOutOfRangeException(nameof(objCode), objCode, "Invalid object code")
         };
 
-        def.Key = key;
-        def.Parent = parent;
+        var def = obj as IDefinition;
+        if (def is not null)
+        {
+            def.Key = key;
+            def.Parent = parent;
+        }
         
-        if (def is Doc doc)
+        if (obj is Doc doc)
         {
             doc.Name = ReadEncodedString()!;
-
-            if (ReadBoolean())
-            {
-                doc.Author = new()
-                {
-                    FullName = ReadEncodedString(),
-                    PhoneNumber = ReadNullableString(),
-                    Email = ReadNullableString(),
-                    Website = ReadNullableString(),
-                };
-            }
+            doc.Author = ReadObject<Author>();
             
             var translationCount = ReadInt32();
             for (int t = 0; t < translationCount; t++)
@@ -86,7 +80,7 @@ public class HyperspeedBinaryReader : BinaryReader
                 doc.AddDefinition(ReadObject<IDefinition>(def)!);
             }
         }
-        if (def is IMultilingual multilingual)
+        if (obj is IMultilingual multilingual)
         {
             var language = ReadNullableString();
             if (language is not null)
@@ -94,12 +88,12 @@ public class HyperspeedBinaryReader : BinaryReader
 
             multilingual.Font = ReadNullableString();
         }
-        if (def is IContent content)
+        if (obj is IContent content)
         {
             // TODO: Optimize inlines
             content.SourceText = ReadEncodedString()!;
         }
-        if (def is IContentCollectionContainer contentCollection)
+        if (obj is IContentCollectionContainer contentCollection)
         {
             contentCollection.Source = ReadObject<SimpleContent>(contentCollection);
             
@@ -112,7 +106,7 @@ public class HyperspeedBinaryReader : BinaryReader
         }
 
         // Serialize class-specific properties
-        switch (def)
+        switch (obj)
         {
             case Section section:
                 var sectionTitle = ReadObject<IContent>(section);
@@ -137,9 +131,16 @@ public class HyperspeedBinaryReader : BinaryReader
                 variable.DefaultValue = ReadObject(variable);
                 variable.Configurable = ReadBoolean();
                 break;
+            
+            case Author author:
+                author.FullName = ReadEncodedString();
+                author.PhoneNumber = ReadNullableString();
+                author.Email = ReadNullableString();
+                author.Website = ReadNullableString();
+                break;
         }
 
-        return def;
+        return obj;
     }
 
     public IDefinition ReadScript()

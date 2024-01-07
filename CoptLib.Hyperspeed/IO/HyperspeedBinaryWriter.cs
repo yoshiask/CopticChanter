@@ -34,6 +34,7 @@ public class HyperspeedBinaryWriter : BinaryWriter
             Variable _                  => HyperspeedObjectCode.Variable,
             TranslationCollection _     => HyperspeedObjectCode.Translations,
             TranslationRunCollection _  => HyperspeedObjectCode.TranslationRuns,
+            Author _                    => HyperspeedObjectCode.Author,
             
             _ => throw new ArgumentOutOfRangeException(nameof(obj), obj.GetType().Name, "")
         };
@@ -49,19 +50,7 @@ public class HyperspeedBinaryWriter : BinaryWriter
         if (obj is Doc doc)
         {
             WriteEncodedString(doc.Name);
-
-            if (doc.Author is null)
-            {
-                Write(false);
-            }
-            else
-            {
-                Write(true);
-                WriteEncodedString(doc.Author.FullName);
-                WriteNullable(doc.Author.PhoneNumber);
-                WriteNullable(doc.Author.Email);
-                WriteNullable(doc.Author.Website);
-            }
+            WriteObject(doc.Author);
 
             doc.ApplyTransforms();
             
@@ -140,6 +129,13 @@ public class HyperspeedBinaryWriter : BinaryWriter
                 WriteObject(variable.DefaultValue);
                 Write(variable.Configurable);
                 break;
+            
+            case Author author:
+                WriteEncodedString(author.FullName);
+                WriteNullable(author.PhoneNumber);
+                WriteNullable(author.Email);
+                WriteNullable(author.Website);
+                break;
         }
         
         Flush();
@@ -176,5 +172,34 @@ public class HyperspeedBinaryWriter : BinaryWriter
         }
         
         Write(str);
+    }
+
+    public void Write(DocSet set)
+    {
+        Write((ushort)HyperspeedObjectCode.Set);
+        WriteNullable(set.Key);
+        WriteObject(set.Author);
+        
+        // Reserve space for the jump table.
+        // This section is an array of longs, where each
+        // item is the position of an included doc.
+        var jumpTableStart = BaseStream.Position;
+        var jumpTableLength = set.IncludedDocs.Count * sizeof(long);
+        BaseStream.Position += jumpTableLength;
+        
+        // Start writing included docs, keeping track of the starting
+        // offset of each doc so we can later write this to the jump table.
+        var jumpTableEntries = new long[set.IncludedDocs.Count];
+        for (int d = 0; d < set.IncludedDocs.Count; d++)
+        {
+            jumpTableEntries[d] = BaseStream.Position;
+            WriteObject(set.IncludedDocs[d]);
+        }
+        
+        // Move back to the jump table and fill in the positions
+        var jumpTableBytes = new byte[jumpTableLength];
+        Buffer.BlockCopy(jumpTableEntries, 0, jumpTableBytes, 0, jumpTableLength);
+        BaseStream.Position = jumpTableStart;
+        Write(jumpTableBytes);
     }
 }
