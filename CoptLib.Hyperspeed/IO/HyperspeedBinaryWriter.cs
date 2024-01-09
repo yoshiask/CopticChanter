@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using CoptLib.Extensions;
@@ -18,12 +19,43 @@ public class HyperspeedBinaryWriter : BinaryWriter
     protected HyperspeedBinaryWriter() : base()
     {
     }
-    
-    public void WriteObject(object? obj)
+
+    public void WriteEx(object? obj)
     {
-        var defCode = obj switch
+        switch (obj)
         {
-            null                        => HyperspeedObjectCode.Null,
+            case DocSet set:
+                Write(set);
+                break;
+            
+            case IDefinition def:
+                Write(def);
+                break;
+            
+            case HyperspeedObjectCode code:
+                Write(code);
+                break;
+            
+            case Author author:
+                Write(author);
+                break;
+            
+            case byte[] bytes:
+                WriteBytes(bytes);
+                break;
+            
+            default:
+                throw new ArgumentException($"'{obj?.GetType()}' is not a Hyperseed object.");
+        }
+    }
+    
+    public void Write(IDefinition? def)
+    {
+        if (WriteNullIfNull(def))
+            return;
+        
+        var defCode = def switch
+        {
             Doc _                       => HyperspeedObjectCode.Doc,
             Stanza _                    => HyperspeedObjectCode.Stanza,
             Section _                   => HyperspeedObjectCode.Section,
@@ -34,16 +66,13 @@ public class HyperspeedBinaryWriter : BinaryWriter
             Variable _                  => HyperspeedObjectCode.Variable,
             TranslationCollection _     => HyperspeedObjectCode.Translations,
             TranslationRunCollection _  => HyperspeedObjectCode.TranslationRuns,
-            Author _                    => HyperspeedObjectCode.Author,
             
-            _ => throw new ArgumentOutOfRangeException(nameof(obj), obj.GetType().Name, "")
+            _ => throw new ArgumentOutOfRangeException(nameof(def), def.GetType().Name, "")
         };
         
-        Write((ushort)defCode);
-        if (obj is null)
-            return;
+        Write(defCode);
 
-        if (obj is IScript<object?> script)
+        if (def is IScript<object?> script)
         {
             // Make sure we write the type ID first, it's effectively an extension
             // of the Hyperspeed object code and is required to know which script
@@ -62,40 +91,37 @@ public class HyperspeedBinaryWriter : BinaryWriter
             }
         }
         
-        if (obj is IDefinition def)
-        {
-            WriteNullable(def.Key);
-        }
-        if (obj is Doc doc)
+        WriteNullable(def.Key);
+        
+        if (def is Doc doc)
         {
             WriteEncodedString(doc.Name);
-            WriteObject(doc.Author);
+            Write(doc.Author);
 
             doc.ApplyTransforms();
             
             Write(doc.Translations.Children.Count);
             foreach (var translation in doc.Translations.Children)
-                WriteObject(translation);
+                Write(translation);
             
             // TODO: Optimize direct definitions, only keep scripts and variables
             Write(doc.DirectDefinitions.Count);
             foreach (var directDefinitions in doc.DirectDefinitions)
-                WriteObject(directDefinitions);
+                Write(directDefinitions);
         }
 
-        if (obj is IMultilingual multilingual)
+        if (def is IMultilingual multilingual)
         {
             var elemLanguage = multilingual.Language;
             var elemFont = multilingual.Font;
 
-            var multiDef = (IDefinition)obj;
-            if (multiDef.Parent is not null)
+            if (def.Parent is not null)
             {
-                var parentLanguage = multiDef.Parent.GetLanguage();
+                var parentLanguage = def.Parent.GetLanguage();
                 if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
                     elemLanguage = null;
                     
-                var parentFont = multiDef.Parent.GetFont();
+                var parentFont = def.Parent.GetFont();
                 if (parentFont is not null && parentFont == elemFont)
                     elemFont = null;
             }
@@ -105,27 +131,27 @@ public class HyperspeedBinaryWriter : BinaryWriter
             WriteNullable(elemLanguage?.ToString());
             WriteNullable(elemFont);
         }
-        if (obj is IContent content)
+        if (def is IContent content)
         {
             content.HandleCommands();
             
             // TODO: Optimize inlines
             WriteEncodedString(content.GetText());
         }
-        if (obj is IContentCollectionContainer contentCollection)
+        if (def is IContentCollectionContainer contentCollection)
         {
-            WriteObject(contentCollection.Source);
+            Write(contentCollection.Source);
             
             Write(contentCollection.Children.Count);
             foreach (var child in contentCollection.Children)
-                WriteObject(child);
+                Write(child);
         }
 
         // Serialize class-specific properties
-        switch (obj)
+        switch (def)
         {
             case Section section:
-                WriteObject(section.Title);
+                Write(section.Title);
                 break;
             
             case Run run:
@@ -135,33 +161,34 @@ public class HyperspeedBinaryWriter : BinaryWriter
             case TranslationRunCollection runCollection:
                 Write(runCollection.Count);
                 foreach (var translationRun in runCollection)
-                    WriteObject(translationRun);
+                    Write(translationRun);
                 break;
 
             case Variable variable:
                 Write(variable.Label);
-                WriteObject(variable.DefaultValue);
+                Write((IDefinition?) variable.DefaultValue);
                 Write(variable.Configurable);
-                break;
-            
-            case Author author:
-                WriteEncodedString(author.FullName);
-                WriteNullable(author.PhoneNumber);
-                WriteNullable(author.Email);
-                WriteNullable(author.Website);
                 break;
         }
         
         Flush();
     }
 
+    public void Write(Author? author)
+    {
+        if (WriteNullIfNull(author))
+            return;
+        
+        WriteEncodedString(author.FullName);
+        WriteNullable(author.PhoneNumber);
+        WriteNullable(author.Email);
+        WriteNullable(author.Website);
+    }
+    
     public void WriteEncodedString(string? str, Encoding? encoding = null)
     {
-        if (str is null)
-        {
-            WriteNull();
+        if (WriteNullIfNull(str))
             return;
-        }
 
         encoding ??= Encoding.Unicode;
         
@@ -169,7 +196,18 @@ public class HyperspeedBinaryWriter : BinaryWriter
         WriteBytes(encoding.GetBytes(str));
     }
 
-    public void WriteNull() => Write((byte)0);
+    public void WriteNull() => Write(HyperspeedObjectCode.Null);
+
+    public bool WriteNullIfNull([NotNullWhen(false)] object? obj)
+    {
+        if (obj is null)
+        {
+            WriteNull();
+            return true;
+        }
+
+        return false;
+    }
 
     public void WriteBytes(byte[] array)
     {
@@ -179,21 +217,20 @@ public class HyperspeedBinaryWriter : BinaryWriter
 
     public void WriteNullable(string? str)
     {
-        if (str is null)
-        {
-            WriteNull();
+        if (WriteNullIfNull(str))
             return;
-        }
         
         Write(str);
     }
 
+    public void Write(HyperspeedObjectCode code) => Write((ushort)code);
+
     public void Write(DocSet set)
     {
-        Write((ushort)HyperspeedObjectCode.Set);
+        Write(HyperspeedObjectCode.Set);
         Write(set.Key!);
         Write(set.Name);
-        WriteObject(set.Author);
+        Write(set.Author);
         
         // Reserve space for the jump table.
         // This section is an array of longs, where each
@@ -209,7 +246,7 @@ public class HyperspeedBinaryWriter : BinaryWriter
         for (int d = 0; d < set.IncludedDocs.Count; d++)
         {
             jumpTableEntries[d] = BaseStream.Position;
-            WriteObject(set.IncludedDocs[d]);
+            Write(set.IncludedDocs[d]);
         }
         
         // Move back to the jump table and fill in the positions

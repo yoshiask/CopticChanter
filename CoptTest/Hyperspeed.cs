@@ -32,7 +32,7 @@ public class Hyperspeed
     {
         using var outStream = Resource.OpenTestResult($"hyperspeed_{id}.bin");
         HyperspeedBinaryWriter writer = new(outStream);
-        writer.WriteObject(defFact());
+        writer.Write(defFact());
     }
 
     [Theory]
