@@ -13,13 +13,13 @@ public class DocSetReader
 {
     private IFolder RootFolder { get; }
 
-    private LoadContextBase Context { get; }
+    private ILoadContext Context { get; }
 
     public Dictionary<string, string>? Index { get; private set; }
 
     public DocSet? Set { get; private set; }
 
-    public DocSetReader(IFolder folder, LoadContextBase? context = null)
+    public DocSetReader(IFolder folder, ILoadContext? context = null)
     {
         Guard.IsNotNull(folder);
 

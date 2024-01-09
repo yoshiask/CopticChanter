@@ -3,17 +3,26 @@ using CoptLib.Models;
 
 namespace CoptLib.Scripting.Typed;
 
-public class DotNetDefinitionScript : DotNetScript<DefinitionScriptImplementationBase, IDefinition>
+public class DotNetDefinitionScript : DotNetScript<IDefinition>
 {
+    public const string TYPE_ID = "csharp-def";
+
     public DotNetDefinitionScript(string scriptBody, IDefinition? parent = null) : base(scriptBody, parent)
     {
     }
 
-    protected override IDefinition ExecuteInternal(LoadContextBase? context)
+    public override string TypeId => TYPE_ID;
+
+    protected override object? ExecuteInternal(ILoadContext? context)
     {
-        var output = Implementation!.Execute(context ?? DocContext?.Context);
-        output.DocContext = DocContext;
-        output.Parent = this;
+        var output = Implementation!.Execute(context ?? DocContext?.Context) as IDefinition;
+        
+        if (output is not null)
+        {
+            output.DocContext = DocContext;
+            output.Parent = this;
+        }
+
         return output;
     }
 }

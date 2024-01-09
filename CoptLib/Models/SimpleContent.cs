@@ -1,6 +1,7 @@
 ﻿using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models;
@@ -10,18 +11,20 @@ public class SimpleContent : Definition, IContent
 {
     private string _sourceText;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public SimpleContent(string? sourceText, IDefinition? parent)
     {
         SourceText = sourceText ?? string.Empty;
         Parent = parent;
         DocContext = parent?.DocContext;
     }
-#pragma warning restore CS8618
 
     public string SourceText
     {
         get => _sourceText;
+        
+        [MemberNotNull(nameof(_sourceText))]
+        [MemberNotNull(nameof(Inlines))]
+        [MemberNotNull(nameof(Commands))]
         set => _sourceText = ContentHelper.UpdateSourceText(this, value);
     }
 

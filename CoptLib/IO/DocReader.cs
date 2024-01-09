@@ -23,9 +23,9 @@ public static class DocReader
     /// <returns></returns>
     /// <remarks>
     /// Do not use when broad filesystem access is not available.
-    /// Instead, load the file manually and use <see cref="ReadDocXml(string,CoptLib.IO.LoadContextBase)"/>. 
+    /// Instead, load the file manually and use <see cref="ReadDocXml(string, ILoadContext)"/>. 
     /// </remarks>
-    public static Doc ReadDocXml(string path, LoadContextBase? context = null)
+    public static Doc ReadDocXml(string path, ILoadContext? context = null)
         => ParseDocXml(XDocument.Load(path), context);
 
     /// <summary>
@@ -34,19 +34,19 @@ public static class DocReader
     /// <param name="file">A Stream of the XML file</param>
     /// <param name="context">The context to load the document into.</param>
     /// <returns></returns>
-    public static Doc ReadDocXml(Stream file, LoadContextBase? context = null)
+    public static Doc ReadDocXml(Stream file, ILoadContext? context = null)
         => ParseDocXml(XDocument.Load(file, LoadOptions.None), context);
 
     /// <summary>
     /// Parses the XML string into a <see cref="Doc"/>.
     /// </summary>
-    public static Doc ParseDocXml(string xml, LoadContextBase? context = null)
+    public static Doc ParseDocXml(string xml, ILoadContext? context = null)
         => ParseDocXml(XDocument.Parse(xml), context);
 
     /// <summary>
     /// Parses the XML document tree into a <see cref="Doc"/>.
     /// </summary>
-    public static Doc ParseDocXml(XDocument xml, LoadContextBase? context = null)
+    public static Doc ParseDocXml(XDocument xml, ILoadContext? context = null)
     {
         Guard.IsNotNull(xml.Root);
 
@@ -115,11 +115,13 @@ public static class DocReader
             }
             else if (defElemName == nameof(Comment))
             {
-                def = new Comment(parent);
+                Comment comment = new(parent);
 
                 var commentTypeStr = defElem.Attribute("Type")?.Value;
                 if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
-                    ((Comment) def).Type = commentType;
+                    comment.Type = commentType;
+
+                def = comment;
             }
             else if (defElemName == "String")
             {
@@ -127,8 +129,20 @@ public static class DocReader
             }
             else if (defElemName == "Script")
             {
-                DotNetDefinitionScript script = new(defElem.Value);
-                def = script;
+                // Default to csharp-def (DotNetDefinitionScript) for backward-compatibility.
+                // Since it's the default, make sure it's always registered.
+                DotNetDefinitionScript.Register();
+                
+                var scriptTypeId = defElem.Attribute("Type")?.Value ?? "csharp-def";
+
+                var script = Scripting.ScriptingEngine.CreateScript(
+                    scriptTypeId, defElem.Value);
+
+                if (script is not IDefinition)
+                    throw new InvalidDataException($"Script of type '{scriptTypeId}' must implement " +
+                                                   $"{nameof(IDefinition)} to be defined directly in a document.");
+                    
+                def = (IDefinition)script;
             }
             else if (defElemName == nameof(Variable))
             {

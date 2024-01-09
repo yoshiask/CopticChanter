@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CommunityToolkit.Diagnostics;
+using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Commands;
@@ -10,7 +11,10 @@ using OwlCore.Extensions;
 
 namespace CoptLib.Scripting;
 
-public class ScriptingEngine
+public delegate ICommandOutput<object?> ScriptFactory(string body, string? subtype,
+    IReadOnlyDictionary<string, object>? additional);
+
+public static class ScriptingEngine
 {
     private static readonly Dictionary<string, Type> AvailableCmds = new()
     {
@@ -22,8 +26,21 @@ public class ScriptingEngine
         { "lang", typeof(LanguageCmd) },
         { "ms", typeof(TimestampCmd) },
         { "trslit", typeof(TransliterateCmd) },
+        { "lines", typeof(LinesCmd) },
         { "foot", typeof(FootnoteCmd) },
     };
+
+    public static readonly Dictionary<string, ScriptFactory> ScriptFactories = new();
+
+    public static ICommandOutput<object?> CreateScript(string typeId, string body,
+        IReadOnlyDictionary<string, object>? additionalParameters = null)
+    {
+        var (type, subtype) = typeId.SplitAtChar(':');
+        if (!ScriptFactories.TryGetValue(type, out var factory))
+            throw new ArgumentException($"Unrecognized script type of '{typeId}'.");
+
+        return factory(body, subtype, additionalParameters);
+    }
 
     /// <summary>
     /// Parses inline text commands from an <see cref="InlineCollection"/>.

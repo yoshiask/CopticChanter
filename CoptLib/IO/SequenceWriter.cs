@@ -95,14 +95,17 @@ public class SequenceWriter
             case ScriptedSequenceNode scriptNode:
                 elem = new(SequenceNodeType.Script.ToString());
 
-                string scriptBody = scriptNode.NextDocCommand switch
+                if (scriptNode.NextDocCommand is IScript<object> script)
                 {
-                    DotNetScript<NullableIntScriptImplementation, int?> dotNetScript => dotNetScript.ScriptBody,
-                    _ => throw new Exception(
-                        $"'{scriptNode.NextDocCommand.GetType()}' is not supported for script serialization.")
-                };
+                    elem.Add(new XCData(script.ScriptBody));
+                    elem.SetAttributeValue("TypeId", script.TypeId);
+                }
+                else
+                {
+                    throw new Exception(
+                        $"'{scriptNode.NextDocCommand.GetType()}' is not supported for script serialization.");
+                }
 
-                elem.Add(new XCData(scriptBody));
                 break;
             
             default:

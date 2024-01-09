@@ -12,10 +12,10 @@ namespace CoptLib.Models;
 [XmlRoot("Document")]
 public class Doc : Definition, IContextualLoad
 {
-    private LoadContextBase _context;
+    private ILoadContext _context;
     private bool _transformed;
 
-    public Doc(LoadContextBase? context = null)
+    public Doc(ILoadContext? context = null)
     {
         _context = context ?? new LoadContext();
         Translations = new(null)
@@ -38,7 +38,7 @@ public class Doc : Definition, IContextualLoad
     public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
 
     [NotNull]
-    public LoadContextBase? Context
+    public ILoadContext? Context
     {
         get => _context;
         set
@@ -81,7 +81,7 @@ public class Doc : Definition, IContextualLoad
         _transformed = true;
     }
 
-    internal static void Transform(object part, LoadContextBase? context)
+    internal static void Transform(object part, ILoadContext? context)
     {
         if (part is ICommandOutput<object> partScript)
         {

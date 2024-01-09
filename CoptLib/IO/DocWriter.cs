@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using CoptLib.Extensions;
+using CoptLib.Scripting;
 using CoptLib.Scripting.Typed;
 using CoptLib.Writing;
 
@@ -159,9 +160,11 @@ public static class DocWriter
                 elem.SetAttributeValue(nameof(section.Title), section.Title);
                 break;
 
-            case DotNetDefinitionScript script:
+            case IScript<object> script:
                 elem.Name = "Script";
                 elem.Add(new XCData(script.ScriptBody));
+                
+                
                 break;
 
             case Variable variable:

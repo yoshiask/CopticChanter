@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CoptLib.IO;
 using CoptLib.Models;
+using CoptLib.Scripting.Typed;
 
 namespace CoptLib.Scripting;
 
@@ -28,5 +29,5 @@ public interface ICommandOutput<out TReturn>
     /// <summary>
     /// Executes the command.
     /// </summary>
-    public void Execute(LoadContextBase? context);
+    public TReturn? Execute(ILoadContext? context);
 }

@@ -10,9 +10,9 @@ namespace CoptLib.Models;
 
 public class DocSet : IContextualLoad
 {
-    private LoadContextBase _context;
+    private ILoadContext _context;
 
-    public DocSet(string key, string name, IEnumerable<Doc>? docs = null, LoadContextBase? context = null)
+    public DocSet(string key, string name, IEnumerable<Doc>? docs = null, ILoadContext? context = null)
     {
         Key = key;
         Name = name;
@@ -29,7 +29,7 @@ public class DocSet : IContextualLoad
     public Author? Author { get; set; }
 
     [NotNull]
-    public LoadContextBase? Context
+    public ILoadContext? Context
     {
         get => _context;
         set
@@ -57,7 +57,7 @@ public class DocSet : IContextualLoad
         return xdoc;
     }
 
-    public static DocSet Deserialize(XDocument xdoc, LoadContextBase? context = null)
+    public static DocSet Deserialize(XDocument xdoc, ILoadContext? context = null)
     {
         var setXml = xdoc.Root;
         Guard.IsNotNull(setXml);
