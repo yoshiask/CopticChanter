@@ -22,6 +22,7 @@ public class ScriptingEngine
         { "lang", typeof(LanguageCmd) },
         { "ms", typeof(TimestampCmd) },
         { "trslit", typeof(TransliterateCmd) },
+        { "foot", typeof(FootnoteCmd) },
     };
 
     /// <summary>

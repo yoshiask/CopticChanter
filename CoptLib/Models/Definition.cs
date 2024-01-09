@@ -51,6 +51,18 @@ public abstract class Definition : IDefinition
     public ICollection<IDefinition> References { get; } = new List<IDefinition>();
 }
 
+public class Definition<T> : Definition
+{
+    public Definition(T value, string? key, IDefinition? parent = null)
+    {
+        Key = key;
+        Parent = parent;
+        Value = value;
+    }
+    
+    public T Value { get; set; }
+}
+
 public class Variable : Definition
 {
     [XmlAttribute]
