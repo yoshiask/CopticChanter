@@ -67,6 +67,16 @@ public class Hyperspeed
         writer.Write(set);
     }
 
+    [Fact]
+    public void ReadHyperspeedSet()
+    {
+        using var inStream = Resource.OpenTestResult($"hyperspeed_set.bin", FileMode.Open);
+        HyperspeedBinaryReader reader = new(inStream);
+        
+        var defAc = reader.ReadSet();
+        _output.WriteLine(defAc.ToString());
+    }
+
     public static TheoryData<string, Func<IDefinition>> HyperspeedDefinitionSamples()
     {
         return new()

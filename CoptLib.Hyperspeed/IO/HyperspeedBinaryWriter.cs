@@ -43,6 +43,15 @@ public class HyperspeedBinaryWriter : BinaryWriter
         if (obj is null)
             return;
 
+        if (obj is IScript<object?> script)
+        {
+            // Make sure we write the type ID first, it's effectively an extension
+            // of the Hyperspeed object code and is required to know which script
+            // type to instantiate when reading.
+            Write(script.TypeId);
+            WriteEncodedString(script.ScriptBody);
+        }
+        
         if (obj is IDefinition def)
         {
             WriteNullable(def.Key);
@@ -64,11 +73,6 @@ public class HyperspeedBinaryWriter : BinaryWriter
                 WriteObject(directDefinitions);
         }
 
-        if (obj is IScript<object> script)
-        {
-            Write(script.TypeId);
-            WriteEncodedString(script.ScriptBody);
-        }
         if (obj is IMultilingual multilingual)
         {
             var elemLanguage = multilingual.Language;
@@ -177,14 +181,16 @@ public class HyperspeedBinaryWriter : BinaryWriter
     public void Write(DocSet set)
     {
         Write((ushort)HyperspeedObjectCode.Set);
-        WriteNullable(set.Key);
+        Write(set.Key!);
+        Write(set.Name);
         WriteObject(set.Author);
         
         // Reserve space for the jump table.
         // This section is an array of longs, where each
         // item is the position of an included doc.
-        var jumpTableStart = BaseStream.Position;
         var jumpTableLength = set.IncludedDocs.Count * sizeof(long);
+        Write(jumpTableLength);
+        var jumpTableStart = BaseStream.Position;
         BaseStream.Position += jumpTableLength;
         
         // Start writing included docs, keeping track of the starting
