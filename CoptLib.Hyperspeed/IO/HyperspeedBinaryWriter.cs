@@ -49,7 +49,17 @@ public class HyperspeedBinaryWriter : BinaryWriter
             // of the Hyperspeed object code and is required to know which script
             // type to instantiate when reading.
             Write(script.TypeId);
-            WriteEncodedString(script.ScriptBody);
+
+            // NOTE: Support compiling script in the future
+            if (false)
+            {
+                Write(true);
+            }
+            else
+            {
+                Write(false);
+                WriteEncodedString(script.ScriptBody);
+            }
         }
         
         if (obj is IDefinition def)

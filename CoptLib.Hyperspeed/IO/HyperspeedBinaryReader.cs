@@ -168,8 +168,17 @@ public class HyperspeedBinaryReader : BinaryReader
     public IDefinition ReadScript()
     {
         var typeId = ReadString()!;
-        var scriptBody = ReadEncodedString()!;
-        return (IDefinition)ScriptingEngine.CreateScript(typeId, scriptBody);
+
+        var isCompiled = ReadBoolean();
+        if (isCompiled)
+        {
+            throw new NotSupportedException($"'{typeId}' does not support compiled scripts.");
+        }
+        else
+        {
+            var scriptBody = ReadEncodedString()!;
+            return (IDefinition)ScriptingEngine.CreateScript(typeId, scriptBody);
+        }
     }
 
     public Author? ReadAuthor()
