@@ -6,48 +6,41 @@ using CoptLib.IO;
 
 namespace CoptLib.Models.Sequences;
 
-public class Sequence : IContextualLoad
+public class Sequence : ISequence
 {
     public Sequence(int rootNodeId, ILoadContext context, string? key = null)
     {
         RootNodeId = rootNodeId;
         Context = context;
         Key = key;
-        Nodes = new(node => node.Id);
     }
-
+    
     public string? Key { get; set; }
-
+    
     public string? Name { get; set; }
-
+    
     [NotNull]
     public ILoadContext? Context { get; set; }
-
-    /// <summary>
-    /// The identifier of the node to always start at.
-    /// </summary>
+    
     public int RootNodeId { get; }
-
-    /// <summary>
-    /// A collection of all nodes in the graph.
-    /// </summary>
-    public ElementKeyedDictionary<int, SequenceNode> Nodes { get; }
-
-    /// <summary>
-    /// Creates an <see cref="IAsyncEnumerable{T}"/> that steps through
-    /// the sequence in order.
-    /// </summary>
+    
+    public ElementKeyedDictionary<int, SequenceNode> Nodes { get; } = new(node => node.Id);
+    
     public IAsyncEnumerable<SequenceNode> EnumerateNodes()
         => new SequenceEnumerable(Nodes[RootNodeId], Context, ResolveNodeAsync);
 
+    protected Task<SequenceNode> ResolveNodeAsync(int nodeId) => Task.FromResult(Nodes[nodeId]);
+}
+
+public static class SequenceExtensions
+{
     /// <summary>
     /// Creates an <see cref="IAsyncEnumerable{T}"/> that steps through
     /// documents in the sequence in order.
     /// </summary>
-    public virtual IAsyncEnumerable<Doc> EnumerateDocs() => EnumerateNodes()
-        .Select(n => n.DocumentKey is not null ? Context.LookupDefinition(n.DocumentKey): null)
+    public static IAsyncEnumerable<Doc> EnumerateDocs(this IReadOnlySequence sequence) => sequence
+        .EnumerateNodes()
+        .Select(n => n.DocumentKey is not null ? sequence.Context!.LookupDefinition(n.DocumentKey) : null)
         .Where(d => d is not null)
         .OfType<Doc>();
-
-    protected virtual Task<SequenceNode> ResolveNodeAsync(int nodeId) => Task.FromResult(Nodes[nodeId]);
 }

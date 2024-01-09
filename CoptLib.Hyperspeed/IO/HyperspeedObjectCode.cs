@@ -17,3 +17,11 @@ public enum HyperspeedObjectCode : ushort
     Sequence,
     Author,
 }
+
+public enum HyperspeedSequenceNodeCode : byte
+{
+    Null,
+    Constant,
+    End,
+    Scripted,
+}

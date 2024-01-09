@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using CoptLib.Extensions;
 using CoptLib.Models;
+using CoptLib.Models.Sequences;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
@@ -223,7 +225,16 @@ public class HyperspeedBinaryWriter : BinaryWriter
         Write(str);
     }
 
+    public void WriteNullable(int? num)
+    {
+        if (WriteNullIfNull(num))
+            return;
+        
+        Write(num.Value);
+    }
+
     public void Write(HyperspeedObjectCode code) => Write((ushort)code);
+    public void Write(HyperspeedSequenceNodeCode code) => Write((byte)code);
 
     public void Write(DocSet set)
     {
@@ -254,5 +265,68 @@ public class HyperspeedBinaryWriter : BinaryWriter
         Buffer.BlockCopy(jumpTableEntries, 0, jumpTableBytes, 0, jumpTableLength);
         BaseStream.Position = jumpTableStart;
         Write(jumpTableBytes);
+    }
+
+    public void Write(ISequence sequence)
+    {
+        Write(HyperspeedObjectCode.Sequence);
+        WriteNullable(sequence.Key);
+        WriteNullable(sequence.Name);
+        Write(sequence.RootNodeId);
+
+        var nodeCount = sequence.Nodes.Count;
+        Write(nodeCount);
+        
+        // Reserve space for ID -> offset map
+        var offsetMapLength = nodeCount * (sizeof(int) + sizeof(long));
+        var offsetMapStart = BaseStream.Position;
+        BaseStream.Position += offsetMapLength;
+        var offsetMapEnd = BaseStream.Position;
+        
+        Dictionary<int, long> offsetMap = new(nodeCount);
+        foreach (var node in sequence.Nodes.Values)
+        {
+            // Note where this node begins
+            var nodeOffset = BaseStream.Position - offsetMapEnd;
+            offsetMap.Add(node.Id, nodeOffset);
+            
+            // Write the sequence node
+            Write(node);
+        }
+        
+        // Move back to the offset map and write the entries
+        BaseStream.Position = offsetMapStart;
+        foreach (var kvp in offsetMap)
+        {
+            Write(kvp.Key);
+            Write(kvp.Value);
+        }
+    }
+
+    public void Write(SequenceNode node)
+    {
+        Write(node.Id);
+        WriteNullable(node.DocumentKey);
+
+        if (node is ConstantSequenceNode constNode)
+        {
+            Write(node is EndSequenceNode
+                ? HyperspeedSequenceNodeCode.End
+                : HyperspeedSequenceNodeCode.Constant);
+            WriteNullable(constNode.NextNodeId);
+        }
+        else if (node is NullSequenceNode)
+        {
+            Write(HyperspeedSequenceNodeCode.Null);
+        }
+        else if (node is ScriptedSequenceNode scriptedNode)
+        {
+            Write(HyperspeedSequenceNodeCode.Scripted);
+            Write(scriptedNode.NextDocCommand as IDefinition);
+        }
+        else
+        {
+            throw new NotSupportedException($"Hyperspeed does not support '{node.GetType()}' sequence nodes.");
+        }
     }
 }

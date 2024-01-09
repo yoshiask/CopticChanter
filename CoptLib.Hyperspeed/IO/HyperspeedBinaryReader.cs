@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using CoptLib.IO;
 using CoptLib.Models;
+using CoptLib.Models.Sequences;
 using CoptLib.Models.Text;
 using CoptLib.Scripting;
 using CoptLib.Writing;
@@ -56,6 +57,33 @@ public class HyperspeedBinaryReader : BinaryReader
             Author = author,
         };
         return set;
+    }
+
+    public IReadOnlySequence ReadSequence()
+    {
+        if (ReadHyperspeedObjectCode() != HyperspeedObjectCode.Sequence)
+            throw new InvalidDataException($"Hyperspeed object at 0x{BaseStream.Position:X} was not a sequence.");
+        
+        var key = ReadNullableString();
+        var name = ReadNullableString();
+        var rootNodeId = ReadInt32();
+        
+        // Read offset mapping
+        var nodeCount = ReadInt32();
+        Dictionary<int, long> offsetMap = new(nodeCount);
+        for (int n = 0; n < nodeCount; n++)
+        {
+            var id = ReadInt32();
+            var offset = ReadInt64();
+            offsetMap.Add(id, offset);
+        }
+
+        MemoryStream nodesStream = new();
+        BaseStream.CopyTo(nodesStream);
+        nodesStream.Position = 0;
+        
+        HyperspeedSequence sequence = new(key, name, Context!, rootNodeId, offsetMap, nodesStream);
+        return sequence;
     }
 
     public T? ReadDefinition<T>(IDefinition? parent = null) where T : IDefinition
@@ -181,6 +209,40 @@ public class HyperspeedBinaryReader : BinaryReader
         }
     }
 
+    public SequenceNode ReadSequenceNode(IDefinition? parent = null)
+    {
+        var id = ReadInt32();
+        var documentKey = ReadNullableString();
+        var code = ReadHyperspeedSequenceNodeCode();
+        SequenceNode node;
+
+        if (code == HyperspeedSequenceNodeCode.Null)
+        {
+            node = new NullSequenceNode(id);
+        }
+        else if (code == HyperspeedSequenceNodeCode.Constant)
+        {
+            var nextNodeId = ReadNullableInt32();
+            node = new ConstantSequenceNode(id, documentKey, nextNodeId);
+        }
+        else if (code == HyperspeedSequenceNodeCode.End)
+        {
+            _ = ReadNullableInt32();
+            node = new EndSequenceNode(id, documentKey);
+        }
+        else if (code == HyperspeedSequenceNodeCode.Scripted)
+        {
+            var script = ReadDefinition(parent) as ICommandOutput<object>;
+            node = new ScriptedSequenceNode(id, documentKey, script!);
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(code), code, "Invalid node code");
+        }
+
+        return node;
+    }
+
     public Author? ReadAuthor()
     {
         var code  = ReadHyperspeedObjectCode();
@@ -229,7 +291,19 @@ public class HyperspeedBinaryReader : BinaryReader
         return ReadString();
     }
 
+    public int? ReadNullableInt32()
+    {
+        if (PeekChar() == 0)
+        {
+            ++BaseStream.Position;
+            return null;
+        }
+
+        return ReadInt32();
+    }
+
     public HyperspeedObjectCode ReadHyperspeedObjectCode() => (HyperspeedObjectCode)ReadUInt16();
+    public HyperspeedSequenceNodeCode ReadHyperspeedSequenceNodeCode() => (HyperspeedSequenceNodeCode)ReadByte();
 
     public bool TryPeekHyperspeedObjectCode(out HyperspeedObjectCode code)
     {

@@ -14,9 +14,9 @@ public record ConstantSequenceNode(int Id, string? DocumentKey, int? NextNodeId)
     public override int? NextNode(ILoadContext context) => NextNodeId;
 }
 
-public sealed record NullSequenceNode() : ConstantSequenceNode(-1, null, null)
+public sealed record NullSequenceNode(int Id) : ConstantSequenceNode(Id, null, null)
 {
-    public static readonly NullSequenceNode Default = new();
+    public static readonly NullSequenceNode Default = new(-1);
 }
 
 public sealed record EndSequenceNode(int Id, string? DocumentKey) : ConstantSequenceNode(Id, DocumentKey, null);

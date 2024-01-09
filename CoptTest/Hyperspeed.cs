@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using CoptLib.Hyperspeed.IO;
 using CoptLib.IO;
 using CoptLib.Models;
@@ -70,11 +72,40 @@ public class Hyperspeed
     [Fact]
     public void ReadHyperspeedSet()
     {
-        using var inStream = Resource.OpenTestResult($"hyperspeed_set.bin", FileMode.Open);
+        using var inStream = Resource.OpenTestResult("hyperspeed_set.bin", FileMode.Open);
         HyperspeedBinaryReader reader = new(inStream);
         
-        var defAc = reader.ReadSet();
-        _output.WriteLine(defAc.ToString());
+        var setAc = reader.ReadSet();
+        _output.WriteLine(setAc.ToString());
+    }
+
+    [Fact]
+    public void WriteHyperspeedSequence()
+    {
+        CoptLib.Scripting.DotNetScript.Register();
+        CoptLib.Scripting.LuaScript.Register();
+        var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
+
+        LoadContext context = new();
+        context.SetDate(new(2023, 8, 24, 6, 50));
+        var sequence = SequenceReader.ParseSequenceXml(xdoc.Root!, context);
+        
+        using var outStream = Resource.OpenTestResult("hyperspeed_sequence.bin");
+        HyperspeedBinaryWriter writer = new(outStream);
+        writer.Write(sequence);
+    }
+
+    [Fact]
+    public async Task ReadHyperspeedSequence()
+    {
+        CoptLib.Scripting.DotNetScript.Register();
+        CoptLib.Scripting.LuaScript.Register();
+        await using var inStream = Resource.OpenTestResult("hyperspeed_sequence.bin", FileMode.Open);
+        HyperspeedBinaryReader reader = new(inStream);
+        
+        var seqAc = reader.ReadSequence();
+        await foreach (var node in seqAc.EnumerateNodes())
+            _output.WriteLine(node.ToString());
     }
 
     public static TheoryData<string, Func<IDefinition>> HyperspeedDefinitionSamples()
