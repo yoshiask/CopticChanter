@@ -21,7 +21,7 @@ public class FootnoteCmd : TextCommandBase
     
     public int FootnoteNumber { get; protected set; }
     
-    protected override void ExecuteInternal(LoadContextBase? context)
+    protected override IDefinition? ExecuteInternal(ILoadContext? context)
     {
         const string lastNumberKey = $"__{nameof(FootnoteCmd)}-lastNumber";
         if (!context!.TryLookupDefinition(lastNumberKey, out var lastNumberDef, Inline.DocContext))
@@ -37,8 +37,8 @@ public class FootnoteCmd : TextCommandBase
         _annotatedDef.RegisterReference(outputLines[0]);
         Span outputSpan = new(outputLines, null);
         
-        Output = outputSpan;
         FootnoteInline = ToInline(_footnoteDef);
+        return outputSpan;
     }
 
     protected static Inline ToInline(IDefinition def)
