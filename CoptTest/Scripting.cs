@@ -24,6 +24,12 @@ namespace CoptTest
         public Scripting(ITestOutputHelper output)
         {
             _output = output;
+
+            SimpleContent simpleContent = new("simple plain text", null)
+            {
+                Key = "TestSimpleContent"
+            };
+            _doc.AddDefinition(simpleContent);
         }
 
         [Theory]
@@ -95,6 +101,32 @@ namespace CoptTest
             stanza.HandleCommands();
 
             Assert.Equal(string.Format(text, string.Empty), stanza.GetText());
+            Assert.True(stanza.Commands.Any());
+        }
+
+        [Theory]
+        [InlineData(@"This is some English, \foot{and this is some annotated text|Or is it?}.",
+                    @"This is some English, and this is some annotated text[1].")]
+        [InlineData(@"Howdy! \foot{Text A|Footnote A} and \foot{Text B|Footnote B} have footnotes.",
+                    @"Howdy! Text A[1] and Text B[2] have footnotes.")]
+        [InlineData(@"You can read this \foot{\def{TestSimpleContent}|Only if definitions are working}.",
+                    @"You can read this simple plain text[1].")]
+        public void ParseTextCommands_FootnoteCommand(string textIn, string textEx)
+        {
+            Stanza stanza = new(null)
+            {
+                SourceText = textIn,
+                DocContext = _doc
+            };
+            stanza.HandleCommands();
+            var textAc = stanza.GetText();
+            
+            _output.WriteLine(textAc);
+            _output.WriteLine(string.Empty);
+            foreach (var footnoteCmd in stanza.Commands.OfType<FootnoteCmd>())
+                _output.WriteLine($"\t[{footnoteCmd.FootnoteNumber}]\t{footnoteCmd.FootnoteInline}");
+
+            Assert.Equal(textEx, textAc);
             Assert.True(stanza.Commands.Any());
         }
 

@@ -27,6 +27,7 @@ public static class ScriptingEngine
         { "ms", typeof(TimestampCmd) },
         { "trslit", typeof(TransliterateCmd) },
         { "lines", typeof(LinesCmd) },
+        { "foot", typeof(FootnoteCmd) },
     };
 
     public static readonly Dictionary<string, ScriptFactory> ScriptFactories = new();
