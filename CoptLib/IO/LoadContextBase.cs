@@ -109,7 +109,7 @@ public abstract class LoadContextBase : ILoadContext
 
     public bool TryLookupDefinition(string key, [NotNullWhen(true)] out IDefinition? def, IContextualLoad? contextualItem = null)
     {
-        def = LookupDefinition(key);
+        def = LookupDefinition(key, contextualItem);
         return def is not null;
     }
 }
