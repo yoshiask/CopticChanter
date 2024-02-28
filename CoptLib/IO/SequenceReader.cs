@@ -10,14 +10,14 @@ namespace CoptLib.IO;
 
 public static class SequenceReader
 {
-    /// <inheritdoc cref="ParseSequenceXml(System.Xml.Linq.XElement,CoptLib.IO.LoadContextBase)"/>/>
-    public static Sequence ParseSequenceXml(XDocument xdoc, LoadContextBase context)
+    /// <inheritdoc cref="ParseSequenceXml(System.Xml.Linq.XElement,CoptLib.IO.ILoadContext)"/>/>
+    public static Sequence ParseSequenceXml(XDocument xdoc, ILoadContext context)
     {
         Guard.IsNotNull(xdoc.Root);
         return ParseSequenceXml(xdoc.Root, context);
     }
     
-    public static Sequence ParseSequenceXml(XElement rootElem, LoadContextBase context)
+    public static Sequence ParseSequenceXml(XElement rootElem, ILoadContext context)
     {
         var rootNodeIdStr = rootElem.Element(nameof(Sequence.RootNodeId))?.Value;
         if (!int.TryParse(rootNodeIdStr, out var rootNodeId))

@@ -176,6 +176,83 @@ public static class DocWriter
 
         return elem;
     }
+    
+    /// <summary>
+    /// Serializes a CoptLib object to XML while keeping the applied transforms.
+    /// </summary>
+    /// <param name="def">The object from CoptLib.Models to serialize.</param>
+    /// <param name="name">
+    /// The name of the XML element. Defaults to the name of
+    /// the type of <paramref name="def"/>.
+    /// </param>
+    /// <returns>
+    /// An XML element representing the object.
+    /// </returns>
+    public static XElement SerializeTransformedObject(IDefinition def, XName? name = null)
+    {
+        name ??= def.GetType().Name;
+        XElement elem = new(name);
+        elem.SetAttributeValue(nameof(def.Key), def.Key);
+
+        if (def is Doc doc)
+        {
+            elem.SetAttributeValue(nameof(doc.Name), doc.Name);
+        }
+        if (def is IContent content)
+        {
+            elem.Value = content.ToString();
+        }
+        if (def is IMultilingual multilingual)
+        {
+            var elemLanguage = multilingual.Language;
+            var elemFont = multilingual.Font;
+
+            if (def.Parent is not null)
+            {
+                var parentLanguage = def.Parent.GetLanguage();
+                if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
+                    elemLanguage = null;
+                    
+                var parentFont = def.Parent.GetFont();
+                if (parentFont is not null && parentFont == elemFont)
+                    elemFont = null;
+            }
+                
+            elem.SetAttributeValue(nameof(multilingual.Language), elemLanguage);
+            elem.SetAttributeValue(nameof(multilingual.Font), elemFont);
+        }
+
+        // Serialize class-specific properties
+        switch (def)
+        {
+            case SimpleContent:
+                elem.Name = "String";
+                break;
+
+            case TranslationCollection:
+            case TranslationCollectionSection:
+            case TranslationRunCollection:
+                elem.Name = "Translations";
+                break;
+
+            case Section section:
+                elem.SetAttributeValue(nameof(section.Title), section.Title);
+                break;
+
+            case IScript<object> script:
+                elem.Name = "Script";
+                elem.Add(new XCData(script.ScriptBody));
+                break;
+
+            case Variable variable:
+                elem.SetAttributeValue(nameof(variable.Label), variable.Label);
+                elem.SetAttributeValue(nameof(variable.DefaultValue), variable.DefaultValue);
+                elem.SetAttributeValue(nameof(variable.Configurable), variable.Configurable);
+                break;
+        }
+
+        return elem;
+    }
 
     private static bool IsExplicitlyDefined(IDefinition def) => def.IsExplicitlyDefined;
 }
