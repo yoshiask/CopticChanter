@@ -202,24 +202,13 @@ public static class DocWriter
         {
             elem.Value = content.ToString();
         }
-        if (def is IMultilingual multilingual)
+        if (def is IMultilingual)
         {
-            var elemLanguage = multilingual.Language;
-            var elemFont = multilingual.Font;
-
-            if (def.Parent is not null)
-            {
-                var parentLanguage = def.Parent.GetLanguage();
-                if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
-                    elemLanguage = null;
-                    
-                var parentFont = def.Parent.GetFont();
-                if (parentFont is not null && parentFont == elemFont)
-                    elemFont = null;
-            }
+            var elemLanguage = def.GetLanguage();
+            var elemFont = def.GetFont();
                 
-            elem.SetAttributeValue(nameof(multilingual.Language), elemLanguage);
-            elem.SetAttributeValue(nameof(multilingual.Font), elemFont);
+            elem.SetAttributeValue(nameof(IMultilingual.Language), elemLanguage);
+            elem.SetAttributeValue(nameof(IMultilingual.Font), elemFont);
         }
 
         // Serialize class-specific properties
