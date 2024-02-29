@@ -65,14 +65,14 @@ public static class DocReader
         var defsElem = xml.Root.Element("Definitions");
         if (defsElem != null)
         {
-            var defs = ParseDefinitionCollection(defsElem.Elements(), doc, null);
+            var defs = ParseDefinitionCollection(defsElem.Elements(), doc);
             doc.DirectDefinitions = defs;
         }
 
         var transsElem = xml.Root.Element(nameof(doc.Translations));
         if (transsElem != null)
         {
-            foreach (var def in ParseDefinitionCollection(transsElem.Elements(), doc, null))
+            foreach (var def in ParseDefinitionCollection(transsElem.Elements(), doc))
                 if (def is ContentPart translation)
                     doc.Translations.Children.Add(translation);
         }
@@ -86,95 +86,108 @@ public static class DocReader
         return doc;
     }
 
-    private static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, Doc doc, IDefinition? parent)
+    public static List<IDefinition> ParseDefinitionCollection(IEnumerable<XElement> elements, IDefinition? parent)
     {
+        var doc = parent as Doc ?? parent?.DocContext;
+        
         List<IDefinition> defs = new();
 
-        foreach (XElement defElem in elements)
+        foreach (var defElem in elements)
         {
-            IDefinition? def = null;
-            string defElemName = defElem.Name.LocalName;
-
-            if (defElemName == nameof(Stanza))
-            {
-                def = new Stanza(parent);
-            }
-            else if (defElemName is nameof(Section) or "Translation")
-            {
-                Section section = new(parent);
-
-                string? title = defElem.Attribute(nameof(section.Title))?.Value;
-                if (title != null)
-                    section.SetTitle(title);
-
-                def = section;
-            }
-            else if (defElemName == nameof(Run))
-            {
-                def = new Run(defElem.Value, parent);
-            }
-            else if (defElemName == nameof(Comment))
-            {
-                Comment comment = new(parent);
-
-                var commentTypeStr = defElem.Attribute("Type")?.Value;
-                if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
-                    comment.Type = commentType;
-
-                def = comment;
-            }
-            else if (defElemName == "String")
-            {
-                def = new SimpleContent(null, parent);
-            }
-            else if (defElemName == "Script")
-            {
-                // Default to csharp-def (DotNetDefinitionScript) for backward-compatibility.
-                // Since it's the default, make sure it's always registered.
-                DotNetDefinitionScript.Register();
-                
-                var scriptTypeId = defElem.Attribute("Type")?.Value ?? "csharp-def";
-
-                var script = Scripting.ScriptingEngine.CreateScript(
-                    scriptTypeId, defElem.Value);
-
-                if (script is not IDefinition)
-                    throw new InvalidDataException($"Script of type '{scriptTypeId}' must implement " +
-                                                   $"{nameof(IDefinition)} to be defined directly in a document.");
-                    
-                def = (IDefinition)script;
-            }
-            else if (defElemName == nameof(Variable))
-            {
-                var configurableStr = defElem.Attribute("Configurable")?.Value;
-                Variable variable = new()
-                {
-                    Label = defElem.Attribute(nameof(variable.Label))?.Value,
-                    DefaultValue = defElem.Attribute(nameof(variable.DefaultValue))?.Value,
-                    Configurable = configurableStr is not null && bool.Parse(configurableStr),
-                };
-                def = variable;
-            }
-            else if (defElemName == "Translations")
-            {
-                def = new TranslationCollection(parent: parent);
-            }
-
+            var def = ParseDefinitionXml(defElem, parent);
             if (def == null)
                 continue;
 
-            ParseCommonXml(ref def, defElem, doc, def.Parent);
-
             if (def.Key != null)
-                doc.AddDefinition(def);
+                doc?.AddDefinition(def);
             defs.Add(def);
         }
 
         return defs;
     }
 
-    private static void ParseCommonXml(ref IDefinition def, XElement elem, Doc doc, IDefinition? parent)
+    public static IDefinition? ParseDefinitionXml(XElement elem, IDefinition? parent)
     {
+        IDefinition? def = null;
+        string defElemName = elem.Name.LocalName;
+        var doc = parent as Doc ?? parent?.DocContext;
+
+        if (defElemName == nameof(Stanza))
+        {
+            def = new Stanza(parent);
+        }
+        else if (defElemName is nameof(Section) or "Translation")
+        {
+            Section section = new(parent);
+
+            string? title = elem.Attribute(nameof(section.Title))?.Value;
+            if (title != null)
+                section.SetTitle(title);
+
+            def = section;
+        }
+        else if (defElemName == nameof(Run))
+        {
+            def = new Run(elem.Value, parent);
+        }
+        else if (defElemName == nameof(Comment))
+        {
+            Comment comment = new(parent);
+
+            var commentTypeStr = elem.Attribute("Type")?.Value;
+            if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
+                comment.Type = commentType;
+
+            def = comment;
+        }
+        else if (defElemName == "String")
+        {
+            def = new SimpleContent(null, parent);
+        }
+        else if (defElemName == "Script")
+        {
+            // Default to csharp-def (DotNetDefinitionScript) for backward-compatibility.
+            // Since it's the default, make sure it's always registered.
+            DotNetDefinitionScript.Register();
+            
+            var scriptTypeId = elem.Attribute("Type")?.Value ?? "csharp-def";
+
+            var script = Scripting.ScriptingEngine.CreateScript(
+                scriptTypeId, elem.Value);
+
+            if (script is not IDefinition defScript)
+                throw new InvalidDataException($"Script of type '{scriptTypeId}' must implement " +
+                                               $"{nameof(IDefinition)} to be defined directly in a document.");
+                
+            def = defScript;
+        }
+        else if (defElemName == nameof(Variable))
+        {
+            var configurableStr = elem.Attribute("Configurable")?.Value;
+            Variable variable = new()
+            {
+                Label = elem.Attribute(nameof(variable.Label))?.Value,
+                DefaultValue = elem.Attribute(nameof(variable.DefaultValue))?.Value,
+                Configurable = configurableStr is not null && bool.Parse(configurableStr),
+            };
+            def = variable;
+        }
+        else if (defElemName == "Translations")
+        {
+            def = new TranslationCollection(parent: parent);
+        }
+        else if (defElemName == "Doc")
+        {
+            def = new Doc
+            {
+                Key = elem.Attribute(nameof(Doc.Key))?.Value,
+                Name = elem.Attribute(nameof(Doc.Name))!.Value,
+            };
+        }
+
+        if (def is null)
+            return null;
+        
         def.DocContext = doc;
         def.Parent = parent;
         def.Key = elem.Attribute(nameof(def.Key))?.Value;
@@ -220,7 +233,7 @@ public static class DocReader
         if (def is IContentCollectionContainer contentCollection and IDefinition defCC)
         {
             // Parse elements, remove anything not a ContentPart
-            var defColl = ParseDefinitionCollection(elem.Elements(), doc, defCC)
+            var defColl = ParseDefinitionCollection(elem.Elements(), defCC)
                 .OfType<ContentPart>();
             contentCollection.Children.AddRange(defColl);
 
@@ -231,7 +244,7 @@ public static class DocReader
 
         if (def is TranslationCollection translationCollection and IDefinition defTC)
         {
-            var translations = ParseDefinitionCollection(elem.Elements(), doc, defTC)
+            var translations = ParseDefinitionCollection(elem.Elements(), defTC)
                 .OfType<IMultilingual>()
                 .ToImmutableArray();
 
@@ -246,5 +259,7 @@ public static class DocReader
                 translationCollection.AddRange(translations);
             }
         }
+
+        return def;
     }
 }
