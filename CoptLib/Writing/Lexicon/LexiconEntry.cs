@@ -5,9 +5,10 @@ namespace CoptLib.Writing.Lexicon;
 
 public interface ILexiconEntry
 {
+    string Id { get; }
 }
 
-public record LexiconSuperEntry(IEnumerable<LexiconEntry> Entries) : ILexiconEntry;
+public record LexiconSuperEntry(string Id, IEnumerable<LexiconEntry> Entries) : ILexiconEntry;
 
 public record LexiconEntry(string Id, EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup GrammarGroup) : ILexiconEntry;
 

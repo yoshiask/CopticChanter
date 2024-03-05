@@ -44,9 +44,15 @@ public class TeiLexicon : ILexicon
             {
                 ILexiconEntry entry;
                 if (iLexEnElem.Name.LocalName == "superEntry")
-                    entry = new LexiconSuperEntry(iLexEnElem.Elements().Select(ParseSingleEntry).Cast<LexiconEntry>());
+                {
+                    var id = iLexEnElem.AttributeLocal("id")!.Value;
+                    var subEntries = iLexEnElem.Elements().Select(ParseSingleEntry);
+                    entry = new LexiconSuperEntry(id, subEntries);
+                }
                 else
+                {
                     entry = ParseSingleEntry(iLexEnElem);
+                }
 
                 _entries.Add(entry);
                 yield return entry;
@@ -57,6 +63,13 @@ public class TeiLexicon : ILexicon
             foreach (var entry in _entries)
                 yield return entry;
         }
+    }
+
+    public async Task<ILexiconEntry> GetEntryAsync(string id, CancellationToken token = default)
+    {
+        return await GetEntriesAsync(token)
+            .Where(e => e.Id == id)
+            .FirstAsync(token);
     }
 
     public IAsyncEnumerable<LexiconEntry> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null,
