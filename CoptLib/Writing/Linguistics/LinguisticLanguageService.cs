@@ -109,15 +109,17 @@ public class LinguisticLanguageService
     public static bool TryIdentifyLanguage(string text, [NotNullWhen(true)] out LanguageInfo? language)
     {
         BucketCounter<KnownLanguage> languageCounts = new();
-        
-        foreach (var c in text)
+
+        var span = text.AsSpan();
+        for (int c = 0; c < span.Length; c++)
         {
-            if ((int)CharUnicodeInfo.GetUnicodeCategory(c) > 10 || c.IsWhiteSpaceCharacter())
+            char ch = span[c];
+            if ((int)CharUnicodeInfo.GetUnicodeCategory(ch) > 10 || ch.IsWhiteSpaceCharacter())
                 continue;
 
             ++languageCounts.Total;
 
-            KnownLanguage charLang = c switch
+            KnownLanguage charLang = ch switch
             {
                 >= 'A' and <= 'z' => KnownLanguage.English,
                 >= 'Ϣ' and <= 'ϯ' or >= 'Ⲁ' and <= 'ⲱ' => KnownLanguage.Coptic,
@@ -140,10 +142,15 @@ public class LinguisticLanguageService
         {
             // Make sure it really is Greek, and not just Coptic written
             // using the Greek Unicode section.
-            var copticPercent = languageCounts.GetBucketPercent(KnownLanguage.Coptic);
-            var greekPercent = languageCounts.GetBucketPercent(KnownLanguage.Greek);
-            if (copticPercent >= 0.80 || (copticPercent > 0 && greekPercent >= 0.80))
-                knownLanguage = KnownLanguage.Coptic;
+            for (int c = 0; c < span.Length; c++)
+            {
+                char ch = span[c];
+                if (ch >= 'Ϣ' && ch <= 'ϯ' && (ch != 'Ϩ' || ch != 'ϩ'))
+                {
+                    knownLanguage = KnownLanguage.Coptic;
+                    break;
+                }
+            }
         }
 
         language = new(knownLanguage);
