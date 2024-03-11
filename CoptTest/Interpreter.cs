@@ -132,6 +132,21 @@ namespace CoptTest
             Assert.Equal(expected, result);
         }
 
+        [Theory]
+        [InlineData("Holy God, Holy Mighty, Holy Immortal, have mercy on us.", "en")]
+        [InlineData("Ἅγιος ὁ Θεός, ἅγιος Ἰσχυρός, ἅγιος Ἀθάνατος, ἐλέησον ἡμᾶς.", "el")]
+        [InlineData("Ⲁⲅⲓⲟⲥ ⲟ Ⲑⲉⲟⲥ: ⲁⲅⲓⲟⲥ ⲓⲥⲭⲩⲣⲟⲥ: ⲁⲅⲓⲟⲥ ⲁⲑⲁⲛⲁⲧⲟⲥ: ⲉⲗⲉⲏⲥⲟⲛ ⲏⲙⲁⲥ.", "cop")]
+        [InlineData("Ⲁ̀ⲅⲓⲟⲥ ⲟ̀ Ⲑⲉⲟⲥ: ⲁ̀ⲅⲓⲟⲥ Ⲓⲥⲭⲩⲣⲟⲥ: ⲁ̀ⲅⲓⲟⲥ Ⲁ̀ⲑⲁⲛⲁⲧⲟⲥ: ⲉ̀ⲗⲉⲏ̀ⲥⲟⲛ ⲏ̀ⲙⲁⲥ.", "cop")]
+        [InlineData("قُدُّوسٌ الله، قُدُّوسٌ القَويُّ، قُدُّوسٌ الحَيُّ الَّذي لا يَموتُ، إرْحَمْنا.", "ar")]
+        public void IdentifyLanguage(string sample, string exTag)
+        {
+            var exLang = LanguageInfo.Parse(exTag);
+
+            bool success = LinguisticLanguageService.TryIdentifyLanguage(sample, out var acLang);
+            Assert.True(success);
+            Assert.Equal(exLang, acLang);
+        }
+
         public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
             => IpaTranscribe_CopticUnicode_Samples.Select(sample => new object[] { sample });
 
