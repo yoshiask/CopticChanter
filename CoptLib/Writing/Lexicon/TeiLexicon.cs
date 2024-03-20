@@ -239,6 +239,6 @@ public class TeiLexicon : ILexicon
         "V" => new LanguageInfo("cop-vvv"),
         "W" => new LanguageInfo("cop-www"),
         "?" or null => new LanguageInfo(KnownLanguage.Default),
-        _ => throw new ArgumentOutOfRangeException(nameof(dialectCode), dialectCode, null),
+        _ => LanguageInfo.Parse(dialectCode),
     }; 
 }
