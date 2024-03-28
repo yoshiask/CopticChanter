@@ -7,7 +7,7 @@
             <Stanza>Amen. Alleluia. Glory to the Father and to the Son and to the Holy Spirit.</Stanza>
             <Stanza>Now and ever and unto the ages of the ages. Amen.</Stanza>
             <Stanza>We proclaim and say, O our Lord Jesus Christ,</Stanza>
-            <Section Source="\def{Proclamation}"/>
+            <Reference>Proclamation</Reference>
             <Stanza>Save us and have mercy on us.</Stanza>
             <Stanza>Lord have mercy. Lord have mercy. Lord bless us. Amen. Bless me. Bless me. Lo, the repentance. Forgive me. Say the blessing.</Stanza>
 
@@ -19,7 +19,7 @@
             <Stanza>Ⲁⲙⲏⲛ: ⲁⲗⲗⲏⲗⲟⲩⲓⲁ. Ⲇⲟⲝⲁ Ⲡⲁⲧⲣⲓ ⲕⲉ Ⲩ&#x0300;ⲓⲱ ⲕⲉ ⲁ&#x0300;ⲅⲓⲱ Ⲡ&#x0300;ⲛⲉⲩⲙⲁⲧⲓ:</Stanza>
             <Stanza>Ⲕⲉ ⲛⲩⲛ ⲕⲉ ⲁ&#x0300;ⲓ&#x0300; ⲕⲉ ⲓⲥ ⲧⲟⲩⲥ ⲉ&#x0300;ⲱ&#x0300;ⲛⲁⲥ ⲧⲱⲛ ⲉ&#x0300;ⲱ&#x0300;ⲛⲱⲛ: ⲁ&#x0300;ⲙⲏⲛ.</Stanza>
             <Stanza>Ⲧⲉⲛⲱϣ ⲉ&#x0300;ⲃⲟⲗ ⲉⲛϫⲱ ⲙ&#x0300;ⲙⲟⲥ: ϫⲉ ⲱ&#x0300; Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭ&#x0300;ⲣⲓⲥⲧⲟⲥ.</Stanza>
-            <Section Source="\def{Proclamation}"/>
+            <Reference>Proclamation</Reference>
             <Stanza>ⲥⲱϯ ⲙ&#x0300;ⲙⲟⲛ ⲟⲩⲟϩ ⲛⲁⲓ ⲛⲁⲛ:</Stanza>
             <Stanza>Ⲕⲩⲣⲓⲉ ⲉ&#x0300;ⲗⲉⲏⲥⲟⲛ: Ⲕⲩⲣⲓⲉ ⲉ&#x0300;ⲗⲉⲏⲥⲟⲛ: Ⲕⲩⲣⲓⲉ ⲉⲩⲗⲟⲅⲏⲥⲟⲛ: ⲁ&#x0300;ⲙⲏⲛ. Ⲥ&#x0300;ⲙⲟⲩ ⲉ&#x0300;ⲣⲟⲓ: ⲥ&#x0300;ⲙⲟⲩ ⲉ&#x0300;ⲣⲟⲓ ⲓⲥ ϯⲙⲉⲧⲁⲛⲟⲓⲁ: ⲭⲱ ⲛⲏⲓ ⲉ&#x0300;ⲃⲟⲗ: ϫⲱ ⲙ&#x0300;ⲡⲓⲥ&#x0300;ⲙⲟⲩ.</Stanza>
 
