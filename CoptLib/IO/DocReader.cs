@@ -126,6 +126,16 @@ public static class DocReader
 
             def = section;
         }
+        else if (defElemName == nameof(PartReference) || defElemName == "Reference")
+        {
+            PartReference reference = new(parent);
+
+            var referenceText = elem.Value;
+            if (referenceText != null)
+                reference.Source = new(referenceText, reference);
+
+            def = reference;
+        }
         else if (defElemName == nameof(Run))
         {
             def = new Run(elem.Value, parent);
@@ -236,10 +246,6 @@ public static class DocReader
             var defColl = ParseDefinitionCollection(elem.Elements(), defCC)
                 .OfType<ContentPart>();
             contentCollection.Children.AddRange(defColl);
-
-            var sourceText = elem.Attribute(nameof(contentCollection.Source))?.Value;
-            if (sourceText != null)
-                contentCollection.Source = new SimpleContent(sourceText, defCC);
         }
 
         if (def is TranslationCollection translationCollection and IDefinition defTC)

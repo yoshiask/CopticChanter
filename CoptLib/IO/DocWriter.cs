@@ -70,8 +70,6 @@ public static class DocWriter
         root.Add(new XElement(nameof(doc.Key), doc.Key));
 
         XElement transsElem = new(nameof(doc.Translations));
-        if (doc.Translations.Source != null)
-            transsElem.SetAttributeValue(nameof(doc.Translations.Source), doc.Translations.Source);
         foreach (var translation in doc.Translations.Children.Where(IsExplicitlyDefined))
             transsElem.Add(SerializeObject(translation, "Translation"));
 
@@ -136,12 +134,8 @@ public static class DocWriter
                 elem.SetAttributeValue(nameof(multilingual.Font), multilingual.Font);
         }
         if (def is IContentCollectionContainer contentCollection)
-        {
             foreach (var child in contentCollection.Children)
                 elem.Add(SerializeObject(child));
-
-            elem.SetAttributeValue(nameof(contentCollection.Source), contentCollection.Source);
-        }
 
         // Serialize class-specific properties
         switch (def)
@@ -163,8 +157,12 @@ public static class DocWriter
             case IScript<object> script:
                 elem.Name = "Script";
                 elem.Add(new XCData(script.ScriptBody));
-                
-                
+                elem.SetAttributeValue(nameof(script.TypeId), script.TypeId);
+                break;
+
+            case PartReference partRef:
+                elem.Name = "Reference";
+                elem.Add(partRef.Source?.SourceText);
                 break;
 
             case Variable variable:

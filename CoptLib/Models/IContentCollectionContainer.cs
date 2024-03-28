@@ -7,10 +7,5 @@ namespace CoptLib.Models;
 /// </summary>
 public interface IContentCollectionContainer : IDefinition
 {
-    /// <summary>
-    /// A command used to populate the collection. May contain nested text commands.
-    /// </summary>
-    SimpleContent? Source { get; set; }
-
     List<ContentPart> Children { get; }
 }

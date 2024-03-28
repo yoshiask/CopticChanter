@@ -143,7 +143,7 @@ public class DocLayout
             translations.Insert(trsIndex, (ContentPart)transliteration);
         }
 
-        // Flatten each translations
+        // Flatten each translation
         foreach (var translation in translations)
         {
             var flattenedTranslation = translation.Flatten().ToList();
