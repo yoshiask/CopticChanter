@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CoptLib.Writing;
+﻿using CoptLib.Writing;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using Xunit;
@@ -8,17 +6,10 @@ using Xunit.Abstractions;
 
 namespace CoptTest
 {
-    public class Interpreter
+    public class Interpreter(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
         private readonly LinguisticAnalyzer _analyzer = new CopticGrecoBohairicAnalyzer();
-
-        public Interpreter(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        public static readonly string[] IpaTranscribe_CopticUnicode_Samples =
+        public static readonly TheoryData<string> IpaTranscribe_CopticUnicode_Samples = new()
         {
             // Difficult words
             "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", "Ⲱⲥⲁⲛⲛⲁ", "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Ⲭⲣⲓⲥⲧⲟⲥ", "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ⲓⲣⲏⲛⲏ", "ⲟⲩⲟϩ",
@@ -42,84 +33,84 @@ namespace CoptTest
             "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
         };
 
-        public static readonly string[] IpaTranscribe_CopticStandard_Samples =
+        public static readonly TheoryData<string> IpaTranscribe_CopticStandard_Samples = new()
         {
             "}polic `m'u,on",
             "Taisoury `nnoub `nka;aroc etfai qa pi`arwmata@ etqen nenjij `n`Aarwn pi`ouyb eftale ou`c;oinoufi `e`pswi `ejen pima `n`ersw`ousi.",
         };
 
-        public static readonly IEnumerable<object[]> Transliterate_CopticUnicode_Samples = new List<object[]>
+        public static readonly TheoryData<string, string> Transliterate_CopticUnicode_Samples = new()
         {
-            new object[] { "ⲛ̀Ⲇⲁⲩⲓⲇ", "en·Dă·vid" },
-            new object[] { "ⲁⲣⲭⲱⲛ", "ăr·kʰon" },
-            new object[] { "ⲡ̀ⲁⲣⲭⲱⲛ", "ep·ăr·kʰon" },
-            new object[] { "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", "em·ep·res·vi·te·ros" },
-            new object[] { "ⲛ̀ⲁ̀ⲣⲭⲏⲁⲅⲅⲉⲗⲟⲥ", "en·ăr·sʰi·ăn·ge·los" },
-            new object[] { "ⲛ̀ⲁ̀ⲣⲭⲏⲉ̀ⲣⲉⲩⲥ", "en·ăr·sʰi·e·revs" },
-            new object[] { "ⲛⲓⲉⲩⲭⲏ", "ni·ev·sʰi" },
-            new object[] { "ⲉⲩⲭⲏ", "ev·sʰi" },
-            new object[] { "ⲡ̀ⲯⲩⲭⲏ", "ep·psi·sʰi" },
-            new object[] { "ⲯⲩⲭⲏ", "psi·sʰi" },
-            new object[] { "ⲭⲱ", "ko" },
-            new object[] { "ⲙ̀ⲡⲓⲭⲱ", "em·pĭ·ko" },
-            new object[] { "ⲭⲱⲣⲓⲥ", "kʰo·rĭs" },
-            new object[] { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "Sʰe·re ne Mă·rĭ·ă" },
-            new object[] { "Ⲱⲥⲁⲛⲛⲁ", "O·săn·nă" },
-            new object[] { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Pi·ekʰ·rĭs·tos" },
-            new object[] { "Ⲭⲣⲓⲥⲧⲟⲥ", "Kʰrĭs·tos" },
-            new object[] { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni·ăn·ge·los" },
-            new object[] { "ⲛⲓⲁⲅⲅⲉⲗⲟⲥ", "ni·ăn·ge·los" },
-            new object[] { "ⲓⲣⲏⲛⲏ", "ĭ·ri·ni" },
-            new object[] { "Ⲓⲥⲭⲩⲣⲟⲛ", "Ĭs·kĭ·ron" },
-            new object[] { "Ⲟⲩⲟϩ", "O·woh" },
-            new object[] { "ⲁϥϭⲓⲥⲁⲣⲝ", "ăf·cʰĭ·sărx" },
-            new object[] { "ⲛ̀ⲛⲓⲡⲁⲭⲛⲏ", "en·ni·păkʰ·ni" },
-            new object[] { "Ⲟⲩⲕⲁϩⲓ", "U·kă·hi" },
-            new object[] { "ⲉⲑⲟⲩⲁⲃ", "etʰ·o·wab" },
-            new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ", "Ten·u·osʰt" },
-            new object[] { "ⲁⲕⲥⲱϯ", "ăk·so·ti" },
-            new object[] { "ⲉ̀ⲧⲉⲛⲥ̀ⲙⲏ", "e·ten·es·mi" },
-            new object[] { "Ⲡⲉⲛⲛⲟⲩϯ", "Pen·nu·ti" },
-            new object[] { "ⲙ̀Ⲫ̀ⲓⲱⲧ", "em·Ef·yot" },
-            new object[] { "ⲡⲉⲧⲥ̀ϣⲉ", "pet·es·sʰe" },
-            new object[] { "ⲛⲁϩⲙⲉⲛ", "năh·men" },
-            new object[] { "\"Ⲡⲓⲱⲓⲕ\"", "\"Pi·ɔik\"" },
-            new object[] { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
+            { "ⲛ̀Ⲇⲁⲩⲓⲇ", "en·Dă·vid" },
+            { "ⲁⲣⲭⲱⲛ", "ăr·kʰon" },
+            { "ⲡ̀ⲁⲣⲭⲱⲛ", "ep·ăr·kʰon" },
+            { "ⲙ̀ⲡ̀ⲣⲉⲥⲃⲩⲧⲉⲣⲟⲥ", "em·ep·res·vi·te·ros" },
+            { "ⲛ̀ⲁ̀ⲣⲭⲏⲁⲅⲅⲉⲗⲟⲥ", "en·ăr·sʰi·ăn·ge·los" },
+            { "ⲛ̀ⲁ̀ⲣⲭⲏⲉ̀ⲣⲉⲩⲥ", "en·ăr·sʰi·e·revs" },
+            { "ⲛⲓⲉⲩⲭⲏ", "ni·ev·sʰi" },
+            { "ⲉⲩⲭⲏ", "ev·sʰi" },
+            { "ⲡ̀ⲯⲩⲭⲏ", "ep·psi·sʰi" },
+            { "ⲯⲩⲭⲏ", "psi·sʰi" },
+            { "ⲭⲱ", "ko" },
+            { "ⲙ̀ⲡⲓⲭⲱ", "em·pĭ·ko" },
+            { "ⲭⲱⲣⲓⲥ", "kʰo·rĭs" },
+            { "Ⲭⲉⲣⲉ ⲛⲉ Ⲙⲁⲣⲓⲁ", "Sʰe·re ne Mă·rĭ·ă" },
+            { "Ⲱⲥⲁⲛⲛⲁ", "O·săn·nă" },
+            { "Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ", "Pi·ekʰ·rĭs·tos" },
+            { "Ⲭⲣⲓⲥⲧⲟⲥ", "Kʰrĭs·tos" },
+            { "ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", "ni·ăn·ge·los" },
+            { "ⲛⲓⲁⲅⲅⲉⲗⲟⲥ", "ni·ăn·ge·los" },
+            { "ⲓⲣⲏⲛⲏ", "ĭ·ri·ni" },
+            { "Ⲓⲥⲭⲩⲣⲟⲛ", "Ĭs·kĭ·ron" },
+            { "Ⲟⲩⲟϩ", "O·woh" },
+            { "ⲁϥϭⲓⲥⲁⲣⲝ", "ăf·cʰĭ·sărx" },
+            { "ⲛ̀ⲛⲓⲡⲁⲭⲛⲏ", "en·ni·păkʰ·ni" },
+            { "Ⲟⲩⲕⲁϩⲓ", "U·kă·hi" },
+            { "ⲉⲑⲟⲩⲁⲃ", "etʰ·o·wab" },
+            { "Ⲧⲉⲛⲟⲩⲱϣⲧ", "Ten·u·osʰt" },
+            { "ⲁⲕⲥⲱϯ", "ăk·so·ti" },
+            { "ⲉ̀ⲧⲉⲛⲥ̀ⲙⲏ", "e·ten·es·mi" },
+            { "Ⲡⲉⲛⲛⲟⲩϯ", "Pen·nu·ti" },
+            { "ⲙ̀Ⲫ̀ⲓⲱⲧ", "em·Ef·yot" },
+            { "ⲡⲉⲧⲥ̀ϣⲉ", "pet·es·sʰe" },
+            { "ⲛⲁϩⲙⲉⲛ", "năh·men" },
+            { "\"Ⲡⲓⲱⲓⲕ\"", "\"Pi·ɔik\"" },
+            { "Ⲧⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟⲕ ⲱ̀ Ⲡⲓⲭ̀ⲣⲓⲥⲧⲟⲥ: ⲛⲉⲙ Ⲡⲉⲕⲓⲱⲧ ⲛ̀ⲁ̀ⲅⲁⲑⲟⲥ: ⲛⲉⲙ Ⲡⲓⲡ̀ⲛⲉⲩⲙⲁ ⲉⲑⲟⲩⲁⲃ: ϫⲉ ⲁⲕⲓ̀ ⲁⲕⲥⲱϯ ⲙ̀ⲙⲟⲛ.",
                            "Ten·u·osʰt em·mok o Pi·ekʰ·rĭs·tos: nem Pek·yot en·ă·gʰă·tʰos: nem Pi·ep·nev·mă etʰ·o·wab: je ăk·i ăk·so·ti em·mon." },
         };
 
         [Theory]
-        [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
+        [MemberData(nameof(IpaTranscribe_CopticUnicode_Samples))]
         public void IpaTranscribe_CopticUnicode(string sample)
         {
             var result = _analyzer.IpaTranscribe(sample);
-            _output.WriteLine(result);
+            output.WriteLine(result);
         }
 
         [Theory]
-        [MemberData(nameof(GetIpaTranscribe_CopticStandard_Samples))]
+        [MemberData(nameof(IpaTranscribe_CopticStandard_Samples))]
         public void IpaTranscribe_CopticStandard(string sample)
         {
             string result = _analyzer.IpaTranscribe(DisplayFont.CopticStandard.Convert(sample));
-            _output.WriteLine(result);
+            output.WriteLine(result);
         }
 
         [Theory]
         [MemberData(nameof(Transliterate_CopticUnicode_Samples))]
         public void Transliterate_CopticUnicode(string sample, string expected)
         {
-            var result = _analyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DefaultSyllableSeparator);
-            _output.WriteLine(result);
+            var result = _analyzer.Transliterate(sample, KnownLanguage.English);
+            output.WriteLine(result);
             Assert.Equal(expected, result);
         }
 
         CopticOldBohairicAnalyzer _obAnalyzer = new();
         [Theory]
-        [MemberData(nameof(GetIpaTranscribe_CopticUnicode_Samples))]
+        [MemberData(nameof(IpaTranscribe_CopticUnicode_Samples))]
         public void IpaTranscribe_OldBohairic(string sample)
         {
             var result = _obAnalyzer.IpaTranscribe(sample);
-            _output.WriteLine(result);
+            output.WriteLine(result);
         }
 
         private GreekAnalyzer _elAnalyzer = new();
@@ -127,8 +118,8 @@ namespace CoptTest
         [InlineData("σταυρος", "stăv·ros")]
         public void Transliterate_Greek(string sample, string expected)
         {
-            var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English, PhoneticWord.DefaultSyllableSeparator);
-            _output.WriteLine(result);
+            var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English);
+            output.WriteLine(result);
             Assert.Equal(expected, result);
         }
 
@@ -148,11 +139,5 @@ namespace CoptTest
             Assert.True(success);
             Assert.Equal(exLang, acLang);
         }
-
-        public static IEnumerable<object[]> GetIpaTranscribe_CopticUnicode_Samples()
-            => IpaTranscribe_CopticUnicode_Samples.Select(sample => new object[] { sample });
-
-        public static IEnumerable<object[]> GetIpaTranscribe_CopticStandard_Samples()
-            => IpaTranscribe_CopticStandard_Samples.Select(sample => new object[] { sample });
     }
 }
