@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace CoptLib.Models;
@@ -16,11 +17,13 @@ public interface IDefinition
     /// <summary>
     /// The document this definition belongs to.
     /// </summary>
+    [JsonIgnore]
     Doc? DocContext { get; set; }
 
     /// <summary>
     /// The parent definition, if any.
     /// </summary>
+    [JsonIgnore]
     IDefinition? Parent { get; set; }
 
     /// <summary>
@@ -49,6 +52,18 @@ public abstract class Definition : IDefinition
     public bool IsExplicitlyDefined { get; set; }
 
     public ICollection<IDefinition> References { get; } = new List<IDefinition>();
+}
+
+public class Definition<T> : Definition
+{
+    public Definition(T value, string? key, IDefinition? parent = null)
+    {
+        Key = key;
+        Parent = parent;
+        Value = value;
+    }
+    
+    public T Value { get; set; }
 }
 
 public class Variable : Definition

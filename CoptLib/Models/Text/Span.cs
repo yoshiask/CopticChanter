@@ -8,6 +8,7 @@ namespace CoptLib.Models.Text;
 /// </summary>
 public class Span : Inline
 {
+    private InlineCollection _inlines;
     public Span(IEnumerable<Inline> inlines, IDefinition? parent) : this(new InlineCollection(inlines), parent) { }
 
     public Span(InlineCollection inlines, IDefinition? parent) : base(parent)
@@ -15,7 +16,16 @@ public class Span : Inline
         Inlines = inlines;
     }
 
-    public InlineCollection Inlines { get; set; }
+    public InlineCollection Inlines
+    {
+        get => _inlines;
+        set
+        {
+            foreach (var inline in value)
+                inline.Parent = this;
+            _inlines = value;
+        }
+    }
 
     public override void HandleFont()
     {

@@ -12,8 +12,6 @@ public class Section : ContentPart, IContentCollectionContainer
 
     public IContent? Title { get; private set; }
 
-    public SimpleContent? Source { get; set; }
-
     public List<ContentPart> Children { get; } = new();
 
     public void SetTitle(IContent? title)

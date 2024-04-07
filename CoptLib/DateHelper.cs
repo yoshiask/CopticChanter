@@ -2,6 +2,7 @@
 using NodaTime;
 using NodaTime.Extensions;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace CoptLib;
@@ -51,7 +52,8 @@ public static partial class DateHelper
     /// <returns></returns>
     public static string Format(this LocalDate date, LanguageInfo language, string? patternText = null)
     {
-        var culture = (System.Globalization.CultureInfo)language.Culture!.Clone();
+        var culture = language.Culture ?? CultureInfo.CurrentCulture;
+        culture = (CultureInfo)culture.Clone();
 
         if (date.Calendar == CalendarSystem.Coptic)
         {

@@ -71,6 +71,19 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         }
     }
 
+    public async Task<ILexiconEntry> GetEntryAsync(string id, CancellationToken token = default)
+    {
+        var command = _db.CreateCommand();
+        command.CommandText = @"SELECT * FROM entries WHERE Id MATCH @id";
+        command.Parameters.AddWithValue("id", id);
+
+        using var reader = await command.ExecuteReaderAsync(token);
+        if (!await reader.ReadAsync(token))
+            throw new KeyNotFoundException($"No entry with ID {id} was found in the lexicon");
+        
+        return ReadLexiconEntry(reader);
+    }
+
     public async Task InitAsync(CancellationToken cancellationToken = default)
     {
         if (IsInitialized) return;

@@ -91,12 +91,13 @@ public class DocLayout
 
         Guard.IsNotNull(Doc.Translations);
 
-        var allLanguages = Doc.Translations.Children.Select(t => t.Language);
+        var transliterations = Options.Transliterations.ToArray();
+
+        var allLanguages = Doc.Translations.Children.Select(t => t.Language)
+            .Concat(transliterations);
         var finalLanguages = (Options.IncludedLanguages ?? allLanguages)
             .Except(Options.ExcludedLanguages, LanguageInfoEqualityComparer.Strict)
             .ToArray();
-
-        var transliterations = Options.Transliterations.ToArray();
 
         // Get the number of translations to display
         int translationCount = finalLanguages.Length + transliterations.Length;
@@ -116,13 +117,15 @@ public class DocLayout
 
         // Create final list of translations
         List<ContentPart> translations = new(translationCount);
+
+        // Ignore translation if it's in the exclusion list but not the inclusion list
+        bool LangFilter(LanguageInfo lang) => finalLanguages.Contains(lang, LanguageInfoEqualityComparer.Strict);
         foreach (var translation in Doc.Translations.Children)
-            // Ignore translation if it's in the exclusion list but not the inclusion list
-            if (finalLanguages.Contains(translation.Language, LanguageInfoEqualityComparer.StrictWithWild))
+            if (LangFilter(translation.Language))
                 translations.Add(translation);
 
         // Perform any requested transliterations
-        foreach (var transliterationLanguage in transliterations)
+        foreach (var transliterationLanguage in transliterations.Where(LangFilter))
         {
             var sourceLanguage = transliterationLanguage.GetPrimary();
             var targetLanguage = transliterationLanguage.Secondary
@@ -133,11 +136,14 @@ public class DocLayout
 
             var transliteration = LinguisticLanguageService.Default.Transliterate(source, targetLanguage, sourceLanguage);
 
-            // Place the transliteration right after the source
-            translations.Insert(translations.IndexOf(source) + 1, (ContentPart)transliteration);
+            // Try to place the transliteration right after its source
+            int srcIndex = translations.IndexOf(source);
+            int trsIndex = srcIndex >= 0 ? srcIndex + 1 : translations.Count;
+
+            translations.Insert(trsIndex, (ContentPart)transliteration);
         }
 
-        // Flatten each translations
+        // Flatten each translation
         foreach (var translation in translations)
         {
             var flattenedTranslation = translation.Flatten().ToList();

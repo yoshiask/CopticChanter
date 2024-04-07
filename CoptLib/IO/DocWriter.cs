@@ -70,8 +70,6 @@ public static class DocWriter
         root.Add(new XElement(nameof(doc.Key), doc.Key));
 
         XElement transsElem = new(nameof(doc.Translations));
-        if (doc.Translations.Source != null)
-            transsElem.SetAttributeValue(nameof(doc.Translations.Source), doc.Translations.Source);
         foreach (var translation in doc.Translations.Children.Where(IsExplicitlyDefined))
             transsElem.Add(SerializeObject(translation, "Translation"));
 
@@ -136,11 +134,79 @@ public static class DocWriter
                 elem.SetAttributeValue(nameof(multilingual.Font), multilingual.Font);
         }
         if (def is IContentCollectionContainer contentCollection)
-        {
             foreach (var child in contentCollection.Children)
                 elem.Add(SerializeObject(child));
 
-            elem.SetAttributeValue(nameof(contentCollection.Source), contentCollection.Source);
+        // Serialize class-specific properties
+        switch (def)
+        {
+            case SimpleContent:
+                elem.Name = "String";
+                break;
+
+            case TranslationCollection:
+            case TranslationCollectionSection:
+            case TranslationRunCollection:
+                elem.Name = "Translations";
+                break;
+
+            case Section section:
+                elem.SetAttributeValue(nameof(section.Title), section.Title);
+                break;
+
+            case IScript<object> script:
+                elem.Name = "Script";
+                elem.Add(new XCData(script.ScriptBody));
+                elem.SetAttributeValue(nameof(script.TypeId), script.TypeId);
+                break;
+
+            case PartReference partRef:
+                elem.Name = "Reference";
+                elem.Add(partRef.Source?.SourceText);
+                break;
+
+            case Variable variable:
+                elem.SetAttributeValue(nameof(variable.Label), variable.Label);
+                elem.SetAttributeValue(nameof(variable.DefaultValue), variable.DefaultValue);
+                elem.SetAttributeValue(nameof(variable.Configurable), variable.Configurable);
+                break;
+        }
+
+        return elem;
+    }
+    
+    /// <summary>
+    /// Serializes a CoptLib object to XML while keeping the applied transforms.
+    /// </summary>
+    /// <param name="def">The object from CoptLib.Models to serialize.</param>
+    /// <param name="name">
+    /// The name of the XML element. Defaults to the name of
+    /// the type of <paramref name="def"/>.
+    /// </param>
+    /// <returns>
+    /// An XML element representing the object.
+    /// </returns>
+    public static XElement SerializeTransformedObject(IDefinition def, XName? name = null)
+    {
+        name ??= def.GetType().Name;
+        XElement elem = new(name);
+        elem.SetAttributeValue(nameof(def.Key), def.Key);
+
+        if (def is Doc doc)
+        {
+            elem.SetAttributeValue(nameof(doc.Name), doc.Name);
+        }
+        if (def is IContent content)
+        {
+            elem.Value = content.ToString();
+        }
+        if (def is IMultilingual)
+        {
+            var elemLanguage = def.GetLanguage();
+            var elemFont = def.GetFont();
+                
+            elem.SetAttributeValue(nameof(IMultilingual.Language), elemLanguage);
+            elem.SetAttributeValue(nameof(IMultilingual.Font), elemFont);
         }
 
         // Serialize class-specific properties
@@ -163,8 +229,6 @@ public static class DocWriter
             case IScript<object> script:
                 elem.Name = "Script";
                 elem.Add(new XCData(script.ScriptBody));
-                
-                
                 break;
 
             case Variable variable:
