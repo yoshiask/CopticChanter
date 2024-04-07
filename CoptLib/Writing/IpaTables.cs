@@ -13,7 +13,9 @@ internal static class IpaTables
 
     public static IReadOnlyDictionary<string, string> IpaToEnglish() => new Dictionary<string, string>
     {
-        [Linguistics.PhoneticWord.DefaultSyllableSeparator] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.PrimaryStressed] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.SecondaryStressed] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.Unstressed] = "·",
         ["ä"] = "a\u0306",  // ă
         ["æ"] = "a",
         ["ɑ"] = "a\u0306",
@@ -59,7 +61,9 @@ internal static class IpaTables
 
     public static IReadOnlyDictionary<string, string> IpaToArabic() => new Dictionary<string, string>
     {
-        [Linguistics.PhoneticWord.DefaultSyllableSeparator] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.PrimaryStressed] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.SecondaryStressed] = "·",
+        [Linguistics.SyllableSeparatorSet.IPA.Unstressed] = "·",
         ["ä"] = "ا",
         ["b"] = "ب",
         ["ɣ"] = "غ",

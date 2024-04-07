@@ -46,13 +46,25 @@ public abstract class LinguisticAnalyzer(LanguageInfo languageInfo)
     /// or <see langword="null"/> to not separate syllables.
     /// </param>
     public virtual string Transliterate(IEnumerable<PhoneticWord> srcText, KnownLanguage lang,
-        int srcTextLength = 0, string? syllableSeparator = null)
+        int srcTextLength = 0, SyllableSeparatorSet? syllableSeparatorsOverride = null)
     {
         IReadOnlyDictionary<string, string> ipaTable;
         if (lang == KnownLanguage.IPA)
             ipaTable = new NothingDictionary<string>();
         else if (!IpaTables.IpaToLanguage.TryGetValue(lang, out ipaTable))
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
+
+        // Create syllable separator set for transliteration target
+        var ipaSyllableSeparatorSet = SyllableSeparatorSet.IPA;
+        SyllableSeparatorSet syllableSeparators = syllableSeparatorsOverride ?? new()
+        {
+            PrimaryStressed = ipaTable.TryGetValue(ipaSyllableSeparatorSet.PrimaryStressed, out var tlPSep)
+                ? tlPSep : ipaSyllableSeparatorSet.PrimaryStressed,
+            SecondaryStressed = ipaTable.TryGetValue(ipaSyllableSeparatorSet.SecondaryStressed, out var tlSSep)
+                ? tlSSep : ipaSyllableSeparatorSet.SecondaryStressed,
+            Unstressed = ipaTable.TryGetValue(ipaSyllableSeparatorSet.Unstressed, out var tlUSep)
+                ? tlUSep : ipaSyllableSeparatorSet.Unstressed,
+        };
 
         StringBuilder sb = new(srcTextLength);
         foreach (var word in srcText)
@@ -61,9 +73,11 @@ public abstract class LinguisticAnalyzer(LanguageInfo languageInfo)
 
             for (int i = 0; i < word.Length; i++)
             {
-                if (syllableSeparator is not null && syllableBreaks.Contains(i))
-                    sb.Append(ipaTable.TryGetValue(syllableSeparator, out var tlSep)
-                        ? tlSep : syllableSeparator);
+                if (syllableBreaks.Contains(i))
+                {
+                    var sep = word.GetSeparatorForSyllable(i, syllableSeparators);
+                    sb.Append(sep);
+                }
 
                 var pe = word.Equivalents[i];
 
@@ -85,12 +99,12 @@ public abstract class LinguisticAnalyzer(LanguageInfo languageInfo)
     /// </summary>
     /// <param name="srcText">The <see cref="Language"/> text to transcribe.</param>
     /// <param name="lang">The script to transliterate to.</param>
-    /// <param name="syllableSeparator">
+    /// <param name="syllableSeparatorOverride">
     /// The <see cref="string"/> to separate syllables with,
     /// or <see langword="null"/> to not separate syllables.
     /// </param>
-    public string Transliterate(string srcText, KnownLanguage lang, string? syllableSeparator = null)
-        => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, syllableSeparator);
+    public string Transliterate(string srcText, KnownLanguage lang, SyllableSeparatorSet? syllableSeparatorOverride = null)
+        => Transliterate(PhoneticAnalysis(srcText), lang, srcText.Length, syllableSeparatorOverride);
 
     /// <summary>
     /// Transcribes text into

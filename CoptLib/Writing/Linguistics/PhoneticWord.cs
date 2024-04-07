@@ -9,8 +9,6 @@ namespace CoptLib.Writing.Linguistics;
 
 public class PhoneticWord
 {
-    public const string DefaultSyllableSeparator = "ˌ";
-
     public PhoneticWord(IList<PhoneticEquivalent> equivalents, IEnumerable<int> syllableBreaks)
     {
         Equivalents = equivalents;
@@ -20,6 +18,10 @@ public class PhoneticWord
     public IList<PhoneticEquivalent> Equivalents { get; }
 
     public SortedSet<int> SyllableBreaks { get; set; }
+
+    public SortedSet<int> PrimarySyllables { get; set; } = [];
+
+    public SortedSet<int> SecondarySyllables { get; set; } = [];
 
     public int Length => Equivalents.Count;
 
@@ -74,10 +76,23 @@ public class PhoneticWord
         return new PhoneticWord(subEquivalents, subSyllableBreaks);
     }
 
+    public bool IsPrimaryStress(int index) => PrimarySyllables.Contains(index);
+    public bool IsSecondaryStress(int index) => SecondarySyllables.Contains(index);
+
+    public string GetSeparatorForSyllable(int index, SyllableSeparatorSet syllableSeparators)
+    {
+        if (IsPrimaryStress(index))
+            return syllableSeparators.PrimaryStressed;
+        else if (IsSecondaryStress(index))
+            return syllableSeparators.SecondaryStressed;
+        else
+            return syllableSeparators.Unstressed;
+    }
+
     public override string ToString()
     {
         string ogStr = ToString(false);
-        string ipaStr = ToString(true, DefaultSyllableSeparator);
+        string ipaStr = ToIpaString();
         return $"({ogStr}, {ipaStr})";
     }
 
@@ -88,19 +103,22 @@ public class PhoneticWord
     /// <param name="useIpa">
     /// Whether to use the IPA transcription instead of the original text.
     /// </param>
-    /// <param name="syllableSeparator">
+    /// <param name="syllableSeparators">
     /// The <see cref="string"/> to separate syllables with,
     /// or <see langword="null"/> to not separate syllables.
     /// </param>
-    public string ToString(bool useIpa, string? syllableSeparator = null)
+    public string ToString(bool useIpa, SyllableSeparatorSet? syllableSeparators = null)
     {
-        bool insertSyllableBreaks = syllableSeparator is not null;
+        bool insertSyllableBreaks = syllableSeparators is not null;
         StringBuilder sb = new(Length + (insertSyllableBreaks ? SyllableBreaks.Count : 0));
 
         for (int i = 0; i < Length; i++)
         {
             if (insertSyllableBreaks && SyllableBreaks.Contains(i))
-                sb.Append(syllableSeparator);
+            {
+                var sep = GetSeparatorForSyllable(i, syllableSeparators!.Value);
+                sb.Append(sep);
+            }
 
             var pe = Equivalents[i];
             sb.Append(useIpa ? pe.GetIpa() : pe.GetSource());
@@ -113,5 +131,5 @@ public class PhoneticWord
     /// Returns a string that represents the IPA transcription of
     /// the source word, using the original casing.
     /// </summary>
-    public string ToIpaString() => ToString(true, DefaultSyllableSeparator);
+    public string ToIpaString() => ToString(true, SyllableSeparatorSet.IPA);
 }

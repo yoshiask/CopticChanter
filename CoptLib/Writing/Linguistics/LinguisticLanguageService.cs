@@ -74,7 +74,7 @@ public class LinguisticLanguageService
     /// <para>Pass <see langword="null"/> to attempt to infer the language.</para>
     /// </param>
     /// <returns>A transliteration of the <paramref name="source"/>.</returns>
-    public IDefinition Transliterate(IDefinition source, LanguageInfo targetLanguage, LanguageInfo? sourceLanguage = null, string? syllableSeparator = null)
+    public IDefinition Transliterate(IDefinition source, LanguageInfo targetLanguage, LanguageInfo? sourceLanguage = null, SyllableSeparatorSet? syllableSeparator = null)
     {
         var analyzer = GetAnalyzerForLanguage(sourceLanguage ?? source.GetLanguage());
         return source.Select(Transliterate);

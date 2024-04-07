@@ -26,5 +26,5 @@ public class TransliterateCmd : TextCommandBase
     public LanguageInfo Language { get; }
 
     protected override IDefinition ExecuteInternal(ILoadContext? context) =>
-        LinguisticLanguageService.Default.Transliterate(Source, Language, syllableSeparator: _syllableSeparator);
+        LinguisticLanguageService.Default.Transliterate(Source, Language, syllableSeparator: new(_syllableSeparator));
 }
