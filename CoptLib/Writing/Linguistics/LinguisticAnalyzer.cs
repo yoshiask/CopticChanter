@@ -7,7 +7,7 @@ namespace CoptLib.Writing.Linguistics;
 
 public abstract class LinguisticAnalyzer(LanguageInfo languageInfo)
 {
-    public static readonly char[] Separators = [' ', ',', ':', ';', '.', '/', '"', '\''];
+    public static readonly char[] Separators = [' ', ',', ':', ';', '.', '/', '"', '\'', '!', '?'];
 
     public LanguageInfo Language { init; get; } = languageInfo;
 
