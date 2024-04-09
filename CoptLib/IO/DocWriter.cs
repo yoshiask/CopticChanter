@@ -188,6 +188,9 @@ public static class DocWriter
     /// </returns>
     public static XElement SerializeTransformedObject(IDefinition def, XName? name = null)
     {
+        if (def is ICommandOutput<IDefinition> {Output: not null} defCmd)
+            def = defCmd.Output;
+        
         name ??= def.GetType().Name;
         XElement elem = new(name);
         elem.SetAttributeValue(nameof(def.Key), def.Key);
