@@ -6,10 +6,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using CoptLib.Extensions;
 
 namespace CoptLib.Writing;
 
-public class LanguageInfo : IEquatable<LanguageInfo>
+public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
 {
     public const LanguageEquivalencyOptions DefaultLEO = LanguageEquivalencyOptions.StrictWithWild;
     
@@ -111,10 +112,10 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         }
 
         // Check if language is known
-        if (Enum.TryParse(value, true, out KnownLanguage kLang))
-        {
-            return new(KnownLanguages.Keys.ElementAt((int)kLang));
-        }
+        if (KnownLanguages.TryGetValue(value, out var known))
+            return new(known);
+        if (Enum.TryParse(value, true, out known))
+            return new(KnownLanguages.Keys.ElementAt((int)known));
 
         return new(value);
     }
@@ -140,12 +141,35 @@ public class LanguageInfo : IEquatable<LanguageInfo>
         }
     }
 
-    public override string ToString()
+    public override string ToString() => ToString("", null);
+    public string ToDisplayString() => ToString("S", null);
+
+    /// <summary>Formats the value of the current instance using the specified format.</summary>
+    /// <param name="format">The format to use.   -or-   A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable"></see> implementation.</param>
+    /// <param name="formatProvider">The provider to use to format the value.   -or-   A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+    /// <returns>The value of the current instance in the specified format.</returns>
+    /// <remarks>
+    /// The following are valid format strings:
+    /// <para> - <c>"E"</c>: Can be passed to <see cref="Parse"/>.</para>
+    /// <para> - <c>"S"</c>: Human-readable display name.</para>
+    /// </remarks>
+    public string ToString(string format, IFormatProvider? formatProvider)
     {
-        string str = Tag;
+        if (string.IsNullOrEmpty(format)) format = "E";
+        formatProvider ??= CultureInfo.InvariantCulture;
+        
+        var str = Known != KnownLanguage.Default
+            ? Known.ToString() : Tag;
+        
         if (Secondary is not null)
-            str += $"/{Secondary}";
-        return str;
+            str += "/" + Secondary.ToString(format, formatProvider);
+
+        return format.ToUpperInvariant() switch
+        {
+            "E" => str,
+            "S" => string.Join(" ", str.SplitCamelCase().Reverse()),
+            _ => throw new FormatException($"The {format} format string is not supported.")
+        };
     }
 
     /// <summary>

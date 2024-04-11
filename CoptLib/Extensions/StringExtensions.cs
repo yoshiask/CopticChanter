@@ -63,4 +63,27 @@ public static class StringExtensions
             ? (s, null)
             : (s[..index], s[(index + 1)..]);
     }
+
+    public static string[] SplitCamelCase(this string str)
+    {
+        var span = str.AsSpan();
+        List<int> upperIndexes = [];
+        
+        for (int c = 0; c < span.Length; c++)
+            if (char.IsUpper(span[c]))
+                upperIndexes.Add(c);
+
+        var segments = new string[upperIndexes.Count];
+        for (int s = 0; s < segments.Length; s++)
+        {
+            int sNext = s + 1;
+            var start = upperIndexes[s];
+            var end = sNext < upperIndexes.Count
+                ? upperIndexes[sNext] : str.Length;
+
+            segments[s] = str[start..end];
+        }
+
+        return segments;
+    }
 }
