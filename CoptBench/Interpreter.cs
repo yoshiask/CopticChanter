@@ -32,8 +32,7 @@ public class Interpreter
     [Benchmark]
     public void IpaTranscribe_CopticUnicode_ManyCached()
     {
-        Span<string> samples = CoptTest.Interpreter.IpaTranscribe_CopticUnicode_Samples;
-        for (int i = 0; i < samples.Length; i++)
-            Analyzer.IpaTranscribe(samples[i]);
+        foreach (var sample in CoptTest.Interpreter.IpaTranscribe_CopticUnicode_Samples)
+            Analyzer.IpaTranscribe(sample[0].ToString()!);
     }
 }
