@@ -31,5 +31,14 @@ public class LoadContext : LoadContextBase
             DefaultValue = false,
             Configurable = true,
         }, null);
+        
+        AddDefinition(new BooleanDefinition(true, null)
+        {
+            Key = "True"
+        }, null);
+        AddDefinition(new BooleanDefinition(false, null)
+        {
+            Key = "False"
+        }, null);
     }
 }
