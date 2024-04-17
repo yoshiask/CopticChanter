@@ -301,6 +301,59 @@ namespace CoptTest
             Assert.Equal(expectedResult, actual);
         }
 
+        [Theory]
+        [InlineData(@"\false{}", false)]
+        [InlineData(@"\true{}", true)]
+        public void ParseTextCommands_Booleans(string conditionText, bool expected)
+        {
+            var inline = ScriptingEngine.ParseTextCommands(conditionText.AsSpan(), null);
+            var commands = ScriptingEngine.RunTextCommands(inline);
+            
+            Assert.NotEmpty(commands);
+            Assert.IsAssignableFrom<ICommandOutput<bool>>(commands[0]);
+
+            var command = (ICommandOutput<bool>)commands[0];
+            Assert.Equal(expected, command.Output);
+        }
+
+        [Theory]
+        [InlineData(@"\tern{\true{}|Pass|Fail}", "Pass")]
+        [InlineData(@"\tern{\fail{}|Fail|Pass}", "Pass")]
+        public void ParseTextCommands_ConstantTernaries(string conditionText, object? expected)
+        {
+            var inline = ScriptingEngine.ParseTextCommands(conditionText.AsSpan(), null);
+            var commands = ScriptingEngine.RunTextCommands(inline);
+            
+            Assert.NotEmpty(commands);
+
+            var actual = commands.Last().Output;
+            Assert.Equal(expected?.ToString(), actual?.ToString());
+        }
+
+        [Fact]
+        public void ParseTextCommands_ScriptTernary()
+        {
+            const string text = @"\tern{\def{Script}|Pass|Fail}";
+
+            Doc doc = new(new LoadContext());
+            
+            LuaScript script = new("return true")
+            {
+                Key = "Script"
+            };
+            script.Execute(doc.Context);
+            doc.AddDefinition(script);
+
+            Inline inline = new Run(text, doc);
+            inline = ScriptingEngine.ParseTextCommands(inline);
+            var commands = ScriptingEngine.RunTextCommands(inline);
+            
+            Assert.NotEmpty(commands);
+
+            var actual = commands.Last().Output;
+            Assert.Equal("Pass", actual?.ToString());
+        }
+        
         public static IEnumerable<object[]> GetRunDotNetScript_Samples()
         {
             return new[]

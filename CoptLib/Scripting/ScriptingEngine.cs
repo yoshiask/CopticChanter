@@ -28,6 +28,10 @@ public static class ScriptingEngine
         { "trslit", typeof(TransliterateCmd) },
         { "lines", typeof(LinesCmd) },
         { "foot", typeof(FootnoteCmd) },
+        { "tern", typeof(TernaryCommand) },
+        { "if", typeof(TernaryCommand) },
+        { "false", typeof(BooleanCommand) },
+        { "true", typeof(BooleanCommand) },
     };
 
     public static readonly Dictionary<string, ScriptFactory> ScriptFactories = new();
