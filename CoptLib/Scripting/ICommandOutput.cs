@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CoptLib.IO;
 using CoptLib.Models;
-using CoptLib.Scripting.Typed;
 
 namespace CoptLib.Scripting;
 
@@ -30,4 +29,12 @@ public interface ICommandOutput<out TReturn>
     /// Executes the command.
     /// </summary>
     public TReturn? Execute(ILoadContext? context);
+}
+
+public sealed record ConstantCommand<TReturn>(TReturn Value) : ICommandOutput<TReturn>
+{
+    public TReturn? Output => Value;
+    public bool Evaluated => true;
+
+    public TReturn? Execute(ILoadContext? context) => Value;
 }
