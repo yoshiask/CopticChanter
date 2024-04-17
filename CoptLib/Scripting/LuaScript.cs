@@ -6,18 +6,13 @@ using System.Linq;
 
 namespace CoptLib.Scripting;
 
-public class LuaScript : IScript<object?>
+public class LuaScript(string scriptBody) : Definition, IScript<object?>
 {
     public const string TYPE_ID = "lua";
 
-    public LuaScript(string scriptBody)
-    {
-        ScriptBody = scriptBody;
-    }
-
     public string TypeId => TYPE_ID;
 
-    public string ScriptBody { get; private set; }
+    public string ScriptBody { get; private set; } = scriptBody;
 
     public object? Output { get; private set; }
 
