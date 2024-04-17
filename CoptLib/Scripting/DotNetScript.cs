@@ -5,40 +5,27 @@ using CSScriptLib;
 
 namespace CoptLib.Scripting;
 
-public class DotNetScript : Definition, IScript<object?>
+public class DotNetScript : ScriptBase<object?>
 {
     public const string TYPE_ID = "csharp";
     private const string CommonUsings = "using CoptLib;\r\nusing CoptLib.IO;\r\nusing CoptLib.Models;\r\nusing CoptLib.Models.Text;\r\nusing CoptLib.Writing;\r\nusing NodaTime;\r\n";
 
-    public DotNetScript(string scriptBody, IDefinition? parent = null)
+    public DotNetScript(string scriptBody, IDefinition? parent = null) : base(scriptBody)
     {
-        ScriptBody = scriptBody;
         Parent = parent;
     }
-    
-    public string ScriptBody { get; }
 
-    public virtual string TypeId => "csharp";
-    
-    public object? Output { get; protected set; }
-
-    public bool Evaluated { get; protected set; }
+    public override string TypeId { get; protected set; } = "csharp";
     
     protected IScriptImplementation? Implementation { get; set; }
 
-    public virtual object? Execute(ILoadContext? context)
+    public override object? Execute(ILoadContext? context)
     {
-        if (!Evaluated)
-        {
-            Implementation = GetImplementation(ScriptBody);
-            Output = ExecuteInternal(context ?? DocContext?.Context);
-            Evaluated = true;
-        }
-
-        return Output;
+        Implementation = GetImplementation(ScriptBody);
+        return ExecuteInternal(context ?? DocContext?.Context);
     }
 
-    protected virtual object? ExecuteInternal(ILoadContext? context)
+    protected override object? ExecuteInternal(ILoadContext? context)
         => Implementation!.Execute(context);
 
     protected virtual IScriptImplementation GetImplementation(string code)

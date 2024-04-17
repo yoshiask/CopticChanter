@@ -74,7 +74,7 @@ public static class ScriptingEngine
                 return ParseTextCommands(run.Text.AsSpan(), run.Parent);
 
             case Span span:
-                InlineCollection parsedSpanInlines = new();
+                InlineCollection parsedSpanInlines = [];
                 parsedSpanInlines.AddRange(span.Inlines.Select(ParseTextCommands));
                 return new Span(parsedSpanInlines, inline.Parent);
 

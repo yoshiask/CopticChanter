@@ -3,13 +3,10 @@ using CoptLib.Models;
 
 namespace CoptLib.Scripting.Typed;
 
-public class DotNetDefinitionScript : DotNetScript<IDefinition>
+public class DotNetDefinitionScript(string scriptBody, IDefinition? parent = null)
+    : DotNetScript<IDefinition>(scriptBody, parent)
 {
     public const string TYPE_ID = "csharp-def";
-
-    public DotNetDefinitionScript(string scriptBody, IDefinition? parent = null) : base(scriptBody, parent)
-    {
-    }
 
     public override string TypeId => TYPE_ID;
 

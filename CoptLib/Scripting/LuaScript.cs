@@ -1,28 +1,16 @@
 ﻿using CoptLib.IO;
-using CoptLib.Models;
-using CoptLib.Scripting.Typed;
 using NLua;
 using System.Linq;
 
 namespace CoptLib.Scripting;
 
-public class LuaScript(string scriptBody) : Definition, IScript<object?>
+public class LuaScript(string scriptBody) : ScriptBase<object?>(scriptBody)
 {
     public const string TYPE_ID = "lua";
+    public override string TypeId { get; protected set; } = TYPE_ID;
 
-    public string TypeId => TYPE_ID;
-
-    public string ScriptBody { get; private set; } = scriptBody;
-
-    public object? Output { get; private set; }
-
-    public bool Evaluated { get; private set; }
-
-    public object? Execute(ILoadContext? context)
+    protected override object? ExecuteInternal(ILoadContext? context)
     {
-        if (Evaluated)
-            return Output;
-
         using Lua state = new();
         state.LoadCLRPackage();
         state.DoString("import ('CoptLib', 'CoptLib')");
@@ -33,10 +21,7 @@ public class LuaScript(string scriptBody) : Definition, IScript<object?>
         state["context"] = context;
         state["dayOfWeek"] = () => (int)context!.CurrentDate.DayOfWeek;
 
-        Output = state.DoString(ScriptBody)?.FirstOrDefault();
-        Evaluated = true;
-
-        return Output;
+        return state.DoString(ScriptBody)?.FirstOrDefault();
     }
 
     /// <summary>
