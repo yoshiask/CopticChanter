@@ -1,7 +1,9 @@
 ﻿using CoptLib.Extensions;
+using CoptLib.Writing.Linguistics.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
@@ -189,6 +191,18 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
             equivalent.Ipa = ipa;
             equivalent.IsVowel = isVowel;
             ipaWord[i] = equivalent;
+        }
+    }
+
+    public async IAsyncEnumerable<StructuralWord> StructuralAnalysis(string srcText)
+    {
+        string[] srcWords = srcText.SplitAndKeep(Separators).ToArray();
+
+        for (int w = 0; w < srcWords.Length; w++)
+        {
+            var srcWord = srcWords[w];
+
+
         }
     }
 
