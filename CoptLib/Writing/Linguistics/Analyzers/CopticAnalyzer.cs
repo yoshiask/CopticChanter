@@ -231,10 +231,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
     {
         // Start the list with 0, then later end it with the length of the word.
         // This allows the second pass to 
-        List<int> breaks = new()
-        {
-            0
-        };
+        List<int> breaks = [0];
 
         // First pass: Apply the maximal onset principle
         for (int c = word.Equivalents.Count - 1; c >= 0; --c)
