@@ -148,17 +148,6 @@ public static class DocReader
             if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
                 comment.Type = commentType;
 
-            if (comment.Type == CommentType.Role)
-            {
-                var roleId = comment.SourceText = elem.Value;
-                if ((comment.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
-                    && roleDef is RoleInfo role)
-                {
-                    comment.Inlines = [role.GetByLanguage(comment.GetLanguage())];
-                    role.References.Add(comment);
-                }
-            }
-
             def = comment;
         }
         else if (defElemName == "String")
