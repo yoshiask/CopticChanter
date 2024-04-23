@@ -26,7 +26,8 @@ public class TranslationCollection<T> : List<T>, ITranslationLookup<T>, IDefinit
             ? this : this.Where(predicate).ToList();
 
         var match = items.FirstOrDefault(t => t.Language.Known == knownLanguage);
-        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default);
+        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default)
+            ?? throw new KeyNotFoundException($"No translation found for '{knownLanguage}'");
     }
 
     public virtual T GetByLanguage(LanguageInfo language, Func<T, bool>? predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO)
@@ -35,7 +36,8 @@ public class TranslationCollection<T> : List<T>, ITranslationLookup<T>, IDefinit
             ? this : this.Where(predicate).ToList();
 
         var match = items.FirstOrDefault(t => t.Language.IsEquivalentTo(language, options));
-        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default);
+        return match ?? items.FirstOrDefault(t => t.Language.Known == KnownLanguage.Default)
+            ?? throw new KeyNotFoundException($"No translation found for '{language}'");
     }
 }
 

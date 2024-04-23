@@ -1,5 +1,6 @@
 ﻿using CoptLib.Writing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -32,7 +33,7 @@ public class TranslationCollectionSection : Section, ITranslationLookup<ContentP
     /// <exception cref="InvalidOperationException">
     /// The content does not contain a translation for the given language.
     /// </exception>
-    public ContentPart this[KnownLanguage lang] => Children.First(t => t.Language.Known == lang);
+    public ContentPart this[KnownLanguage lang] => GetByLanguage(lang);
 
     /// <summary>
     /// Gets the <see cref="ContentPart"/> at the given index.
@@ -56,18 +57,20 @@ public class TranslationCollectionSection : Section, ITranslationLookup<ContentP
     public ContentPart GetByLanguage(KnownLanguage knownLanguage, Func<ContentPart, bool>? predicate = null)
     {
         var children = predicate is null
-            ? Children : Children.Where(predicate);
+            ? Children : Children.Where(predicate).ToList();
 
-        return children
-            .First(t => t.Language.Known == knownLanguage);
+        return children.FirstOrDefault(t => t.Language.Known == knownLanguage)
+               ?? children.FirstOrDefault(t => t.Language.IsDefault())
+               ?? throw new KeyNotFoundException($"No translation found for '{knownLanguage}'");
     }
 
     public ContentPart GetByLanguage(LanguageInfo language, Func<ContentPart, bool>? predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO)
     {
         var children = predicate is null
-            ? Children : Children.Where(predicate);
+            ? Children : Children.Where(predicate).ToList();
 
-        return children
-            .First(t => t.Language.IsEquivalentTo(language, options));
+        return children.FirstOrDefault(t => t.Language.IsEquivalentTo(language, options))
+           ?? children.FirstOrDefault(t => t.Language.IsDefault())
+           ?? throw new KeyNotFoundException($"No translation found for '{language}'"); 
     }
 }
