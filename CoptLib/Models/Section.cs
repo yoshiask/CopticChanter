@@ -43,9 +43,6 @@ public class Section : ContentPart, IContentCollectionContainer
     {
         int count = Children.Sum(c => c.CountRows());
 
-        if (RoleName is not null)
-            ++count;
-
         if (Title is not null)
             ++count;
 
@@ -73,9 +70,6 @@ public class Section : ContentPart, IContentCollectionContainer
 
         if (Title is IMultilingual multiTitle)
             multiTitle.HandleFont();
-        
-        if (RoleName is not null)
-            RoleName.HandleFont();
             
         FontHandled = true;
     }
@@ -85,11 +79,7 @@ public class Section : ContentPart, IContentCollectionContainer
         if (Title is not null)
             yield return this;
 
-        if (RoleName is not null)
-            yield return RoleName;
-
-        foreach (var child in Children)
-            foreach (var subChild in child.Flatten())
-                yield return subChild;
+        foreach (var subChild in Children.SelectMany(child => child.Flatten()))
+            yield return subChild;
     }
 }

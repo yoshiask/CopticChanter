@@ -19,9 +19,6 @@ public static class DefinitionExtensions
         if (newDef is Section {Title: IContent title} section)
             section.SetTitle((IContent)title.Select(func));
 
-        if (newDef is ContentPart { RoleName: Run roleName } contentPart)
-            contentPart.RoleName = (Run)roleName.Select(func);
-
         if (newDef is IContent content)
             for (int i = 0; i < content.Inlines.Count; i++)
                 content.Inlines[i] = (Inline)content.Inlines[i].Select(func);

@@ -126,7 +126,7 @@ public static class DocReader
 
             def = section;
         }
-        else if (defElemName == nameof(PartReference) || defElemName == "Reference")
+        else if (defElemName is nameof(PartReference) or "Reference")
         {
             PartReference reference = new(parent);
 
@@ -147,6 +147,17 @@ public static class DocReader
             var commentTypeStr = elem.Attribute("Type")?.Value;
             if (commentTypeStr is not null && Enum.TryParse(commentTypeStr, out CommentType commentType))
                 comment.Type = commentType;
+
+            if (comment.Type == CommentType.Role)
+            {
+                var roleId = comment.SourceText = elem.Value;
+                if ((comment.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
+                    && roleDef is RoleInfo role)
+                {
+                    comment.Inlines.Add(role.GetByLanguage(comment.GetLanguage()));
+                    role.References.Add(comment);
+                }
+            }
 
             def = comment;
         }
@@ -228,17 +239,8 @@ public static class DocReader
             }
         }
 
-        if (def is ContentPart contentPart)
-        {
-            var roleId = elem.Attribute("Role")?.Value;
-            if (roleId != null
-                && (contentPart.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
-                && roleDef is RoleInfo role)
-            {
-                contentPart.RoleName = role.GetByLanguage(contentPart.GetLanguage());
-                role.References.Add(contentPart);
-            }
-        }
+        if (def is ContentPart && elem.Attribute("Role") != null)
+            throw new Exception("Roles are now their own comment type, rather than a property on ContentPart.");
             
         if (def is IContentCollectionContainer contentCollection and IDefinition defCC)
         {

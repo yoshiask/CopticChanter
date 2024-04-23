@@ -23,5 +23,6 @@ public enum CommentType
     Tune,
     Description,
     Explanation,
-    Commentary
+    Commentary,
+    Role,
 }
