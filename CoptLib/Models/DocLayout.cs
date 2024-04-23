@@ -159,7 +159,8 @@ public class DocLayout
 
 public record DocLayoutOptions
 {
-    public DocLayoutOptions(IEnumerable<LanguageInfo>? includedLanguages = null, IEnumerable<LanguageInfo>? excludedLanguages = null, IEnumerable<LanguageInfo> transliterations = null)
+    public DocLayoutOptions(IEnumerable<LanguageInfo>? includedLanguages = null, 
+        IEnumerable<LanguageInfo>? excludedLanguages = null, IEnumerable<LanguageInfo>? transliterations = null)
     {
         IncludedLanguages = includedLanguages;
         ExcludedLanguages = excludedLanguages ?? Enumerable.Empty<LanguageInfo>();
