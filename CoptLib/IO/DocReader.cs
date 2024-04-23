@@ -154,7 +154,7 @@ public static class DocReader
                 if ((comment.DocContext?.Context.TryLookupDefinition(roleId, out var roleDef) ?? false)
                     && roleDef is RoleInfo role)
                 {
-                    comment.Inlines.Add(role.GetByLanguage(comment.GetLanguage()));
+                    comment.Inlines = [role.GetByLanguage(comment.GetLanguage())];
                     role.References.Add(comment);
                 }
             }
