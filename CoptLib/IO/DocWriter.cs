@@ -203,6 +203,10 @@ public static class DocWriter
         {
             elem.Value = content.ToString();
         }
+        if (def is Inline inline)
+        {
+            elem.Value = inline.ToString();
+        }
         if (def is IMultilingual)
         {
             var elemLanguage = def.GetLanguage();
