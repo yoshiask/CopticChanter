@@ -131,14 +131,16 @@ public class DocLayout
             var targetLanguage = transliterationLanguage.Secondary
                 ?? throw new ArgumentException("A target language must be specified for transliteration.");
 
-            var source = Doc.Translations.GetByLanguage(sourceLanguage);
-            Guard.IsNotNull(source);
+            // Skips docs that don't have translations that need to be transliterated
+            if (!Doc.Translations.TryGetByLanguage(sourceLanguage, out var source))
+                continue;
 
-            var transliteration = LinguisticLanguageService.Default.Transliterate(source, targetLanguage, sourceLanguage);
+            var transliteration = LinguisticLanguageService.Default
+                .Transliterate(source, targetLanguage, sourceLanguage);
 
             // Try to place the transliteration right after its source
-            int srcIndex = translations.IndexOf(source);
-            int trsIndex = srcIndex >= 0 ? srcIndex + 1 : translations.Count;
+            var srcIndex = translations.IndexOf(source);
+            var trsIndex = srcIndex >= 0 ? srcIndex + 1 : translations.Count;
 
             translations.Insert(trsIndex, (ContentPart)transliteration);
         }

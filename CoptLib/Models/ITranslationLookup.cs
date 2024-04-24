@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using CoptLib.Writing;
 
 namespace CoptLib.Models;
@@ -28,4 +29,24 @@ public interface ITranslationLookup<out T> where T : IMultilingual
 /// <inheritdoc />
 public interface ITranslationLookup : ITranslationLookup<IMultilingual>
 {
+}
+
+public static class TranslationLookupExtensions
+{
+    public static bool TryGetByLanguage<T>(this ITranslationLookup<T> lookup, LanguageInfo language,
+        [NotNullWhen(true)] out T? item,
+        Func<T, bool>? predicate = null, LanguageEquivalencyOptions options = LanguageInfo.DefaultLEO)
+        where T : IMultilingual
+    {
+        try
+        {
+            item = lookup.GetByLanguage(language, predicate, options);
+            return true;
+        }
+        catch
+        {
+            item = default;
+            return false;
+        }
+    }
 }
