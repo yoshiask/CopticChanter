@@ -9,11 +9,10 @@ namespace CoptLib.Models;
 /// </summary>
 public abstract class ContentPart : Definition, IMultilingual, ISupportsTextCommands
 {
-    public ContentPart(IDefinition? parent)
+    protected ContentPart(IDefinition? parent)
     {
         Parent = parent;
         DocContext = parent?.DocContext;
-        Commands = new List<TextCommandBase>();
 
         if (parent is IMultilingual multiParent)
         {
@@ -36,7 +35,11 @@ public abstract class ContentPart : Definition, IMultilingual, ISupportsTextComm
 
     public bool CommandsHandled { get; set; }
 
-    public List<TextCommandBase> Commands { get; set; }
+    public List<TextCommandBase> Commands { get; set; } = [];
+
+    public HashSet<string> Classes { get; set; } = [];
+
+    public virtual bool HasClass(string className) => Classes.Contains(className);
 
     /// <summary>
     /// Returns the number of rows this part requires to display

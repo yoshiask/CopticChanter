@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Document>
     <Name>Hymn of the Intercessions</Name>
-    <Uuid>https://tasbeha.org/hymn_library/view/210</Uuid>
+    <Key>https://tasbeha.org/hymn_library/view/210</Key>
     <Translations>
         <Translation Language="English" Title="Hymn of the Intercessions">
             <Stanza>Through the intercessions, of the Mother of God Saint Mary, \def{Refrain}</Stanza>
@@ -67,6 +67,9 @@
             <Stanza Language="Coptic">Tawadros</Stanza>
             <Stanza Language="Arabic">تواضروس</Stanza>
         </Translations>
+        
+        <Script Key="Truthy" TypeId="lua">return true</Script>
+        <Script Key="Falsy" TypeId="lua">return false</Script>
 
         <Script Key="AkiAktonkScript" TypeId="csharp-def">
 <![CDATA[

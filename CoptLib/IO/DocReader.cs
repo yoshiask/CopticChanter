@@ -6,10 +6,13 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using AngleSharp.Text;
 using CommunityToolkit.Diagnostics;
 using CoptLib.Models.Text;
 using CoptLib.Scripting.Typed;
 using CoptLib.Extensions;
+using CoptLib.Scripting;
+using CoptLib.Scripting.Patterns;
 
 namespace CoptLib.IO;
 
@@ -126,13 +129,10 @@ public static class DocReader
 
             def = section;
         }
-        else if (defElemName == nameof(PartReference) || defElemName == "Reference")
+        else if (defElemName is nameof(PartReference) or "Reference")
         {
             PartReference reference = new(parent);
-
-            var referenceText = elem.Value;
-            if (referenceText != null)
-                reference.Source = new(referenceText, reference);
+            reference.Source = new(elem.Value, reference);
 
             def = reference;
         }
@@ -238,6 +238,10 @@ public static class DocReader
                 contentPart.RoleName = role.GetByLanguage(contentPart.GetLanguage());
                 role.References.Add(contentPart);
             }
+
+            var classesAttr = elem.Attribute("Classes")?.Value ?? elem.Attribute("Class")?.Value;
+            if (classesAttr != null)
+                contentPart.Classes = [..classesAttr.SplitWithTrimming('|')];
         }
             
         if (def is IContentCollectionContainer contentCollection and IDefinition defCC)
@@ -267,5 +271,21 @@ public static class DocReader
         }
 
         return def;
+    }
+
+    public static Pattern? ParsePatternXml(XElement elem, IDefinition? parent)
+    {
+        Pattern? pattern = null;
+        string defElemName = elem.Name.LocalName;
+
+        if (defElemName is "TranslationSelector")
+        {
+            pattern = new DynamicExpressoPattern<Func<int, ISet<string>, string>>(elem.Value, ["r", c]);
+        }
+
+        if (pattern is null) return null;
+        
+        pattern.Parent = parent;
+        return pattern;
     }
 }

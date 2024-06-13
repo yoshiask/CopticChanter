@@ -3,9 +3,7 @@ using CoptLib.IO;
 using CoptLib.Scripting;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Xml.Serialization;
-using CoptLib.Extensions;
 
 namespace CoptLib.Models;
 
@@ -35,7 +33,9 @@ public class Doc : Definition, IContextualLoad
 
     public TranslationCollectionSection Translations { get; set; }
 
-    public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = System.Array.Empty<IDefinition>();
+    public IReadOnlyCollection<IDefinition> DirectDefinitions { get; set; } = [];
+    
+    public List<IScript<object>> Patterns { get; set; } = [];
 
     [NotNull]
     public ILoadContext? Context

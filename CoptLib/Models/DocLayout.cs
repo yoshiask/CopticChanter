@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Diagnostics;
-using CoptLib.Extensions;
 using CoptLib.Writing;
 using CoptLib.Writing.Linguistics;
 using OwlCore.Extensions;
@@ -148,7 +147,18 @@ public class DocLayout
         {
             var flattenedTranslation = translation.Flatten().ToList();
             for (int i = 0; i < flattenedTranslation.Count; i++)
-                _table[i + 1].Add(flattenedTranslation[i]);
+            {
+                var cell = flattenedTranslation[i];
+                _table[i + 1].Add(cell);
+
+                if (cell is ContentPart part)
+                {
+                    // Apply patterns
+                    var lang = Options.TranslationSelector(i, part.Classes);
+                    if (part.Language == lang)
+                        part.Classes.Add("to-chant");
+                }
+            }
         }
 
         IsInvalidated = false;
@@ -159,11 +169,28 @@ public class DocLayout
 
 public record DocLayoutOptions
 {
-    public DocLayoutOptions(IEnumerable<LanguageInfo>? includedLanguages = null, IEnumerable<LanguageInfo>? excludedLanguages = null, IEnumerable<LanguageInfo> transliterations = null)
+    public DocLayoutOptions() : this((IEnumerable<LanguageInfo>?)null)
+    {
+    }
+    
+    public DocLayoutOptions(IEnumerable<LanguageInfo>? includedLanguages = null,
+        IEnumerable<LanguageInfo>? excludedLanguages = null, IEnumerable<LanguageInfo>? transliterations = null,
+        TranslationSelectorDelegate? translationSelector = null)
     {
         IncludedLanguages = includedLanguages;
         ExcludedLanguages = excludedLanguages ?? Enumerable.Empty<LanguageInfo>();
         Transliterations = transliterations ?? Enumerable.Empty<LanguageInfo>();
+        TranslationSelector = translationSelector ?? ((_, __) => LanguageInfo.Default);
+    }
+    
+    public DocLayoutOptions(IEnumerable<string>? includedLanguages = null,
+        IEnumerable<string>? excludedLanguages = null, IEnumerable<string>? transliterations = null,
+        Func<int, ISet<string>, string>? translationSelector = null)
+    : this(includedLanguages?.Select(LanguageInfo.Parse),
+        excludedLanguages?.Select(LanguageInfo.Parse),
+        transliterations?.Select(LanguageInfo.Parse),
+        translationSelector is null ? null : (i, c) => LanguageInfo.Parse(translationSelector(i, c)))
+    {
     }
 
     /// <summary>
@@ -182,4 +209,13 @@ public record DocLayoutOptions
     /// for the source language, and <c>Secondary</c> for the target.
     /// </summary>
     public IEnumerable<LanguageInfo> Transliterations { get; init; }
+    
+    /// <summary>
+    /// A function that determines which translation will be chanted or said
+    /// in a specific row. Selectors are given the row's index and classes, and are expected
+    /// to return the language whose translation to display.
+    /// </summary>
+    public TranslationSelectorDelegate TranslationSelector { get; init; }
+
+    public delegate LanguageInfo TranslationSelectorDelegate(int rowIndex, ISet<string> classes);
 }
