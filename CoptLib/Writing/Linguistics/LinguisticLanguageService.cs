@@ -3,6 +3,7 @@ using CoptLib.Extensions;
 using CoptLib.Models;
 using CoptLib.Models.Text;
 using CoptLib.Writing.Linguistics.Analyzers;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -155,5 +156,18 @@ public class LinguisticLanguageService
 
         language = new(knownLanguage);
         return true;
+    }
+
+    /// <summary>
+    /// Identifies what language a piece of text is written in.
+    /// </summary>
+    /// <param name="text">The text to analyze.</param>
+    /// <returns>The most likely language.</returns>
+    /// <exception cref="ArgumentException">A language could not be identified.</exception>
+    public static LanguageInfo IdentifyLanguage(string text)
+    {
+        if (TryIdentifyLanguage(text, out var language))
+            return language;
+        throw new ArgumentException($"Unable to identify language of source text: '{text}'");
     }
 }

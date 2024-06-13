@@ -3,6 +3,7 @@ using System.Linq;
 using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Writing;
+using CoptLib.Writing.Linguistics.XBar;
 using Xunit;
 using Xunit.Abstractions;
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;

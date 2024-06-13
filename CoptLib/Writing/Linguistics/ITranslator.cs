@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace CoptLib.Writing.Linguistics;
 
@@ -12,8 +11,7 @@ public static class TranslatorExtensions
 {
     public static Task<string> TranslateAsync(this ITranslator translator, string sourceText, LanguageInfo targetLanguage)
     {
-        if (!LinguisticLanguageService.TryIdentifyLanguage(sourceText, out var sourceLanguage))
-            throw new ArgumentException($"Unable to identify language of source text: '{sourceText}'");
+        var sourceLanguage = LinguisticLanguageService.IdentifyLanguage(sourceText);
 
         return translator.TranslateAsync(sourceText, sourceLanguage, targetLanguage);
     }
