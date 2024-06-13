@@ -16,6 +16,10 @@ public class BinaryNode<T>
 
     public T? Value { get; set; }
 
+    public bool IsTerminal => Left is null && Right is null;
+
+    public bool IsRoot => Parent is null;
+
     public BinaryNode(T? value = default, BinaryNode<T>? left = null, BinaryNode<T>? right = null, BinaryNode<T>? parent = null)
     {
         Parent = parent;

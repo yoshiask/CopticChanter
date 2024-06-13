@@ -1,5 +1,5 @@
 ﻿using CoptLib.Extensions;
-using CoptLib.Writing.Linguistics.Structure;
+using CoptLib.Writing.Linguistics.XBar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -204,6 +204,8 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
 
         }
+
+        yield break;
     }
 
     // ReSharper disable InvalidXmlDocComment
@@ -220,7 +222,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
         // Singular feminine
         "ϯ", "ⲑ̀", "ⲧ̀",
         // Plural
-        "ⲛⲓ", "ⲛⲉⲛ", "ⲛ̀",
+        "ⲛⲓ", "ⲛⲉⲛ",
 
         /// Indefinite articles
         // Singular (masculine and feminine)
@@ -230,7 +232,7 @@ public class CopticGrecoBohairicAnalyzer : CopticAnalyzer
 
         /// Possestive articles
         // Simple
-        "ⲙ̀",
+        "ⲙ̀", "ⲛ̀",
         // 2nd masculine singular
         "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
         // 3rd masculine singular
