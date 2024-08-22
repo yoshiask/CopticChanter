@@ -41,9 +41,3 @@ public class XPhrase : BinaryNode<IStructuralElement>
     private static Exception ThrowMissingNodeException([CallerMemberName] string nodeType = "")
         => new InvalidOperationException($"A {nodeType} node must be present.");
 }
-
-public enum PhrasalCategory
-{
-    Unknown,
-    Adjective, Adverb, Adposition, Noun, Sentence, Tense, Verb
-}

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using CoptLib.Writing.Lexicon;
+using CoptLib.Writing.Linguistics.XBar;
+using System.Collections.Generic;
 // ReSharper disable InvalidXmlDocComment
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
@@ -38,7 +40,7 @@ partial class CopticAnalyzer
         // Singular feminine
         "ϯ", "ⲑ̀", "ⲧ̀",
         // Plural
-        "ⲛⲓ", "ⲛⲉⲛ", "ⲛ̀",
+        "ⲛⲓ", "ⲛⲉⲛ",
 
         "ⲧⲓ",
 
@@ -50,7 +52,7 @@ partial class CopticAnalyzer
 
         /// Possestive articles
         // Simple
-        "ⲙ̀",
+        "ⲙ̀", "ⲛ̀",
         // 2nd masculine singular
         "ⲡⲉⲕ", "ⲧⲉⲕ", "ⲛⲉⲕ",
         // 3rd masculine singular
@@ -103,5 +105,112 @@ partial class CopticAnalyzer
         ["ⲟⲩⲟϩ".GetHashCode()] = PhoneticWord.Parse("ⲟ,o", "ⲩ,w;ⲟ,o;ϩ,h"),
         ["ⲛⲉⲙ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲉ,ɛ;ⲙ,m"),
         ["ⲛⲁϩⲣⲉⲛ".GetHashCode()] = PhoneticWord.Parse("ⲛ,n;ⲁ,ɑ;ϩ,h", "ⲣ,ɾ;ⲉ,ɛ;ⲛ,n"),
+    };
+
+    public static readonly IReadOnlyDictionary<string, IDeterminerMeta> Determiners = new Dictionary<string, IDeterminerMeta>
+    {
+        // Definite
+        ["ⲡ"] = new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲫ"] = new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲡⲓ"] = new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧ"] = new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲑ"] = new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ϯ"] = new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲓ"] = new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Number: GrammaticalCount.Plural)),
+
+        // Indefinite
+        ["ⲟⲩ"] = new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Singular)),
+        ["ϩⲁⲛ"] = new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Plural)),
+
+        // Possessive Strong
+        ["ⲛ"] = new DeterminerPossessiveMeta(DeterminerStrength.Strong, NounMeta.Unspecified, NounMeta.Unspecified),
+        ["ⲙ"] = new DeterminerPossessiveMeta(DeterminerStrength.Strong, NounMeta.Unspecified, NounMeta.Unspecified),
+
+        // Possessive 1st Person
+        ["ⲡⲁ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲁ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲁ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Number: GrammaticalCount.Plural)),
+        ["ⲡⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Number: GrammaticalCount.Plural)),
+
+        // Possessive 2nd Person
+        ["ⲡⲉⲕ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉⲕ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉⲕ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural)),
+        ["ⲡⲉ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural)),
+        ["ⲡⲉⲧⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉⲧⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉⲧⲉⲛ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Number: GrammaticalCount.Plural)),
+
+        // Possessive 3rd Person
+        ["ⲡⲉϥ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉϥ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉϥ"] = new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural)),
+        ["ⲡⲉⲥ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲉⲥ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲉⲥ"] = new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural)),
+        ["ⲡⲟⲩ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲟⲩ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲟⲩ"] = new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Number: GrammaticalCount.Plural)),
+
+        // Demonstrative
+        ["ⲡⲁⲓ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Masculine, GrammaticalCount.Singular)),
+        ["ⲧⲁⲓ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Feminine, GrammaticalCount.Singular)),
+        ["ⲛⲁⲓ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Number: GrammaticalCount.Plural)),
+        ["ⲉⲧⲉ ⲙⲙⲁⲩ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Far, NounMeta.Unspecified),
+
+        // Quantifier
+        ["ⲛⲓⲃⲉⲛ"] = new DeterminerQuantifyingMeta(new(Number: GrammaticalCount.All)),
+    };
+
+    public static readonly IReadOnlyDictionary<string, object> NounPrefixes = new Dictionary<string, object>
+    {
+        // Determiners
+        ["ⲡ"] = Determiners["ⲡ"],
+        ["ⲫ"] = Determiners["ⲫ"],
+        ["ⲡⲓ"] = Determiners["ⲡⲓ"],
+        ["ⲧ"] = Determiners["ⲧ"],
+        ["ⲑ"] = Determiners["ⲑ"],
+        ["ϯ"] = Determiners["ϯ"],
+        ["ⲛⲓ"] = Determiners["ⲛⲓ"],
+        ["ⲟⲩ"] = Determiners["ⲟⲩ"],
+        ["ϩⲁⲛ"] = Determiners["ϩⲁⲛ"],
+        ["ⲛ"] = Determiners["ⲛ"],
+        ["ⲙ"] = Determiners["ⲙ"],
+        ["ⲡⲁ"] = Determiners["ⲡⲁ"],
+        ["ⲧⲁ"] = Determiners["ⲧⲁ"],
+        ["ⲛⲁ"] = Determiners["ⲛⲁ"],
+        ["ⲡⲉⲛ"] = Determiners["ⲡⲉⲛ"],
+        ["ⲧⲉⲛ"] = Determiners["ⲧⲉⲛ"],
+        ["ⲛⲉⲛ"] = Determiners["ⲛⲉⲛ"],
+        ["ⲡⲉⲕ"] = Determiners["ⲡⲉⲕ"],
+        ["ⲧⲉⲕ"] = Determiners["ⲧⲉⲕ"],
+        ["ⲛⲉⲕ"] = Determiners["ⲛⲉⲕ"],
+        ["ⲡⲉ"] = Determiners["ⲡⲉ"],
+        ["ⲧⲉ"] = Determiners["ⲧⲉ"],
+        ["ⲛⲉ"] = Determiners["ⲛⲉ"],
+        ["ⲡⲉⲧⲉⲛ"] = Determiners["ⲡⲉⲧⲉⲛ"],
+        ["ⲧⲉⲧⲉⲛ"] = Determiners["ⲧⲉⲧⲉⲛ"],
+        ["ⲛⲉⲧⲉⲛ"] = Determiners["ⲛⲉⲧⲉⲛ"],
+        ["ⲡⲉϥ"] = Determiners["ⲡⲉϥ"],
+        ["ⲧⲉϥ"] = Determiners["ⲧⲉϥ"],
+        ["ⲛⲉϥ"] = Determiners["ⲛⲉϥ"],
+        ["ⲡⲉⲥ"] = Determiners["ⲡⲉⲥ"],
+        ["ⲧⲉⲥ"] = Determiners["ⲧⲉⲥ"],
+        ["ⲛⲉⲥ"] = Determiners["ⲛⲉⲥ"],
+        ["ⲡⲟⲩ"] = Determiners["ⲡⲟⲩ"],
+        ["ⲧⲟⲩ"] = Determiners["ⲧⲟⲩ"],
+        ["ⲛⲟⲩ"] = Determiners["ⲛⲟⲩ"],
+        ["ⲡⲁⲓ"] = Determiners["ⲡⲁⲓ"],
+        ["ⲧⲁⲓ"] = Determiners["ⲧⲁⲓ"],
+        ["ⲛⲁⲓ"] = Determiners["ⲛⲁⲓ"],
+
+        // TODO: This lookup table should include all prefixes, including those that aren't strictly determiners
+        //["ⲉ"] = null,
+        //["ⲉⲟⲩ"] = null,
+        //["ⲉⲩ"] = null,    // Contraction of above
     };
 }

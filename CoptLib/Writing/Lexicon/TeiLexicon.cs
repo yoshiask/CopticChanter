@@ -72,6 +72,29 @@ public class TeiLexicon : ILexicon
             .FirstAsync(token);
     }
 
+    public IAsyncEnumerable<LexiconEntry> BasicSearchAsync(string query, LanguageInfo usage, CancellationToken token = default)
+    {
+        return GetEntriesAsync(token)
+            .SelectMany(e =>
+            {
+                return e switch
+                {
+                    LexiconSuperEntry superEntry => superEntry.Entries.ToAsyncEnumerable(),
+                    LexiconEntry entry => entry.IntoList().ToAsyncEnumerable(),
+                    _ => throw new ArgumentException(nameof(e))
+                };
+            })
+            .Where(IsMatch);
+
+        bool IsMatch(LexiconEntry entry)
+        {
+            if (!entry.Forms.PruneNull().Any(f => f.Usage.IsEquivalentTo(usage, LanguageEquivalencyOptions.StrictWithWild)))
+                return false;
+
+            return entry.Forms.Any(f => f.Orthography.Contains(query));
+        }
+    }
+
     public IAsyncEnumerable<LexiconEntry> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null,
         CancellationToken token = default)
     {

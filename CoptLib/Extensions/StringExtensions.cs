@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CoptLib.Extensions;
 
 public static class StringExtensions
 {
-    public static bool StartsWithAny(this string str, IEnumerable<string> values, StringComparison comparisonType = default)
+    public static bool StartsWithAny(this string str, IEnumerable<string> values, [NotNullWhen(true)] out string? prefix, StringComparison comparisonType = default)
     {
         foreach (string val in values)
-            if (str.StartsWith(val, comparisonType))
-                return true;
+        {
+            if (!str.StartsWith(val, comparisonType))
+                continue;
+
+            prefix = val;
+            return true;
+        }
+
+        prefix = null;
         return false;
     }
 
     public static bool StartsWithAny(this string str, StringComparison comparisonType = default, params string[] values)
-        => StartsWithAny(str, values, comparisonType);
+        => StartsWithAny(str, values, out _, comparisonType);
 
     public static bool EndsWithAny(this string str, IEnumerable<string> values)
     {
@@ -62,5 +70,19 @@ public static class StringExtensions
         return index < 0
             ? (s, null)
             : (s[..index], s[(index + 1)..]);
+    }
+
+    public static IEnumerable<string> SplitAlongCapitals(this string s)
+    {
+        int lastCapital = 0;
+        for (int i = 0; i < s.Length;)
+        {
+            char ch = s[i];
+            if (!char.IsUpper(ch))
+                continue;
+
+            yield return s[lastCapital..++i];
+            lastCapital = i;
+        }
     }
 }

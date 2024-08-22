@@ -6,12 +6,9 @@ public interface ITenseMeta
 {
 }
 
-public record TenseMeta(RelativeTime Start = default, RelativeTime End = default, TenseFlags Flags = default, int Degree = 0) : ITenseMeta
+public record TenseMeta(RelativeTime CurrentTime = default, RelativeTime Start = default, RelativeTime End = default, TenseFlags Flags = default, int Degree = 0) : ITenseMeta
 {
-    public static readonly TenseMeta Present = new(RelativeTime.Present, Degree: 1);
-    public static readonly TenseMeta Future = new(RelativeTime.Future, Degree: 1);
-    public static readonly TenseMeta Past = new(RelativeTime.Past, Degree: 1);
-    public static readonly TenseMeta Aorist = new(RelativeTime.Aorist, Degree: 1);
+    public bool IsAorist => Start == RelativeTime.Aorist && End == RelativeTime.Aorist;
 }
 
 [System.Flags]
@@ -44,7 +41,7 @@ public enum RelativeTime : sbyte
 }
 
 [System.Flags]
-public enum TenseFlags : byte
+public enum TenseFlags : ushort
 {
     Unspecified,
 
@@ -55,4 +52,6 @@ public enum TenseFlags : byte
     Perfect         = 1 << 4,
     Relative        = 1 << 5,
     Imperative      = 1 << 6,
+    Negative        = 1 << 7,
+    Conditional     = 1 << 8,
 }
