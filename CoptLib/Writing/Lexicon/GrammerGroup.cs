@@ -51,7 +51,7 @@ public enum Number : byte
 
 public enum Gender : byte
 {
-    Neutral, Masculine, Feminine
+    Unspecified, Neutral, Masculine, Feminine, Animate, Inanimate
 }
 
 public enum GrammarType : byte

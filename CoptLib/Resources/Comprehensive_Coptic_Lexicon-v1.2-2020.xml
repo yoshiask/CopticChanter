@@ -67591,6 +67591,7 @@
       <entry xml:id="C2783">
         <form type="lemma" xml:id="CF7397"><usg type="geo">S</usg><orth>ⲡ-</orth></form>
         <form xml:id="CF7398"><usg type="geo">S</usg><orth>ⲡ-</orth></form>
+        <form xml:id="CF73980"><usg type="geo">B</usg><orth>ⲡ-</orth></form>
         <gramGrp>
           <pos>bestimmter Artikel</pos>
           <number>sg.</number>
@@ -67615,6 +67616,7 @@
       <entry xml:id="C2784">
         <form type="lemma" xml:id="CF7399"><usg type="geo">S</usg><orth>ⲡⲁ-</orth></form>
         <form xml:id="CF7400"><usg type="geo">S</usg><orth>ⲡⲁ-</orth></form>
+        <form xml:id="CF74000"><usg type="geo">B</usg><orth>ⲡⲁ-</orth></form>
         <gramGrp>
           <pos>Possessivartikel</pos>
           <number>sg.</number>
@@ -67646,6 +67648,7 @@
       <entry type="hom" xml:id="C2785">
         <form type="lemma" xml:id="CF7401"><usg type="geo">S</usg><orth>ⲡⲁ-</orth></form>
         <form xml:id="CF7402"><usg type="geo">S</usg><orth>ⲡⲁ-</orth></form>
+        <form xml:id="CF74020"><usg type="geo">B</usg><orth>ⲡⲁ-</orth></form>
         <gramGrp>
           <pos>Possessivpräfix</pos>
           <gen>m.</gen>
@@ -67670,6 +67673,7 @@
       <entry xml:id="C2786">
         <form type="lemma" xml:id="CF7403"><usg type="geo">S</usg><orth>ⲡⲉ⸗</orth></form>
         <form type="inflected" xml:id="CF7404"><usg type="geo">S</usg><orth>ⲡⲉ⸗</orth></form>
+        <form type="inflected" xml:id="CF74040"><usg type="geo">B</usg><orth>ⲡⲉ⸗</orth></form>
         <gramGrp>
           <pos>Possessivartikel</pos>
           <gen>m.</gen>
@@ -67744,6 +67748,7 @@
       <entry type="hom" xml:id="C2788">
         <form type="lemma" xml:id="CF7411"><usg type="geo">S</usg><orth>ⲡⲉ</orth></form>
         <form xml:id="CF7412"><usg type="geo">S</usg><orth>ⲡⲉ</orth></form>
+        <form xml:id="CF74120"><usg type="geo">B</usg><orth>ⲡⲉ</orth></form>
       <gramGrp>
           <pos>Dem. Pron.</pos>
           <subc>Kopula</subc>

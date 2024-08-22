@@ -31,6 +31,24 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
     
     public bool IsInitialized { get; private set; }
 
+    public async IAsyncEnumerable<LexiconEntry> BasicSearchAsync(string query, LanguageInfo usage,
+        [EnumeratorCancellation] CancellationToken token = default)
+    {
+        var command = _db.CreateCommand();
+        command.CommandText = @"SELECT * FROM entries WHERE search MATCH @query ORDER BY rank";
+        command.Parameters.AddWithValue("query", query);
+
+        using var reader = await command.ExecuteReaderAsync(token);
+        while (await reader.ReadAsync(token))
+        {
+            token.ThrowIfCancellationRequested();
+            var entry =  ReadLexiconEntry(reader);
+            
+            if (entry.Forms.Any(f => f.Usage.IsEquivalentTo(usage, LanguageEquivalencyOptions.StrictWithWild)))
+                yield return entry;
+        }
+    }
+
     public async IAsyncEnumerable<LexiconEntry> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null,
         [EnumeratorCancellation] CancellationToken token = default)
     {

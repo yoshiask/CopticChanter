@@ -13,14 +13,17 @@ public static class CommonAttributes
 
 public interface IStructuralElement
 {
-    string SourceText { get; }
+    /// <summary>
+    /// The range in the source text that this element represents.
+    /// </summary>
+    Range SourceRange { get; }
 
     IDictionary<string, object> Attributes { get; }
 
     bool TryGetAttribute<T>(string key, [NotNullWhen(true)] out T? value);
 }
 
-public abstract record StructuralElement(string SourceText) : IStructuralElement
+public abstract record StructuralElement(Range SourceRange) : IStructuralElement
 {
     public IDictionary<string, object> Attributes { get; } = new Dictionary<string, object>();
 
@@ -34,8 +37,13 @@ public abstract record StructuralElement(string SourceText) : IStructuralElement
     }
 }
 
-public record StructuralPhrase(string SourceText) : StructuralElement(SourceText)
+public record StructuralPhrase(Range SourceRange) : StructuralElement(SourceRange)
 {
+    public StructuralPhrase(Range sourceRange, PhrasalCategory category) : this(sourceRange)
+    {
+        Category = category;
+    }
+
     public PhrasalCategory Category
     {
         get
@@ -48,23 +56,16 @@ public record StructuralPhrase(string SourceText) : StructuralElement(SourceText
     }
 }
 
-public record EmptyStructuralElement() : StructuralElement(string.Empty);
+public record EmptyStructuralElement() : StructuralElement(Range.Empty);
 
-public record StructuralLexeme(string SourceText, LexiconEntry Entry, int SenseIndex) : StructuralElement(SourceText)
+public record StructuralLexeme(Range SourceRange, LexiconEntry Entry, int SenseIndex) : StructuralElement(SourceRange)
 {
     public Sense Sense => Entry.Senses[SenseIndex];
 }
 
-public record StructuralWord(string SourceText, IList<StructuralLexeme> Lexemes) : StructuralElement(SourceText)
+public record StructuralWord(Range SourceRange, IList<StructuralLexeme> Lexemes) : StructuralElement(SourceRange)
 {
-    public StructuralWord(string sourceText) : this(sourceText, [])
-    {
-    }
-}
-
-public record StructuralSentence(string SourceText, IList<StructuralWord> Words) : StructuralElement(SourceText)
-{
-    public StructuralSentence(string sourceText) : this(sourceText, [])
+    public StructuralWord(Range sourceRange) : this(sourceRange, [])
     {
     }
 }

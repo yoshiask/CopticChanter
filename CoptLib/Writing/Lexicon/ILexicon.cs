@@ -12,6 +12,8 @@ public interface ILexicon
     LanguageInfo Language { get; }
 
     IAsyncEnumerable<LexiconEntry> SearchAsync(string query, LanguageInfo usage, PartOfSpeech? partOfSpeech = null, CancellationToken token = default);
+    
+    IAsyncEnumerable<LexiconEntry> BasicSearchAsync(string query, LanguageInfo usage, CancellationToken token = default);
 
     IAsyncEnumerable<ILexiconEntry> GetEntriesAsync(CancellationToken token = default);
 
