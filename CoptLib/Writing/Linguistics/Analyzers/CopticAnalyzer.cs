@@ -170,7 +170,7 @@ public abstract partial class CopticAnalyzer : LinguisticAnalyzer
         // If it has "ⲩ" that is pronounced as "EE"
 
         // Some prefixes are specific to Greek
-        if (normWord.StartsWithAny(GreekSpecificPrefixes))
+        if (normWord.StartsWithAny(GreekSpecificPrefixes, out _))
             return (KnownLanguage.Greek, 0.8);
 
         // Some suffixes are much more common in Greek than Coptic
