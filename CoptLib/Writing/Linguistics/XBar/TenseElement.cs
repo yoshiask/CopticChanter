@@ -1,10 +1,12 @@
 ﻿namespace CoptLib.Writing.Linguistics.XBar;
 
-public record TenseElement(Range SourceRange, TenseMeta Meta, NounMeta Actor, NounMeta? Target = null) : StructuralElement(SourceRange);
+public record TenseElement(Range SourceRange, TenseMeta Meta) : StructuralElement(SourceRange);
 
 public interface ITenseMeta
 {
 }
+
+public record VerbMeta(TenseMeta Tense, NounMeta Actor, NounMeta? Target = null);
 
 public record TenseMeta(RelativeTime CurrentTime = default, RelativeTime Start = default, RelativeTime End = default, TenseFlags Flags = default, int Degree = 0) : ITenseMeta
 {
