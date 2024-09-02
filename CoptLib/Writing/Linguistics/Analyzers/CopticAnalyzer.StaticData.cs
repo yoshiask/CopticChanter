@@ -1,6 +1,8 @@
 ﻿using CoptLib.Writing.Lexicon;
 using CoptLib.Writing.Linguistics.XBar;
+using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 // ReSharper disable InvalidXmlDocComment
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
@@ -213,4 +215,34 @@ partial class CopticAnalyzer
         //["ⲉⲟⲩ"] = null,
         //["ⲉⲩ"] = null,    // Contraction of above
     };
+
+    public static readonly IReadOnlyList<(List<LazyRegex>, List<Func<Match, VerbMeta>>)> VerbPrefixes = new List<(List<LazyRegex>, List<Func<Match, VerbMeta>>)>
+    {
+        ([new LazyRegex(@"^((?<unt>ϣⲁ)|(?<yetn>ⲙⲡⲁ))?(?<pov>ϯ)(?<fut>ⲛⲁ)?(?<base>\w+)")],
+            [m => new(new(RelativeTime.Present, m.Groups["fut"].Success ? RelativeTime.Future : default), MapVerbConjToPOV(m.Groups["pov"].Value))]),
+        ([new LazyRegex(@"^((?<unt>ϣⲁ)|(?<yetn>ⲙⲡⲁ))?(?<pov>ϯ)(?<fut>ⲛⲁ)?(?<base>\w+)")],
+            [m => new(new(RelativeTime.Present, m.Groups["fut"].Success ? RelativeTime.Future : default), MapVerbConjToPOV(m.Groups["pov"].Value))]),
+    };
+
+    private static NounMeta MapVerbConjToPOV(string prefix)
+    {
+        return prefix switch
+        {
+            // Part                    Gender               Sg./Pl.                          1st/2nd/3rd
+            "ϯ" or "ⲓ"          => new(default,             GrammaticalCount.Singular,      PointOfView.First),
+            
+            "ⲕ" or "ⲭ"          => new(Gender.Masculine,    GrammaticalCount.Singular,      PointOfView.Second),
+            "ϥ"                 => new(Gender.Masculine,    GrammaticalCount.Singular,      PointOfView.Third),
+
+            "ⲉ" or "ⲧⲉ"          => new(Gender.Feminine,    GrammaticalCount.Singular,      PointOfView.Second),
+            "ⲉ" or "ⲧⲉ"          => new(Gender.Feminine,    GrammaticalCount.Singular,      PointOfView.Third),
+            
+            "ⲧⲉⲧⲉⲛ"             => new(default,             GrammaticalCount.Plural,        PointOfView.First),
+            "ⲟⲩ" or "ⲁⲩ"        => new(default,             GrammaticalCount.Plural,        PointOfView.Second),
+            "ⲛ"                 => new(default,             GrammaticalCount.Plural,        PointOfView.Third),
+            
+            "ⲥ"                 => new(Gender.Feminine,     GrammaticalCount.Singular,      PointOfView.Third),
+            _ => throw new ArgumentException(),
+        };
+    }
 }
