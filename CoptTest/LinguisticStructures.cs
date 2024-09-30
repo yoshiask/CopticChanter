@@ -114,22 +114,22 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [InlineData("ⲁⲛⲥⲱⲧⲉⲙ", PointOfView.First, GrammaticalCount.Plural, Gender.Unspecified)]
     public async Task BohairicCoptic_DetectVerbs(string verb, PointOfView pov, GrammaticalCount number, Gender gender, RelativeTime start = default, RelativeTime end = default, TenseFlags flags = default)
     {
-        var ctor = CopticBohairicTranslator.TryIdentifyVerb(verb);
-        Guard.IsNotNull(ctor);
+        var meta = CopticBohairicTranslator.TryIdentifyVerb(verb);
+        Guard.IsNotNull(meta);
 
-        var element = ctor(Range.All);
+        VerbElement element = new(Range.All, meta);
         Guard.IsNotNull(element);
 
         Guard.IsNotNull(element.Meta);
-        Guard.IsNotNull(element.Actor);
+        Guard.IsNotNull(element.Meta.Actor);
 
         _output.WriteLine(verb);
         _output.WriteLine(element.Meta.ToString());
-        _output.WriteLine(element.Actor.ToString());
+        _output.WriteLine(element.Meta.Actor.ToString());
 
-        Guard.IsEqualTo((byte)element.Actor.PointOfView, (byte)pov);
-        Guard.IsEqualTo((int)element.Actor.Number, (int)number);
-        Guard.IsEqualTo((byte)element.Actor.Gender, (byte)gender);
+        Guard.IsEqualTo((byte)element.Meta.Actor.PointOfView, (byte)pov);
+        Guard.IsEqualTo((int)element.Meta.Actor.Number, (int)number);
+        Guard.IsEqualTo((byte)element.Meta.Actor.Gender, (byte)gender);
     }
 
     [Fact]

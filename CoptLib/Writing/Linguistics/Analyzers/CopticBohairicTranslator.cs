@@ -90,7 +90,7 @@ public class CopticBohairicTranslator : ITranslator
         return BreakAffixes(remainingWord, components, currentOffset, isNoun);
     }
 
-    public static IEnumerable<Func<Range, TenseElement>> IdentifyVerb(string word)
+    public static IEnumerable<VerbMeta> IdentifyVerb(string word)
     {
         List<(Regex, Lazy<NounMeta>)> verbConjs =
         [
@@ -101,18 +101,18 @@ public class CopticBohairicTranslator : ITranslator
 
         foreach ((var rx, var actor) in verbConjs)
         {
-            var match = MatchVerb(word, rx, actor);
+            var match = MatchTense(word, rx);
             if (match is null)
                 continue;
 
             // TODO: Check for base verb in the dictionary
-            yield return match;
+            yield return new(match, actor.Value, null);
         }
     }
 
-    public static Func<Range, TenseElement>? TryIdentifyVerb(string word) => IdentifyVerb(word).FirstOrDefault();
+    public static VerbMeta? TryIdentifyVerb(string word) => IdentifyVerb(word).FirstOrDefault();
 
-    private static Func<Range, TenseElement>? MatchVerb(string word, Regex verbRx, Lazy<NounMeta> actor)
+    private static TenseMeta? MatchTense(string word, Regex verbRx)
     {
         var match = verbRx.Match(word);
         if (!match.Success)
@@ -158,9 +158,7 @@ public class CopticBohairicTranslator : ITranslator
         if (conditional)
             flags |= TenseFlags.Conditional;
 
-        TenseMeta tense = new(currentTime, start, end, flags, degree);
-
-        return range => new(range, tense, actor.Value);
+        return new(currentTime, start, end, flags, degree);
     }
 
     private static string RemoveDiacritics(string text)
