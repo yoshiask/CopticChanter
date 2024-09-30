@@ -8,6 +8,8 @@ public interface ITenseMeta
 
 public record VerbMeta(TenseMeta Tense, NounMeta Actor, NounMeta? Target = null);
 
+public record VerbElement(Range SourceRange, VerbMeta Meta) : StructuralElement(SourceRange);
+
 public record TenseMeta(RelativeTime CurrentTime = default, RelativeTime Start = default, RelativeTime End = default, TenseFlags Flags = default, int Degree = 0) : ITenseMeta
 {
     public bool IsAorist => Start == RelativeTime.Aorist && End == RelativeTime.Aorist;
