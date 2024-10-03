@@ -163,6 +163,7 @@ partial class CopticAnalyzer
         ["ⲧⲁⲓ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Feminine, GrammaticalCount.Singular)),
         ["ⲛⲁⲓ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Number: GrammaticalCount.Plural)),
         ["ⲉⲧⲉ ⲙⲙⲁⲩ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Far, NounMeta.Unspecified),
+        ["ⲉⲧⲉⲙⲙⲁⲩ"] = new DeterminerDemonstrativeMeta(DeterminerStrength.Far, NounMeta.Unspecified),
 
         // Quantifier
         ["ⲛⲓⲃⲉⲛ"] = new DeterminerQuantifyingMeta(new(Number: GrammaticalCount.All)),
@@ -211,9 +212,9 @@ partial class CopticAnalyzer
         ["ⲛⲁⲓ"] = Determiners["ⲛⲁⲓ"],
 
         // TODO: This lookup table should include all prefixes, including those that aren't strictly determiners
-        //["ⲉ"] = null,
+        ["ⲉ"] = new PrepositionMeta(PrepositionType.To),
         //["ⲉⲟⲩ"] = null,
-        //["ⲉⲩ"] = null,    // Contraction of above
+        //["ⲉⲩ"] = null,    // Contraction of ⲉⲟⲩ
     };
 
     public static readonly IReadOnlyList<(List<LazyRegex>, List<Func<Match, VerbMeta>>)> VerbPrefixes = new List<(List<LazyRegex>, List<Func<Match, VerbMeta>>)>
@@ -222,6 +223,56 @@ partial class CopticAnalyzer
             [m => new(new(RelativeTime.Present, m.Groups["fut"].Success ? RelativeTime.Future : default), MapVerbConjToPOV(m.Groups["pov"].Value))]),
         ([new LazyRegex(@"^((?<unt>ϣⲁ)|(?<yetn>ⲙⲡⲁ))?(?<pov>ϯ)(?<fut>ⲛⲁ)?(?<base>\w+)")],
             [m => new(new(RelativeTime.Present, m.Groups["fut"].Success ? RelativeTime.Future : default), MapVerbConjToPOV(m.Groups["pov"].Value))]),
+    };
+
+    public static readonly IReadOnlyDictionary<string, PrepositionMeta> Prepositions = new Dictionary<string, PrepositionMeta>
+    {
+        ["ⲛⲧⲉ"] = new(PrepositionType.Of),
+        ["ϩⲓⲧⲉⲛ"] = new(PrepositionType.Through),
+
+        ["ⲁⲧϭⲛⲉ"] = new(PrepositionType.With, true),
+        ["ⲥⲁⲃⲟⲗ"] = new(PrepositionType.Away),
+        ["ϣⲁⲉⲃⲟⲗ"] = new(PrepositionType.In, true),
+        ["ⲉⲑⲃⲉ"] = new(PrepositionType.BecauseOf),
+        ["ⲓⲥϫⲉⲛ"] = new(PrepositionType.Since),
+        ["ⲕⲁⲧⲁ"] = new(PrepositionType.AccordingTo),
+        ["ⲗⲟⲓⲡⲟⲛ"] = new(PrepositionType.After),
+        ["ⲙⲉⲛϩⲓ"] = new(PrepositionType.After),
+        ["ⲙⲏⲣ"] = new(PrepositionType.OtherSide),
+        ["ϩⲓⲙⲏⲣ"] = new(PrepositionType.OtherSide),
+        ["ⲉⲧⲙⲏϯ"] = new(PrepositionType.Between),
+        //["ⲙⲙⲟⲛ"] = new(PrepositionType.X),
+        ["ⲛⲉⲙ"] = new(PrepositionType.With),
+        ["ⲡⲗⲏⲛ"] = new(PrepositionType.Except),
+        ["ⲙⲉⲛⲉⲛⲥⲁ"] = new(PrepositionType.After),
+        ["ⲉⲥⲕⲉⲛ"] = new(PrepositionType.Beside),
+        ["ⲛⲧⲉⲛ"] = new(PrepositionType.BecauseOf),
+        ["ϧⲁⲧⲉⲛ"] = new(PrepositionType.Under),
+        ["ⲟⲩⲃⲉ"] = new(PrepositionType.Contrasting),
+        ["ⲟⲩⲧⲉ"] = new(PrepositionType.Between),
+        //["ⲛⲟⲩⲉϣⲉⲛ"] = new(PrepositionType.X),
+        ["ⲉⲫⲁϩⲟⲩ"] = new(PrepositionType.Forward, true),
+        ["ⲥⲁⲫⲁϩⲟⲩ"] = new(PrepositionType.Behind),
+        ["ϩⲓⲫⲁϩⲟⲩ"] = new(PrepositionType.Behind),
+        ["ⲭⲱⲣⲓⲥ"] = new(PrepositionType.With, true),
+        ["ϣⲁ"] = new(PrepositionType.To),
+        ["ϧⲁ"] = new(PrepositionType.In),
+        //["ϣⲁⲧⲉⲛ"] = new(PrepositionType.To),
+        ["ϧⲉⲛ"] = new(PrepositionType.In),
+        ["ϩⲁ"] = new(PrepositionType.To),
+        ["ⲉⲑⲏ"] = new(PrepositionType.Forward),
+        ["ⲥⲁⲧϩⲏ"] = new(PrepositionType.After, true),
+        ["ϩⲁⲑⲏ"] = new(PrepositionType.Behind, true),
+        ["ϩⲓⲑⲏ"] = new(PrepositionType.Forward),
+        ["ϩⲓ"] = new(PrepositionType.Concerning),
+        ["ⲉϩⲣⲉⲛ"] = new(PrepositionType.Facing),
+        ["ⲛⲁϩⲣⲉⲛ"] = new(PrepositionType.PresenceOf),
+        ["ⲉϧⲟⲩⲛ"] = new(PrepositionType.To),
+        ["ϩⲟⲧⲉ"] = new(PrepositionType.Beyond),
+        ["ⲉϩⲣⲏⲓ"] = new(PrepositionType.Above),
+        ["ⲉϫⲉⲛ"] = new(PrepositionType.On),
+        ["ϧⲁϫⲉⲛ"] = new(PrepositionType.After, true),
+        ["ϩⲓϫⲉⲛ"] = new(PrepositionType.On),
     };
 
     private static NounMeta MapVerbConjToPOV(string prefix)
