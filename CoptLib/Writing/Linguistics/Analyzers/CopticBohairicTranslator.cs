@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using CoptLib.Extensions;
+﻿using CoptLib.Extensions;
 using CoptLib.Writing.Lexicon;
 using CoptLib.Writing.Linguistics.XBar;
 using OwlCore.ComponentModel;
@@ -7,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
