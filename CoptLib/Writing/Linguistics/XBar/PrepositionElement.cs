@@ -2,7 +2,7 @@
 
 public record PrepositionElement(Range SourceRange, PrepositionMeta Meta) : StructuralElement(SourceRange);
 
-public record PrepositionMeta(PrepositionType Type, bool Negative = false);
+public record PrepositionMeta(PrepositionType Type, bool Negative = false) : IMeta;
 
 public enum PrepositionType
 {
