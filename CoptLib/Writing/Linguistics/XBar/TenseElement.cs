@@ -2,11 +2,9 @@
 
 public record TenseElement(Range SourceRange, TenseMeta Meta) : StructuralElement(SourceRange);
 
-public interface ITenseMeta
-{
-}
+public interface ITenseMeta : IMeta;
 
-public record VerbMeta(TenseMeta Tense, NounMeta Actor, NounMeta? Target = null);
+public record VerbMeta(TenseMeta Tense, InflectionMeta Actor, InflectionMeta? Target = null) : IMeta;
 
 public record VerbElement(Range SourceRange, VerbMeta Meta) : StructuralElement(SourceRange);
 
