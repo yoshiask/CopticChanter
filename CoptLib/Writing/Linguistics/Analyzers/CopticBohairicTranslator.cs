@@ -31,7 +31,6 @@ public class CopticBohairicTranslator : ITranslator
             if (srcWord.Length <= 0)
                 continue;
 
-            IStructuralElement? element = null;
             var endIndex = currentOffset + srcWord.Length;
             var range = new Range(currentOffset, endIndex);
 
@@ -40,8 +39,8 @@ public class CopticBohairicTranslator : ITranslator
             List<StructuralElement> wordComponents = [];
             BreakAffixes(srcWordNorm, wordComponents);
 
-            if (element is not null)
-                sentence.Add(element);
+            if (wordComponents is not null)
+                sentence.AddRange(wordComponents);
 
             currentOffset = endIndex;
         }
@@ -90,7 +89,7 @@ public class CopticBohairicTranslator : ITranslator
 
     public static IEnumerable<VerbMeta> IdentifyVerb(string word)
     {
-        List<(Regex, Lazy<NounMeta>)> verbConjs =
+        List<(Regex, Lazy<InflectionMeta>)> verbConjs =
         [
             (Verb1stSingRegex, new(() => new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
             (Verb1stPlurRegex, new(() => new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
@@ -109,6 +108,27 @@ public class CopticBohairicTranslator : ITranslator
     }
 
     public static VerbMeta? TryIdentifyVerb(string word) => IdentifyVerb(word).FirstOrDefault();
+
+    public static IEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement> existingElements = new())
+    {
+        // Check each possible prefix
+        foreach (var prefix in CopticAnalyzer.NounPrefixes.Keys)
+        {
+            if (!word.StartsWith(prefix))
+                continue;
+
+            var meta = CopticAnalyzer.NounPrefixes[prefix];
+
+            if (existingElements.Count > 0)
+            {
+                // There are already some prefixes, let's do some pruning!
+
+                // Determiners such as 
+                if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta))
+                    continue;
+            }
+        }
+    }
 
     private static TenseMeta? MatchTense(string word, Regex verbRx)
     {
@@ -177,6 +197,18 @@ public class CopticBohairicTranslator : ITranslator
         return stringBuilder
             .ToString()
             .Normalize(NormalizationForm.FormC);
+    }
+
+    private static int GetSequenceHashCode<T>(IEnumerable<T> sequence)
+    {
+        const int seed = 487;
+        const int modifier = 31;
+
+        unchecked
+        {
+            return sequence.Aggregate(seed, (current, item) =>
+                (current * modifier) + item.GetHashCode());
+        }
     }
 
     private static readonly Regex Verb1stSingRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡ)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ϯ|ⲓ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲓ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
