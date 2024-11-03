@@ -7,7 +7,10 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicGrammar
 {
-    const string VILMINOR = "ⲃⲏⲗⲙⲓⲛⲟⲣ";
+    const string VILMINOR = "ⲃⲏⲗⲙⲓⲛⲟⲣⲫⲯ";
+
+    const string VILMINOR_REGEX = $"(?:[{VILMINOR}])";
+    const string NOT_VILMINOR_REGEX = $"(?:[^{VILMINOR}])";
 
     private IEnumerable<SemanticPair>? _determiners;
     private IEnumerable<SemanticPair>? _nounPrefixes;
@@ -15,11 +18,11 @@ public class CopticBohairicGrammar
     public IEnumerable<SemanticPair> Articles { get; } =
     [
         // Definite
-        new(new Regex($"ⲡ[^{VILMINOR}]"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new(new Regex($"ⲫ[{VILMINOR}]"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new(new Regex($"ⲡ{NOT_VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new(new Regex($"ⲫ{VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
         new("ⲡⲓ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new(new Regex($"ⲧ[^{VILMINOR}]"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
-        new(new Regex($"ⲑ[{VILMINOR}]"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new(new Regex($"ⲧ{NOT_VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new(new Regex($"ⲑ{VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
         new("ϯ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Feminine, GrammaticalCount.Singular))),
         new("ⲛⲓ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Number: GrammaticalCount.Plural))),
 
@@ -28,8 +31,8 @@ public class CopticBohairicGrammar
         new("ϩⲁⲛ", () => new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Plural))),
 
         // Possessive Strong
-        new(new Regex($"ⲛ[^{VILMINOR}]"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
-        new(new Regex($"ⲙ[{VILMINOR}]"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
+        new(new Regex($"ⲛ{NOT_VILMINOR_REGEX}"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
+        new(new Regex($"ⲙ{VILMINOR_REGEX}"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
 
         // Possessive 1st Person
         new("ⲡⲁ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
@@ -99,8 +102,8 @@ public class CopticBohairicGrammar
                 new("ⲉ", () => new PrepositionMeta(PrepositionType.To)),
                 // TODO: "ⲉⲟⲩ" and its contraction "ⲉⲩ"
 
-                new(new Regex($"ⲛ[^{VILMINOR}]"), () => new PrepositionMeta(PrepositionType.Of)),
-                new(new Regex($"ⲙ[{VILMINOR}]"), () => new PrepositionMeta(PrepositionType.Of)),
+                new(new Regex($"ⲛ{NOT_VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
+                new(new Regex($"ⲙ{VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
 
                 .. Articles
             ];
