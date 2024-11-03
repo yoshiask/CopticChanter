@@ -36,7 +36,7 @@ public sealed class RegexPattern(Regex regex) : Pattern
     {
         var match = RegularExpression.Match(str, start);
 
-        return match.Success && match.Index == 0
+        return match.Success && match.Index == start
             ? CreateMatch(match, str)
             : null;
     }
