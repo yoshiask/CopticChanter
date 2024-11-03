@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using CoptLib;
+﻿using CoptLib.Extensions;
 using CoptLib.Writing.Lexicon;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
@@ -13,7 +12,8 @@ namespace CoptTest;
 
 public class LinguisticStructures(ITestOutputHelper _output)
 {
-    private readonly ITranslator _bohairicTranslator = new CopticBohairicTranslator();
+    private readonly CopticBohairicTranslator _bohairicTranslator = new();
+    private readonly ITranslator _translator = new CopticBohairicTranslator();
 
     [Fact]
     public void BinaryTree_GraphViz()
@@ -114,29 +114,51 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [InlineData("ⲁⲛⲥⲱⲧⲉⲙ", PointOfView.First, GrammaticalCount.Plural, Gender.Unspecified)]
     public async Task BohairicCoptic_DetectVerbs(string verb, PointOfView pov, GrammaticalCount number, Gender gender, RelativeTime start = default, RelativeTime end = default, TenseFlags flags = default)
     {
-        var meta = CopticBohairicTranslator.TryIdentifyVerb(verb);
-        Guard.IsNotNull(meta);
+        throw new System.NotImplementedException();
+        //var ctor = CopticBohairicTranslator.TryIdentifyVerb(verb);
+        //Guard.IsNotNull(ctor);
 
-        VerbElement element = new(Range.All, meta);
-        Guard.IsNotNull(element);
+        //var element = ctor(Range.All);
+        //Guard.IsNotNull(element);
 
-        Guard.IsNotNull(element.Meta);
-        Guard.IsNotNull(element.Meta.Actor);
+        //Guard.IsNotNull(element.Meta);
+        //Guard.IsNotNull(element.Actor);
 
-        _output.WriteLine(verb);
-        _output.WriteLine(element.Meta.ToString());
-        _output.WriteLine(element.Meta.Actor.ToString());
+        //_output.WriteLine(verb);
+        //_output.WriteLine(element.Meta.ToString());
+        //_output.WriteLine(element.Actor.ToString());
 
-        Guard.IsEqualTo((byte)element.Meta.Actor.PointOfView, (byte)pov);
-        Guard.IsEqualTo((int)element.Meta.Actor.Number, (int)number);
-        Guard.IsEqualTo((byte)element.Meta.Actor.Gender, (byte)gender);
+        //Guard.IsEqualTo((byte)element.Actor.PointOfView, (byte)pov);
+        //Guard.IsEqualTo((int)element.Actor.Number, (int)number);
+        //Guard.IsEqualTo((byte)element.Actor.Gender, (byte)gender);
+    }
+
+    [Theory]
+    [InlineData("ⲛⲉⲛⲓⲟϯ")]
+    [InlineData("Ⲫⲓⲱⲧ")]
+    [InlineData("ⲙⲪⲓⲱⲧ")]
+    [InlineData("ⲛⲪⲓⲱⲧ")]
+    [InlineData("Ⲡϭⲟⲓⲥ")]
+    [InlineData("ⲡⲁϭⲟⲓⲥ")]
+    [InlineData("ⲧⲁϭⲟⲓⲥ")]
+    [InlineData("ⲡⲓⲙⲁ")]
+    [InlineData("ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ")]
+    [InlineData("ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ")]
+    public async Task BohairicCoptic_DetectNouns(string noun)
+    {
+        noun = CopticBohairicTranslator.NormalizeText(noun);
+        await foreach (var x in _bohairicTranslator.IdentifyNoun(noun))
+        {
+            var xstr = string.Join("⸱", x.Select(y => noun.Substring(y.SourceRange)));
+            _output.WriteLine(xstr);
+        }
     }
 
     [Fact]
     public async Task AnnotateBohairicCoptic()
     {
-        var x = await _bohairicTranslator
-            .AnnotateAsync("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ", new(CoptLib.Writing.KnownLanguage.CopticBohairic))
+        var x = await _translator
+            .AnnotateAsync("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ")
             .ToListAsync();
 
         var annotations = x.First();
