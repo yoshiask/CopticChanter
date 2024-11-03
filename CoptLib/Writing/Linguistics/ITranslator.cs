@@ -8,8 +8,9 @@ namespace CoptLib.Writing.Linguistics;
 
 public interface ITranslator
 {
-    Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText, LanguageInfo sourceLanguage);
-    IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string sourceText, LanguageInfo sourceLanguage);
+    Task SetSourceLanguageAsync(LanguageInfo language);
+    Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText);
+    IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string sourceText);
 }
 
 public static class TranslatorExtensions
@@ -17,7 +18,7 @@ public static class TranslatorExtensions
     public static async Task<BinaryNode<IStructuralElement>> TranslateAsync(this ITranslator translator,
         string sourceText, LanguageInfo sourceLanguage)
     {
-        var annotatedText = translator.AnnotateAsync(sourceText, sourceLanguage);
+        var annotatedText = translator.AnnotateAsync(sourceText);
         throw new NotImplementedException();
         //return await translator.TranslateAsync(annotatedText, sourceLanguage);
     }

@@ -14,9 +14,13 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicTranslator : ITranslator
 {
+    private LanguageInfo _language = new(KnownLanguage.CopticBohairic);
     private readonly ILexicon _lexicon = new CopticScriptoriumLexicon();
+    private readonly CopticBohairicGrammar _grammar = new();
 
-    public async IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string srcText, LanguageInfo sourceLanguage)
+    public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(() => _language = language);
+
+    public async IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string srcText)
     {
         if (_lexicon is IAsyncInit lexiconInit)
             await lexiconInit.InitAsync();
@@ -48,12 +52,12 @@ public class CopticBohairicTranslator : ITranslator
         yield return sentence;
     }
 
-    public Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText, LanguageInfo sourceLanguage)
+    public Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
     {
         throw new NotImplementedException();
     }
 
-    private static bool BreakAffixes(string remainingWord, List<StructuralElement> components, int currentOffset = 0, bool? isNoun = null)
+    private bool BreakAffixes(string remainingWord, List<StructuralElement> components, int currentOffset = 0, bool? isNoun = null)
     {
         int originalComponentsCount = components.Count;
 
@@ -65,14 +69,9 @@ public class CopticBohairicTranslator : ITranslator
         }
 
         // Check for noun prefixes
-        if ((isNoun is null or true) && remainingWord.StartsWithAny(CopticAnalyzer.NounPrefixes.Keys, out var prefix))
+        if (isNoun is null or true)
         {
-            var meta = CopticAnalyzer.NounPrefixes[prefix];
-            if (meta is IDeterminerMeta determinerMeta)
-            {
-                DeterminerElement element = new(new(currentOffset, currentOffset + prefix.Length), determinerMeta);
-                components.Add(element);
-            }
+            var nounResults = IdentifyNoun(remainingWord).ToList();
         }
 
         if (remainingWord.Length == 0 || currentOffset == remainingWord.Length || components.Count == originalComponentsCount)
@@ -109,24 +108,35 @@ public class CopticBohairicTranslator : ITranslator
 
     public static VerbMeta? TryIdentifyVerb(string word) => IdentifyVerb(word).FirstOrDefault();
 
-    public static IEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement> existingElements = new())
+    public async IAsyncEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement>? existingElements = null)
     {
-        // Check each possible prefix
-        foreach (var prefix in CopticAnalyzer.NounPrefixes.Keys)
+        existingElements ??= [];
+
+        var wordEntries = _lexicon.BasicSearchAsync(word, );
+        await foreach (var wordEntry in wordEntries)
         {
-            if (!word.StartsWith(prefix))
+
+        }
+
+        // Check each possible prefix
+        foreach (var prefix in _grammar.NounPrefixes)
+        {
+            var match = prefix.Pattern.MatchAsPrefix(word);
+            if (match is null)
                 continue;
 
-            var meta = CopticAnalyzer.NounPrefixes[prefix];
+            var meta = prefix.MetaFactory();
 
             if (existingElements.Count > 0)
             {
                 // There are already some prefixes, let's do some pruning!
 
-                // Determiners such as 
                 if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta))
                     continue;
             }
+
+            // TODO: Recursive
+
         }
     }
 
