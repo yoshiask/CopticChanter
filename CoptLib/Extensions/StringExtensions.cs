@@ -94,4 +94,10 @@ public static class StringExtensions
 
         return segments;
     }
+
+    public static string Substring(this string s, Range range)
+    {
+        (var offset, var length)= range.GetOffsetAndLength(s.Length);
+        return s.Substring(offset, length);
+    }
 }

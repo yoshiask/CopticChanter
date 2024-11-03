@@ -62,6 +62,8 @@ public sealed class RegexPattern(Regex regex) : Pattern
             Groups = groups,
         };
     }
+
+    public override string ToString() => RegularExpression.ToString();
 }
 
 public sealed class StringPattern(string expression) : Pattern
@@ -106,6 +108,8 @@ public sealed class StringPattern(string expression) : Pattern
     }
 
     public static implicit operator StringPattern(string expression) => new(expression);
+
+    public override string ToString() => Expression;
 }
 
 public sealed class PatternMatch
