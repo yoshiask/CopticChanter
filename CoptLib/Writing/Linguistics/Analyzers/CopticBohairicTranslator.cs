@@ -38,10 +38,9 @@ public class CopticBohairicTranslator : ITranslator
             var endIndex = currentOffset + srcWord.Length;
             var range = new Range(currentOffset, endIndex);
 
-            var srcWordNorm = RemoveDiacritics(srcWord);
+            var srcWordNorm = NormalizeText(srcWord);
 
             List<StructuralElement> wordComponents = [];
-            BreakAffixes(srcWordNorm, wordComponents);
 
             if (wordComponents is not null)
                 sentence.AddRange(wordComponents);
@@ -57,62 +56,15 @@ public class CopticBohairicTranslator : ITranslator
         throw new NotImplementedException();
     }
 
-    private bool BreakAffixes(string remainingWord, List<StructuralElement> components, int currentOffset = 0, bool? isNoun = null)
-    {
-        int originalComponentsCount = components.Count;
-
-        // Prefixes that are used on verbs are generally more identifiable than
-        // those used on nouns, so check those first.
-        if (isNoun is null or false)
-        {
-            var verb1s = TryIdentifyVerb(remainingWord);
-        }
-
-        // Check for noun prefixes
-        if (isNoun is null or true)
-        {
-            var nounResults = IdentifyNoun(remainingWord).ToList();
-        }
-
-        if (remainingWord.Length == 0 || currentOffset == remainingWord.Length || components.Count == originalComponentsCount)
-        {
-            // TODO: Check if base morph actually exists
-            return true;
-        }
-
-        remainingWord = remainingWord[..currentOffset];
-        currentOffset = components[^1].SourceRange.End.Value;
-
-        return BreakAffixes(remainingWord, components, currentOffset, isNoun);
-    }
-
-    public static IEnumerable<VerbMeta> IdentifyVerb(string word)
-    {
-        List<(Regex, Lazy<InflectionMeta>)> verbConjs =
-        [
-            (Verb1stSingRegex, new(() => new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
-            (Verb1stPlurRegex, new(() => new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
-            // TODO: Add other conjugations
-        ];
-
-        foreach ((var rx, var actor) in verbConjs)
-        {
-            var match = MatchTense(word, rx);
-            if (match is null)
-                continue;
-
-            // TODO: Check for base verb in the dictionary
-            yield return new(match, actor.Value, null);
-        }
-    }
-
-    public static VerbMeta? TryIdentifyVerb(string word) => IdentifyVerb(word).FirstOrDefault();
-
     public async IAsyncEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement>? existingElements = null)
     {
+        // TODO: Remove
+        if (_lexicon is IAsyncInit lexiconInit)
+            await lexiconInit.InitAsync();
+
         existingElements ??= [];
 
-        var wordEntries = _lexicon.BasicSearchAsync(word, );
+        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
         await foreach (var wordEntry in wordEntries)
         {
 
@@ -126,6 +78,8 @@ public class CopticBohairicTranslator : ITranslator
                 continue;
 
             var meta = prefix.MetaFactory();
+            if (meta is null)
+                continue;
 
             if (existingElements.Count > 0)
             {
@@ -137,6 +91,30 @@ public class CopticBohairicTranslator : ITranslator
 
             // TODO: Recursive
 
+            var baseStart = match.Groups.Count > 1 ? match.Groups[1]!.Length : match.End;
+            Range range = new(match.Start, baseStart);
+
+            StructuralElement element = meta switch
+            {
+                IDeterminerMeta detMeta => new DeterminerElement(range, detMeta),
+                PrepositionMeta prepMeta => new PrepositionElement(range, prepMeta),
+
+                _ => throw new NotImplementedException($"Unrecognized meta type: {meta.GetType().Name}")
+            };
+
+            List<IStructuralElement> newList = new(existingElements)
+            {
+                element
+            };
+
+            if (baseStart < word.Length)
+            {
+                var baseRange = new Range(baseStart, Index.End);
+                var baseElement = new StructuralLexeme(baseRange, null, -1);
+                newList.Add(baseElement);
+            }
+            
+            yield return newList;
         }
     }
 
@@ -189,9 +167,9 @@ public class CopticBohairicTranslator : ITranslator
         return new(currentTime, start, end, flags, degree);
     }
 
-    private static string RemoveDiacritics(string text)
+    public static string NormalizeText(string text)
     {
-        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var normalizedString = text.ToLower().Normalize(NormalizationForm.FormD);
         var stringBuilder = new StringBuilder(capacity: normalizedString.Length);
 
         for (int i = 0; i < normalizedString.Length; i++)
