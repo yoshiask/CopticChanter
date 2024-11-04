@@ -38,6 +38,10 @@ public readonly struct Range : IEquatable<Range>
         End = end;
     }
 
+    public static Range operator +(Range a, Index offset)
+        => new Range(a.Start + offset, a.End + offset);
+
+
     /// <summary>Indicates whether the current Range object is equal to another object of the same type.</summary>
     /// <param name="value">An object to compare with this object</param>
     public override bool Equals([NotNullWhen(true)] object? value) =>

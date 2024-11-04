@@ -56,6 +56,9 @@ public readonly struct Index : IEquatable<Index>
     /// <summary>Create an Index pointing at beyond last element.</summary>
     public static Index End => new(~0);
 
+    public static Index operator +(Index a, Index b)
+        => new Index(a.Value + b.Value);
+
     /// <summary>Create an Index from the start at the position indicated by the value.</summary>
     /// <param name="value">The index value from the start.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
