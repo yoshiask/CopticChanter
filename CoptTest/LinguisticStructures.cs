@@ -149,8 +149,12 @@ public class LinguisticStructures(ITestOutputHelper _output)
         noun = CopticBohairicTranslator.NormalizeText(noun);
         await foreach (var x in _bohairicTranslator.IdentifyNoun(noun))
         {
-            var xstr = string.Join("⸱", x.Select(y => noun.Substring(y.SourceRange)));
-            _output.WriteLine(xstr);
+            var text = string.Join("⸱", x.Select(y => noun.Substring(y.SourceRange)));
+            var annotations = string.Join(", ", x.Select(y => y.ToString()));
+
+            _output.WriteLine(text);
+            _output.WriteLine(annotations);
+            _output.WriteLine("");
         }
     }
 
