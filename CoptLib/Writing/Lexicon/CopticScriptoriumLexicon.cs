@@ -22,7 +22,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
     static CopticScriptoriumLexicon()
     {
         var appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        _dbPath = Path.Combine(appDataDir, "CopticLib", "sahidic_dict.db");
+        _dbPath = Path.Combine(appDataDir, "CopticLib", "coptic_dict.db");
         
         _db = new SqliteConnection($"Data Source={_dbPath}");
     }
@@ -117,7 +117,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         Directory.CreateDirectory(Path.GetDirectoryName(_dbPath));
         using (var fileStream = File.OpenWrite(_dbPath))
         using (var dbStream =
-                     assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.sahidic_dict.db"))
+                     assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.coptic_dict.db"))
         {
             Guard.IsNotNull(dbStream);
 
