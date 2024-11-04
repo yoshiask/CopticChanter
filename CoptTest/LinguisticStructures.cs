@@ -161,10 +161,19 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [Fact]
     public async Task AnnotateBohairicCoptic()
     {
-        var x = await _translator
-            .AnnotateAsync("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ")
-            .ToListAsync();
+        var sentence = _translator.AnnotateAsync("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ");
 
-        var annotations = x.First();
+        await foreach (var word in sentence)
+        {
+            await foreach (var element in word)
+            {
+                //var text = string.Join("⸱", element.Select(y => noun.Substring(y.SourceRange)));
+                var annotations = string.Join(", ", element.Select(y => y.ToString()));
+
+                //_output.WriteLine(text);
+                _output.WriteLine(annotations);
+            }
+            _output.WriteLine("");
+        }
     }
 }
