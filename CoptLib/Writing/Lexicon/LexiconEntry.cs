@@ -25,7 +25,7 @@ public enum EntryType : byte
 /// <param name="Type"></param>
 /// <param name="Usage">The language or dialect that uses this form.</param>
 /// <param name="Orthography">The orthography of this form.</param>
-public record Form(FormType Type, LanguageInfo Usage, string Orthography);
+public record Form(FormType Type, LanguageInfo Usage, string Orthography, GrammarGroup? GrammarGroup);
 
 public enum FormType : byte
 {
