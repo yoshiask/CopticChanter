@@ -1,8 +1,14 @@
 ﻿namespace CoptLib.Writing.Linguistics.XBar;
 
-public record PrepositionElement(Range SourceRange, PrepositionMeta Meta) : StructuralElement(SourceRange);
+public record PrepositionElement(Range SourceRange, PrepositionMeta Meta) : StructuralElement(SourceRange)
+{
+    public override string ToString() => $"Preposition{{{SourceRange}, {Meta}}}";
+}
 
-public record PrepositionMeta(PrepositionType Type, bool Negative = false) : IMeta;
+public record PrepositionMeta(PrepositionType Type, bool Negative = false) : IMeta
+{
+    public override string ToString() => $"PREP{(Negative ? '-' : '+')}{Type}";
+}
 
 public enum PrepositionType
 {

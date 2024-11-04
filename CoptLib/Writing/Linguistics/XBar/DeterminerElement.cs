@@ -2,12 +2,22 @@
 
 namespace CoptLib.Writing.Linguistics.XBar;
 
-public record DeterminerElement(Range SourceRange, IDeterminerMeta? Meta) : StructuralElement(SourceRange);
+public record DeterminerElement(Range SourceRange, IDeterminerMeta? Meta) : StructuralElement(SourceRange)
+{
+    public override string ToString() => $"Determiner{{{SourceRange}, {Meta}}}";
+}
 
 public interface IDeterminerMeta : IMeta;
 
-public record DeterminerArticleMeta(DeterminerStrength Strength, bool Definite, InflectionMeta Target) : IDeterminerMeta;
-public record DeterminerPossessiveMeta(DeterminerStrength Strength, InflectionMeta Possessor, InflectionMeta Possessed) : IDeterminerMeta;
+public record DeterminerArticleMeta(DeterminerStrength Strength, bool Definite, InflectionMeta Target) : IDeterminerMeta
+{
+    public override string ToString() => $"DET{{{Strength} {(Definite ? "Def" : "Indef")} Article, {Target}}}";
+}
+
+public record DeterminerPossessiveMeta(DeterminerStrength Strength, InflectionMeta Possessor, InflectionMeta Possessed) : IDeterminerMeta
+{
+    public override string ToString() => $"DET{{{Strength} Poss Article, {Possessor}, {Possessed}}}";
+}
 
 // TODO: Support different systems of deixis
 public record DeterminerDemonstrativeMeta(DeterminerStrength Strength, InflectionMeta Target) : IDeterminerMeta;
@@ -32,6 +42,43 @@ public struct ConceptReference(string? conceptNetId)
 public record InflectionMeta(Gender Gender = default, GrammaticalCount Number = default, PointOfView PointOfView = default) : IMeta
 {
     public static readonly InflectionMeta Unspecified = new();
+
+    public override string ToString()
+    {
+        var g = Gender switch
+        {
+            Gender.Neutral => "NEUT",
+            Gender.Masculine => "MASC",
+            Gender.Feminine => "FEM",
+            Gender.Animate => "ANI",
+            Gender.Inanimate => "INAN",
+            _ => "*"
+        };
+
+        var n = Number switch
+        {
+            GrammaticalCount.Singular => "SG",
+            GrammaticalCount.Dual => "2",
+            GrammaticalCount.Trial => "3",
+            GrammaticalCount.Quadral => "4",
+            GrammaticalCount.Pacual => "5",
+            GrammaticalCount.Plural => "PL",
+            GrammaticalCount.GreaterPlural => "PL+",
+            GrammaticalCount.GreatestPlural => "PL++",
+            GrammaticalCount.Unspecified => "*",
+            _ => Number.ToString()
+        };
+
+        var p = PointOfView switch
+        {
+            PointOfView.First => "1st",
+            PointOfView.Second => "2nd",
+            PointOfView.Third => "3rd",
+            _ => "*",
+        };
+
+        return $"{g}.{n}.{p}";
+    }
 }
 
 public enum DeterminerStrength : byte

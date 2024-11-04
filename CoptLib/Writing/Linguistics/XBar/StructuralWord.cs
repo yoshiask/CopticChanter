@@ -61,6 +61,8 @@ public record EmptyStructuralElement() : StructuralElement(Range.Empty);
 public record StructuralLexeme(Range SourceRange, LexiconEntry Entry, int SenseIndex) : StructuralElement(SourceRange)
 {
     public Sense Sense => Entry.Senses[SenseIndex];
+
+    public override string ToString() => $"Lexeme{{{SourceRange}, {Entry.Id} {Entry.Forms[0].Orthography}, {SenseIndex}}}";
 }
 
 public record StructuralWord(Range SourceRange, IList<StructuralLexeme> Lexemes) : StructuralElement(SourceRange)
