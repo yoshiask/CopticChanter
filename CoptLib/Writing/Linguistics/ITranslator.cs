@@ -10,7 +10,7 @@ public interface ITranslator
 {
     Task SetSourceLanguageAsync(LanguageInfo language);
     Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText);
-    IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string sourceText);
+    IAsyncEnumerable<IAsyncEnumerable<List<IStructuralElement>>> AnnotateAsync(string sourceText);
 }
 
 public static class TranslatorExtensions
