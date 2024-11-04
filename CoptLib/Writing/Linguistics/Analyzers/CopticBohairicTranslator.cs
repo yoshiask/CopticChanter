@@ -94,7 +94,7 @@ public class CopticBohairicTranslator : ITranslator
                 // There are already some prefixes, let's do some pruning!
 
                 bool isArticle = _grammar.Articles.Contains(prefix);
-                if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta))
+                if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta or DeterminerElement))
                     continue;
             }
 
