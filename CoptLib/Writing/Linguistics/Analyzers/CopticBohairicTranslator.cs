@@ -126,7 +126,8 @@ public class CopticBohairicTranslator : ITranslator
                     yield return child;
             }
 
-            yield return newList;
+            // TODO: Yield this interpretation if we've consumed the entire string
+            //yield return newList;
         }
     }
 
