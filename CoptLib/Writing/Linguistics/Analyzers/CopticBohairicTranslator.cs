@@ -63,11 +63,19 @@ public class CopticBohairicTranslator : ITranslator
             await lexiconInit.InitAsync();
 
         existingElements ??= [];
+        var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
 
         var wordEntries = _lexicon.BasicSearchAsync(word, _language);
         await foreach (var wordEntry in wordEntries)
         {
 
+            var baseRange = new Range(startIndex, Index.End);
+            var baseElement = new StructuralLexeme(baseRange, wordEntry, 0);
+
+            yield return new(existingElements)
+            {
+                baseElement
+            };
         }
 
         // Check each possible prefix
@@ -85,14 +93,16 @@ public class CopticBohairicTranslator : ITranslator
             {
                 // There are already some prefixes, let's do some pruning!
 
+                bool isArticle = _grammar.Articles.Contains(prefix);
                 if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta))
                     continue;
             }
 
-            // TODO: Recursive
+            var baseStart = match.Groups.Count > 1
+                ? match.Groups[1]!.Length
+                : match.End;
 
-            var baseStart = match.Groups.Count > 1 ? match.Groups[1]!.Length : match.End;
-            Range range = new(match.Start, baseStart);
+            Range range = new Range(match.Start, baseStart) + startIndex;
 
             StructuralElement element = meta switch
             {
@@ -110,10 +120,12 @@ public class CopticBohairicTranslator : ITranslator
             if (baseStart < word.Length)
             {
                 var baseRange = new Range(baseStart, Index.End);
-                var baseElement = new StructuralLexeme(baseRange, null, -1);
-                newList.Add(baseElement);
+                var baseWord = word.Substring(baseRange);
+
+                await foreach (var child in IdentifyNoun(baseWord, newList))
+                    yield return child;
             }
-            
+
             yield return newList;
         }
     }
