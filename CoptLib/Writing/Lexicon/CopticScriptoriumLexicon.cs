@@ -261,7 +261,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         var diaEnd = formText.IndexOf('^');
         var dia = formText[diaStart..diaEnd];
 
-        return new(FormType.Lemma, TeiLexicon.MapDialectCode(dia), orth);
+        return new(FormType.Lemma, TeiLexicon.MapDialectCode(dia), orth, null);
     }
 
     private static IEnumerable<Form> ParseForms(string formsText) =>
