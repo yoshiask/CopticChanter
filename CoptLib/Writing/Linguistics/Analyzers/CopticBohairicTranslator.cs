@@ -20,13 +20,12 @@ public class CopticBohairicTranslator : ITranslator
 
     public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(() => _language = language);
 
-    public async IAsyncEnumerable<List<IStructuralElement>> AnnotateAsync(string srcText)
+    public async IAsyncEnumerable<IAsyncEnumerable<List<IStructuralElement>>> AnnotateAsync(string srcText)
     {
         if (_lexicon is IAsyncInit lexiconInit)
             await lexiconInit.InitAsync();
 
         string[] srcWords = srcText.SplitAndKeep(LinguisticAnalyzer.Separators).ToArray();
-        List<IStructuralElement> sentence = new(srcWords.Length);
 
         int currentOffset = 0;
         for (int w = 0; w < srcWords.Length; w++)
@@ -42,13 +41,10 @@ public class CopticBohairicTranslator : ITranslator
 
             List<StructuralElement> wordComponents = [];
 
-            if (wordComponents is not null)
-                sentence.AddRange(wordComponents);
+            yield return IdentifyNoun(srcWordNorm);
 
             currentOffset = endIndex;
         }
-
-        yield return sentence;
     }
 
     public Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
@@ -68,7 +64,19 @@ public class CopticBohairicTranslator : ITranslator
         var wordEntries = _lexicon.BasicSearchAsync(word, _language);
         await foreach (var wordEntry in wordEntries)
         {
+            // Get the form of the lemma that matches its usage here
+            var form = wordEntry.Forms.FirstOrDefault(f => f.Usage == _language && f.Orthography == word);
+            if (form is null)
+                continue;
 
+            // Check if this is a noun
+            var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
+            if (grammarGroup.PartOfSpeech != PartOfSpeech.Substantive)
+                continue;
+
+            // Check that the gender and number of the base word match any prefixes
+            //existingElements.OfType<DeterminerElement>().Select(d => d.Meta.)
+            
             var baseRange = new Range(startIndex, Index.End);
             var baseElement = new StructuralLexeme(baseRange, wordEntry, 0);
 
@@ -94,7 +102,7 @@ public class CopticBohairicTranslator : ITranslator
                 // There are already some prefixes, let's do some pruning!
 
                 bool isArticle = _grammar.Articles.Contains(prefix);
-                if (meta is IDeterminerMeta determinerMeta && existingElements.Any(e => e is IDeterminerMeta or DeterminerElement))
+                if (meta is IDeterminerMeta determinerMeta && existingElements.OfType<DeterminerElement>().Any())
                     continue;
             }
 
