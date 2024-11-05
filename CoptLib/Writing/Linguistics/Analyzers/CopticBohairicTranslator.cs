@@ -25,7 +25,7 @@ public class CopticBohairicTranslator : ITranslator
         if (_lexicon is IAsyncInit lexiconInit)
             await lexiconInit.InitAsync();
 
-        string[] srcWords = srcText.SplitAndKeep(LinguisticAnalyzer.Separators).ToArray();
+        string[] srcWords = srcText.Split(LinguisticAnalyzer.Separators);
 
         int currentOffset = 0;
         for (int w = 0; w < srcWords.Length; w++)
