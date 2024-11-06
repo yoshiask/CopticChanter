@@ -1,4 +1,5 @@
 ﻿using CoptLib.Writing.Lexicon;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -34,6 +35,19 @@ public abstract record StructuralElement(Range SourceRange) : IStructuralElement
             value = (T)v;
 
         return value is not null;
+    }
+
+    [return: NotNullIfNotNull(nameof(meta))]
+    public static StructuralElement? FromMeta(Range range, IMeta? meta)
+    {
+        return meta switch
+        {
+            null => null,
+            IDeterminerMeta detMeta => new DeterminerElement(range, detMeta),
+            PrepositionMeta prepMeta => new PrepositionElement(range, prepMeta),
+
+            _ => throw new NotImplementedException($"Unrecognized meta type: {meta.GetType().Name}")
+        };
     }
 }
 
