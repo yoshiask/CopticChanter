@@ -7,7 +7,7 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicGrammar
 {
-    const string VILMINOR = "ⲃⲏⲗⲙⲓⲛⲟⲣⲫⲯ";
+    const string VILMINOR = "ⲃⲓⲗⲙⲛⲟⲣⲫⲯ";
 
     const string VILMINOR_REGEX = $"[{VILMINOR}]";
     const string NOT_VILMINOR_REGEX = $"[^{VILMINOR}]";

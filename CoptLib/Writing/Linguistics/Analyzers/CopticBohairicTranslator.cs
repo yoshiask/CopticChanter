@@ -41,7 +41,7 @@ public class CopticBohairicTranslator : ITranslator
 
             List<StructuralElement> wordComponents = [];
 
-            yield return IdentifyNoun(srcWordNorm);
+            yield return IdentifyWord(srcWordNorm);
 
             currentOffset = endIndex;
         }
@@ -50,6 +50,26 @@ public class CopticBohairicTranslator : ITranslator
     public Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
     {
         throw new NotImplementedException();
+    }
+
+    public async IAsyncEnumerable<List<IStructuralElement>> IdentifyWord(string word)
+    {
+        // Check for preposition
+        foreach (var prefix in _grammar.Prepositions)
+        {
+            var match = prefix.Pattern.MatchAsPrefix(word);
+            if (match is null)
+                continue;
+
+            var meta = prefix.MetaFactory();
+            if (meta is null)
+                continue;
+
+            yield return [StructuralElement.FromMeta(Range.All, meta)];
+        }
+
+        await foreach (var nounInterpretation in IdentifyNoun(word))
+            yield return nounInterpretation;
     }
 
     public async IAsyncEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement>? existingElements = null)
@@ -112,17 +132,9 @@ public class CopticBohairicTranslator : ITranslator
 
             Range range = new Range(match.Start, baseStart) + startIndex;
 
-            StructuralElement element = meta switch
-            {
-                IDeterminerMeta detMeta => new DeterminerElement(range, detMeta),
-                PrepositionMeta prepMeta => new PrepositionElement(range, prepMeta),
-
-                _ => throw new NotImplementedException($"Unrecognized meta type: {meta.GetType().Name}")
-            };
-
             List<IStructuralElement> newList = new(existingElements)
             {
-                element
+                StructuralElement.FromMeta(range, meta)
             };
 
             if (baseStart < word.Length)
