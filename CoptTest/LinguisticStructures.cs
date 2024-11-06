@@ -3,6 +3,8 @@ using CoptLib.Writing.Lexicon;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using CoptLib.Writing.Linguistics.XBar;
+using OwlCore.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -147,13 +149,16 @@ public class LinguisticStructures(ITestOutputHelper _output)
     public async Task BohairicCoptic_DetectNouns(string noun)
     {
         noun = CopticBohairicTranslator.NormalizeText(noun);
-        await foreach (var x in _bohairicTranslator.IdentifyNoun(noun))
+
+        var interpretations = _bohairicTranslator.IdentifyNoun(noun);
+        await foreach (var x in interpretations)
         {
             var text = string.Join("⸱", x.Select(y => noun.Substring(y.SourceRange)));
             var annotations = string.Join(", ", x.Select(y => y.ToString()));
 
             _output.WriteLine(text);
             _output.WriteLine(annotations);
+            _output.WriteLine(DemoText(x));
             _output.WriteLine("");
         }
     }
@@ -171,17 +176,50 @@ public class LinguisticStructures(ITestOutputHelper _output)
     {
         var sentence = _translator.AnnotateAsync(text);
 
+        List<IStructuralElement> demo = [];
+
         await foreach (var word in sentence)
         {
-            await foreach (var element in word)
+            bool isFirstInterpretation = true;
+            await foreach (var wordInterpretation in word)
             {
                 //var text = string.Join("⸱", element.Select(y => noun.Substring(y.SourceRange)));
-                var annotations = string.Join(", ", element.Select(y => y.ToString()));
+                var annotations = string.Join(", ", wordInterpretation.Select(y => y.ToString()));
 
                 //_output.WriteLine(text);
                 _output.WriteLine(annotations);
+
+                if (isFirstInterpretation)
+                {
+                    demo.AddRange(wordInterpretation);
+                    isFirstInterpretation = false;
+                }
             }
             _output.WriteLine("");
         }
+
+        var demoText = DemoText(demo);
+        _output.WriteLine(demoText);
+    }
+
+    private static string DemoText(IEnumerable<IStructuralElement> elements)
+    {
+        return string.Join(" ", elements.Select(y => y switch
+        {
+            DeterminerElement detElem => detElem.Meta switch
+            {
+                DeterminerArticleMeta articleMeta => articleMeta switch
+                {
+                    { Definite: false } => articleMeta.Target.Number == GrammaticalCount.Singular ? "a" : "",
+                    _ => articleMeta.Strength == DeterminerStrength.Weak ? "the" : "The",
+                },
+                DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Strength == DeterminerStrength.Strong
+                    ? "'s" : "of",
+            },
+            PrepositionElement prepElem => (prepElem.Meta.Negative ? "not " : "")
+                + prepElem.Meta.Type.ToString().ToLower(),
+
+            StructuralLexeme lexElem => lexElem.Sense.Translations.GetByLanguage(CoptLib.Writing.KnownLanguage.English).ToString(),
+        }));
     }
 }
