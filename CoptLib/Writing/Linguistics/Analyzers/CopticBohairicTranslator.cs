@@ -8,22 +8,22 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
-public class CopticBohairicTranslator : ITranslator
+public class CopticBohairicTranslator : ITranslator, IAsyncInit
 {
     private LanguageInfo _language = new(KnownLanguage.CopticBohairic);
-    private readonly ILexicon _lexicon = new CopticScriptoriumLexicon();
+    private ILexicon _lexicon;
     private readonly CopticBohairicGrammar _grammar = new();
 
     public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(() => _language = language);
 
     public async IAsyncEnumerable<IAsyncEnumerable<List<IStructuralElement>>> AnnotateAsync(string srcText)
     {
-        if (_lexicon is IAsyncInit lexiconInit)
-            await lexiconInit.InitAsync();
+        await InitAsync();
 
         string[] srcWords = srcText.Split(LinguisticAnalyzer.Separators);
 
@@ -74,9 +74,7 @@ public class CopticBohairicTranslator : ITranslator
 
     public async IAsyncEnumerable<List<IStructuralElement>> IdentifyNoun(string word, List<IStructuralElement>? existingElements = null)
     {
-        // TODO: Remove
-        if (_lexicon is IAsyncInit lexiconInit)
-            await lexiconInit.InitAsync();
+        await InitAsync();
 
         existingElements ??= [];
         var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
@@ -232,6 +230,29 @@ public class CopticBohairicTranslator : ITranslator
         }
     }
 
+    public async Task InitAsync(CancellationToken cancellationToken = default)
+    {
+        if (!IsInitialized)
+        {
+            bool useXml = true;
+            if (useXml)
+            {
+                var teiDoc = XDocument.Load(@"C:\Users\jjask\source\repos\KELLIA\dictionary\xml\Comprehensive_Coptic_Lexicon-v1.2-2020.xml");
+                _lexicon = new TeiLexicon(_language, teiDoc, []);
+            }
+            else
+            {
+                _lexicon = new CopticScriptoriumLexicon();
+            }
+
+            if (_lexicon is IAsyncInit lexiconInit)
+                await lexiconInit.InitAsync();
+        }
+
+        IsInitialized = true;
+    }
     private static readonly Regex Verb1stSingRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡ)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ϯ|ⲓ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲓ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
     private static readonly Regex Verb1stPlurRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡⲉ?)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ⲛ|ⲧ?ⲉⲛ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲉⲛ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
+
+    public bool IsInitialized { get; protected set; }
 }
