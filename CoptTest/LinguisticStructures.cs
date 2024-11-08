@@ -166,6 +166,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [Theory]
     [InlineData("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ")]
     [InlineData("Ϣⲟⲡ ⲁⲧϭⲛⲉ ⲟⲩⲙⲉⲧⲕⲟⲩϫⲓ ⲛϩⲏⲧ!")]
+    [InlineData("Ⲭⲉⲣⲉ ⲡⲓⲙⲁⲛ̀ϣⲉⲗⲉⲧ: ⲉⲧⲥⲉⲗⲥⲱⲗ ϧⲉⲛ ⲟⲩⲑⲟ ⲛ̀ⲣⲏϯ: ⲛ̀ⲧⲉ Ⲡⲓⲛⲩⲙⲫⲓⲟⲥ ⲙ̀ⲙⲏⲓ: ⲉ̀ⲧⲁϥϩⲱⲧⲡ ⲉ̀ϯⲙⲉⲧⲣⲱⲙⲓ.")]
     [InlineData("Ⲛⲓϣⲉⲡϩ̀ⲙⲟⲧ ⲛ̀ⲧⲉ ⲛⲏⲉ̀ⲧⲁⲩⲉⲣⲡ̀ⲣⲟⲥⲫⲉⲣⲓⲛ: ⲉ̀ⲟⲩⲧⲁⲓⲟ ⲛⲉⲙ ⲟⲩⲱ̀ⲟⲩ ⲙ̀ⲡⲉⲕⲣⲁⲛ ⲉⲑⲟⲩⲁⲃ.\r\n" + 
                 "Ϣⲟⲡⲟⲩ ⲉ̀ⲣⲟⲕ ⲉ̀ϫⲉⲛ ⲡⲉⲕⲑⲩⲥⲓⲁⲧⲏⲣⲓⲟⲛ ⲉⲑⲟⲩⲁⲃ ⲛ̀ⲉⲗⲗⲟⲅⲓⲙⲟⲛ ⲛ̀ⲧⲉ ⲧ̀ⲫⲉ: ⲉ̀ⲟⲩⲥ̀ⲑⲟⲓ ⲛ̀ⲥ̀ⲑⲟⲓⲛⲟⲩϥⲓ: ⲉ̀ϧⲟⲩⲛ ⲉ̀ⲧⲉⲕⲙⲉⲧⲛⲓϣϯ ⲉⲧϧⲉⲛ ⲛⲓⲫⲏⲟⲩⲓ̀: ⲉ̀ⲃⲟⲗϩⲓⲧⲉⲛ ⲡ̀ϣⲉⲙϣⲓ ⲛ̀ⲧⲉ ⲛⲉⲕⲁⲅⲅⲉⲗⲟⲥ ⲛⲉⲙ ⲛⲉⲕⲁⲣⲭⲏⲁⲅⲅⲉⲗⲟⲥ ⲉⲑⲟⲩⲁⲃ. Ⲙ̀ⲫ̀ⲣⲏϯ ⲉ̀ⲧⲁⲕϣⲱⲡ ⲉ̀ⲣⲟⲕ ⲛ̀ⲛⲓⲇⲱⲣⲟⲛ ⲛ̀ⲧⲉ ⲡⲓⲑ̀ⲙⲏⲓ Ⲁ̀ⲃⲉⲗ: ⲛⲉⲙ ϯⲑⲩⲥⲓⲁ ⲛ̀ⲧⲉ ⲡⲉⲛⲓⲱⲧ Ⲁⲃⲣⲁⲁⲙ ⲛⲉⲙ ϯⲧⲉⲃⲓ ⲥ̀ⲛⲟⲩϯ ⲛ̀ⲧⲉ ϯⲭⲏⲣⲁ.\r\n" + 
                 "Ⲡⲁⲓⲣⲏϯ ⲟⲛ ⲛⲓⲕⲉⲉⲩⲭⲁⲣⲓⲥⲧⲏⲣⲓⲟⲛ: ϣⲟⲡⲟⲩ ⲉ̀ⲣⲟⲕ: ⲛⲁ ⲡⲓϩⲟⲩⲟ̀ ⲛⲉⲙ ⲛⲁ ⲡⲓⲕⲟⲩϫⲓ: ⲛⲏⲉⲧϩⲏⲡ ⲛⲉⲙ ⲛⲏⲉⲑⲟⲩⲱⲛϩ ⲉ̀ⲃⲟⲗ.\r\n" + 
@@ -211,15 +212,24 @@ public class LinguisticStructures(ITestOutputHelper _output)
                 DeterminerArticleMeta articleMeta => articleMeta switch
                 {
                     { Definite: false } => articleMeta.Target.Number == GrammaticalCount.Singular ? "a" : "",
-                    _ => articleMeta.Strength == DeterminerStrength.Weak ? "the" : "The",
+                    _ => articleMeta.Strength == DeterminerStrength.Weak ? "The" : "the",
                 },
-                DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Strength == DeterminerStrength.Strong
-                    ? "'s" : "of",
+                DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Possessor switch
+                {
+                    { PointOfView: PointOfView.First }
+                        => possessiveMeta.Possessor.Number == GrammaticalCount.Singular ? "my" : "our",
+                    { PointOfView: PointOfView.Second }
+                        => possessiveMeta.Possessor.Number == GrammaticalCount.Singular ? "your" : "y'all's",
+                    { PointOfView: PointOfView.Third, Number: GrammaticalCount.Singular }
+                        => possessiveMeta.Possessor.Gender == Gender.Masculine ? "his" : "her",
+                    { PointOfView: PointOfView.Third, Number: GrammaticalCount.Plural } => "their",
+                },
             },
             PrepositionElement prepElem => (prepElem.Meta.Negative ? "not " : "")
                 + prepElem.Meta.Type.ToString().ToLower(),
 
             StructuralLexeme lexElem => lexElem.Sense.Translations.GetByLanguage(CoptLib.Writing.KnownLanguage.English).ToString(),
+            NounElement nounElem => nounElem.Meta.Meaning.Orthography,
         }));
     }
 }
