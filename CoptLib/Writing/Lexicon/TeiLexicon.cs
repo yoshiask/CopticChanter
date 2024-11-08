@@ -45,7 +45,7 @@ public class TeiLexicon : ILexicon
                 ILexiconEntry entry;
                 if (iLexEnElem.Name.LocalName == "superEntry")
                 {
-                    var id = iLexEnElem.AttributeLocal("id")!.Value;
+                    var id = iLexEnElem.AttributeLocal("id")?.Value ?? "";
                     var subEntries = iLexEnElem.Elements().Select(ParseSingleEntry);
                     entry = new LexiconSuperEntry(id, subEntries);
                 }
@@ -220,15 +220,14 @@ public class TeiLexicon : ILexicon
             "Interjektion" => PartOfSpeech.Interjection,
             "Kompositum" => PartOfSpeech.Composite,
             "unpersönlicher Ausdruck" => PartOfSpeech.ImpersonalExpression,
-            "" => PartOfSpeech.Unknown,
-            _ => throw new NotImplementedException(),
+            _ => PartOfSpeech.Unknown,
         };
 
         var gen = elem.ElementLocal("gen")?.Value switch
         {
             "m." => Gender.Masculine,
             "f." => Gender.Feminine,
-            _ => Gender.Neutral,
+            _ => Gender.Unspecified,
         };
 
         var num = elem.ElementLocal("number")?.Value switch
@@ -238,7 +237,7 @@ public class TeiLexicon : ILexicon
             _ => Number.None,
         };
 
-        List<GrammarEntry> grammarEntries = new();
+        List<GrammarEntry> grammarEntries = [];
         foreach (var grammarEntryElem in elem.ElementsLocal("gram"))
         {
             var grammarType = grammarEntryElem.AttributeLocal("type")?.Value switch

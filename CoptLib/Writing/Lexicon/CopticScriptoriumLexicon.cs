@@ -141,7 +141,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         var etym = reader.GetString(7);
         var search = reader.GetString(9);
 
-        GrammarGroup grammarGroup = new(ParsePartOfSpeech(pos), default, null, null, null, null);
+        GrammarGroup grammarGroup = new(ParsePartOfSpeech(pos), default, default, null, null, null);
         var senses = ParseSenses(new[]
         {
             (new LanguageInfo(KnownLanguage.German), de),
