@@ -127,9 +127,11 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 if (previousNumber != baseNumber)
                     continue;
             }
-            
+
+            var baseNounMeta = new NounMeta(new LexiconEntryReference(wordEntry, form),
+                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
             var baseRange = new Range(startIndex, Index.End);
-            var baseElement = new StructuralLexeme(baseRange, wordEntry, 0);
+            var baseElement = new NounElement(baseRange, baseNounMeta);
 
             yield return new(existingElements)
             {
