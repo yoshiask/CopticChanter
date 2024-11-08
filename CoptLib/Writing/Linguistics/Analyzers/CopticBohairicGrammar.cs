@@ -73,13 +73,13 @@ public class CopticBohairicGrammar
     public IEnumerable<SemanticPair> ComplexPrefixes { get; } =
     [
         // Example: "ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ" / "the bridal chamber" ("the place of [the] bride")
-        new("ⲙⲁ", () => new NounMeta(new("/c/en/house"), InflectionMeta.Unspecified)),
+        new("ⲙⲁ", () => new NounMeta(new ConceptReference("", "/c/en/house"), InflectionMeta.Unspecified)),
 
         // Example: "ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ" / "the Coptic language" ("[the language of] person of Egypt")
-        new("ⲣⲉⲙ", () => new NounMeta(new("/c/en/person"), InflectionMeta.Unspecified)),
+        new("ⲣⲉⲙ", () => new NounMeta(new ConceptReference("", "/c/en/person"), InflectionMeta.Unspecified)),
 
         // Example: "ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ" / "a sinner" ("a person that sins")
-        new("ⲣⲉϥ", () => new CompoundMeta([new NounMeta(new("/c/en/person"), InflectionMeta.Unspecified),])),
+        new("ⲣⲉϥ", () => new CompoundMeta([new NounMeta(new ConceptReference("", "/c/en/person"), InflectionMeta.Unspecified),])),
     ];
 
     public IEnumerable<SemanticPair> Determiners
@@ -105,7 +105,8 @@ public class CopticBohairicGrammar
                 new(new Regex($"(ⲛ){NOT_VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
                 new(new Regex($"(ⲙ){VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
 
-                .. Articles
+                .. ComplexPrefixes,
+                .. Articles,
             ];
         }
     }
@@ -158,5 +159,29 @@ public class CopticBohairicGrammar
         new("ⲉϫⲉⲛ", () => new PrepositionMeta(PrepositionType.On)),
         new("ϧⲁϫⲉⲛ", () => new PrepositionMeta(PrepositionType.After, true)),
         new("ϩⲓϫⲉⲛ", () => new PrepositionMeta(PrepositionType.On)),
+    ];
+
+    public IEnumerable<SemanticPair> IndependentPersonalPronouns { get; } =
+    [
+        new("ⲁⲛⲟⲕ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ⲛⲑⲟⲕ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟϥ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲛⲑⲟⲥ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲁⲛⲟⲛ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ⲛⲑⲱⲧⲉⲛ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ⲛⲑⲱⲟⲩ", () => new NounMeta(new ConceptReference("", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
+    ];
+
+    public IEnumerable<SemanticPair> EmphaticPronouns { get; } =
+    [
+        new("ϩⲱ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ϩⲱⲕ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱⲓ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱϥ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲥ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲛ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ϩⲱⲧⲉⲛ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ϩⲱⲟⲩ", () => new NounMeta(new ConceptReference("", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 }
