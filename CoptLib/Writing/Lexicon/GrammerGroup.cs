@@ -1,9 +1,10 @@
 ﻿#nullable enable
+using CoptLib.Writing.Linguistics.XBar;
 using System.Collections.Generic;
 
 namespace CoptLib.Writing.Lexicon;
 
-public record GrammarGroup(PartOfSpeech PartOfSpeech, Number Number, Gender? Gender,
+public record GrammarGroup(PartOfSpeech PartOfSpeech, Number Number, Gender Gender,
     List<GrammarEntry>? Entries, string? Subclass, string? Note);
 
 public record GrammarEntry(GrammarType Type, string Text);
@@ -61,4 +62,17 @@ public enum GrammarType : byte
     CollocParticle,
     CollocNoun,
     CollocConj,
+}
+
+public static class GrammarGroupExtensions
+{
+    public static GrammaticalCount ToGrammaticalCount(this Number number)
+    {
+        return number switch
+        {
+            Number.Singular => GrammaticalCount.Singular,
+            Number.Plural => GrammaticalCount.Plural,
+            _ => GrammaticalCount.Unspecified,
+        };
+    }
 }
