@@ -83,7 +83,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>
 
     public string? Variant { get; }
 
-    public CultureInfo? Culture { get; private set; }
+    public CultureInfo? Culture => OwlCore.Flow.Catch(() => CultureInfo.GetCultureInfo(Tag));
 
     /// <summary>
     /// A secondary content language, typically used for
@@ -257,9 +257,5 @@ public class LanguageInfo : IEquatable<LanguageInfo>
     {
         if (KnownLanguages.ContainsKey(subtag))
             Known = KnownLanguages[subtag];
-
-        var culture = OwlCore.Flow.Catch(() => CultureInfo.GetCultureInfo(subtag));
-        if (culture is not null)
-            Culture = culture;
     }
 }
