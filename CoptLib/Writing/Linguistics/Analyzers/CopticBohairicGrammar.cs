@@ -73,13 +73,13 @@ public class CopticBohairicGrammar
     public IEnumerable<SemanticPair> ComplexPrefixes { get; } =
     [
         // Example: "ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ" / "the bridal chamber" ("the place of [the] bride")
-        new("ⲙⲁ", () => new NounMeta(new ConceptReference("", "/c/en/house"), InflectionMeta.Unspecified)),
+        new("ⲙⲁ", () => new NounMeta(new ConceptReference("place", "/c/en/place"), InflectionMeta.Unspecified)),
 
         // Example: "ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ" / "the Coptic language" ("[the language of] person of Egypt")
-        new("ⲣⲉⲙ", () => new NounMeta(new ConceptReference("", "/c/en/person"), InflectionMeta.Unspecified)),
+        new("ⲣⲉⲙ", () => new NounMeta(new ConceptReference("person", "/c/en/person"), InflectionMeta.Unspecified)),
 
         // Example: "ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ" / "a sinner" ("a person that sins")
-        new("ⲣⲉϥ", () => new CompoundMeta([new NounMeta(new ConceptReference("", "/c/en/person"), InflectionMeta.Unspecified),])),
+        new("ⲣⲉϥ", () => new CompoundMeta([new NounMeta(new ConceptReference("person that", "/c/en/person"), InflectionMeta.Unspecified),])),
     ];
 
     public IEnumerable<SemanticPair> Determiners

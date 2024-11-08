@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace CoptLib.Writing.Linguistics.XBar;
 
@@ -38,13 +39,15 @@ public abstract record StructuralElement(Range SourceRange) : IStructuralElement
     }
 
     [return: NotNullIfNotNull(nameof(meta))]
-    public static StructuralElement? FromMeta(Range range, IMeta? meta)
+    public static IEnumerable<StructuralElement>? FromMeta(Range range, IMeta? meta)
     {
         return meta switch
         {
             null => null,
-            IDeterminerMeta detMeta => new DeterminerElement(range, detMeta),
-            PrepositionMeta prepMeta => new PrepositionElement(range, prepMeta),
+            IDeterminerMeta detMeta => [new DeterminerElement(range, detMeta)],
+            PrepositionMeta prepMeta => [new PrepositionElement(range, prepMeta)],
+            NounMeta nounMeta => [new NounElement(range, nounMeta)],
+            CompoundMeta compoundMeta => compoundMeta.Metas.SelectMany(m => FromMeta(range, m)),
 
             _ => throw new NotImplementedException($"Unrecognized meta type: {meta.GetType().Name}")
         };
