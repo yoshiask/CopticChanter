@@ -154,8 +154,12 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             {
                 // There are already some prefixes, let's do some pruning!
 
-                bool isArticle = _grammar.Articles.Contains(prefix);
+                // Nouns can only be determined once
                 if (meta is IDeterminerMeta determinerMeta && existingElements.OfType<DeterminerElement>().Any())
+                    continue;
+
+                // A prepositional prefix in Coptic must follow another noun prefix (such as 'ⲙⲁ-')
+                if (meta is PrepositionMeta && existingElements[^1] is not NounElement)
                     continue;
             }
 
