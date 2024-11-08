@@ -22,7 +22,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
     public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(() => _language = language);
 
-    public async IAsyncEnumerable<IAsyncEnumerable<List<IStructuralElement>>> AnnotateAsync(string srcText)
+    public async IAsyncEnumerable<IAsyncEnumerable<IEnumerable<IStructuralElement>>> AnnotateAsync(string srcText)
     {
         await InitAsync();
 
@@ -53,7 +53,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         throw new NotImplementedException();
     }
 
-    public async IAsyncEnumerable<List<IStructuralElement>> IdentifyWord(string word)
+    public async IAsyncEnumerable<IEnumerable<IStructuralElement>> IdentifyWord(string word)
     {
         // Check for preposition
         foreach (var prefix in _grammar.Prepositions)
@@ -66,7 +66,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             if (meta is null)
                 continue;
 
-            yield return [StructuralElement.FromMeta(Range.All, meta)];
+            yield return StructuralElement.FromMeta(Range.All, meta);
         }
 
         await foreach (var nounInterpretation in IdentifyNoun(word))
@@ -94,22 +94,37 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 continue;
 
             // Check that the gender and number of the base word match any prefixes
-            var number = grammarGroup.Number.ToGrammaticalCount();
+            var baseGender = grammarGroup.Gender;
+            var baseNumber = grammarGroup.Number.ToGrammaticalCount();
             
-            var genderedElement = existingElements
-                .Select(ElementToGenderAndCount)
-                .ToList();
-            var previousGender = genderedElement.Select(a => a.Item1).LastOrDefault(g => g != Gender.Unspecified);
-            var previousNumber = genderedElement.Select(a => a.Item2).LastOrDefault(c => c != GrammaticalCount.Unspecified);
-
-            if (previousGender is not Gender.Unspecified && grammarGroup.Gender is not Gender.Unspecified)
+            Gender previousGender = Gender.Unspecified;
+            GrammaticalCount previousNumber = GrammaticalCount.Unspecified;
+            for (int i = 0; i < existingElements.Count; i++)
             {
-                if (previousGender != grammarGroup.Gender)
+                var element = existingElements[i];
+                if (element is PrepositionElement)
+                {
+                    // Preposition is linking two ideas, so it effectively resets the inflection
+                    previousGender = Gender.Unspecified;
+                    previousNumber = GrammaticalCount.Unspecified;
+                    continue;
+                }
+
+                (var gender, var number) = ElementToGenderAndCount(element);
+                if (gender is not Gender.Unspecified)
+                    previousGender = gender;
+                if (number is not GrammaticalCount.Unspecified)
+                    previousNumber = number;
+            }
+
+            if (previousGender is not Gender.Unspecified && baseGender is not Gender.Unspecified)
+            {
+                if (previousGender != baseGender)
                     continue;
             }
-            if (previousNumber is not GrammaticalCount.Unspecified && number is not GrammaticalCount.Unspecified)
+            if (previousNumber is not GrammaticalCount.Unspecified && baseNumber is not GrammaticalCount.Unspecified)
             {
-                if (previousNumber != number)
+                if (previousNumber != baseNumber)
                     continue;
             }
             
@@ -148,10 +163,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
             Range range = new Range(match.Start, baseStart) + startIndex;
 
-            List<IStructuralElement> newList = new(existingElements)
-            {
-                StructuralElement.FromMeta(range, meta)
-            };
+            List<IStructuralElement> newList = new(existingElements);
+            newList.AddRange(StructuralElement.FromMeta(range, meta));
 
             if (baseStart < word.Length)
             {
