@@ -18,9 +18,14 @@ public interface ILexemeReference
 }
 
 // TODO: What system will be used to map words to meanings?
-public record ConceptReference(string Orthography, string ConceptNetId) : ILexemeReference;
-
-public record LexiconEntryReference(LexiconEntry Entry) : ILexemeReference
+public record ConceptReference(string Orthography, string ConceptNetId) : ILexemeReference
 {
-    public string Orthography => Entry.Forms[0].Orthography;
+    public override string ToString() => $"ConceptNet{{{ConceptNetId}}}";
+}
+
+public record LexiconEntryReference(LexiconEntry Entry, Form Form) : ILexemeReference
+{
+    public string Orthography => Entry.Senses[0].Translations.GetByLanguage(KnownLanguage.English).ToString();
+
+    public override string ToString() => $"LexEntry{{{Entry.Id} {Form.Orthography}}}";
 }
