@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
@@ -87,13 +88,30 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             if (form is null)
                 continue;
 
-            // Check if this is a noun
+            // Verify that this is a noun
             var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
             if (grammarGroup.PartOfSpeech != PartOfSpeech.Substantive)
                 continue;
 
             // Check that the gender and number of the base word match any prefixes
-            //existingElements.OfType<DeterminerElement>().Select(d => d.Meta.)
+            var number = grammarGroup.Number.ToGrammaticalCount();
+            
+            var genderedElement = existingElements
+                .Select(ElementToGenderAndCount)
+                .ToList();
+            var previousGender = genderedElement.Select(a => a.Item1).LastOrDefault(g => g != Gender.Unspecified);
+            var previousNumber = genderedElement.Select(a => a.Item2).LastOrDefault(c => c != GrammaticalCount.Unspecified);
+
+            if (previousGender is not Gender.Unspecified && grammarGroup.Gender is not Gender.Unspecified)
+            {
+                if (previousGender != grammarGroup.Gender)
+                    continue;
+            }
+            if (previousNumber is not GrammaticalCount.Unspecified && number is not GrammaticalCount.Unspecified)
+            {
+                if (previousNumber != number)
+                    continue;
+            }
             
             var baseRange = new Range(startIndex, Index.End);
             var baseElement = new StructuralLexeme(baseRange, wordEntry, 0);
@@ -251,6 +269,30 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
         IsInitialized = true;
     }
+
+    private static (Gender, GrammaticalCount) ElementToGenderAndCount(IStructuralElement elem)
+    {
+        if (elem is DeterminerElement detElem)
+        {
+            var inflection = detElem.Meta switch
+            {
+                DeterminerArticleMeta articleMeta => articleMeta.Target,
+                DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Possessed,
+                DeterminerDemonstrativeMeta possessiveMeta => possessiveMeta.Target,
+                DeterminerQuantifyingMeta possessiveMeta => possessiveMeta.Target,
+                _ => throw new NotImplementedException(),
+            };
+            return (inflection.Gender, inflection.Number);
+        }
+        if (elem is StructuralLexeme lexElem)
+        {
+            var grammarGroup = lexElem.Entry.GrammarGroup;
+            return (grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount());
+        }
+
+        return (Gender.Unspecified, GrammaticalCount.Unspecified);
+    }
+
     private static readonly Regex Verb1stSingRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡ)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ϯ|ⲓ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲓ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
     private static readonly Regex Verb1stPlurRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡⲉ?)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ⲛ|ⲧ?ⲉⲛ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲉⲛ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
 
