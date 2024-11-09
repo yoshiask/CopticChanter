@@ -55,7 +55,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
     public async IAsyncEnumerable<IEnumerable<IStructuralElement>> IdentifyWord(string word)
     {
-        // Check for preposition
+        // Check for prepositions
         foreach (var prefix in _grammar.Prepositions)
         {
             var match = prefix.Pattern.MatchAsPrefix(word);
@@ -63,6 +63,20 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 continue;
 
             var meta = prefix.MetaFactory();
+            if (meta is null)
+                continue;
+
+            yield return StructuralElement.FromMeta(Range.All, meta);
+        }
+
+        // Check for various pronouns
+        foreach (var pronoun in _grammar.Pronouns)
+        {
+            var match = pronoun.Pattern.MatchAsPrefix(word);
+            if (match is null)
+                continue;
+
+            var meta = pronoun.MetaFactory();
             if (meta is null)
                 continue;
 
@@ -110,7 +124,29 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                     continue;
                 }
 
-                (var gender, var number) = ElementToGenderAndCount(element);
+                Gender gender = Gender.Unspecified;
+                GrammaticalCount number = GrammaticalCount.Unspecified;
+
+                if (element is DeterminerElement detElem)
+                {
+                    var inflection = detElem.Meta switch
+                    {
+                        DeterminerArticleMeta articleMeta => articleMeta.Target,
+                        DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Possessed,
+                        DeterminerDemonstrativeMeta possessiveMeta => possessiveMeta.Target,
+                        DeterminerQuantifyingMeta possessiveMeta => possessiveMeta.Target,
+                        _ => throw new NotImplementedException(),
+                    };
+                    gender = inflection.Gender;
+                    number = inflection.Number;
+                }
+                if (element is StructuralLexeme lexElem)
+                {
+                    var lexemeGrammarGroup = lexElem.Entry.GrammarGroup;
+                    gender = lexemeGrammarGroup.Gender;
+                    number = lexemeGrammarGroup.Number.ToGrammaticalCount();
+                }
+
                 if (gender is not Gender.Unspecified)
                     previousGender = gender;
                 if (number is not GrammaticalCount.Unspecified)
@@ -287,29 +323,6 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         }
 
         IsInitialized = true;
-    }
-
-    private static (Gender, GrammaticalCount) ElementToGenderAndCount(IStructuralElement elem)
-    {
-        if (elem is DeterminerElement detElem)
-        {
-            var inflection = detElem.Meta switch
-            {
-                DeterminerArticleMeta articleMeta => articleMeta.Target,
-                DeterminerPossessiveMeta possessiveMeta => possessiveMeta.Possessed,
-                DeterminerDemonstrativeMeta possessiveMeta => possessiveMeta.Target,
-                DeterminerQuantifyingMeta possessiveMeta => possessiveMeta.Target,
-                _ => throw new NotImplementedException(),
-            };
-            return (inflection.Gender, inflection.Number);
-        }
-        if (elem is StructuralLexeme lexElem)
-        {
-            var grammarGroup = lexElem.Entry.GrammarGroup;
-            return (grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount());
-        }
-
-        return (Gender.Unspecified, GrammaticalCount.Unspecified);
     }
 
     private static readonly Regex Verb1stSingRegex = new(@"^((?<rela>ⲉⲧ)?(?<pret>ⲛⲁ|ⲛⲉ)?(?<circ>ⲉ|ⲉⲁ)?((?<neg>ⲙⲡ)?(?<focl>ⲁ)?(?<juss>ⲙⲁⲣ|ⲉⲛⲑⲣ)?|(?<aor>ϣⲁ)?)(ϯ|ⲓ)(?<cond>ϣⲁⲛ|(?<cndn>ϣⲧⲉⲙ))?(?<futr>ⲛⲁ)?|(?<conj>ⲛⲧⲁ|ⲧⲁⲣⲓ)|(?<optn>ⲛⲛⲁ))(?<base>\w+)$");
