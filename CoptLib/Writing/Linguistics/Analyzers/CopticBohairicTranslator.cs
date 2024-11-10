@@ -62,7 +62,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             if (match is null)
                 continue;
 
-            var meta = prefix.MetaFactory();
+            var meta = prefix.MetaFactory(match);
             if (meta is null)
                 continue;
 
@@ -76,7 +76,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             if (match is null)
                 continue;
 
-            var meta = pronoun.MetaFactory();
+            var meta = pronoun.MetaFactory(match);
             if (meta is null)
                 continue;
 
@@ -182,7 +182,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             if (match is null)
                 continue;
 
-            var meta = prefix.MetaFactory();
+            var meta = prefix.MetaFactory(match);
             if (meta is null)
                 continue;
 
