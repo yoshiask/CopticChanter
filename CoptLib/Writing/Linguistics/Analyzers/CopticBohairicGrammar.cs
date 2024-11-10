@@ -17,79 +17,79 @@ public class CopticBohairicGrammar
     private IEnumerable<SemanticPair>? _pronouns;
 
     public SemanticPair GenericNominalizer { get; } =
-        new("(ⲙⲉ(?:ⲧ|ⲑ))", () => new NominalizingMeta(NominalizingType.Unspecified, NominalizingType.Noun));
+        new("(ⲙⲉ(?:ⲧ|ⲑ))", _ => new NominalizingMeta(NominalizingType.Unspecified, NominalizingType.Noun));
 
     public SemanticPair VerbNominalizer { get; } =
-        new("ϫⲓⲛ", () => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
+        new("ϫⲓⲛ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
 
     public SemanticPair AgentNounConverter { get; } =
-        new("ⲣⲉϥ", () => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Agent));
+        new("ⲣⲉϥ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Agent));
 
     public SemanticPair Denominalizer { get; } =
-        new("ⲉⲣ", () => new NominalizingMeta(NominalizingType.Noun | NominalizingType.Adjective, NominalizingType.Verb));
+        new("ⲉⲣ", _ => new NominalizingMeta(NominalizingType.Noun | NominalizingType.Adjective, NominalizingType.Verb));
 
     public IEnumerable<SemanticPair> Articles { get; } =
     [
         // Definite
-        new(new Regex($"(ⲡ){NOT_VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new(new Regex($"(ⲫ){VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲡⲓ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new(new Regex($"(ⲧ){NOT_VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
-        new(new Regex($"(ⲑ){VILMINOR_REGEX}"), () => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ϯ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲓ", () => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Number: GrammaticalCount.Plural))),
+        new(new Regex($"(ⲡ){NOT_VILMINOR_REGEX}"), _ => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new(new Regex($"(ⲫ){VILMINOR_REGEX}"), _ => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲡⲓ", _ => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new(new Regex($"(ⲧ){NOT_VILMINOR_REGEX}"), _ => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new(new Regex($"(ⲑ){VILMINOR_REGEX}"), _ => new DeterminerArticleMeta(DeterminerStrength.Weak, true, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ϯ", _ => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲓ", _ => new DeterminerArticleMeta(DeterminerStrength.Strong, true, new(Number: GrammaticalCount.Plural))),
 
         // Indefinite
-        new("ⲟⲩ", () => new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Singular))),
-        new("ϩⲁⲛ", () => new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Plural))),
+        new("ⲟⲩ", _ => new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Singular))),
+        new("ϩⲁⲛ", _ => new DeterminerArticleMeta(default, false, new(Number: GrammaticalCount.Plural))),
 
         // Possessive Strong
-        new(new Regex($"(ⲛ){NOT_VILMINOR_REGEX}"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
-        new(new Regex($"(ⲙ){VILMINOR_REGEX}"), () => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
+        new(new Regex($"(ⲛ){NOT_VILMINOR_REGEX}"), _ => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
+        new(new Regex($"(ⲙ){VILMINOR_REGEX}"), _ => new DeterminerPossessiveMeta(DeterminerStrength.Strong, InflectionMeta.Unspecified, InflectionMeta.Unspecified)),
 
         // Possessive 1st Person
-        new("ⲡⲁ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲁ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲁ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Number: GrammaticalCount.Plural))),
-        new("ⲡⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲁ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲁ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲁ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.First), new(Number: GrammaticalCount.Plural))),
 
         // Possessive 2nd Person
-        new("ⲡⲉⲕ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉⲕ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉⲕ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
-        new("ⲡⲉ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
-        new("ⲡⲉⲧⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉⲧⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉⲧⲉⲛ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Second), new(Number: GrammaticalCount.Plural))),
 
         // Possessive 3rd Person
-        new("ⲡⲉϥ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉϥ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉϥ", () => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
-        new("ⲡⲉⲥ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲉⲥ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲉⲥ", () => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
-        new("ⲡⲟⲩ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲟⲩ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲟⲩ", () => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲉⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲉⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲉⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Plural, PointOfView.Third), new(Number: GrammaticalCount.Plural))),
 
         // Demonstrative
-        new("ⲡⲁⲓ", () => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Masculine, GrammaticalCount.Singular))),
-        new("ⲧⲁⲓ", () => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Feminine, GrammaticalCount.Singular))),
-        new("ⲛⲁⲓ", () => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Number: GrammaticalCount.Plural))),
+        new("ⲡⲁⲓ", _ => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲧⲁⲓ", _ => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲛⲁⲓ", _ => new DeterminerDemonstrativeMeta(DeterminerStrength.Near, new(Number: GrammaticalCount.Plural))),
     ];
 
     public IEnumerable<SemanticPair> ComplexNounPrefixes { get; } =
     [
         // Example: "ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ" / "the bridal chamber" ("the place of [the] bride")
-        new("ⲙⲁ", () => new NounMeta(new ConceptReference("place", "/c/en/place"), InflectionMeta.Unspecified)),
+        new("ⲙⲁ", _ => new NounMeta(new ConceptReference("place", "/c/en/place"), InflectionMeta.Unspecified)),
 
         // Example: "ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ" / "the Coptic language" ("[the language of] person of Egypt")
-        new("ⲣⲉⲙ", () => new NounMeta(new ConceptReference("person", "/c/en/person"), InflectionMeta.Unspecified)),
+        new("ⲣⲉⲙ", _ => new NounMeta(new ConceptReference("person", "/c/en/person"), InflectionMeta.Unspecified)),
     ];
 
     public IEnumerable<SemanticPair> Determiners
@@ -97,8 +97,8 @@ public class CopticBohairicGrammar
         get
         {
             return _determiners ??= [
-                new("ⲉⲧⲉⲙⲙⲁⲩ", () => new DeterminerDemonstrativeMeta(DeterminerStrength.Far, InflectionMeta.Unspecified)),
-                new("ⲛⲓⲃⲉⲛ", () => new DeterminerQuantifyingMeta(new(Number: GrammaticalCount.All))),
+                new("ⲉⲧⲉⲙⲙⲁⲩ", _ => new DeterminerDemonstrativeMeta(DeterminerStrength.Far, InflectionMeta.Unspecified)),
+                new("ⲛⲓⲃⲉⲛ", _ => new DeterminerQuantifyingMeta(new(Number: GrammaticalCount.All))),
                 .. Articles
             ];
         }
@@ -109,11 +109,11 @@ public class CopticBohairicGrammar
         get
         {
             return _nounPrefixes ??= [
-                new("ⲉ", () => new PrepositionMeta(PrepositionType.To)),
+                new("ⲉ", _ => new PrepositionMeta(PrepositionType.To)),
                 // TODO: "ⲉⲟⲩ" and its contraction "ⲉⲩ"
 
-                new(new Regex($"(ⲛ){NOT_VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
-                new(new Regex($"(ⲙ){VILMINOR_REGEX}"), () => new PrepositionMeta(PrepositionType.Of)),
+                new(new Regex($"(ⲛ){NOT_VILMINOR_REGEX}"), _ => new PrepositionMeta(PrepositionType.Of)),
+                new(new Regex($"(ⲙ){VILMINOR_REGEX}"), _ => new PrepositionMeta(PrepositionType.Of)),
 
                 .. ComplexNounPrefixes,
                 .. Articles,
@@ -123,76 +123,76 @@ public class CopticBohairicGrammar
 
     public IEnumerable<SemanticPair> Prepositions { get; } =
     [
-        new("ⲛⲧⲉ", () => new PrepositionMeta(PrepositionType.Of)),
-        new("ϩⲓⲧⲉⲛ", () => new PrepositionMeta(PrepositionType.Through)),
+        new("ⲛⲧⲉ", _ => new PrepositionMeta(PrepositionType.Of)),
+        new("ϩⲓⲧⲉⲛ", _ => new PrepositionMeta(PrepositionType.Through)),
 
-        new("ⲁⲧϭⲛⲉ", () => new PrepositionMeta(PrepositionType.With, true)),
-        new("ⲥⲁⲃⲟⲗ", () => new PrepositionMeta(PrepositionType.Away)),
-        new("ϣⲁⲉⲃⲟⲗ", () => new PrepositionMeta(PrepositionType.In, true)),
-        new("ⲉⲑⲃⲉ", () => new PrepositionMeta(PrepositionType.BecauseOf)),
-        new("ⲓⲥϫⲉⲛ", () => new PrepositionMeta(PrepositionType.Since)),
-        new("ⲕⲁⲧⲁ", () => new PrepositionMeta(PrepositionType.AccordingTo)),
-        new("ⲗⲟⲓⲡⲟⲛ", () => new PrepositionMeta(PrepositionType.After)),
-        new("ⲙⲉⲛϩⲓ", () => new PrepositionMeta(PrepositionType.After)),
-        new("ⲙⲏⲣ", () => new PrepositionMeta(PrepositionType.OtherSide)),
-        new("ϩⲓⲙⲏⲣ", () => new PrepositionMeta(PrepositionType.OtherSide)),
-        new("ⲉⲧⲙⲏϯ", () => new PrepositionMeta(PrepositionType.Between)),
-        //new("ⲙⲙⲟⲛ", () => new PrepositionMeta(PrepositionType.X)),
-        new("ⲛⲉⲙ", () => new PrepositionMeta(PrepositionType.With)),
-        new("ⲡⲗⲏⲛ", () => new PrepositionMeta(PrepositionType.Except)),
-        new("ⲙⲉⲛⲉⲛⲥⲁ", () => new PrepositionMeta(PrepositionType.After)),
-        new("ⲉⲥⲕⲉⲛ", () => new PrepositionMeta(PrepositionType.Beside)),
-        new("ⲛⲧⲉⲛ", () => new PrepositionMeta(PrepositionType.BecauseOf)),
-        new("ϧⲁⲧⲉⲛ", () => new PrepositionMeta(PrepositionType.Under)),
-        new("ⲟⲩⲃⲉ", () => new PrepositionMeta(PrepositionType.Contrasting)),
-        new("ⲟⲩⲧⲉ", () => new PrepositionMeta(PrepositionType.Between)),
-        //new("ⲛⲟⲩⲉϣⲉⲛ", () => new PrepositionMeta(PrepositionType.X)),
-        new("ⲉⲫⲁϩⲟⲩ", () => new PrepositionMeta(PrepositionType.Forward, true)),
-        new("ⲥⲁⲫⲁϩⲟⲩ", () => new PrepositionMeta(PrepositionType.Behind)),
-        new("ϩⲓⲫⲁϩⲟⲩ", () => new PrepositionMeta(PrepositionType.Behind)),
-        new("ⲭⲱⲣⲓⲥ", () => new PrepositionMeta(PrepositionType.With, true)),
-        new("ϣⲁ", () => new PrepositionMeta(PrepositionType.To)),
-        new("ϧⲁ", () => new PrepositionMeta(PrepositionType.In)),
-        //new("ϣⲁⲧⲉⲛ", () => new PrepositionMeta(PrepositionType.To)),
-        new("ϧⲉⲛ", () => new PrepositionMeta(PrepositionType.In)),
-        new("ϩⲁ", () => new PrepositionMeta(PrepositionType.To)),
-        new("ⲉⲑⲏ", () => new PrepositionMeta(PrepositionType.Forward)),
-        new("ⲥⲁⲧϩⲏ", () => new PrepositionMeta(PrepositionType.After, true)),
-        new("ϩⲁⲑⲏ", () => new PrepositionMeta(PrepositionType.Behind, true)),
-        new("ϩⲓⲑⲏ", () => new PrepositionMeta(PrepositionType.Forward)),
-        new("ϩⲓ", () => new PrepositionMeta(PrepositionType.Concerning)),
-        new("ⲉϩⲣⲉⲛ", () => new PrepositionMeta(PrepositionType.Facing)),
-        new("ⲛⲁϩⲣⲉⲛ", () => new PrepositionMeta(PrepositionType.PresenceOf)),
-        new("ⲉϧⲟⲩⲛ", () => new PrepositionMeta(PrepositionType.To)),
-        new("ϩⲟⲧⲉ", () => new PrepositionMeta(PrepositionType.Beyond)),
-        new("ⲉϩⲣⲏⲓ", () => new PrepositionMeta(PrepositionType.Above)),
-        new("ⲉϫⲉⲛ", () => new PrepositionMeta(PrepositionType.On)),
-        new("ϧⲁϫⲉⲛ", () => new PrepositionMeta(PrepositionType.After, true)),
-        new("ϩⲓϫⲉⲛ", () => new PrepositionMeta(PrepositionType.On)),
+        new("ⲁⲧϭⲛⲉ", _ => new PrepositionMeta(PrepositionType.With, true)),
+        new("ⲥⲁⲃⲟⲗ", _ => new PrepositionMeta(PrepositionType.Away)),
+        new("ϣⲁⲉⲃⲟⲗ", _ => new PrepositionMeta(PrepositionType.In, true)),
+        new("ⲉⲑⲃⲉ", _ => new PrepositionMeta(PrepositionType.BecauseOf)),
+        new("ⲓⲥϫⲉⲛ", _ => new PrepositionMeta(PrepositionType.Since)),
+        new("ⲕⲁⲧⲁ", _ => new PrepositionMeta(PrepositionType.AccordingTo)),
+        new("ⲗⲟⲓⲡⲟⲛ", _ => new PrepositionMeta(PrepositionType.After)),
+        new("ⲙⲉⲛϩⲓ", _ => new PrepositionMeta(PrepositionType.After)),
+        new("ⲙⲏⲣ", _ => new PrepositionMeta(PrepositionType.OtherSide)),
+        new("ϩⲓⲙⲏⲣ", _ => new PrepositionMeta(PrepositionType.OtherSide)),
+        new("ⲉⲧⲙⲏϯ", _ => new PrepositionMeta(PrepositionType.Between)),
+        //new("ⲙⲙⲟⲛ", _ => new PrepositionMeta(PrepositionType.X)),
+        new("ⲛⲉⲙ", _ => new PrepositionMeta(PrepositionType.With)),
+        new("ⲡⲗⲏⲛ", _ => new PrepositionMeta(PrepositionType.Except)),
+        new("ⲙⲉⲛⲉⲛⲥⲁ", _ => new PrepositionMeta(PrepositionType.After)),
+        new("ⲉⲥⲕⲉⲛ", _ => new PrepositionMeta(PrepositionType.Beside)),
+        new("ⲛⲧⲉⲛ", _ => new PrepositionMeta(PrepositionType.BecauseOf)),
+        new("ϧⲁⲧⲉⲛ", _ => new PrepositionMeta(PrepositionType.Under)),
+        new("ⲟⲩⲃⲉ", _ => new PrepositionMeta(PrepositionType.Contrasting)),
+        new("ⲟⲩⲧⲉ", _ => new PrepositionMeta(PrepositionType.Between)),
+        //new("ⲛⲟⲩⲉϣⲉⲛ", _ => new PrepositionMeta(PrepositionType.X)),
+        new("ⲉⲫⲁϩⲟⲩ", _ => new PrepositionMeta(PrepositionType.Forward, true)),
+        new("ⲥⲁⲫⲁϩⲟⲩ", _ => new PrepositionMeta(PrepositionType.Behind)),
+        new("ϩⲓⲫⲁϩⲟⲩ", _ => new PrepositionMeta(PrepositionType.Behind)),
+        new("ⲭⲱⲣⲓⲥ", _ => new PrepositionMeta(PrepositionType.With, true)),
+        new("ϣⲁ", _ => new PrepositionMeta(PrepositionType.To)),
+        new("ϧⲁ", _ => new PrepositionMeta(PrepositionType.In)),
+        //new("ϣⲁⲧⲉⲛ", _ => new PrepositionMeta(PrepositionType.To)),
+        new("ϧⲉⲛ", _ => new PrepositionMeta(PrepositionType.In)),
+        new("ϩⲁ", _ => new PrepositionMeta(PrepositionType.To)),
+        new("ⲉⲑⲏ", _ => new PrepositionMeta(PrepositionType.Forward)),
+        new("ⲥⲁⲧϩⲏ", _ => new PrepositionMeta(PrepositionType.After, true)),
+        new("ϩⲁⲑⲏ", _ => new PrepositionMeta(PrepositionType.Behind, true)),
+        new("ϩⲓⲑⲏ", _ => new PrepositionMeta(PrepositionType.Forward)),
+        new("ϩⲓ", _ => new PrepositionMeta(PrepositionType.Concerning)),
+        new("ⲉϩⲣⲉⲛ", _ => new PrepositionMeta(PrepositionType.Facing)),
+        new("ⲛⲁϩⲣⲉⲛ", _ => new PrepositionMeta(PrepositionType.PresenceOf)),
+        new("ⲉϧⲟⲩⲛ", _ => new PrepositionMeta(PrepositionType.To)),
+        new("ϩⲟⲧⲉ", _ => new PrepositionMeta(PrepositionType.Beyond)),
+        new("ⲉϩⲣⲏⲓ", _ => new PrepositionMeta(PrepositionType.Above)),
+        new("ⲉϫⲉⲛ", _ => new PrepositionMeta(PrepositionType.On)),
+        new("ϧⲁϫⲉⲛ", _ => new PrepositionMeta(PrepositionType.After, true)),
+        new("ϩⲓϫⲉⲛ", _ => new PrepositionMeta(PrepositionType.On)),
     ];
 
     public IEnumerable<SemanticPair> IndependentPersonalPronouns { get; } =
     [
-        new("ⲁⲛⲟⲕ", () => new NounMeta(new ConceptReference("I", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
-        new("ⲛⲑⲟⲕ", () => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ⲛⲑⲟ", () => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ⲛⲑⲟϥ", () => new NounMeta(new ConceptReference("he", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ⲛⲑⲟⲥ", () => new NounMeta(new ConceptReference("she", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ⲁⲛⲟⲛ", () => new NounMeta(new ConceptReference("we", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
-        new("ⲛⲑⲱⲧⲉⲛ", () => new NounMeta(new ConceptReference("y'all", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
-        new("ⲛⲑⲱⲟⲩ", () => new NounMeta(new ConceptReference("they", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
+        new("ⲁⲛⲟⲕ", _ => new NounMeta(new ConceptReference("I", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ⲛⲑⲟⲕ", _ => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟ", _ => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟϥ", _ => new NounMeta(new ConceptReference("he", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲛⲑⲟⲥ", _ => new NounMeta(new ConceptReference("she", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲁⲛⲟⲛ", _ => new NounMeta(new ConceptReference("we", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ⲛⲑⲱⲧⲉⲛ", _ => new NounMeta(new ConceptReference("y'all", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ⲛⲑⲱⲟⲩ", _ => new NounMeta(new ConceptReference("they", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 
     public IEnumerable<SemanticPair> EmphaticPronouns { get; } =
     [
-        new("ϩⲱ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
-        new("ϩⲱⲕ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ϩⲱⲓ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ϩⲱϥ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ϩⲱⲥ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ϩⲱⲛ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
-        new("ϩⲱⲧⲉⲛ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
-        new("ϩⲱⲟⲩ", () => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
+        new("ϩⲱ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ϩⲱⲕ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱⲓ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱϥ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲥ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲛ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ϩⲱⲧⲉⲛ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ϩⲱⲟⲩ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 
     public IEnumerable<SemanticPair> Pronouns

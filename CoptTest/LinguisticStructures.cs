@@ -170,6 +170,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [InlineData("Ϧⲉⲛ Ⲡⲓⲭⲣⲓⲥⲧⲟⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲉⲛϭⲟⲓⲥ")]
     [InlineData("Ϣⲟⲡ ⲁⲧϭⲛⲉ ⲟⲩⲙⲉⲧⲕⲟⲩϫⲓ ⲛϩⲏⲧ!")]
     [InlineData("Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭⲣⲓⲥⲧⲟⲥ Ⲡⲟⲩⲣⲟ ⲛⲧⲉ Ⲡⲱⲟⲩ: ⲁϥⲧⲱⲛϥ ⲉⲃⲟⲗ ϧⲉⲛ ⲛⲏⲉⲑⲙⲱⲟⲩⲧ.")]
+    [InlineData("Ⲡⲁϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭⲣⲓⲥⲧⲟⲥ: Ⲡϣⲏⲣⲓ ⲙⲪⲛⲟⲩϯ: ⲛⲁⲓ ⲛⲏⲓ: ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ.")]
     [InlineData("Ⲭⲉⲣⲉ ⲡⲓⲙⲁⲛ̀ϣⲉⲗⲉⲧ: ⲉⲧⲥⲉⲗⲥⲱⲗ ϧⲉⲛ ⲟⲩⲑⲟ ⲛ̀ⲣⲏϯ: ⲛ̀ⲧⲉ Ⲡⲓⲛⲩⲙⲫⲓⲟⲥ ⲙ̀ⲙⲏⲓ: ⲉ̀ⲧⲁϥϩⲱⲧⲡ ⲉ̀ϯⲙⲉⲧⲣⲱⲙⲓ.")]
     [InlineData("Ⲁ̀ⲛⲟⲛ ϩⲱⲛ ⲙⲁⲣⲉⲛⲟⲩⲱϣⲧ ⲙ̀ⲙⲟϥ: ⲉⲛⲱϣ ⲉ̀ⲃⲟⲗ ⲉⲛϫⲱ ⲙ̀ⲙⲟⲥ: ϫⲉ ⲛⲁⲓ ⲛⲁⲛ Ⲫ̀ⲛⲟⲩϯ Ⲡⲉⲛⲥⲱⲧⲏⲣ: ⲫⲏⲉ̀ⲧⲁⲩⲁϣϥ ⲉ̀Ⲡⲓⲥ̀ⲧⲁⲩⲣⲟⲥ: ⲉⲕⲉ̀ϧⲟⲙϧⲉⲙ ⲙ̀Ⲡ̀ⲥⲁⲧⲁⲛⲁⲥ: ⲥⲁⲡⲉⲥⲏⲧ ⲛ̀ⲛⲉⲛϭⲁⲗⲁⲩϫ.")]
     [InlineData("Ⲛⲓϣⲉⲡϩ̀ⲙⲟⲧ ⲛ̀ⲧⲉ ⲛⲏⲉ̀ⲧⲁⲩⲉⲣⲡ̀ⲣⲟⲥⲫⲉⲣⲓⲛ: ⲉ̀ⲟⲩⲧⲁⲓⲟ ⲛⲉⲙ ⲟⲩⲱ̀ⲟⲩ ⲙ̀ⲡⲉⲕⲣⲁⲛ ⲉⲑⲟⲩⲁⲃ.\r\n" + 
@@ -228,8 +229,11 @@ public class LinguisticStructures(ITestOutputHelper _output)
                     { PointOfView: PointOfView.Third, Number: GrammaticalCount.Singular }
                         => possessiveMeta.Possessor.Gender == Gender.Masculine ? "his" : "her",
                     { PointOfView: PointOfView.Third, Number: GrammaticalCount.Plural } => "their",
+                    _ => "of"   // not really correct but whatever
                 },
+                DeterminerDemonstrativeMeta => "this",
             },
+
             PrepositionElement prepElem => (prepElem.Meta.Negative ? "not " : "")
                 + prepElem.Meta.Type.ToString().ToLower(),
 
