@@ -47,6 +47,8 @@ public abstract record StructuralElement(Range SourceRange) : IStructuralElement
             IDeterminerMeta detMeta => [new DeterminerElement(range, detMeta)],
             PrepositionMeta prepMeta => [new PrepositionElement(range, prepMeta)],
             NounMeta nounMeta => [new NounElement(range, nounMeta)],
+            VerbMeta verbMeta => [new VerbElement(range, verbMeta)],
+            TenseMeta tenseMeta => [new TenseElement(range, tenseMeta)],
             CompoundMeta compoundMeta => compoundMeta.Metas.SelectMany(m => FromMeta(range, m)),
 
             _ => throw new NotImplementedException($"Unrecognized meta type: {meta.GetType().Name}")
