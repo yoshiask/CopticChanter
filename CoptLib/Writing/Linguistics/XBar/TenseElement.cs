@@ -4,10 +4,6 @@ public record TenseElement(Range SourceRange, TenseMeta Meta) : StructuralElemen
 
 public interface ITenseMeta : IMeta;
 
-public record VerbMeta(TenseMeta Tense, InflectionMeta Actor, InflectionMeta? Target = null) : IMeta;
-
-public record VerbElement(Range SourceRange, VerbMeta Meta) : StructuralElement(SourceRange);
-
 public record TenseMeta(RelativeTime CurrentTime = default, RelativeTime Start = default, RelativeTime End = default, TenseFlags Flags = default, int Degree = 0) : ITenseMeta
 {
     public bool IsAorist => Start == RelativeTime.Aorist && End == RelativeTime.Aorist;
