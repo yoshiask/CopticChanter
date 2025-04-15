@@ -16,9 +16,9 @@ internal static class IpaTables
         [Linguistics.SyllableSeparatorSet.IPA.PrimaryStressed] = "·",
         [Linguistics.SyllableSeparatorSet.IPA.SecondaryStressed] = "·",
         [Linguistics.SyllableSeparatorSet.IPA.Unstressed] = "·",
-        ["ä"] = "a\u0306",  // ă
+        ["ä"] = "a",
         ["æ"] = "a",
-        ["ɑ"] = "a\u0306",
+        ["ɑ"] = "a",
         ["b\u032A"] = "b",
         ["g"] = "g",
         ["ɣ"] = "gʰ",

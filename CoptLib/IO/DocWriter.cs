@@ -223,10 +223,22 @@ public static class DocWriter
                 elem.Name = "String";
                 break;
 
-            case TranslationCollection:
-            case TranslationCollectionSection:
-            case TranslationRunCollection:
+            case TranslationRunCollection translationRuns:
                 elem.Name = "Translations";
+                foreach (var translation in translationRuns)
+                    elem.Add(SerializeTransformedObject(translation));
+                break;
+
+            case TranslationCollection translationCollection:
+                elem.Name = "Translations";
+                foreach (var translation in translationCollection.OfType<IDefinition>())
+                    elem.Add(SerializeTransformedObject(translation));
+                break;
+
+            case TranslationCollectionSection translationCollectionSection:
+                elem.Name = "Translations";
+                foreach (var translation in translationCollectionSection.Children)
+                    elem.Add(SerializeTransformedObject(translation));
                 break;
 
             case Section section:

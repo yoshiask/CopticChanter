@@ -55,7 +55,7 @@ public abstract class LinguisticAnalyzer(LanguageInfo languageInfo)
             throw new ArgumentException($"{lang} is not a supported transliteration target.");
 
         // Create syllable separator set for transliteration target
-        var ipaSyllableSeparatorSet = SyllableSeparatorSet.IPA;
+        var ipaSyllableSeparatorSet = SyllableSeparatorSet.Empty;
         SyllableSeparatorSet syllableSeparators = syllableSeparatorsOverride ?? new()
         {
             PrimaryStressed = ipaTable.TryGetValue(ipaSyllableSeparatorSet.PrimaryStressed, out var tlPSep)
