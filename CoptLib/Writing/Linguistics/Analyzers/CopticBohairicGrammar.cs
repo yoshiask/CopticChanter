@@ -86,10 +86,10 @@ public class CopticBohairicGrammar
     public IEnumerable<SemanticPair> ComplexNounPrefixes { get; } =
     [
         // Example: "ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ" / "the bridal chamber" ("the place of [the] bride")
-        new("ⲙⲁ", _ => new NounMeta(new ConceptReference("place", "/c/en/place"), InflectionMeta.Unspecified)),
+        new("ⲙⲁ", _ => new LexemeMeta(new ConceptReference("place", "/c/en/place"), InflectionMeta.Unspecified)),
 
         // Example: "ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ" / "the Coptic language" ("[the language of] person of Egypt")
-        new("ⲣⲉⲙ", _ => new NounMeta(new ConceptReference("person", "/c/en/person"), InflectionMeta.Unspecified)),
+        new("ⲣⲉⲙ", _ => new LexemeMeta(new ConceptReference("person", "/c/en/person"), InflectionMeta.Unspecified)),
     ];
 
     public IEnumerable<SemanticPair> Determiners
@@ -173,26 +173,26 @@ public class CopticBohairicGrammar
 
     public IEnumerable<SemanticPair> IndependentPersonalPronouns { get; } =
     [
-        new("ⲁⲛⲟⲕ", _ => new NounMeta(new ConceptReference("I", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
-        new("ⲛⲑⲟⲕ", _ => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ⲛⲑⲟ", _ => new NounMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ⲛⲑⲟϥ", _ => new NounMeta(new ConceptReference("he", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ⲛⲑⲟⲥ", _ => new NounMeta(new ConceptReference("she", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ⲁⲛⲟⲛ", _ => new NounMeta(new ConceptReference("we", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
-        new("ⲛⲑⲱⲧⲉⲛ", _ => new NounMeta(new ConceptReference("y'all", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
-        new("ⲛⲑⲱⲟⲩ", _ => new NounMeta(new ConceptReference("they", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
+        new("ⲁⲛⲟⲕ", _ => new LexemeMeta(new ConceptReference("I", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ⲛⲑⲟⲕ", _ => new LexemeMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟ", _ => new LexemeMeta(new ConceptReference("you", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ⲛⲑⲟϥ", _ => new LexemeMeta(new ConceptReference("he", "/c/en/pronoun"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲛⲑⲟⲥ", _ => new LexemeMeta(new ConceptReference("she", "/c/en/pronoun"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ⲁⲛⲟⲛ", _ => new LexemeMeta(new ConceptReference("we", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ⲛⲑⲱⲧⲉⲛ", _ => new LexemeMeta(new ConceptReference("y'all", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ⲛⲑⲱⲟⲩ", _ => new LexemeMeta(new ConceptReference("they", "/c/en/pronoun"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 
     public IEnumerable<SemanticPair> EmphaticPronouns { get; } =
     [
-        new("ϩⲱ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
-        new("ϩⲱⲕ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ϩⲱⲓ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
-        new("ϩⲱϥ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ϩⲱⲥ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
-        new("ϩⲱⲛ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
-        new("ϩⲱⲧⲉⲛ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
-        new("ϩⲱⲟⲩ", _ => new NounMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
+        new("ϩⲱ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First))),
+        new("ϩⲱⲕ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱⲓ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second))),
+        new("ϩⲱϥ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲥ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third))),
+        new("ϩⲱⲛ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First))),
+        new("ϩⲱⲧⲉⲛ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second))),
+        new("ϩⲱⲟⲩ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 
     public IEnumerable<SemanticPair> Pronouns
