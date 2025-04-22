@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
-public class CopticBohairicGrammar
+public partial class CopticBohairicGrammar
 {
     const string VILMINOR = "ⲃⲓⲗⲙⲛⲟⲣⲫⲯ";
     const string VOWELS = "ⲱⲉⲏⲩⲓⲟⲁ";
@@ -15,18 +15,12 @@ public class CopticBohairicGrammar
     const string VOWELS_REGEX = $"[{VOWELS}]";
     const string NOT_VOWELS_REGEX = $"[^{VOWELS}]";
 
-    const string FUTURE_TENSE_INFIX = "ⲛⲁ";
-
     private IEnumerable<SemanticPair>? _determiners;
     private IEnumerable<SemanticPair>? _nounPrefixes;
-    private IEnumerable<SemanticPair>? _verbPrefixes;
     private IEnumerable<SemanticPair>? _pronouns;
 
     public SemanticPair GenericNominalizer { get; } =
         new("(ⲙⲉ(?:ⲧ|ⲑ))", _ => new NominalizingMeta(NominalizingType.Unspecified, NominalizingType.Noun));
-
-    public SemanticPair VerbNominalizer { get; } =
-        new("ϫⲓⲛ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
 
     public SemanticPair AgentNounConverter { get; } =
         new("ⲣⲉϥ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Agent));
@@ -210,38 +204,5 @@ public class CopticBohairicGrammar
                 .. EmphaticPronouns,
             ];
         }
-    }
-
-    public IEnumerable<SemanticPair> VerbConjugationPrefixes { get; } =
-    [
-        ..GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Present), [
-            ("ϯ", new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First)),
-            ("ⲕ", new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second)),
-            ("ϥ", new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third)),
-            ("ⲧⲉⲧⲉⲛ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second)),
-            ("ⲧⲉⲛ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First)),
-            ("ⲧⲉ", new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third)),
-            ("ⲥⲉ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third)),
-            ("ⲥ", new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second)),
-        ]),
-    ];
-
-    public IEnumerable<SemanticPair> VerbPrefixes
-    {
-        get
-        {
-            return _verbPrefixes ??= [
-                new(new Regex($"(ⲉⲧ){VOWELS_REGEX}|(ⲉⲧⲉ){NOT_VOWELS_REGEX}|(ⲉϯ)"), match => throw new System.NotImplementedException("Need relative converter")),
-                //new(new Regex($"ⲉⲑ{VILMINOR_REGEX}"), match => new ),
-                ..VerbConjugationPrefixes
-            ];
-        }
-    }
-
-    private static IEnumerable<SemanticPair> GenerateSemanticPairForVerbTense(TenseMeta tense,
-        List<(Pattern, InflectionMeta)> inflections)
-    {
-        foreach (var (pattern, inflection) in inflections)
-            yield return new SemanticPair(pattern, _ => new VerbMeta(tense, inflection));
     }
 }
