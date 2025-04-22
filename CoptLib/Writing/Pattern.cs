@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -75,7 +76,7 @@ public sealed class StringPattern(string expression) : Pattern
         int searchIndex = start;
         while (searchIndex < str.Length)
         {
-            searchIndex = str.IndexOf(Expression, searchIndex);
+            searchIndex = str.IndexOf(Expression, searchIndex, StringComparison.Ordinal);
             if (searchIndex < 0)
                 break;
 
@@ -92,19 +93,19 @@ public sealed class StringPattern(string expression) : Pattern
 
     public override PatternMatch? MatchAsPrefix(string str, int start = 0)
     {
-        var matchIndex = str.IndexOf(Expression, start);
-
-        if (matchIndex != start)
-            return null;
-
-        return new PatternMatch
+        if (str[start..].StartsWith(Expression))
         {
-            Start = matchIndex,
-            End = matchIndex + Expression.Length,
-            Input = str,
-            Pattern = this,
-            Groups = [],
-        };
+            return new PatternMatch
+            {
+                Start = start,
+                End = start + Expression.Length,
+                Input = str,
+                Pattern = this,
+                Groups = [],
+            };
+        }
+        
+        return null;
     }
 
     public static implicit operator StringPattern(string expression) => new(expression);
