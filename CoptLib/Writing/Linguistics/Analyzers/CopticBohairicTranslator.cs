@@ -164,10 +164,10 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                     continue;
             }
 
-            var baseNounMeta = new NounMeta(new LexiconEntryReference(wordEntry, form),
+            var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
                 new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
             var baseRange = new Range(startIndex, Index.End);
-            var baseElement = new NounElement(baseRange, baseNounMeta);
+            var baseElement = new LexemeElement(baseRange, baseNounMeta);
 
             yield return new(existingElements)
             {
@@ -195,7 +195,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                     continue;
 
                 // A prepositional prefix in Coptic must follow another noun prefix (such as 'ⲙⲁ-')
-                if (meta is PrepositionMeta && existingElements[^1] is not NounElement)
+                if (meta is PrepositionMeta && existingElements[^1] is not LexemeElement)
                     continue;
             }
 

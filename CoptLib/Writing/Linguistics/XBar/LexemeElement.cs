@@ -2,14 +2,14 @@
 
 namespace CoptLib.Writing.Linguistics.XBar;
 
-public record NounElement(Range SourceRange, NounMeta Meta) : StructuralElement(SourceRange)
+public record LexemeElement(Range SourceRange, LexemeMeta Meta) : StructuralElement(SourceRange)
 {
-    public override string ToString() => $"Noun{{{SourceRange}, {Meta}}}";
+    public override string ToString() => $"Lexeme{{{SourceRange}, {Meta}}}";
 }
 
-public record NounMeta(ILexemeReference Meaning, InflectionMeta Inflection) : IMeta
+public record LexemeMeta(ILexemeReference Meaning, InflectionMeta Inflection) : IMeta
 {
-    public override string ToString() => $"NOUN{{{Meaning}, {Inflection}}}";
+    public override string ToString() => $"LEX{{{Meaning}, {Inflection}}}";
 }
 
 public interface ILexemeReference
