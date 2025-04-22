@@ -2,18 +2,25 @@
 using CoptLib.Writing.Linguistics.XBar;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using CommunityToolkit.Diagnostics;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicGrammar
 {
     const string VILMINOR = "ⲃⲓⲗⲙⲛⲟⲣⲫⲯ";
+    const string VOWELS = "ⲱⲉⲏⲩⲓⲟⲁ";
 
     const string VILMINOR_REGEX = $"[{VILMINOR}]";
     const string NOT_VILMINOR_REGEX = $"[^{VILMINOR}]";
+    const string VOWELS_REGEX = $"[{VOWELS}]";
+    const string NOT_VOWELS_REGEX = $"[^{VOWELS}]";
+
+    const string FUTURE_TENSE_INFIX = "ⲛⲁ";
 
     private IEnumerable<SemanticPair>? _determiners;
     private IEnumerable<SemanticPair>? _nounPrefixes;
+    private IEnumerable<SemanticPair>? _verbPrefixes;
     private IEnumerable<SemanticPair>? _pronouns;
 
     public SemanticPair GenericNominalizer { get; } =
@@ -203,6 +210,51 @@ public class CopticBohairicGrammar
                 .. IndependentPersonalPronouns,
                 .. EmphaticPronouns,
             ];
+        }
+    }
+
+    public IEnumerable<SemanticPair> VerbConjugationPrefixes { get; } =
+    [
+        //new(new Regex(@"(ϯ|ⲕ|ϥ|ⲥⲉ|ⲥ|ⲧⲉⲧⲉⲛ|ⲧⲉⲛ|ⲧⲉ)"), match => new VerbMeta(new(RelativeTime.Present), new())),
+        GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Present), new Dictionary<string, InflectionMeta> {
+            ["ϯ"] = new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First),
+            ["ⲕ"] = new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second),
+            ["ϥ"] = new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third),
+            ["ⲧⲉⲧⲉⲛ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second),
+            ["ⲧⲉⲛ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First),
+            ["ⲧⲉ"] = new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third),
+            ["ⲥⲉ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third),
+            ["ⲥ"] = new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second),
+        }),
+    ];
+
+    public IEnumerable<SemanticPair> VerbPrefixes
+    {
+        get
+        {
+            return _verbPrefixes ??= [
+                new(new Regex($"(ⲉⲧ){VOWELS_REGEX}|(ⲉⲧⲉ){NOT_VOWELS_REGEX}|(ⲉϯ)"), match => throw new System.NotImplementedException("Need relative converter")),
+                //new(new Regex($"ⲉⲑ{VILMINOR_REGEX}"), match => new ),
+                ..VerbConjugationPrefixes
+            ];
+        }
+    }
+
+    private static SemanticPair GenerateSemanticPairForVerbTense(TenseMeta tense,
+        Dictionary<string, InflectionMeta> inflections)
+    {
+        var combinedRxStr = string.Join("|", inflections.Keys);
+        return new SemanticPair(new Regex($"({combinedRxStr})"), MetaFactory);
+
+        IMeta MetaFactory(PatternMatch match)
+        {
+            var conj = match.Groups.Count >= 2
+                ? match.Groups[1]
+                : match.Groups[0];
+            Guard.IsNotNull(conj);
+            
+            var inflection = inflections[conj];
+            return new VerbMeta(tense, inflection);
         }
     }
 }
