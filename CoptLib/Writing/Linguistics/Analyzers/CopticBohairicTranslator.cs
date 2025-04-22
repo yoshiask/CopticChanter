@@ -16,7 +16,7 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicTranslator : ITranslator, IAsyncInit
 {
-    private LanguageInfo _language = new(KnownLanguage.CopticBohairic);
+    private LanguageInfo _language = new(KnownLanguage.Coptic);
     private ILexicon _lexicon;
     private readonly CopticBohairicGrammar _grammar = new();
 
@@ -82,6 +82,9 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
             yield return StructuralElement.FromMeta(Range.All, meta);
         }
+
+        await foreach (var verbInterpretation in IdentifyVerb(word))
+            yield return verbInterpretation;
 
         await foreach (var nounInterpretation in IdentifyNoun(word))
             yield return nounInterpretation;
@@ -214,6 +217,81 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 var baseWord = word.Substring(baseRange);
 
                 await foreach (var child in IdentifyNoun(baseWord, newList))
+                    yield return child;
+            }
+
+            // TODO: Yield this interpretation if we've consumed the entire string
+            //yield return newList;
+        }
+    }
+
+    public async IAsyncEnumerable<List<IStructuralElement>> IdentifyVerb(string word, List<IStructuralElement>? existingElements = null)
+    {
+        await InitAsync();
+
+        existingElements ??= [];
+        var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
+
+        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
+        await foreach (var wordEntry in wordEntries)
+        {
+            // Get the form of the lemma that matches its usage here
+            var matchingOrthographies = wordEntry.Forms.Where(f => f.Orthography == word).ToList();
+            var form = matchingOrthographies.FirstOrDefault(f => f.Usage == _language);
+            if (form is null)
+            {
+                // Fall back to generic usages
+                form = matchingOrthographies.FirstOrDefault();
+                if (form is null)
+                    continue;
+            }
+
+            var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
+            if (grammarGroup.PartOfSpeech != PartOfSpeech.Verb)
+                continue;
+
+            var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
+                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
+            var baseRange = new Range(startIndex, Index.End);
+            var baseElement = new LexemeElement(baseRange, baseNounMeta);
+
+            yield return new(existingElements)
+            {
+                baseElement
+            };
+        }
+
+        // Check for possible prefix conjugations
+        foreach (var prefix in _grammar.VerbConjugationPrefixes)
+        {
+            var match = prefix.Pattern.MatchAsPrefix(word);
+            if (match is null)
+                continue;
+
+            var meta = prefix.MetaFactory(match);
+            if (meta is null)
+                continue;
+
+            if (existingElements.Count > 0)
+            {
+                // There are already some prefixes, let's do some pruning!
+            }
+
+            var baseStart = match.Groups.Count > 1
+                ? match.Groups[1]!.Length
+                : match.End;
+
+            Range range = new Range(match.Start, baseStart) + startIndex;
+
+            List<IStructuralElement> newList = new(existingElements);
+            newList.AddRange(StructuralElement.FromMeta(range, meta));
+
+            if (baseStart < word.Length)
+            {
+                var baseRange = new Range(baseStart, Index.End);
+                var baseWord = word.Substring(baseRange);
+
+                await foreach (var child in IdentifyVerb(baseWord, newList))
                     yield return child;
             }
 
