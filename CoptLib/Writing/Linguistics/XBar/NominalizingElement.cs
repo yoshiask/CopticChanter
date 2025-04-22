@@ -11,9 +11,9 @@ public record NominalizingElement(Range SourceRange, NominalizingMeta Meta) : St
 /// See <see href="https://en.wikipedia.org/wiki/Nominalization"/>
 /// </summary>
 /// <param name="NominalizationType"></param>
-public record NominalizingMeta(NominalizingType SourceTypes, NominalizingType DestinationType) : IMeta
+public record NominalizingMeta(NominalizingType SourceTypes, NominalizingType DestinationTypes) : IMeta
 {
-    public override string ToString() => $"NOM{{{SourceTypes} -> {DestinationType}}}";
+    public override string ToString() => $"NOM{{{SourceTypes} -> {DestinationTypes}}}";
 }
 
 [Flags]

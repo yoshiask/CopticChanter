@@ -195,6 +195,39 @@ public partial class CopticBohairicGrammar
         new("ϩⲱⲟⲩ", _ => new LexemeMeta(new ConceptReference("also", "/c/en/also"), new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third))),
     ];
 
+    public IEnumerable<SemanticPair> PossessivePronouns { get; } =
+    [
+        // Masculine possessed
+        new("ⲫⲱⲓ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Masculine, GrammaticalCount.Singular))),
+        new("ⲫⲱⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Masculine, GrammaticalCount.Singular))),
+        
+        // Feminine possessed
+        new("ⲑⲱⲓ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Feminine, GrammaticalCount.Singular))),
+        new("ⲑⲱⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Feminine, GrammaticalCount.Singular))),
+        
+        // Plural possessed
+        new("ⲛⲟⲩⲓ", _ => new DeterminerPossessiveMeta(default, new(default, GrammaticalCount.Singular, PointOfView.First), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩⲕ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.First), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩϥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩⲥ", _ => new DeterminerPossessiveMeta(default, new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩⲧⲉⲛ", _ => new DeterminerPossessiveMeta(default, new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second), new(Gender.Unspecified, GrammaticalCount.Plural))),
+        new("ⲛⲟⲩⲟⲩ", _ => new DeterminerPossessiveMeta(default, new(Gender.Masculine, GrammaticalCount.Plural, PointOfView.Third), new(Gender.Unspecified, GrammaticalCount.Plural))),
+    ];
+
     public IEnumerable<SemanticPair> Pronouns
     { 
         get
@@ -202,6 +235,7 @@ public partial class CopticBohairicGrammar
             return _pronouns ??= [
                 .. IndependentPersonalPronouns,
                 .. EmphaticPronouns,
+                .. PossessivePronouns,
             ];
         }
     }
