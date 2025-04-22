@@ -2,7 +2,6 @@
 using CoptLib.Writing.Linguistics.XBar;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using CommunityToolkit.Diagnostics;
 
 namespace CoptLib.Writing.Linguistics.Analyzers;
 
@@ -215,17 +214,16 @@ public class CopticBohairicGrammar
 
     public IEnumerable<SemanticPair> VerbConjugationPrefixes { get; } =
     [
-        //new(new Regex(@"(ϯ|ⲕ|ϥ|ⲥⲉ|ⲥ|ⲧⲉⲧⲉⲛ|ⲧⲉⲛ|ⲧⲉ)"), match => new VerbMeta(new(RelativeTime.Present), new())),
-        GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Present), new Dictionary<string, InflectionMeta> {
-            ["ϯ"] = new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First),
-            ["ⲕ"] = new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second),
-            ["ϥ"] = new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third),
-            ["ⲧⲉⲧⲉⲛ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second),
-            ["ⲧⲉⲛ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First),
-            ["ⲧⲉ"] = new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third),
-            ["ⲥⲉ"] = new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third),
-            ["ⲥ"] = new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second),
-        }),
+        ..GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Present), [
+            ("ϯ", new(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First)),
+            ("ⲕ", new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Second)),
+            ("ϥ", new(Gender.Masculine, GrammaticalCount.Singular, PointOfView.Third)),
+            ("ⲧⲉⲧⲉⲛ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Second)),
+            ("ⲧⲉⲛ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.First)),
+            ("ⲧⲉ", new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Third)),
+            ("ⲥⲉ", new(Gender.Unspecified, GrammaticalCount.Plural, PointOfView.Third)),
+            ("ⲥ", new(Gender.Feminine, GrammaticalCount.Singular, PointOfView.Second)),
+        ]),
     ];
 
     public IEnumerable<SemanticPair> VerbPrefixes
@@ -240,21 +238,10 @@ public class CopticBohairicGrammar
         }
     }
 
-    private static SemanticPair GenerateSemanticPairForVerbTense(TenseMeta tense,
-        Dictionary<string, InflectionMeta> inflections)
+    private static IEnumerable<SemanticPair> GenerateSemanticPairForVerbTense(TenseMeta tense,
+        List<(Pattern, InflectionMeta)> inflections)
     {
-        var combinedRxStr = string.Join("|", inflections.Keys);
-        return new SemanticPair(new Regex($"({combinedRxStr})"), MetaFactory);
-
-        IMeta MetaFactory(PatternMatch match)
-        {
-            var conj = match.Groups.Count >= 2
-                ? match.Groups[1]
-                : match.Groups[0];
-            Guard.IsNotNull(conj);
-            
-            var inflection = inflections[conj];
-            return new VerbMeta(tense, inflection);
-        }
+        foreach (var (pattern, inflection) in inflections)
+            yield return new SemanticPair(pattern, _ => new VerbMeta(tense, inflection));
     }
 }
