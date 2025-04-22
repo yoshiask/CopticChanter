@@ -63,7 +63,7 @@ public partial class CopticBohairicGrammar
         ]),
 
         // Conditional
-        ..GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Future), [
+        ..GenerateSemanticPairForVerbTense(new TenseMeta(RelativeTime.Unspecified, Flags: TenseFlags.Conditional), [
             (new Regex("(ⲁⲓ(ϣⲁⲛ)?)"),
                 new InflectionMeta(Gender.Unspecified, GrammaticalCount.Singular, PointOfView.First)),
             (new Regex("(ⲁⲕ(ϣⲁⲛ)?)"),
