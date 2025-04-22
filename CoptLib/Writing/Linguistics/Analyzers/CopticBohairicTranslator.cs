@@ -232,34 +232,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         existingElements ??= [];
         var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
 
-        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
-        await foreach (var wordEntry in wordEntries)
-        {
-            // Get the form of the lemma that matches its usage here
-            var matchingOrthographies = wordEntry.Forms.Where(f => f.Orthography == word).ToList();
-            var form = matchingOrthographies.FirstOrDefault(f => f.Usage == _language);
-            if (form is null)
-            {
-                // Fall back to generic usages
-                form = matchingOrthographies.FirstOrDefault();
-                if (form is null)
-                    continue;
-            }
-
-            var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
-            if (grammarGroup.PartOfSpeech != PartOfSpeech.Verb)
-                continue;
-
-            var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
-                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
-            var baseRange = new Range(startIndex, Index.End);
-            var baseElement = new LexemeElement(baseRange, baseNounMeta);
-
-            yield return new(existingElements)
-            {
-                baseElement
-            };
-        }
+        await foreach (var infinitiveVerbs in IdentifyInfinitiveVerb(word, existingElements))
+            yield return infinitiveVerbs;
 
         // Check for possible prefix conjugations
         foreach (var prefix in _grammar.VerbConjugationPrefixes)
@@ -291,7 +265,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 var baseRange = new Range(baseStart, Index.End);
                 var baseWord = word.Substring(baseRange);
 
-                await foreach (var child in IdentifyVerb(baseWord, newList))
+                // TODO: Check for conjugation agreement (e.g. ⲁϥⲧⲱⲛϥ is valid, ⲁⲕⲧⲱⲛϥ is not)
+                await foreach (var child in IdentifyInfinitiveVerb(baseWord, newList))
                     yield return child;
             }
 
@@ -300,53 +275,42 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         }
     }
 
-    private static TenseMeta? MatchTense(string word, Regex verbRx)
+    public async IAsyncEnumerable<List<IStructuralElement>> IdentifyInfinitiveVerb(string word,
+        List<IStructuralElement>? existingElements = null)
     {
-        var match = verbRx.Match(word);
-        if (!match.Success)
-            return null;
+        await InitAsync();
 
-        var groups = match.Groups;
-        var relative = groups["rela"].Success;
-        var preterite = groups["pret"].Success;
-        var circumstantial = groups["circ"].Success;
-        var negative = groups["neg"].Success || groups["optn"].Success || groups["cndn"].Success;
-        var focalized = groups["focl"].Success;
-        var conditional = groups["cond"].Success;
-        var future = groups["futr"].Success;
-        var jussive = groups["juss"].Success;
-        var aorist = groups["aor"].Success;
+        existingElements ??= [];
+        var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
 
-        var baseWord = groups["base"].Value;
-        var prefix = word[..^baseWord.Length];
-
-        var currentTime = RelativeTime.Unspecified;
-        var start = RelativeTime.Unspecified;
-        var end = RelativeTime.Unspecified;
-        int degree = 0;
-        TenseFlags flags = default;
-
-        if (future)
+        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
+        await foreach (var wordEntry in wordEntries)
         {
-            start = RelativeTime.Future;
-            currentTime = RelativeTime.Present;
-        }
-        else if (aorist)
-        {
-            start = end = RelativeTime.Aorist;
-            flags |= TenseFlags.Ending;
-        }
+            // Get the form of the lemma that matches its usage here
+            var matchingOrthographies = wordEntry.Forms.Where(f => f.Orthography == word).ToList();
+            var form = matchingOrthographies.FirstOrDefault(f => f.Usage == _language);
+            if (form is null)
+            {
+                // Fall back to generic usages
+                form = matchingOrthographies.FirstOrDefault();
+                if (form is null)
+                    continue;
+            }
 
-        if (circumstantial)
-            flags |= TenseFlags.Circumstantial;
-        if (negative)
-            flags |= TenseFlags.Negative;
-        if (relative)
-            flags |= TenseFlags.Relative;
-        if (conditional)
-            flags |= TenseFlags.Conditional;
+            var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
+            if (grammarGroup.PartOfSpeech != PartOfSpeech.Verb)
+                continue;
 
-        return new(currentTime, start, end, flags, degree);
+            var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
+                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
+            var baseRange = new Range(startIndex, Index.End);
+            var baseElement = new LexemeElement(baseRange, baseNounMeta);
+
+            yield return new(existingElements)
+            {
+                baseElement
+            };
+        }
     }
 
     public static string NormalizeText(string text)
