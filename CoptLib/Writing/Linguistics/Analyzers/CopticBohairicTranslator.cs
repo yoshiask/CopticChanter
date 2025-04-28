@@ -381,7 +381,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             bool useXml = true;
             if (useXml)
             {
-                var teiDoc = XDocument.Load(@"C:\Users\jjask\source\repos\KELLIA\dictionary\xml\Comprehensive_Coptic_Lexicon-v1.2-2020.xml");
+                var teiDoc = XDocument.Load(@"E:\Repos\KELLIA\dictionary\xml\Comprehensive_Coptic_Lexicon-v1.2-2020.xml");
                 _lexicon = new TeiLexicon(_language, teiDoc, []);
             }
             else
