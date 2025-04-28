@@ -18,6 +18,12 @@ public partial class CopticBohairicGrammar
     public SemanticPair VerbRelativeNominalizer { get; } =
         new("ⲡⲉⲧ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
 
+    /// <summary>
+    /// Nominal state of ⲓⲣⲓ (to do, make)
+    /// </summary>
+    public SemanticPair VerbDenominalizer { get; } =
+        new("ⲉⲣ", _ => new NominalizingMeta(NominalizingType.Noun | NominalizingType.Adjective, NominalizingType.Verb));
+    
     public IEnumerable<SemanticPair> VerbConjugationPrefixes { get; } =
     [
         // Present basic

@@ -25,9 +25,6 @@ public partial class CopticBohairicGrammar
     public SemanticPair AgentNounConverter { get; } =
         new("ⲣⲉϥ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Agent));
 
-    public SemanticPair Denominalizer { get; } =
-        new("ⲉⲣ", _ => new NominalizingMeta(NominalizingType.Noun | NominalizingType.Adjective, NominalizingType.Verb));
-
     public IEnumerable<SemanticPair> Articles { get; } =
     [
         // Definite
