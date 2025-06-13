@@ -37,11 +37,11 @@ public static class DefinitionExtensions
 
     public static LanguageInfo GetLanguage(this IDefinition def)
     {
-        if (def is IMultilingual multi && !LanguageInfo.IsNullOrDefault(multi.Language))
+        if (def is IMultilingual multi && !multi.Language.IsNullOrDefault())
             return multi.Language;
 
         var ancestor = def.CrawlBy(d => d.Parent,
-            d => d is IMultilingual m && !LanguageInfo.IsNullOrDefault(m.Language));
+            d => d is IMultilingual m && !m.Language.IsNullOrDefault());
 
         return (ancestor as IMultilingual)?.Language ?? LanguageInfo.Default;
     }

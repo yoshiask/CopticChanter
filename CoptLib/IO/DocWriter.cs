@@ -119,7 +119,7 @@ public static class DocWriter
             if (def.Parent is not null)
             {
                 var parentLanguage = def.Parent.GetLanguage();
-                if (!LanguageInfo.IsNullOrDefault(parentLanguage) && parentLanguage == elemLanguage)
+                if (!parentLanguage.IsNullOrDefault() && parentLanguage == elemLanguage)
                     elemLanguage = null;
                     
                 var parentFont = def.Parent.GetFont();

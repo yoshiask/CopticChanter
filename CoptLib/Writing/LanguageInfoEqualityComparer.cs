@@ -14,7 +14,7 @@ public class LanguageInfoEqualityComparer : EqualityComparer<LanguageInfo>
         Options = options;
     }
 
-    public override bool Equals(LanguageInfo x, LanguageInfo y) => LanguageInfo.IsEquivalentTo(x, y, Options);
+    public override bool Equals(LanguageInfo x, LanguageInfo y) => x.IsEquivalentTo(y, Options);
 
     public override int GetHashCode(LanguageInfo obj) => 1; // Return a constant to force use of Equals
 }

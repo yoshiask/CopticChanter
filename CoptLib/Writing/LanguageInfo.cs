@@ -216,7 +216,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
             options |= (LanguageEquivalencyOptions)pri;
 
             // Compare secondary values
-            isEqual &= IsEquivalentTo(this.Secondary, other.Secondary, options);
+            isEqual &= LanguageInfoExtensions.IsEquivalentTo(this.Secondary, other.Secondary, options);
         }
 
         return isEqual;
@@ -224,7 +224,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
 
     public bool Equals(LanguageInfo? other) => IsEquivalentTo(other);
 
-    public static bool operator ==(LanguageInfo a, LanguageInfo b) => IsEquivalentTo(a, b);
+    public static bool operator ==(LanguageInfo a, LanguageInfo b) => a.IsEquivalentTo(b);
 
     public static bool operator !=(LanguageInfo a, LanguageInfo b) => !(a == b);
 
@@ -233,16 +233,6 @@ public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
     public bool IsDefault() => this == Default;
 
     public override int GetHashCode() => ToString().GetHashCode();
-
-    /// <inheritdoc cref="IsEquivalentTo(LanguageInfo, LanguageEquivalencyOptions)"/>
-    public static bool IsEquivalentTo(LanguageInfo? a, LanguageInfo? b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
-    {
-        if (a is null)
-            return b is null || options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
-        return a.IsEquivalentTo(b, options);
-    }
-
-    public static bool IsNullOrDefault(LanguageInfo? languageInfo) => languageInfo is null || languageInfo.IsDefault();
     
     private static readonly IReadOnlyDictionary<string, KnownLanguage> KnownLanguages = new Dictionary<string, KnownLanguage>
     {
@@ -281,4 +271,18 @@ public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
         if (KnownLanguages.ContainsKey(subtag))
             Known = KnownLanguages[subtag];
     }
+}
+
+public static class LanguageInfoExtensions
+{
+
+    /// <inheritdoc cref="IsEquivalentTo(LanguageInfo, LanguageEquivalencyOptions)"/>
+    public static bool IsEquivalentTo(this LanguageInfo? a, LanguageInfo? b, LanguageEquivalencyOptions options = LanguageEquivalencyOptions.Strict)
+    {
+        if (a is null)
+            return b is null || options.HasFlag(LanguageEquivalencyOptions.TreatNullAsWild);
+        return a.IsEquivalentTo(b, options);
+    }
+
+    public static bool IsNullOrDefault(this LanguageInfo? languageInfo) => languageInfo is null || languageInfo.IsDefault();
 }
