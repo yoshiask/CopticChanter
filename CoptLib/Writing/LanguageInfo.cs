@@ -285,4 +285,47 @@ public static class LanguageInfoExtensions
     }
 
     public static bool IsNullOrDefault(this LanguageInfo? languageInfo) => languageInfo is null || languageInfo.IsDefault();
+
+    public static uint ComputeDistance(this LanguageInfo? a, LanguageInfo? b)
+    {
+        // Nulls are treated as wildcards, so if either language is null
+        // the distance is zero
+        if (a is null || b is null)
+            return 0;
+
+        if (a == b)
+            return 0;
+        
+        uint distance = 0;
+
+        // Two languages are farther apart if they are from different
+        // families, but closer if only the region is different
+        if (a.Language != b.Language)
+            distance += 16;
+
+        if (a.Region != b.Region)
+            distance += 8;
+
+        if (a.Variant != b.Variant)
+            distance += 2;
+        
+        // Include distance for secondary language with 50% weight
+        distance += ComputeDistance(a.Secondary, b.Secondary) >> 1;
+        return distance;
+    }
+    
+    public static IOrderedEnumerable<T> OrderByLanguage<T>(this IEnumerable<T> source,
+        LanguageInfo targetLanguage, Func<T, LanguageInfo> languageSelector)
+    {
+        Guard.IsNotNull(targetLanguage);
+        Guard.IsNotNull(languageSelector);
+        
+        return source.OrderBy(item =>
+        {
+            // Compute "distance" between item and target languages
+            var itemLanguage = languageSelector(item);
+            var distance = ComputeDistance(targetLanguage, itemLanguage);
+            return distance;
+        });
+    }
 }

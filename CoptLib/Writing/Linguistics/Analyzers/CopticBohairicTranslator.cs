@@ -16,11 +16,18 @@ namespace CoptLib.Writing.Linguistics.Analyzers;
 
 public class CopticBohairicTranslator : ITranslator, IAsyncInit
 {
-    private LanguageInfo _language = new(KnownLanguage.Coptic);
+    private LanguageInfo _language = new(KnownLanguage.CopticBohairic);
+    private LanguageInfo _languageFamily = new(KnownLanguage.Coptic);
     private ILexicon _lexicon;
     private readonly CopticBohairicGrammar _grammar = new();
 
-    public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(() => _language = language);
+    public Task SetSourceLanguageAsync(LanguageInfo language) => Task.Run(delegate
+    {
+        _language = language;
+        _languageFamily = language.Language is null
+            ? LanguageInfo.Default
+            : new(language.Language, null, null);
+    });
 
     public async IAsyncEnumerable<IAsyncEnumerable<IEnumerable<IStructuralElement>>> AnnotateAsync(string srcText)
     {
@@ -97,11 +104,13 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         existingElements ??= [];
         var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
 
-        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
+        var wordEntries = _lexicon.BasicSearchAsync(word, _languageFamily);
         await foreach (var wordEntry in wordEntries)
         {
             // Get the form of the lemma that matches its usage here
-            var form = wordEntry.Forms.FirstOrDefault(f => f.Usage == _language && f.Orthography == word);
+            var form = wordEntry.Forms
+                .OrderByLanguage(_language, f => f.Usage)
+                .FirstOrDefault(f => f.Orthography == word);
             if (form is null)
                 continue;
 
@@ -265,7 +274,6 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 var baseRange = new Range(baseStart, Index.End);
                 var baseWord = word.Substring(baseRange);
 
-                // TODO: Check for conjugation agreement (e.g. ⲁϥⲧⲱⲛϥ is valid, ⲁⲕⲧⲱⲛϥ is not)
                 await foreach (var child in IdentifyInfinitiveVerb(baseWord, newList))
                     yield return child;
             }
@@ -283,19 +291,15 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         existingElements ??= [];
         var startIndex = existingElements.LastOrDefault()?.SourceRange.End ?? Index.Start;
 
-        var wordEntries = _lexicon.BasicSearchAsync(word, _language);
+        var wordEntries = _lexicon.BasicSearchAsync(word, _languageFamily);
         await foreach (var wordEntry in wordEntries)
         {
             // Get the form of the lemma that matches its usage here
-            var matchingOrthographies = wordEntry.Forms.Where(f => f.Orthography == word).ToList();
-            var form = matchingOrthographies.FirstOrDefault(f => f.Usage == _language);
+            var form = wordEntry.Forms
+                .OrderByLanguage(_language, f => f.Usage)
+                .FirstOrDefault(f => f.Orthography == word);
             if (form is null)
-            {
-                // Fall back to generic usages
-                form = matchingOrthographies.FirstOrDefault();
-                if (form is null)
-                    continue;
-            }
+                continue;
 
             var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
             if (grammarGroup.PartOfSpeech != PartOfSpeech.Verb)
