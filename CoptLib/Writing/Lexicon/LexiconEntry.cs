@@ -10,7 +10,7 @@ public interface ILexiconEntry
 
 public record LexiconSuperEntry(string Id, IEnumerable<LexiconEntry> Entries) : ILexiconEntry;
 
-public record LexiconEntry(string Id, EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup GrammarGroup) : ILexiconEntry;
+public record LexiconEntry(string Id, EntryType Type, List<Form> Forms, List<Sense> Senses, GrammarGroup? GrammarGroup) : ILexiconEntry;
 
 public enum EntryType : byte
 {

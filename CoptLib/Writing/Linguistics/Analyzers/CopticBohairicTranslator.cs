@@ -107,10 +107,14 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         var wordEntries = _lexicon.BasicSearchAsync(word, _languageFamily);
         await foreach (var wordEntry in wordEntries)
         {
-            // Get the form of the lemma that matches its usage here
             var form = wordEntry.Forms
+                // Sort by forms whose language is closest to target
                 .OrderByLanguage(_language, f => f.Usage)
+                // Prefer forms whose grammar is known
+                .ThenBy(f => f.GrammarGroup is null ? 1 : 0)
+                // Take first form that matches the usage we've seen
                 .FirstOrDefault(f => f.Orthography == word);
+            
             if (form is null)
                 continue;
 
@@ -294,15 +298,21 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         var wordEntries = _lexicon.BasicSearchAsync(word, _languageFamily);
         await foreach (var wordEntry in wordEntries)
         {
-            // Get the form of the lemma that matches its usage here
             var form = wordEntry.Forms
+                // Sort by forms whose language is closest to target
                 .OrderByLanguage(_language, f => f.Usage)
+                // Prefer forms whose grammar is known
+                .ThenBy(f => f.GrammarGroup is null ? 1 : 0)
+                // Take first form that matches the usage we've seen
                 .FirstOrDefault(f => f.Orthography == word);
+            
             if (form is null)
                 continue;
 
-            var grammarGroup = form.GrammarGroup ?? wordEntry.GrammarGroup;
-            if (grammarGroup.PartOfSpeech != PartOfSpeech.Verb)
+            var grammarGroup = form.GrammarGroup
+                ?? wordEntry.GrammarGroup
+                ?? GrammarGroup.Default;
+            if (grammarGroup.PartOfSpeech is not (PartOfSpeech.Verb or PartOfSpeech.Unknown))
                 continue;
 
             var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),

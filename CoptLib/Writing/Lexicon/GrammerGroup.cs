@@ -5,7 +5,11 @@ using System.Collections.Generic;
 namespace CoptLib.Writing.Lexicon;
 
 public record GrammarGroup(PartOfSpeech PartOfSpeech, Number Number, Gender Gender,
-    List<GrammarEntry>? Entries, string? Subclass, string? Note);
+    List<GrammarEntry>? Entries, string? Subclass, string? Note)
+{
+    public static GrammarGroup Default { get; } =
+        new(PartOfSpeech.Unknown, Number.None, Gender.Unspecified, [], null, null);
+}
 
 public record GrammarEntry(GrammarType Type, string Text);
 
