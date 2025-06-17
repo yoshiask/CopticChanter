@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace CoptLib.Writing.Lexicon;
 
 public record GrammarGroup(PartOfSpeech PartOfSpeech, Number Number, Gender Gender,
-    List<GrammarEntry>? Entries, string? Subclass, string? Note)
+    List<GrammarEntry> Entries, PartOfSpeechSubclass Subclass, string? Note)
 {
     public static GrammarGroup Default { get; } =
-        new(PartOfSpeech.Unknown, Number.None, Gender.Unspecified, [], null, null);
+        new(PartOfSpeech.Unknown, Number.None, Gender.Unspecified, [], PartOfSpeechSubclass.Unknown, null);
 }
 
 public record GrammarEntry(GrammarType Type, string Text);
@@ -66,6 +66,36 @@ public enum GrammarType : byte
     CollocParticle,
     CollocNoun,
     CollocConj,
+}
+
+public enum PartOfSpeechSubclass : byte
+{
+    Unknown,
+    Copula,
+    Composite,
+    Genitive,
+    Interrogative,
+    Nominal,
+    Pronominal,
+    
+    ConverterFocalization,
+    ConverterRelative,
+    ParticleNegation,
+    Pronoun1stPerson,
+    Pronoun2ndPerson,
+    Pronoun3rdPerson,
+    PronounIndefinite,
+    SubstantiveDeityName,
+    SubstantivePlaceName,
+    SubstantiveThingOrInstitutionName,
+    SubstantiveTitle,
+    VerbAdjective,
+    VerbAuxiliary,
+    VerbSuffixConjugation,
+    VerbInfinitive,
+    VerbImperative,
+    VerbQualitative,
+    VerbStative,
 }
 
 public static class GrammarGroupExtensions

@@ -186,7 +186,6 @@ public class TeiLexicon : ILexicon
 
     private static GrammarGroup ParseGrammarGroup(XElement elem)
     {
-        var subc = elem.ElementLocal("subc")?.Value;
         var note = elem.ElementLocal("note")?.Value;
 
         PartOfSpeech pos = elem.ElementLocal("pos")?.Value?.TrimEnd('?') switch
@@ -221,6 +220,34 @@ public class TeiLexicon : ILexicon
             "Kompositum" => PartOfSpeech.Composite,
             "unpersönlicher Ausdruck" => PartOfSpeech.ImpersonalExpression,
             _ => PartOfSpeech.Unknown,
+        };
+
+        var subc = elem.ElementLocal("subc")?.Value switch
+        {
+            "Kopula" => PartOfSpeechSubclass.Copula,
+            "Kompositverb" => PartOfSpeechSubclass.Composite,
+            "Genitivpartikel" => PartOfSpeechSubclass.Genitive,
+            "Frageadverb" or "Fragepronomen" or "Fragepartikel" => PartOfSpeechSubclass.Interrogative,
+            "Status pronominalis" => PartOfSpeechSubclass.Pronominal,
+            "Status nominalis" => PartOfSpeechSubclass.Nominal,
+            "Fokalisierungskonverter" => PartOfSpeechSubclass.ConverterFocalization,
+            "Relativkonverter" => PartOfSpeechSubclass.ConverterRelative,
+            "Negationspartikel" => PartOfSpeechSubclass.ParticleNegation,
+            "1. Pers." => PartOfSpeechSubclass.Pronoun1stPerson,
+            "2. Pers." => PartOfSpeechSubclass.Pronoun2ndPerson,
+            "3. Pers." => PartOfSpeechSubclass.Pronoun3rdPerson,
+            "Indefinitpronomen" => PartOfSpeechSubclass.PronounIndefinite,
+            "Göttername" => PartOfSpeechSubclass.SubstantiveDeityName,
+            "Ortsname" => PartOfSpeechSubclass.SubstantivePlaceName,
+            "Name einer Sache oder Institution" => PartOfSpeechSubclass.SubstantiveThingOrInstitutionName,
+            "Titel" => PartOfSpeechSubclass.SubstantiveTitle,
+            "Adjektivverb" => PartOfSpeechSubclass.VerbAdjective,
+            "Hilfsverb" => PartOfSpeechSubclass.VerbAuxiliary,
+            "Suffixkonjugation" => PartOfSpeechSubclass.VerbSuffixConjugation,
+            "Imperativ" => PartOfSpeechSubclass.VerbImperative,
+            "Infinitiv" => PartOfSpeechSubclass.VerbInfinitive,
+            "Qualitativ" => PartOfSpeechSubclass.VerbQualitative,
+            _ => PartOfSpeechSubclass.Unknown,
         };
 
         var gen = elem.ElementLocal("gen")?.Value switch

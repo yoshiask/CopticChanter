@@ -134,14 +134,15 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
     {
         var id = reader.GetString(0);
         var name = reader.GetString(2);
-        var pos = reader.GetString(3);
+        var posStr = reader.GetString(3);
         var de = reader.GetString(4);
         var en = reader.GetString(5);
         var fr = reader.GetString(6);
         var etym = reader.GetString(7);
         var search = reader.GetString(9);
 
-        GrammarGroup grammarGroup = new(ParsePartOfSpeech(pos), default, default, null, null, null);
+        var (pos, subc) = ParsePartOfSpeechAndSubclass(posStr);
+        GrammarGroup grammarGroup = new(pos, default, default, [], subc, null);
         var senses = ParseSenses(new[]
         {
             (new LanguageInfo(KnownLanguage.German), de),
@@ -154,9 +155,9 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
         return new LexiconEntry(id, default, forms, senses, grammarGroup);
     }
     
-    private static PartOfSpeech ParsePartOfSpeech(string pos)
+    private static (PartOfSpeech, PartOfSpeechSubclass) ParsePartOfSpeechAndSubclass(string posStr)
     {
-        return pos switch
+        var pos = posStr switch
         {
             "N" => PartOfSpeech.Substantive,
             "EXIST" or "V" or "VBD" or "VIMP" or "VSTAT" => PartOfSpeech.Verb,
@@ -181,6 +182,17 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
             
             _ => throw new NotImplementedException()
         };
+        
+        var subc = posStr switch
+        {
+            "NEG" => PartOfSpeechSubclass.ParticleNegation,
+            "VIMP" => PartOfSpeechSubclass.VerbImperative,
+            "VSTAT" => PartOfSpeechSubclass.VerbStative,
+            "VBD" => PartOfSpeechSubclass.VerbSuffixConjugation,
+            _ => PartOfSpeechSubclass.Unknown,
+        };
+
+        return (pos, subc);
     }
 
     private static (string Id, string Definition, string Bibliography) ParseSensePart(string senseText)
