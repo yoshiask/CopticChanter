@@ -221,8 +221,10 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
             Range range = new Range(match.Start, baseStart) + startIndex;
 
-            List<IStructuralElement> newList = new(existingElements);
-            newList.AddRange(StructuralElement.FromMeta(range, meta));
+            List<IStructuralElement> newList = [
+                ..existingElements,
+                ..StructuralElement.FromMeta(range, meta)
+            ];
 
             if (baseStart < word.Length)
             {
@@ -270,8 +272,10 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
             Range range = new Range(match.Start, baseStart) + startIndex;
 
-            List<IStructuralElement> newList = new(existingElements);
-            newList.AddRange(StructuralElement.FromMeta(range, meta));
+            List<IStructuralElement> newList = [
+                ..existingElements,
+                ..StructuralElement.FromMeta(range, meta)
+            ];
 
             if (baseStart < word.Length)
             {
@@ -320,10 +324,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             var baseRange = new Range(startIndex, Index.End);
             var baseElement = new LexemeElement(baseRange, baseNounMeta);
 
-            yield return new(existingElements)
-            {
-                baseElement
-            };
+            yield return [..existingElements, baseElement];
         }
     }
 
@@ -375,7 +376,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             }
 
             if (_lexicon is IAsyncInit lexiconInit)
-                await lexiconInit.InitAsync();
+                await lexiconInit.InitAsync(cancellationToken);
         }
 
         IsInitialized = true;

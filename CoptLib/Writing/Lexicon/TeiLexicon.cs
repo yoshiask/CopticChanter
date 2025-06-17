@@ -287,7 +287,7 @@ public class TeiLexicon : ILexicon
     {
         "S" => new LanguageInfo(KnownLanguage.CopticSahidic),
         "B" => new LanguageInfo(KnownLanguage.CopticBohairic),
-        "A" or"Ak" => new LanguageInfo(KnownLanguage.CopticAkhmimic),
+        "A" or "Ak" => new LanguageInfo(KnownLanguage.CopticAkhmimic),
         "L" => new LanguageInfo(KnownLanguage.CopticLycopolitan),
         "F" => new LanguageInfo(KnownLanguage.CopticFayyumic),
         "M" => new LanguageInfo(KnownLanguage.CopticOxyrhynchite),
@@ -296,7 +296,7 @@ public class TeiLexicon : ILexicon
         "P" => new LanguageInfo("cop-ppp"),
         "V" => new LanguageInfo("cop-vvv"),
         "W" => new LanguageInfo("cop-www"),
-        "?" or null => new LanguageInfo(KnownLanguage.Default),
+        "?" or null => LanguageInfo.Default,
         _ => LanguageInfo.Parse(dialectCode),
     }; 
 }
