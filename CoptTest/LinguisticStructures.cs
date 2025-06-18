@@ -228,6 +228,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [InlineData("ⲡⲓⲙⲁⲛϣⲉⲗⲉⲧ")]
     [InlineData("ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ")]
     [InlineData("ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ")]
+    [InlineData("ⲙⲡⲉⲛⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ")]
     public async Task BohairicCoptic_DetectNouns(string noun)
     {
         noun = CopticBohairicTranslator.NormalizeText(noun);

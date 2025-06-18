@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using OwlCore.Extensions;
 
 namespace CoptLib.Writing;
 
@@ -111,6 +112,21 @@ public sealed class StringPattern(string expression) : Pattern
     public static implicit operator StringPattern(string expression) => new(expression);
 
     public override string ToString() => Expression;
+}
+
+public sealed class OrPattern(params Pattern[] patterns) : Pattern
+{
+    public Pattern[] Patterns { get; } = patterns;
+    
+    public override IEnumerable<PatternMatch> AllMatches(string str, int start = 0)
+        => Patterns.SelectMany(p => p.AllMatches(str, start));
+
+    public override PatternMatch? MatchAsPrefix(string str, int start = 0)
+    {
+        return Patterns
+            .Select(p => p.MatchAsPrefix(str, start))
+            .FirstOrDefault(p => p is not null);
+    }
 }
 
 public sealed class PatternMatch
