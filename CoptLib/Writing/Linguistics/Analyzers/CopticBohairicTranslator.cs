@@ -62,8 +62,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
 
     public async IAsyncEnumerable<IEnumerable<IStructuralElement>> IdentifyWord(string word)
     {
-        // Check for prepositions
-        foreach (var prefix in _grammar.Prepositions)
+        // Check for prefix prepositions
+        foreach (var prefix in _grammar.CommonPrepositions)
         {
             var match = prefix.Pattern.MatchAsPrefix(word);
             if (match is null)
@@ -74,6 +74,20 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 continue;
 
             yield return StructuralElement.FromMeta(Range.All, meta);
+        }
+        
+        // Check for personal prepositions
+        foreach (var prefix in _grammar.PersonalPrepositions)
+        {
+            var matches = prefix.Pattern.AllMatches(word);
+            foreach (var match in matches)
+            {
+                var meta = prefix.MetaFactory(match);
+                if (meta is null)
+                    continue;
+
+                yield return StructuralElement.FromMeta(Range.All, meta);
+            }
         }
 
         // Check for various pronouns

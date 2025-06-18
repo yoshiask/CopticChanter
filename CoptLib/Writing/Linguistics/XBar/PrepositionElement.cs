@@ -5,9 +5,17 @@ public record PrepositionElement(Range SourceRange, PrepositionMeta Meta) : Stru
     public override string ToString() => $"Preposition{{{SourceRange}, {Meta}}}";
 }
 
-public record PrepositionMeta(PrepositionType Type, bool Negative = false) : IMeta
+public record PrepositionMeta(PrepositionType Type, bool Negative = false, InflectionMeta? Inflection = null) : IMeta
 {
-    public override string ToString() => $"PREP{(Negative ? '-' : '+')}{Type}";
+    public override string ToString()
+    {
+        var str = $"PREP{(Negative ? '-' : '+')}{Type}";
+
+        if (Inflection is not null)
+            str += $"/{Inflection}";
+        
+        return str;
+    }
 }
 
 public enum PrepositionType
