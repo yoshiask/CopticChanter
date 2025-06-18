@@ -4,5 +4,5 @@ public record VerbElement(Range SourceRange, VerbMeta Meta) : StructuralElement(
 
 public record VerbMeta(TenseMeta Tense, InflectionMeta Actor, InflectionMeta? Target = null) : IMeta
 {
-    public bool IsTransitive() => Target is not null;
+    public bool IsTransitive => Target is not null;
 }
