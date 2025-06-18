@@ -89,6 +89,8 @@ public sealed class StringPattern(string expression) : Pattern
                 Pattern = this,
                 Groups = [],
             };
+
+            ++searchIndex;
         }
     }
 
