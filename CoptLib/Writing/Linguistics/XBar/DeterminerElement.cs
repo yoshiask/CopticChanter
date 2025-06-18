@@ -32,38 +32,9 @@ public record InflectionMeta(Gender Gender = default, GrammaticalCount Number = 
 
     public override string ToString()
     {
-        var g = Gender switch
-        {
-            Gender.Neutral => "NEUT",
-            Gender.Masculine => "MASC",
-            Gender.Feminine => "FEM",
-            Gender.Animate => "ANI",
-            Gender.Inanimate => "INAN",
-            _ => "*"
-        };
-
-        var n = Number switch
-        {
-            GrammaticalCount.Singular => "SG",
-            GrammaticalCount.Dual => "2",
-            GrammaticalCount.Trial => "3",
-            GrammaticalCount.Quadral => "4",
-            GrammaticalCount.Pacual => "5",
-            GrammaticalCount.Plural => "PL",
-            GrammaticalCount.GreaterPlural => "PL+",
-            GrammaticalCount.GreatestPlural => "PL++",
-            GrammaticalCount.Unspecified => "*",
-            _ => Number.ToString()
-        };
-
-        var p = PointOfView switch
-        {
-            PointOfView.First => "1st",
-            PointOfView.Second => "2nd",
-            PointOfView.Third => "3rd",
-            _ => "*",
-        };
-
+        var g = Gender.ToAbbreviation();
+        var n = Number.ToAbbreviation();
+        var p = PointOfView.ToAbbreviation();
         return $"{g}.{n}.{p}";
     }
 }
@@ -99,4 +70,18 @@ public enum GrammaticalCount : int
     GreaterPlural = int.MaxValue - 20,
     GreatestPlural = int.MaxValue - 10,
     All = int.MaxValue,
+}
+
+public static class DeterminerElementExtensions
+{
+    public static string ToAbbreviation(this PointOfView pointOfView)
+    {
+        return pointOfView switch
+        {
+            PointOfView.First => "1st",
+            PointOfView.Second => "2nd",
+            PointOfView.Third => "3rd",
+            _ => "*",
+        };
+    }
 }

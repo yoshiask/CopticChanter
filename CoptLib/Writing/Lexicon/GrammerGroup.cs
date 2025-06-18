@@ -109,4 +109,34 @@ public static class GrammarGroupExtensions
             _ => GrammaticalCount.Unspecified,
         };
     }
+
+    public static string ToAbbreviation(this Gender gender)
+    {
+        return gender switch
+        {
+            Gender.Neutral => "NEUT",
+            Gender.Masculine => "MASC",
+            Gender.Feminine => "FEM",
+            Gender.Animate => "ANI",
+            Gender.Inanimate => "INAN",
+            _ => "*"
+        };
+    }
+
+    public static string ToAbbreviation(this GrammaticalCount count)
+    {
+        return count switch
+        {
+            GrammaticalCount.Singular => "SG",
+            GrammaticalCount.Dual => "2",
+            GrammaticalCount.Trial => "3",
+            GrammaticalCount.Quadral => "4",
+            GrammaticalCount.Pacual => "5",
+            GrammaticalCount.Plural => "PL",
+            GrammaticalCount.GreaterPlural => "PL+",
+            GrammaticalCount.GreatestPlural => "PL++",
+            GrammaticalCount.Unspecified => "*",
+            _ => count.ToString()
+        };
+    }
 }
