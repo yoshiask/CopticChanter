@@ -1,4 +1,5 @@
-﻿using CoptLib.Writing.Lexicon;
+﻿using System.Text;
+using CoptLib.Writing.Lexicon;
 
 namespace CoptLib.Writing.Linguistics.XBar;
 
@@ -27,5 +28,33 @@ public record LexiconEntryReference(LexiconEntry Entry, Form Form) : ILexemeRefe
 {
     public string Orthography => Entry.Senses[0].Translations.GetByLanguage(KnownLanguage.English).ToString();
 
-    public override string ToString() => $"LexEntry{{{Entry.Id} {Form.Orthography}}}";
+    public override string ToString()
+    {
+        var sb = new StringBuilder("LexEntry{");
+        
+        sb.Append(Entry.Id);
+        sb.Append(' ');
+        sb.Append(Form.Orthography);
+
+        var grammar = Entry.GrammarGroup ?? Form.GrammarGroup;
+        if (grammar is not null)
+        {
+            sb.Append(' ');
+            sb.Append(grammar.Gender.ToAbbreviation());
+            sb.Append('.');
+            sb.Append(grammar.Number.ToGrammaticalCount().ToAbbreviation());
+            sb.Append(' ');
+            sb.Append(grammar.PartOfSpeech);
+
+            if (grammar.Subclass is not PartOfSpeechSubclass.Unknown)
+            {
+                sb.Append('.');
+                sb.Append(grammar.Subclass);
+            }
+        }
+        
+        sb.Append('}');
+        
+        return sb.ToString();
+    }
 }
