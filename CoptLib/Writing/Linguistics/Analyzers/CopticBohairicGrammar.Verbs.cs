@@ -12,6 +12,12 @@ public partial class CopticBohairicGrammar
     public SemanticPair VerbNominalizer { get; } =
         new("ϫⲓⲛ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
 
+    /// <summary>
+    /// Converts a verb to a relative noun, for example ⲡⲉⲧϧⲉⲗϧⲱⲗϥ = "he who was slain" or "slaughtered one".
+    /// </summary>
+    public SemanticPair VerbRelativeNominalizer { get; } =
+        new("ⲡⲉⲧ", _ => new NominalizingMeta(NominalizingType.Verb, NominalizingType.Noun));
+
     public IEnumerable<SemanticPair> VerbConjugationPrefixes { get; } =
     [
         // Present basic
