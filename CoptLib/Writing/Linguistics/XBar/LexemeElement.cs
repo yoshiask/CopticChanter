@@ -26,7 +26,32 @@ public record ConceptReference(string Orthography, string ConceptNetId) : ILexem
 
 public record LexiconEntryReference(LexiconEntry Entry, Form Form) : ILexemeReference
 {
-    public string Orthography => Entry.Senses[0].Translations.GetByLanguage(KnownLanguage.English).ToString();
+    public string Orthography => GetOrthography();
+
+    private string GetOrthography()
+    {
+        var definition = Entry.Senses[0].Translations.GetByLanguage(KnownLanguage.English).ToString();
+        var translation = definition;
+            
+        // Remove any alternate translations
+        var commaIndex = translation.IndexOf(',');
+        if (commaIndex > 0)
+            translation = translation[..commaIndex];
+
+        // Remove any comments within parenthesis
+        var openBracketIndex = translation.IndexOf('(');
+        if (openBracketIndex > 0)
+        {
+            var closeBracketIndex = translation.IndexOf(')', openBracketIndex);
+                
+            var commentLength = closeBracketIndex > 0
+                ? closeBracketIndex - openBracketIndex
+                : translation.Length - openBracketIndex;
+            translation = translation.Remove(openBracketIndex, commentLength);
+        }
+            
+        return translation.Trim();
+    }
 
     public override string ToString()
     {

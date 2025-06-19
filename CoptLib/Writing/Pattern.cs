@@ -116,6 +116,32 @@ public sealed class StringPattern(string expression) : Pattern
     public override string ToString() => Expression;
 }
 
+public sealed class ExactStringPattern(string expression) : Pattern
+{
+    public string Expression { get; } = expression;
+
+    public override IEnumerable<PatternMatch> AllMatches(string str, int start = 0)
+    {
+        if (!str[start..].Equals(Expression, StringComparison.Ordinal))
+            yield break;
+        
+        yield return new()
+        {
+            Start = start,
+            End = start + Expression.Length,
+            Input = str,
+            Pattern = this,
+            Groups = [],
+        };
+    }
+
+    public override PatternMatch? MatchAsPrefix(string str, int start = 0) => null;
+
+    public static implicit operator ExactStringPattern(string expression) => new(expression);
+
+    public override string ToString() => Expression;
+}
+
 public sealed class OrPattern(params Pattern[] patterns) : Pattern
 {
     public Pattern[] Patterns { get; } = patterns;

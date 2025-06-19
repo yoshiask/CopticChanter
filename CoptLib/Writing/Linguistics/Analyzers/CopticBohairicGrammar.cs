@@ -182,4 +182,10 @@ public partial class CopticBohairicGrammar
             ];
         }
     }
+
+    public IEnumerable<SemanticPair> Conjunctions { get; } =
+    [
+        new(new ExactStringPattern("ⲛⲉⲙ"), _ => new ConjunctionMeta(ConjunctionType.And)),
+        new(new ExactStringPattern("ⲟⲩⲟϩ"), _ => new ConjunctionMeta(ConjunctionType.And)),
+    ];
 }

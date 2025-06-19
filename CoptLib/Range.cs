@@ -60,10 +60,7 @@ public readonly struct Range : IEquatable<Range>
     }
 
     /// <summary>Converts the value of the current Range object to its equivalent string representation.</summary>
-    public override string ToString()
-    {
-        return Start.ToString() + ".." + End.ToString();
-    }
+    public override string ToString() => $"{Start}..{End}";
 
     /// <summary>Create a Range object starting from start index to the end of the collection.</summary>
     public static Range StartAt(Index start) => new Range(start, Index.End);
