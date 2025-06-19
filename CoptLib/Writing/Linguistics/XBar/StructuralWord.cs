@@ -46,6 +46,7 @@ public abstract record StructuralElement(Range SourceRange) : IStructuralElement
             null => null,
             IDeterminerMeta detMeta => [new DeterminerElement(range, detMeta)],
             PrepositionMeta prepMeta => [new PrepositionElement(range, prepMeta)],
+            ConjunctionMeta conjMeta => [new ConjunctionElement(range, conjMeta)],
             LexemeMeta nounMeta => [new LexemeElement(range, nounMeta)],
             VerbMeta verbMeta => [new VerbElement(range, verbMeta)],
             TenseMeta tenseMeta => [new TenseElement(range, tenseMeta)],

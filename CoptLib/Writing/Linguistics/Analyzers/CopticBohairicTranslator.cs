@@ -88,6 +88,20 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 yield return StructuralElement.FromMeta(Range.All, meta);
             }
         }
+        
+        // Check for conjunctions
+        foreach (var prefix in _grammar.Conjunctions)
+        {
+            var matches = prefix.Pattern.AllMatches(word);
+            foreach (var match in matches)
+            {
+                var meta = prefix.MetaFactory(match);
+                if (meta is null)
+                    continue;
+
+                yield return StructuralElement.FromMeta(Range.All, meta);
+            }
+        }
 
         // Check for various pronouns
         foreach (var pronoun in _grammar.Pronouns)
