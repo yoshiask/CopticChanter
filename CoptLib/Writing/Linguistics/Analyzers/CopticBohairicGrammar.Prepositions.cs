@@ -110,9 +110,12 @@ public partial class CopticBohairicGrammar
     }
     
     private static IEnumerable<SemanticPair> GenerateSemanticPairForPersonalPreposition(PrepositionMeta prep,
-        List<(Pattern, InflectionMeta)> inflections)
+        List<(string, InflectionMeta)> inflections)
     {
         foreach (var (pattern, inflection) in inflections)
-            yield return new SemanticPair(pattern, _ => prep with { Inflection = inflection });
+            yield return new SemanticPair(
+                new ExactStringPattern(pattern),
+                _ => prep with { Inflection = inflection }
+            );
     }
 }
