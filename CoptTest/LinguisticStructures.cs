@@ -275,7 +275,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
         await foreach (var word in sentence)
         {
             bool isFirstInterpretation = true;
-            await foreach (var wordInterpretation in word)
+            await foreach (var wordInterpretation in word.Select(w => w.ToList()))
             {
                 //var text = string.Join("⸱", element.Select(y => noun.Substring(y.SourceRange)));
                 var annotations = string.Join(", ", wordInterpretation.Select(y => y.ToString()));
@@ -322,7 +322,20 @@ public class LinguisticStructures(ITestOutputHelper _output)
             },
 
             PrepositionElement prepElem => (prepElem.Meta.Negative ? "not " : "")
-                + prepElem.Meta.Type.ToString().ToLower(),
+                + prepElem.Meta.Type.ToString().ToLower()
+                + (prepElem.Meta.Inflection is null
+                    ? ""
+                    : " " + (prepElem.Meta.Inflection switch
+                    {
+                        { PointOfView: PointOfView.First, Number: GrammaticalCount.Singular } => "me",
+                        { PointOfView: PointOfView.First, Number: GrammaticalCount.Plural } => "us",
+                        { PointOfView: PointOfView.Second, Number: GrammaticalCount.Singular } => "you",
+                        { PointOfView: PointOfView.Second, Number: GrammaticalCount.Plural } => "y'all",
+                        { PointOfView: PointOfView.Third, Number: GrammaticalCount.Singular }
+                            => prepElem.Meta.Inflection.Gender is Gender.Masculine ? "him" : "her",
+                        { PointOfView: PointOfView.Third, Number: GrammaticalCount.Plural } => "them",
+                        _ => prepElem.Meta.Inflection.Gender.ToString().ToLower()
+                    })),
             
             VerbElement verbElem => $"({verbElem.Meta.Tense})",
 

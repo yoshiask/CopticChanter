@@ -45,7 +45,7 @@ public record LexiconEntryReference(LexiconEntry Entry, Form Form) : ILexemeRefe
             var closeBracketIndex = translation.IndexOf(')', openBracketIndex);
                 
             var commentLength = closeBracketIndex > 0
-                ? closeBracketIndex - openBracketIndex
+                ? closeBracketIndex - openBracketIndex + 1
                 : translation.Length - openBracketIndex;
             translation = translation.Remove(openBracketIndex, commentLength);
         }
