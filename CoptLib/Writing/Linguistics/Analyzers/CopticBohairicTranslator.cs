@@ -54,7 +54,7 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         }
     }
 
-    public Task<BinaryNode<IStructuralElement>> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
+    public Task<XBarNode> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
     {
         throw new NotImplementedException();
     }

@@ -57,6 +57,18 @@ public abstract record StructuralElement(Range SourceRange) : IStructuralElement
     }
 }
 
+public sealed record DemoStructuralElement : StructuralElement
+{
+    public DemoStructuralElement(string content, Range? sourceRange = null) : base(sourceRange ?? Range.All)
+    {
+        Content = content;
+    }
+    
+    public string Content { get; init; }
+
+    public override string ToString() => Content;
+}
+
 public record StructuralPhrase(Range SourceRange) : StructuralElement(SourceRange)
 {
     public StructuralPhrase(Range sourceRange, PhrasalCategory category) : this(sourceRange)

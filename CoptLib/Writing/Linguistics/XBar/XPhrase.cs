@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using CoptLib.Trees.Binary;
 
 namespace CoptLib.Writing.Linguistics.XBar;
 

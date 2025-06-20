@@ -1,10 +1,8 @@
-﻿using CoptLib.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using CoptLib.IO;
 
-namespace CoptLib.Writing.Linguistics.XBar;
+namespace CoptLib.Trees.Binary;
 
 public class BinaryNode<T>
 {
@@ -16,7 +14,7 @@ public class BinaryNode<T>
 
     public T? Value { get; set; }
 
-    public bool IsTerminal => Left is null && Right is null;
+    public bool IsLeaf => Left is null && Right is null;
 
     public bool IsRoot => Parent is null;
 
@@ -116,4 +114,25 @@ public class BinaryNode<T>
                 queue.Enqueue(node.Right);
         }
     }
+
+    /// <summary>
+    /// Swaps the left and right child nodes.
+    /// </summary>
+    public void SwapChildren()
+    {
+        var nodeA = Left;
+        var nodeB = Right;
+        Left = nodeB;
+        Right = nodeA;
+    }
+
+    public BinaryNode<T> GetRoot()
+    {
+        var currentNode = this;
+        while (currentNode.Parent is not null)
+            currentNode = currentNode.Parent;
+        return currentNode;
+    }
+    
+    public virtual string GetLabel() => Value?.ToString() ?? string.Empty;
 }

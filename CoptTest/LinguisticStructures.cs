@@ -3,10 +3,10 @@ using CoptLib.Writing.Lexicon;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using CoptLib.Writing.Linguistics.XBar;
-using OwlCore.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoptLib.Trees.Binary;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,8 +17,48 @@ public class LinguisticStructures(ITestOutputHelper _output)
     private readonly CopticBohairicTranslator _bohairicTranslator = new();
     private readonly ITranslator _translator = new CopticBohairicTranslator();
 
+    public static TheoryData<XBarNode, XBarNode> GetXBarTreeComplementCases()
+    {
+        TheoryData<XBarNode, XBarNode> data = new();
+        XBarNode root, startNode;
+        XBarNode? exNode;
+        
+        root = new XBarNode(Tag.Parse("VP"),
+            left: new XBarNode(Tag.Parse("V'"),
+                left: startNode = new XBarNode(Tag.Parse("V°"), new DemoStructuralElement("spilled")),
+                right: exNode = new XBarNode(Tag.Parse("DP"),
+                    left: new XBarNode(Tag.Parse("D'"),
+                        left: new XBarNode(Tag.Parse("D°"), new DemoStructuralElement("my")),
+                        right: new XBarNode(Tag.Parse("NP"),
+                            left: new XBarNode(Tag.Parse("N'"),
+                                left: new XBarNode(Tag.Parse("N°"), new DemoStructuralElement("juice"))
+                            )
+                        )
+                    )
+                )
+            )
+        );
+        data.Add(startNode, exNode);
+        data.Add(exNode, startNode);
+
+        root = new XBarNode(Tag.Parse("PP"),
+            left: new XBarNode(Tag.Parse("P'"),
+                left: exNode = new XBarNode(Tag.Parse("P°"), new DemoStructuralElement("from")),
+                right: startNode = new XBarNode(Tag.Parse("NP"),
+                    left: new XBarNode(Tag.Parse("N'"),
+                        left: new XBarNode(Tag.Parse("N°"), new DemoStructuralElement("Egypt"))
+                    )
+                )
+            )
+        );
+        data.Add(startNode, exNode);
+        data.Add(exNode, startNode);
+        
+        return data;
+    }
+    
     [Fact]
-    public void BinaryTree_String_GraphViz()
+    public void BinaryTree_String_Graphviz()
     {
         BinaryNode<string> root = new("XP",
             new("Specifier"),
@@ -32,7 +72,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     }
 
     [Fact]
-    public void BinaryTree_XBar_GraphViz()
+    public void BinaryTree_XBar_Graphviz()
     {
         BinaryNode<Tag> root = new(Tag.Parse("DP"),
             new(Tag.Parse("D°")),
@@ -49,22 +89,30 @@ public class LinguisticStructures(ITestOutputHelper _output)
         _output.WriteLine(root.SerializeToDot());
     }
 
-    [Fact]
-    public void BinaryTree_XBar_SyntaxTree()
+    [Theory]
+    [MemberData(nameof(GetXBarTreeComplementCases))]
+    public void XBarTree_SyntaxTree(XBarNode headNode, XBarNode _)
     {
-        BinaryNode<Tag> root = new(Tag.Parse("DP"),
-            new(Tag.Parse("D°")),
-            new(Tag.Parse("NP"),
-                new(Tag.Parse("AdjP"),
-                    new(Tag.Parse("Adj°"))
-                ),
-                new(Tag.Parse("NP"),
-                    new(Tag.Parse("N°"))
-                )
-            )
-        );
-
+        var root = headNode.GetXBarRoot();
         _output.WriteLine(root.SerializeToSyntaxTree());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetXBarTreeComplementCases))]
+    public void XBarTree_Graphviz(XBarNode headNode, XBarNode _)
+    {
+        var root = headNode.GetXBarRoot();
+        _output.WriteLine(root.SerializeToDot());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetXBarTreeComplementCases))]
+    public void XBarTree_Complement(XBarNode headNode, XBarNode exComplementNode)
+    {
+        _output.WriteLine(headNode.GetXBarRoot().SerializeToSyntaxTree());
+        
+        var acNode = headNode.Complement;
+        Assert.Equal(exComplementNode, acNode);
     }
 
     [Fact]
@@ -359,7 +407,14 @@ public class LinguisticStructures(ITestOutputHelper _output)
             },
 
             PrepositionElement prepElem => (prepElem.Meta.Negative ? "not " : "")
-                + prepElem.Meta.Type.ToString().ToLower()
+                + (prepElem.Meta.Type switch
+                {
+                    PrepositionType.AccordingTo => "according to",
+                    PrepositionType.BecauseOf => "because of",
+                    PrepositionType.OtherSide => "other side",
+                    PrepositionType.PresenceOf => "presence of",
+                    _ => prepElem.Meta.Type.ToString().ToLower()
+                })
                 + (prepElem.Meta.Inflection is null
                     ? ""
                     : " " + (prepElem.Meta.Inflection switch
