@@ -36,12 +36,12 @@ public static class PhrasalCategories
         if (_abbreviationMap.TryGetLeft(str, out var category))
             return category;
 
-        // Check substrings if necessary
-        if (str.Length > 4)
-            return Parse(str[..4]);
-        if (str.Length >= 2)
-            return Parse(str[..^1]);
-
-        return PhrasalCategory.Unspecified;
+        return str.Length switch
+        {
+            // Check substrings if necessary
+            > 4 => Parse(str[..4]),
+            >= 2 => Parse(str[..^1]),
+            _ => PhrasalCategory.Unspecified
+        };
     }
 }

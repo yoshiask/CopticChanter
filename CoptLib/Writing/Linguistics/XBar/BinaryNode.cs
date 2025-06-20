@@ -116,38 +116,4 @@ public class BinaryNode<T>
                 queue.Enqueue(node.Right);
         }
     }
-
-    /// <summary>
-    /// Represents the binary tree using Graphviz's DOT language.
-    /// </summary>
-    /// <param name="sb">A <see cref="StringBuilder"/> to write to.</param>
-    public StringBuilder SerializeToDot(StringBuilder sb)
-    {
-        sb.AppendLine("strict graph {");
-        sb.AppendLine("    rankdir=\"BT\"");
-        sb.AppendLine();
-
-        var nodes = EnumerateLevelOrder().ToList();
-
-        sb.AppendLine($"    n{nodes[0].GetHashCode()} [label=\"{nodes[0].Value}\"]");
-
-        foreach (var node in nodes)
-        {
-            if (node.Parent is null)
-                continue;
-
-            var id = node.GetHashCode();
-            sb.AppendLine($"    n{id} [label=\"{node.Value}\"]");
-            sb.AppendLine($"    n{id} -- n{node.Parent.GetHashCode()}");
-        }
-
-        sb.AppendLine("}");
-
-        return sb;
-    }
-
-    /// <summary>
-    /// Represents the binary tree using Graphviz's DOT language.
-    /// </summary>
-    public string SerializeToDot() => SerializeToDot(new StringBuilder()).ToString();
 }

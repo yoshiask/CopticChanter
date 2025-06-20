@@ -18,7 +18,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     private readonly ITranslator _translator = new CopticBohairicTranslator();
 
     [Fact]
-    public void BinaryTree_GraphViz()
+    public void BinaryTree_String_GraphViz()
     {
         BinaryNode<string> root = new("XP",
             new("Specifier"),
@@ -29,6 +29,42 @@ public class LinguisticStructures(ITestOutputHelper _output)
         );
 
         _output.WriteLine(root.SerializeToDot());
+    }
+
+    [Fact]
+    public void BinaryTree_XBar_GraphViz()
+    {
+        BinaryNode<Tag> root = new(Tag.Parse("DP"),
+            new(Tag.Parse("D°")),
+            new(Tag.Parse("NP"),
+                new(Tag.Parse("AdjP"),
+                    new(Tag.Parse("Adj°"))
+                ),
+                new(Tag.Parse("NP"),
+                    new(Tag.Parse("N°"))
+                )
+            )
+        );
+
+        _output.WriteLine(root.SerializeToDot());
+    }
+
+    [Fact]
+    public void BinaryTree_XBar_SyntaxTree()
+    {
+        BinaryNode<Tag> root = new(Tag.Parse("DP"),
+            new(Tag.Parse("D°")),
+            new(Tag.Parse("NP"),
+                new(Tag.Parse("AdjP"),
+                    new(Tag.Parse("Adj°"))
+                ),
+                new(Tag.Parse("NP"),
+                    new(Tag.Parse("N°"))
+                )
+            )
+        );
+
+        _output.WriteLine(root.SerializeToSyntaxTree());
     }
 
     [Fact]
@@ -229,6 +265,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     [InlineData("ⲟⲩⲣⲉϥⲉⲣⲛⲟⲃⲓ")]
     [InlineData("ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ")]
     [InlineData("ⲙⲡⲉⲛⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ")]
+    [InlineData("Ⲡⲟⲩⲣⲟ")]
     public async Task BohairicCoptic_DetectNouns(string noun)
     {
         noun = CopticBohairicTranslator.NormalizeText(noun);

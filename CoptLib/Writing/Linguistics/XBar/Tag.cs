@@ -7,15 +7,9 @@ public record Tag(PhrasalCategory Category, XBarNodeType Type)
 {
     public static Tag Parse(string str)
     {
-        var parts = str.SplitAlongCapitals().ToArray();
-
-        var category = PhrasalCategories.Parse(parts[0]);
-
-        var type = XBarNodeType.PartOfSpeech;
-        if (parts.Length >= 2)
-            type = XBarNodeTypes.Parse(parts[1]);
-
-        return new(category, type);
+        var (type, categoryStr) = XBarNodeTypes.ParseSuffix(str);
+        var category = PhrasalCategories.Parse(categoryStr);
+        return new Tag(category, type);
     }
 
     public override string ToString() => $"{Category.ToAbbreviation()}{Type.ToSuffix()}";
