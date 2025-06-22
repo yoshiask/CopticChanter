@@ -381,6 +381,27 @@ public class LinguisticStructures(ITestOutputHelper _output)
         _output.WriteLine(demoText);
     }
 
+    [Theory]
+    [InlineData("ⲡ̀ⲏⲓ ⲛ̀ⲧⲉ ⲛⲓⲁ̀ⲅⲅⲉⲗⲟⲥ")]
+    [InlineData("ⲉⲕⲉ̀ϧⲟⲙϧⲉⲙ ⲙ̀Ⲡ̀ⲥⲁⲧⲁⲛⲁⲥ: ⲥⲁⲡⲉⲥⲏⲧ ⲛ̀ⲛⲉⲛϭⲁⲗⲁⲩϫ.")]
+    [InlineData("Ⲥⲙⲟⲩ ⲉⲣⲟϥ ⲕⲁⲧⲁ ⲡⲁϣⲁⲓ ⲛⲧⲉ ⲧⲉϥⲙⲉⲧⲛⲓϣϯ: ⲁⲗⲗⲏⲗⲟⲩⲓⲁ.")]
+    [InlineData("Ϯⲛⲁⲱϣ ϯⲉⲡⲓⲥⲧⲟⲗⲏ ϧⲉⲛ ⲡⲓⲙⲁ ϧⲁϫⲉⲛ ⲡϣⲁⲓ")]
+    public async Task TranslateBohairicCoptic(string text)
+    {
+        var sentence = _translator.AnnotateAsync(text);
+
+        List<IStructuralElement> interpretation = [];
+        await foreach (var wordInterpretations in sentence)
+        {
+            var firstWordInterpretation = await wordInterpretations.FirstOrDefaultAsync();
+            if (firstWordInterpretation is not null)
+                interpretation.AddRange(firstWordInterpretation);
+        }
+        
+        var sentenceTree = await _translator.TranslateAsync(interpretation.ToAsyncEnumerable());
+        _output.WriteLine(sentenceTree.SerializeToDot(GraphvizSerializationOptions.XBar));
+    }
+
     private static string DemoText(IEnumerable<IStructuralElement> elements)
     {
         return string.Join(" ", elements.Select(y => y switch

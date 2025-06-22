@@ -54,9 +54,49 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
         }
     }
 
-    public Task<XBarNode> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
+    public async Task<XBarNode> TranslateAsync(IAsyncEnumerable<IStructuralElement> annotatedText)
     {
-        throw new NotImplementedException();
+        var elements = await annotatedText.ToListAsync();
+
+        Stack<XBarNode> phrases = new();
+        for (var i = elements.Count - 1; i >= 0; --i)
+        {
+            var elem = elements[i]!;
+
+            if (elem is LexemeElement { Meta.PartOfSpeech: PartOfSpeech.Substantive } nounElement)
+            {
+                var newNounPhrase = XBarNode.CreatePhrase(PhrasalCategory.Noun, nounElement);
+                newNounPhrase.SwapChildren();
+                phrases.Push(newNounPhrase);
+            }
+            else if (elem is DeterminerElement determinerElement)
+            {
+                if (phrases.TryPeek(out var lastPhrase) && lastPhrase?.Tag.Category is PhrasalCategory.Noun)
+                {
+                    lastPhrase.Left = XBarNode.CreatePhrase(PhrasalCategory.Determiner, determinerElement);
+                }
+            }
+            else if (elem is PrepositionElement prepositionElement)
+            {
+                var newPrepositionPhrase = XBarNode.CreatePhrase(PhrasalCategory.Prepositional, prepositionElement);
+                
+                if (phrases.TryPop(out var nounPhrase) && nounPhrase?.Tag.Category is PhrasalCategory.Noun)
+                {
+                    newPrepositionPhrase.Right = nounPhrase;
+                }
+                
+                phrases.Push(newPrepositionPhrase);
+            }
+        }
+        
+        var clauseNode = new XBarNode(new Tag(PhrasalCategory.Clause, XBarNodeType.Phrase));
+        
+        if (phrases.TryPop(out var leftPhrase))
+            clauseNode.Left = leftPhrase;
+        if (phrases.TryPop(out var rightPhrase))
+            clauseNode.Right = rightPhrase;
+        
+        return clauseNode;
     }
 
     public async IAsyncEnumerable<IEnumerable<IStructuralElement>> IdentifyWord(string word)
