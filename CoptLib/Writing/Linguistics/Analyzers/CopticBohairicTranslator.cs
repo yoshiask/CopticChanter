@@ -208,7 +208,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
             }
 
             var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
-                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
+                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()),
+                grammarGroup.PartOfSpeech);
             var baseRange = new Range(startIndex, Index.End);
             var baseElement = new LexemeElement(baseRange, baseNounMeta);
 
@@ -347,7 +348,8 @@ public class CopticBohairicTranslator : ITranslator, IAsyncInit
                 continue;
 
             var baseNounMeta = new LexemeMeta(new LexiconEntryReference(wordEntry, form),
-                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()));
+                new(grammarGroup.Gender, grammarGroup.Number.ToGrammaticalCount()),
+                grammarGroup.PartOfSpeech);
             var baseRange = new Range(startIndex, Index.End);
             var baseElement = new LexemeElement(baseRange, baseNounMeta);
 

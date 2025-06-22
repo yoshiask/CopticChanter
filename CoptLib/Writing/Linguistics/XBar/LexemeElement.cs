@@ -8,9 +8,9 @@ public record LexemeElement(Range SourceRange, LexemeMeta Meta) : StructuralElem
     public override string ToString() => $"Lexeme{{{SourceRange}, {Meta}}}";
 }
 
-public record LexemeMeta(ILexemeReference Meaning, InflectionMeta Inflection) : IMeta
+public record LexemeMeta(ILexemeReference Meaning, InflectionMeta Inflection, PartOfSpeech PartOfSpeech) : IMeta
 {
-    public override string ToString() => $"LEX{{{Meaning}, {Inflection}}}";
+    public override string ToString() => $"LEX{{{PartOfSpeech}, {Meaning}, {Inflection}}}";
 }
 
 public interface ILexemeReference
