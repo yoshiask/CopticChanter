@@ -6,11 +6,39 @@ namespace CoptLib.Trees.Binary;
 
 public class BinaryNode<T>
 {
-    public BinaryNode<T>? Parent { get; set; }
+    private BinaryNode<T>? _left, _right;
+    
+    public BinaryNode<T>? Parent { get; private set; }
 
-    public BinaryNode<T>? Left { get; set; }
+    public BinaryNode<T>? Left
+    {
+        get => _left;
+        set
+        {
+            if (_left is not null)
+                _left.Parent = null;
+            
+            _left = value;
+            
+            if (_left is not null)
+                _left.Parent = this;
+        }
+    }
 
-    public BinaryNode<T>? Right { get; set; }
+    public BinaryNode<T>? Right
+    {
+        get => _right;
+        set
+        {
+            if (_right is not null)
+                _right.Parent = null;
+            
+            _right = value;
+            
+            if (_right is not null)
+                _right.Parent = this;
+        }
+    }
 
     public T? Value { get; set; }
 
@@ -120,10 +148,12 @@ public class BinaryNode<T>
     /// </summary>
     public void SwapChildren()
     {
-        var nodeA = Left;
-        var nodeB = Right;
-        Left = nodeB;
-        Right = nodeA;
+        // Avoid using the properties, since we know both children must already
+        // have the correct parent set.
+        var nodeA = _left;
+        var nodeB = _right;
+        _left = nodeB;
+        _right = nodeA;
     }
 
     public BinaryNode<T> GetRoot()

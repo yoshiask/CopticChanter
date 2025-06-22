@@ -15,12 +15,8 @@ public class XBarNode(Tag tag,
 {
     public Tag Tag { get; } = tag;
 
-    public XBarNode? XBarParent
-    {
-        get => Parent as XBarNode;
-        set => Parent = value;
-    }
-    
+    public XBarNode? XBarParent => Parent as XBarNode;
+
     public XBarNode? XBarLeft
     {
         get => Left as XBarNode;
@@ -80,6 +76,13 @@ public class XBarNode(Tag tag,
     }
 
     public override string GetLabel() => Value?.ToString() ?? Tag.ToString();
+
+    public static XBarNode CreatePhrase(PhrasalCategory category, IStructuralElement element)
+    {
+        return new XBarNode(new Tag(category, XBarNodeType.Phrase),
+            left: new XBarNode(new Tag(category, XBarNodeType.Bar),
+                left: new XBarNode(new Tag(PhrasalCategory.Noun, XBarNodeType.LexicalItem), value: element)));
+    }
 }
 
 public static class XBarNodeExtensions

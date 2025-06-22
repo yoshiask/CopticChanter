@@ -102,7 +102,7 @@ public class LinguisticStructures(ITestOutputHelper _output)
     public void XBarTree_Graphviz(XBarNode headNode, XBarNode _)
     {
         var root = headNode.GetXBarRoot();
-        _output.WriteLine(root.SerializeToDot());
+        _output.WriteLine(root.SerializeToDot(GraphvizSerializationOptions.XBar));
     }
 
     [Theory]
