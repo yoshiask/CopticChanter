@@ -43,7 +43,7 @@ public class SequenceWriter
 
     public async Task WriteXmlAsync(IFile file)
     {
-        using var stream = await file.OpenStreamAsync();
+        using var stream = await file.OpenStreamAsync(FileAccess.Write);
         WriteXml(stream);
     }
 

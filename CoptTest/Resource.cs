@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using OwlCore.Storage;
-using OwlCore.Storage.SystemIO;
+using OwlCore.Storage.System.IO;
 
 namespace CoptTest
 {

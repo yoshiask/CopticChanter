@@ -71,7 +71,7 @@ public abstract class LoadContextBase : ILoadContext
 
     public async Task<Doc> LoadDoc(IFile file)
     {
-        using var stream = await file.OpenStreamAsync();
+        using var stream = await file.OpenStreamAsync(FileAccess.Read);
         return LoadDoc(stream);
     }
 
