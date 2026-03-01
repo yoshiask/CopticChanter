@@ -254,7 +254,7 @@ public static class ScriptingEngine
                     for (int i = 0; i < parameters.Length; i++)
                     {
                         var param = inCmd.Parameters[i];
-                        if (param is InlineCommand {Command.Output: { }} paramInCmd)
+                        if (param is InlineCommand {Command.Output: not null } paramInCmd)
                             parameters[i] = paramInCmd.Command.Output;
                         else
                             parameters[i] = param;

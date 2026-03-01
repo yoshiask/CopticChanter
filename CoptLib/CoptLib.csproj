@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
-        <Version>2.9.0</Version>
+        <Version>2.10.0</Version>
         <Authors>Joshua Askharoun</Authors>
         <Company>Joshua Askharoun</Company>
         <Product>Coptic Chanter</Product>
@@ -14,7 +14,7 @@
         <PackageProjectUrl>https://github.com/yoshiask/CopticChanter</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>Coptic, Bohairic, Orthodox</PackageTags>
-        <Copyright>2017-2023</Copyright>
+        <Copyright>2017-2026</Copyright>
 
         <!-- SourceLink and NuGet symbols -->
         <PublishRepositoryUrl>https://github.com/yoshiask/CopticChanter</PublishRepositoryUrl>
@@ -24,12 +24,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AngleSharp" Version="1.0.4" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="AngleSharp" Version="1.4.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="CS-Script" Version="4.8.1" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.13" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.3" />
         <PackageReference Include="NLua" Version="1.6.3" />
-        <PackageReference Include="NodaTime" Version="3.1.9" />
+        <PackageReference Include="NodaTime" Version="3.3.0" />
         <PackageReference Include="OwlCore" Version="0.4.0" />
         <PackageReference Include="OwlCore.Storage" Version="0.8.6" />
         <PackageReference Include="System.Linq" Version="4.3.0" />
@@ -39,8 +39,8 @@
         <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
         <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
 
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-        <PackageReference Include="PolySharp" Version="1.13.2">
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
+        <PackageReference Include="PolySharp" Version="1.15.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime;build;native;contentfiles;analyzers</IncludeAssets>
         </PackageReference>

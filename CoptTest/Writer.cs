@@ -8,12 +8,10 @@ using SharpCompress.Archives.Zip;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using CoptLib.Extensions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CoptTest;
 

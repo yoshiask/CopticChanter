@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using CoptLib.Extensions;
 
 namespace CoptLib.Writing;
@@ -167,7 +166,7 @@ public class LanguageInfo : IEquatable<LanguageInfo>, IFormattable
         return format.ToUpperInvariant() switch
         {
             "E" => str,
-            "S" => string.Join(" ", str.SplitCamelCase().Reverse()),
+            "S" => string.Join(" ", str.SplitCamelCase().AsEnumerable().Reverse()),
             _ => throw new FormatException($"The {format} format string is not supported.")
         };
     }

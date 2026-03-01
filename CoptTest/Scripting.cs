@@ -12,7 +12,6 @@ using CoptLib.Scripting.Typed;
 using CoptLib.Writing;
 using NodaTime;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CoptTest
 {
@@ -318,7 +317,7 @@ namespace CoptTest
 
         [Theory]
         [InlineData(@"\tern{\true{}|Pass|Fail}", "Pass")]
-        [InlineData(@"\tern{\fail{}|Fail|Pass}", "Pass")]
+        [InlineData(@"\tern{\false{}|Fail|Pass}", "Pass")]
         public void ParseTextCommands_ConstantTernaries(string conditionText, object? expected)
         {
             var inline = ScriptingEngine.ParseTextCommands(conditionText.AsSpan(), null);

@@ -2,7 +2,6 @@
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CoptTest
 {

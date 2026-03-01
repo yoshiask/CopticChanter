@@ -4,7 +4,6 @@ using CoptLib.IO;
 using CoptLib.Models;
 using CoptLib.Writing;
 using Xunit;
-using Xunit.Abstractions;
 using LEO = CoptLib.Writing.LanguageEquivalencyOptions;
 
 namespace CoptTest
