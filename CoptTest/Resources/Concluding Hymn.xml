@@ -11,11 +11,13 @@
             <Stanza>Save us and have mercy on us.</Stanza>
             <Stanza>Lord have mercy. Lord have mercy. Lord bless us. Amen. Bless me. Bless me. Lo, the repentance. Forgive me. Say the blessing.</Stanza>
 
-            <Stanza Role="Priest">O Christ our God--</Stanza>
-            <Stanza Role="People">Amen. So be it.</Stanza>
+            <Comment Type="Role">Priest</Comment>
+            <Stanza >O Christ our God--</Stanza>
+            <Comment Type="Role">People</Comment>
+            <Stanza >Amen. So be it.</Stanza>
         </Translation>
 
-        <Translation Title="Ⲡⲓϩⲩⲙⲛⲟⲥ " Language="Coptic">
+        <Translation Title="Ⲡⲓϩⲩⲙⲛⲟⲥ ⲛ̀Ⲧ̀ϧⲁⲉ" Language="Coptic">
             <Stanza>Ⲁⲙⲏⲛ: ⲁⲗⲗⲏⲗⲟⲩⲓⲁ. Ⲇⲟⲝⲁ Ⲡⲁⲧⲣⲓ ⲕⲉ Ⲩ&#x0300;ⲓⲱ ⲕⲉ ⲁ&#x0300;ⲅⲓⲱ Ⲡ&#x0300;ⲛⲉⲩⲙⲁⲧⲓ:</Stanza>
             <Stanza>Ⲕⲉ ⲛⲩⲛ ⲕⲉ ⲁ&#x0300;ⲓ&#x0300; ⲕⲉ ⲓⲥ ⲧⲟⲩⲥ ⲉ&#x0300;ⲱ&#x0300;ⲛⲁⲥ ⲧⲱⲛ ⲉ&#x0300;ⲱ&#x0300;ⲛⲱⲛ: ⲁ&#x0300;ⲙⲏⲛ.</Stanza>
             <Stanza>Ⲧⲉⲛⲱϣ ⲉ&#x0300;ⲃⲟⲗ ⲉⲛϫⲱ ⲙ&#x0300;ⲙⲟⲥ: ϫⲉ ⲱ&#x0300; Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭ&#x0300;ⲣⲓⲥⲧⲟⲥ.</Stanza>
@@ -23,15 +25,17 @@
             <Stanza>ⲥⲱϯ ⲙ&#x0300;ⲙⲟⲛ ⲟⲩⲟϩ ⲛⲁⲓ ⲛⲁⲛ:</Stanza>
             <Stanza>Ⲕⲩⲣⲓⲉ ⲉ&#x0300;ⲗⲉⲏⲥⲟⲛ: Ⲕⲩⲣⲓⲉ ⲉ&#x0300;ⲗⲉⲏⲥⲟⲛ: Ⲕⲩⲣⲓⲉ ⲉⲩⲗⲟⲅⲏⲥⲟⲛ: ⲁ&#x0300;ⲙⲏⲛ. Ⲥ&#x0300;ⲙⲟⲩ ⲉ&#x0300;ⲣⲟⲓ: ⲥ&#x0300;ⲙⲟⲩ ⲉ&#x0300;ⲣⲟⲓ ⲓⲥ ϯⲙⲉⲧⲁⲛⲟⲓⲁ: ⲭⲱ ⲛⲏⲓ ⲉ&#x0300;ⲃⲟⲗ: ϫⲱ ⲙ&#x0300;ⲡⲓⲥ&#x0300;ⲙⲟⲩ.</Stanza>
 
-            <Stanza Role="Priest">Ⲡⲓⲭ&#x0300;ⲣⲓⲥⲧⲟⲥ Ⲡⲉⲛⲛⲟⲩϯ.</Stanza>
-            <Stanza Role="People">Ⲁⲙⲏⲛ ⲉⲥⲉ&#x0300;ϣⲱⲡⲓ.</Stanza>
+            <Comment Type="Role">Priest</Comment>
+            <Stanza>Ⲡⲓⲭ&#x0300;ⲣⲓⲥⲧⲟⲥ Ⲡⲉⲛⲛⲟⲩϯ.</Stanza>
+            <Comment Type="Role">People</Comment>
+            <Stanza>Ⲁⲙⲏⲛ ⲉⲥⲉ&#x0300;ϣⲱⲡⲓ.</Stanza>
         </Translation>
 
         <!-- <Translation Title="الختام" Language="Arabic">
             <Stanza>آمين، هلليلويا. المجد للآب والإبن والروح القدس،.</Stanza>
             <Stanza>الآن وكل أوان وإلى دهر الدهور، آمين.</Stanza>
             <Stanza>نصرخ قائلين: "يا ربنا يسوع المسيح</Stanza>
-            <Section Source="\def{Proclamation}"/>
+            <Reference>Proclamation</Reference>
             <Stanza/>
             <Stanza>خلصنا وإرحمنا."</Stanza>
             <Stanza>يا ربُّ إرحَم، يا ربُّ إرحَم، يا رب بارك آمين. باركوا عليَّ، باركوا عليَّ، ها مطانية، إغفروا لي، قُل البركة.</Stanza>
@@ -43,7 +47,7 @@
 
     <Definitions>
         <Script Key="ProclamationScript">
-<![CDATA[
+            <![CDATA[
 var today = context!.CurrentDate;
 int year = today.Year;
 
@@ -52,25 +56,30 @@ LocalDate NewDate(int month, int day, int? y = null)
     return new LocalDate(y ?? year, month, day, CalendarSystem.Coptic);
 }
 
-string? engText, copText;//, araText;
+string? engText, copText, araText;
 engText = copText = null;
 
 const string seasonEndEng = "May your mercy and peace be fortress unto Your people.";
 const string seasonEndCop = "ⲙⲁⲣⲉ ⲡⲉⲕⲛⲁⲓ ⲛⲉⲙ ⲧⲉⲕϩⲓⲣⲏⲛⲏ ⲟⲓ ⲛ\u0300ⲥⲟⲃⲧ ⲙ\u0300ⲡⲉⲕⲗⲁⲟⲥ:";
+const string seasonEndAra = "ولتكن رحمتك وسلامك حصناً لشعبك.";
 if (new DatePeriod(NewDate(5, 11), NewDate(10, 11)).IsDuring(today))
 {
     engText = $"Bless the air of heaven. {seasonEndEng}";
     copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲁ\u0300ⲏⲣ ⲛ\u0300ⲧⲉ ⲧ\u0300ⲫⲉ: {seasonEndCop}";
+    araText = $"بارك اهوية السماء. {seasonEndAra}";
 }
 else if (new DatePeriod(NewDate(10, 12), NewDate(2, 9, year + 1)).IsDuring(today))
 {
     engText = $"Bless the water of the rivers. {seasonEndEng}";
     copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲙⲱⲟⲩ ⲙ\u0300ⲫ\u0300ⲓⲁⲣⲟⲩ: {seasonEndCop}";
+    araText = $"بارك مياه النهر. {seasonEndAra}";
+    
 }
 else if (new DatePeriod(NewDate(2, 10), NewDate(5, 10)).IsDuring(today))
 {
-    engText = $"Bless the seed and the herbs. {seasonEndEng}";
+    engText = $"Bless the seeds and the herbs. {seasonEndEng}";
     copText = $"Ⲥ\u0300ⲙⲟⲩ ⲉ\u0300ⲛⲓⲥⲓϯ ⲛⲉⲙ ⲛⲓⲥⲓⲙ: {seasonEndCop}";
+    araText = $"بارك الزروع والعشب. {seasonEndAra}";
 }
 else
 {
@@ -135,19 +144,8 @@ else if (today == CopticCalendar.Annunciation(year))
 }
 else if (CopticCalendar.GreatFast(year).IsDuring(today))
 {
-    // Lazarus Saturday isn't included in this?
-    if (today.DayOfWeek is IsoDayOfWeek.Sunday or IsoDayOfWeek.Saturday)
-    {
-        engText = "O You who fasted for us forty days and forty nights to save us from our sins.";
-        copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩϥⲉⲣⲛⲏⲥⲧⲉⲩⲓⲛ ⲉ\u0300ϩ\u0300ⲣⲏⲓ ⲉ\u0300ϫⲱⲛ ⲛ\u0300ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϩⲟⲟⲩ ⲛⲉⲙ ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϫⲱⲣϩ: ϣⲁ ⲛ\u0300ⲧⲉϥⲥⲟⲧⲧⲉⲛ ϧⲉⲛ ⲛⲉⲛⲛⲟⲃⲓ:";
-    }
-    else
-    {
-        // Weekdays of the Great Lent have a completely different hymn. This is just here for thoroughness.
-        engText = "The Body and Blood of the only-begotten God; having partaken, let us give thanks to him.";
-        copText = "Ⲥⲱⲙⲁⲧⲟⲥ ⲕⲉ ⲏ\u0300ⲙⲁⲧⲟⲥ ⲙⲟⲛⲟⲅⲉⲛⲏⲥ Ⲑⲉⲟⲩ ⲙⲁⲧⲁ\u0300ⲗⲁⲃⲟⲛⲧⲟⲥ ⲁⲩⲧⲱ ⲉⲩⲭⲁⲣⲓⲥⲧⲏⲥⲱⲙⲉⲛ.";
-    }
-    goto done;
+    engText = "O You who fasted for us forty days and forty nights to save us from our sins.";
+    copText = "Ⲫⲏⲉ\u0300ⲧⲁⲩϥⲉⲣⲛⲏⲥⲧⲉⲩⲓⲛ ⲉ\u0300ϩ\u0300ⲣⲏⲓ ⲉ\u0300ϫⲱⲛ ⲛ\u0300ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϩⲟⲟⲩ ⲛⲉⲙ ϩ\u0300ⲙⲉ ⲛ\u0300ⲉ\u0300ϫⲱⲣϩ: ϣⲁ ⲛ\u0300ⲧⲉϥⲥⲟⲧⲧⲉⲛ ϧⲉⲛ ⲛⲉⲛⲛⲟⲃⲓ:";
 }
 
 var ressurection = CopticCalendar.Resurrection(year);

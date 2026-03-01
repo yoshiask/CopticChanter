@@ -3,7 +3,7 @@
     <Name>The Morning Doxology</Name>
     <Uuid>28c70071-ce5e-4add-aa5c-d093acfb2787</Uuid>
     <Translations>
-        <Translation Title="The Morning Doxology" Language="English" Role="People">
+        <Translation Title="The Morning Doxology" Language="English">
             <Stanza>We worship the Father and the Son, and the Holy Spirit, hail to the church, the house of the angels.</Stanza>
             <Stanza>Hail to the Virgin, who gave birth to our Savior, hail to Gabriel, who announced to her the good news.</Stanza>
             <Stanza>Hail to Michael, the archangel, hail to the twenty four, presbyters.</Stanza>
@@ -83,7 +83,7 @@
                 <Stanza>Through their prayers, O God grant us, the forgiveness of our sins, and give us peace.</Stanza>
             </Section>
         </Translation>
-        <Translation Key="CopticTranslation" Title="Ϯⲇⲟⲝⲟⲗⲟⲅⲓⲁ ̀ⲛⲧⲉ Ϣⲱⲣⲡ" Language="Coptic" Font="CopticStandard" Role="People">
+        <Translation Key="CopticTranslation" Title="Ϯⲇⲟⲝⲟⲗⲟⲅⲓⲁ ⲛ&#x0300;ⲧⲉ Ϣⲱⲣⲡ" Language="Coptic" Font="CopticStandard">
             <Stanza>Tenouwst `m`Viwt nem `Psyri@ nem Pi`pneuma e;ouab@ ,ere ]ekklycia@ `pyi `nte niaggeloc.</Stanza>
             <Stanza>&lt;ere \}par;enoc@ `etacmec Pencwtyr@ ,ere Gabriyl@ `etafhisennoufi nac.</Stanza>
             <Stanza>&lt;ere Mi,ayl@ piar,yaggeloc@ ,ere pijout `ftoou@ `m`precbuteroc.</Stanza>
@@ -94,7 +94,7 @@
             <Stanza>&lt;ere `p,oroc tyrf@ `nte nimarturoc@ ,ere abba Antwni@ nem pisomt Makarioc.</Stanza>
             <Stanza>&lt;ere `p,oroc tyrf@ `nte ni`ctaurovoroc@ ,ere nye;ouab tyrou@ `etafranaf `m`P[oic.</Stanza>
             <Stanza>Hiten noueu,y@ Pi`,rictoc Penouro@ `ari ounai neman@ qen tekmetouro.</Stanza>
-            <Section Title="Ⲉⲑⲃⲉ Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓ̀ⲭⲣⲓⲥⲧⲟⲥ">
+            <Section Title="Ⲉⲑⲃⲉ Ⲡⲉⲛϭⲟⲓⲥ Ⲓⲏⲥⲟⲩⲥ Ⲡⲓⲭ&#x0300;ⲣⲓⲥⲧⲟⲥ">
                 <Stanza>Piouwini `nta`vmyi@ vyeterouwini@ `erwmi niben@ e;nyou `epikocmoc.</Stanza>
                 <Stanza>Ak`i `epikocmoc@ hiten tekmetmairwmi@ `a]`ktycic tyrc@ ;elyl qa pekjin`i.</Stanza>
                 <Stanza>Akcw] `n`Adam@ `ebol qen ]`apaty@ aker `Eua `nremhe@ qen ninakhi `nte `vmou.</Stanza>
@@ -138,7 +138,7 @@
                 <Stanza>Je `,ouab `,ouab@ `,ouab qen oume;myi@ pi`wou nem pitaio@ er`prepi `n\}`triac.</Stanza>
                 <Stanza>Hiten ni`precbia@ `nte `p,oroc tyrf `nte niaggeloc@ `P[oic `ari`hmot nan@ `mpi,w `ebol `nte nennobi.</Stanza>
             </Section>
-            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓ̀ⲁⲡⲟⲥⲧⲟⲗⲟⲥ">
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲁ&#x0300;ⲡⲟⲥⲧⲟⲗⲟⲥ">
                 <Stanza>Nenio] `n`apoctoloc@ auhiwis qen nie;noc@ qen pieuaggelion@ `nte Iycouc Pi`,rictoc.</Stanza>
                 <Stanza>`A pou`qrwou senaf@ hijen `pkahi tyrf@ ouoh noucaji auvoh@ sa auryjc `n]oikoumeny.</Stanza>
                 <Stanza>Hiten nieu,y@ `nte na[oic `nio] `n`apoctoloc@ `P[oic `ari`hmot nan@ `mpi,w `ebol `nte nennobi.</Stanza>
@@ -153,7 +153,7 @@
                 <Stanza>Tekmetouro Panou]@ oumetouro `n`eneh@ ouoh tekmet[oic@ sa nigene`a tyrou.</Stanza>
                 <Stanza>Hiten nieu,y@ `nte `p,oroc tyrf `nte ni`ctaurovoroc@ nem ni`;myi nem nidikeoc@ `P[oic `ari`hmot nan@ `mpi,w `ebol `nte nennobi.</Stanza>
             </Section>
-            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ ⲛⲉⲙ Ⲛⲓ̀ⲡⲣⲟⲫⲏⲧⲏⲥ">
+            <Section Title="Ⲉⲑⲃⲉ Ⲛⲓⲡⲁⲧⲣⲓⲁⲣⲭⲏⲥ ⲛⲉⲙ Ⲛⲓⲡ&#x0300;ⲣⲟⲫⲏⲧⲏⲥ">
                 <Stanza>&lt;ere `Yliac@ picovron `m`provytyc@ nem `Eliceoc@ pefcwtp `mma;ytyc.</Stanza>
                 <Stanza>Pinis] `nrefhiwis@ qen ],wra `nte &lt;ymi@ Markoc pi`apoctoloc@ pecsorp `nneferhemi.</Stanza>
                 <Stanza>`N;o pe `:mau `m`Vnou]@ Maria \}par;enoc@ twbh `mmof `ejwn@ e;refnai qa pengenoc.</Stanza>

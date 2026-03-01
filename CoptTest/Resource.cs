@@ -16,13 +16,13 @@ namespace CoptTest
             var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().Location);
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             var dirPath = System.IO.Path.GetDirectoryName(codeBasePath)!;
-            _resPrefix = System.IO.Path.Combine(dirPath, @"Resources\");
+            _resPrefix = System.IO.Path.Combine(dirPath, "Resources");
 
-            _trPrefix = System.IO.Path.Combine(dirPath, @"Output\");
+            _trPrefix = System.IO.Path.Combine(dirPath, "Output");
             Directory.CreateDirectory(_trPrefix);
         }
 
-        public static string Path(string name) => _resPrefix + name;
+        public static string Path(string name) => System.IO.Path.Join(_resPrefix, name);
 
         public static Stream Open(string name, FileMode mode = FileMode.Open) => File.Open(Path(name), mode);
 

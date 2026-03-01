@@ -21,7 +21,7 @@ public class CopticScriptoriumLexicon : ILexicon, IAsyncInit
 
     static CopticScriptoriumLexicon()
     {
-        var appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         _dbPath = Path.Combine(appDataDir, "CopticLib", "sahidic_dict.db");
         
         _db = new SqliteConnection($"Data Source={_dbPath}");

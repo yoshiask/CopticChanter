@@ -84,6 +84,7 @@ public class Sequences
     {
         var xdoc = XDocument.Parse(Resource.ReadAllText("test_sequence.xml"));
         DotNetScript.Register();
+        LuaScript.Register();
         
         LoadContext context = new();
         context.SetDate(new(2023, 8, 24, 6, 50));
@@ -123,6 +124,7 @@ public class Sequences
     {
         LoadContext context = new();
         DotNetScript.Register();
+        LuaScript.Register();
         
         var xmlEx = Resource.ReadAllText(file);
         var sequenceEx = SequenceReader.ParseSequenceXml(XDocument.Parse(xmlEx), context);
