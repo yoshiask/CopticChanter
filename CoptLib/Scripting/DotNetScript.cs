@@ -42,7 +42,7 @@ public class DotNetScript : Definition, IScript<object?>
         => Implementation!.Execute(context);
 
     protected virtual IScriptImplementation GetImplementation(string code)
-        => CSScript.Evaluator.LoadMethod<IScriptImplementation>(GetSourceCode(code));
+        => CSScript.RoslynEvaluator.LoadMethod<IScriptImplementation>(GetSourceCode(code));
 
     /// <summary>
     /// Registers built-in implementations of <see cref="DotNetScript"/> with <see cref="ScriptingEngine"/>.
