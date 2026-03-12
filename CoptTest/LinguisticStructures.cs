@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoptLib.Trees.Binary;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CoptTest;
 
