@@ -1,4 +1,6 @@
-﻿using CoptLib.Writing;
+﻿using CoptLib.IO;
+using CoptLib.Models;
+using CoptLib.Writing;
 using CoptLib.Writing.Linguistics;
 using CoptLib.Writing.Linguistics.Analyzers;
 using Xunit;
@@ -120,6 +122,32 @@ namespace CoptTest
             var result = _elAnalyzer.Transliterate(sample, KnownLanguage.English);
             output.WriteLine(result);
             Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("Priest", "cop", "en", "Pi·o·wib")]
+        public void Transliterate_Role(string roleId, string src, string dst, string expected)
+        {
+            var srcLang = LanguageInfo.Parse(src);
+            var dstLang = LanguageInfo.Parse(dst);
+
+            Doc doc = new(new LoadContext());
+            Section section = new(doc)
+            {
+                Language = srcLang
+            };
+            
+            Comment comment = new(CommentType.Role, section)
+            {
+                SourceText = roleId
+            };
+            section.Children.Add(comment);
+            
+            section.HandleCommands();
+
+            var actualDef = LinguisticLanguageService.Default.Transliterate(comment, dstLang);
+            
+            Assert.Equal(expected, actualDef.ToString());
         }
 
         [Theory]
